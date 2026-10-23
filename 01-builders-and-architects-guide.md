@@ -19,7 +19,7 @@ full list is in [07-profile-parameters.md](07-profile-parameters.md).
 | room | a named area with a floor, modelled as an `IfcSpace` (the IFC entity name; here it always means "room or zone") |
 | zone | a named volume that is data only: an `IfcSpatialZone` |
 | declaration property | a named property this set asks you to write because consumers read it (for example `RoomId`); a profile can rename them |
-| extension | an optional group of rules a profile switches on when its consumer needs it: walkability, luminaires, signboards, furniture collision |
+| extension | an optional group of rules a profile switches on when its consumer needs it: walkability, luminaires, signboards, furniture collision, terrain |
 
 ## 2. What the profile gives you
 
@@ -33,7 +33,7 @@ your delivery notes. If a number your work depends on is missing, ask the consum
 | identifiers | room identifier length and pattern, assigned entity-number range, allowed occupants | `identifiers.*`, `propertyNames` |
 | geometry | doorway, stair and ramp values | `geometry.*` |
 | volumes | the region to stay inside, regions to keep out, floors the consumer supplies | `buildVolume`, `keepOut`, `baseSurfaces` |
-| extensions | whether it walks people through rooms, turns fixtures into lights, generates signs, simplifies furniture | `extensions.*` |
+| extensions | whether it walks people through rooms, turns fixtures into lights, generates signs, simplifies furniture, supplies terrain | `extensions.*` |
 | rule levels | rules it makes stricter or switches off | `ruleLevels` |
 
 ## 3. File and schema
@@ -72,6 +72,8 @@ your delivery notes. If a number your work depends on is missing, ask the consum
 
 **B-15 · RECOMMENDED** - Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.
 
+**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor except slabs, footings, piles, walls, stairs, ramps, openings, the terrain element and reservation volumes. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.
+
 ## 5. Rooms and zones
 
 A room is the unit a consumer identifies, lists, lights, signs, and places people in.
@@ -95,6 +97,8 @@ A room is the unit a consumer identifies, lists, lights, signs, and places peopl
 **B-28 · RECOMMENDED** - Give each room a complete, human-readable `Name`; names appear in lists and on labels.
 
 **B-29 · RECOMMENDED** - Declare streets, paths, plazas and park areas as rooms too, with an identifier and a `Function`, so that they can be referred to, lit and signed. Open floor that belongs to no room has no identity.
+
+**B-143 · RECOMMENDED** - Model an open-air room (terrace, courtyard, deck, path, plaza) as an `IfcSpace` with `PredefinedType` `EXTERNAL` and the boolean property `Enclosed` set to false, and an internal room with `Enclosed` true or absent. Its volume rises to what covers it, or to a nominal height where it is open to the sky. Consumers that look for enclosed rooms (lighting, walkability, ceilings) skip open-air rooms.
 
 **B-30 · RECOMMENDED** - Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make "which room is this point in" ambiguous.
 
@@ -158,6 +162,8 @@ These two rules apply when the profile enables `extensions.walkability` (a consu
 **B-53 · REQUIRED** - Cut every hole in a slab (stair wells, shafts, service drops) as an `IfcOpeningElement` linked by `IfcRelVoidsElement`, not as separate floor pieces that merely leave a gap.
 
 **B-54 · RECOMMENDED** - Model ceilings or roofs. Many consumers draw no ceiling unless there is geometry; a room with nothing above it reads as open-topped. A ceiling is the underside of a slab or an `IfcCovering`.
+
+**B-144 · RECOMMENDED** - Model a pitched or sloped roof with sloped `IfcSlab` `ROOF` pieces that follow the real pitch, and a wall whose faces lean (a battered wall) as one `IfcWall` with an inclined section, not as flat boxes or steps. Consumers that work out rain, snow, sight lines or shadows read the shape; a stepped approximation gives the wrong answer.
 
 **B-55 · RECOMMENDED** - Keep your own structure clear of openings in surfaces the consumer supplies (`baseSurfaces`), with the margin the profile states.
 
@@ -273,7 +279,7 @@ These rules apply when the profile enables `extensions.signboards` (a consumer t
 
 ## 13. Geometry hygiene
 
-**B-110 · REQUIRED** - Keep all geometry inside the profile's build volume (`buildVolume`) and outside its keep-out regions (`keepOut`), when it gives them; check every vertex, not only footprints.
+**B-110 · REQUIRED** - Keep all geometry inside the profile's build volume (`buildVolume`) and outside its keep-out regions (`keepOut`), when it gives them; check every vertex, not only footprints. The terrain element of the terrain extension (section 16) is context supplied by the consumer's terrain source and is not checked against the build volume.
 
 **B-111 · RECOMMENDED** - Make solids closed and consistently oriented: no missing faces, no inside-out solids, no zero-area or duplicate faces.
 
@@ -283,7 +289,7 @@ These rules apply when the profile enables `extensions.signboards` (a consumer t
 
 **B-114 · RECOMMENDED** - Do not model what cannot be seen or used: hidden interiors, bolts, hinge detail, text as geometry, curves with more than `geometry.maxCurveSegmentsPerCircle` segments per full circle.
 
-**B-115 · RECOMMENDED** - Do not model terrain, soil or relief in IFC unless the profile says how. Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid.
+**B-115 · RECOMMENDED** - Do not model terrain, soil or relief in IFC unless the profile says how. Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid. The terrain extension (section 16) is how a profile says how: with it, the only terrain in the file is the derived patch it describes.
 
 **B-116 · RECOMMENDED** - Do not model a thin layer at a height where the consumer adds its own surface layer (floor finishes laid on the room floor); two layers at one height flicker.
 
@@ -300,7 +306,7 @@ Triangle count drives load time; the number of distinct materials and objects dr
 | triangles, recommended | `budgets.recommendedTriangles` | 1,000,000 |
 | distinct (class, colour, opacity) combinations | `budgets.maxDistinctColours` | 50 |
 
-**B-120 · RECOMMENDED** - Stay under the profile's recommended triangle count, `budgets.recommendedTriangles`. A constrained consumer publishes a much lower figure; build to the profile you were given.
+**B-120 · RECOMMENDED** - Stay under the profile's recommended triangle count, `budgets.recommendedTriangles`. A constrained consumer publishes a much lower figure; build to the profile you were given. Terrain triangles are counted separately (B-138).
 
 **B-121 · RECOMMENDED** - Spend triangles where the viewer looks: entrances, interiors a person stands in, anything within arm's reach. Distant detail is wasted.
 
@@ -318,3 +324,63 @@ Triangle count drives load time; the number of distinct materials and objects dr
 * Geometry readers drop silently (B-06).
 * One-way glass promises: ordinary glass is two-way.
 * Changing identifiers between revisions (B-75).
+* Cutting a pad, a cut or a fill into the terrain element, or modelling water in the file (B-130, B-139).
+
+## 16. Optional extension: terrain context
+
+Some consumers place a building in a world whose ground comes from their own terrain source. There the terrain stays authoritative in
+the source. In IFC it is **derived, read-only context**: a terrain element built from a patch the source gives you, used for
+placement, clash and "is the building floating or buried" checks. The extension applies when `extensions.terrain.enabled` is true;
+its numbers are in `extensions.terrain.*`.
+
+The work flows like this:
+
+1. **Send** the source three things: the footprint polygon of every ground-contact level, the finished floor elevation of each (height above
+   sea level of its finished floor) and a grading rule (`extensions.terrain.grading`, for example cut and fill slopes no steeper than 1:2). `tools/site_request.py` writes them from the master file.
+2. **Receive** a height patch: a GeoTIFF with one float32 band in metres, cut round the building with a margin, at one source level
+   (one pixel size), and a JSON sidecar (`schemas/terrain-patch.schema.json`) with the source package version and hash, origin, pixel size, CRS
+   definition, vertical datum and licence. The source grades the pad and clears vegetation inside the footprint plus a margin
+   (`extensions.terrain.clearingMarginMetres`). Its baseline ground is natural, with no built features; the building is an overlay
+   layer and never part of the terrain.
+3. **Import** with `tools/terrain_import.py`: it reduces the samples to a triangulated network within a stated error bound, converts
+   to the file frame and writes the elements the rules below describe.
+4. **Check** with `check_ifc.py` and a profile that enables the extension.
+
+Say which frame each number is in:
+
+| Where | Frame |
+|---|---|
+| sidecar and site request | site frame: x east, y north, z up, metres, centred on the site; heights above mean sea level, with sea level exactly 0 |
+| IFC file | file frame: the site frame shifted by the building origin and turned by the building azimuth (the angle from east, counter-clockwise, to the file's +X axis), z measured from the lowest finished floor |
+| the consumer's own runtime | whatever it uses (for example x east, y up, z south); the consumer converts, you never write it |
+
+The site frame is a custom azimuthal frame on a sphere, not a registry code. `IfcProjectedCRS.Name` carries the profile's name for it
+(`extensions.terrain.crsName`) and `Description` carries the definition from the sidecar.
+
+## 17. Terrain context: the rules
+
+These rules apply when `extensions.terrain.enabled` is true (section 16 explains the flow and the frames).
+
+**B-130 · REQUIRED · terrain** - Deliver the terrain as exactly one `IfcGeographicElement` with `PredefinedType` `TERRAIN`, contained in the `IfcSite`, whose body is one `IfcTriangulatedFaceSet`. It is derived, read-only context: do not edit its heights, and do not cut pads, cuts, fills or building features into it. The terrain source does grading and clearing before it cuts the patch, so the world and the model agree.
+
+**B-131 · REQUIRED · terrain** - Make the terrain a valid heightfield over a rectangular patch: every triangle faces up and has area, no edge belongs to more than two triangles, and the triangles cover the patch rectangle exactly once. Consumers sample the surface by plan position, so an overhang, a hole or an overlap gives two heights or none for one point.
+
+**B-132 · REQUIRED · terrain** - Make the terrain cover the building: the plan points of the slabs and walls of every ground-contact level, grown by `extensions.terrain.footprintMarginMetres`, lie inside the patch. A patch that stops short of the footprint cannot answer where the ground is under the building.
+
+**B-133 · REQUIRED · terrain** - Georeference the file with an `IfcMapConversion` from the model context to an `IfcProjectedCRS` named `extensions.terrain.crsName`, in metres, with the local X axis set to the building azimuth (a unit vector, east when the building is not turned), scale 1 and `OrthogonalHeight` equal to the height above sea level of the lowest finished floor (local z = 0). The name need not be a registry code. The profile's `frame.levelOffsetMetres` must be 0, because the floor height is carried here and not by an offset.
+
+**B-134 · REQUIRED · terrain** - Set `IfcSite.RefElevation` to the terrain height at the building origin above sea level, within `extensions.terrain.siteElevationToleranceMetres` of the terrain element at that point. The site elevation and the terrain must tell one story about where the ground is.
+
+**B-135 · REQUIRED · terrain** - Do not put a building in water: the terrain at every footprint point of every ground-contact level is at or above `extensions.terrain.seaLevelMetres`, and `FootprintInWater` is not true. Terrain below sea level is seabed.
+
+**B-136 · RECOMMENDED · terrain** - Do not let the building float or sink: no ground-contact level's floor is above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point of that level, or below it by more than `extensions.terrain.buryToleranceMetres` at every one. A house on a slope may stand above the ground at one edge and below it at another; that is allowed. A building above or below the ground everywhere was placed at the wrong height. The check is an estimate from the footprint points, so it starts as a warning; a consumer that relies on it raises it in `ruleLevels`.
+
+**B-137 · REQUIRED · terrain** - Pin the terrain source in a property set `Pset_Declaration_Terrain` on the terrain element: `Role` (`derived-context`), `PackageName`, `PackageVersion`, `PackageSha256`, `PatchSha256`, `PatchLevel`, `PixelSizeMetres`, `ErrorBoundMetres` (at most `extensions.terrain.maxErrorBoundMetres`), `Frame` and `VerticalDatum`. Heights near water can change between source versions, so a delivery says exactly which version it was built on and never carries numbers from an earlier one.
+
+**B-138 · RECOMMENDED · terrain** - Keep the terrain within `extensions.terrain.maxTriangles`. Terrain triangles do not count against `budgets.recommendedTriangles`; they still count against the hard limits of B-05.
+
+**B-139 · RECOMMENDED · terrain** - Keep water out of the file and declare it as metadata in `Pset_Declaration_Site` on the `IfcSite`: `SeaLevelMetres`, `FootprintInWater` and, when known, `DistanceToShoreMetres`. Sea and shoreline belong to the terrain source; the file only says how the building relates to them.
+
+**B-140 · RECOMMENDED · terrain** - State the frame of the terrain numbers: `Pset_Declaration_Terrain.Frame` says that the file frame is x east, y north, z up and relative to the lowest finished floor. Never write coordinates in a consumer's runtime frame.
+
+**B-141 · RECOMMENDED · terrain** - Declare every level that touches the ground with `GroundContact` true in `Pset_Declaration_Level`; without a declaration the lowest level is the only ground-contact level. On a stepped or terraced site several levels meet the ground, each at its own height, and the terrain source needs each footprint and floor elevation to grade them. The checker warns about an undeclared level that sits on the terrain.

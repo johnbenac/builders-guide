@@ -3,7 +3,7 @@ name: accept-and-package-delivery
 description: Package a delivery (master IFC, finish schedule, texture sets, items, tables, reports) with a manifest of SHA-256 hashes, versions, provenance and licences, run the final checks against a consumer profile, and decide whether to accept, ask for revision or reject someone else's delivery. Use when assembling or verifying a delivery package, writing manifest.json, choosing a version number, or when a check reports an X-rule finding.
 license: CC-BY-4.0
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   rules: "X-01 to X-60"
 ---
 
@@ -23,7 +23,9 @@ metadata:
 3. **Notes.** `notes/changes.md` (X-32); `notes/open-points.md` for anything unsettled.
 4. **Meta file.** `package-meta.json` from `templates/package-meta.template.json`: delivery id, title, SemVer version, UTC time such as
    `2026-10-22T10:00:00Z`, kind, author, profile (name, version), frame, a provenance entry per IFC file, texture set and item with source
-   and licence, a licence statement, the checks block (X-10, X-20, X-21, X-30).
+   and licence, a licence statement, the checks block (X-10, X-20, X-21, X-30). With the terrain extension also put the patch, its sidecar
+   and the site request under `terrain/`, add a provenance entry for the patch and the sidecar, and add the `terrain` section of the meta
+   file (source package name, version and hash, patch path and hash, sidecar path), copied from the sidecar (X-23).
 5. **Manifest.** `python3 tools/build_package.py init PACKAGE_DIR package-meta.json` writes `manifest.json` and `SHA256SUMS.txt`.
 6. **Verify.** `python3 tools/check_all.py PACKAGE_DIR --profile PROFILE.json --json --out final.json` must exit 0. Never edit a file
    after this without rebuilding the manifest and rerunning (X-11, X-50).
@@ -54,7 +56,7 @@ python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json
 ## Reading the report
 
 `build_package.py` findings: X-10 manifest schema, X-11 hash or size mismatch, X-12 unlisted file, X-13 master count, X-14 package size
-cap, X-20 and X-21 provenance and licence, X-30 version and time form, X-40 the check report belongs to the master and passed.
+cap, X-20 and X-21 provenance and licence, X-23 terrain source pinned, X-30 version and time form, X-40 the check report belongs to the master and passed.
 
 ## Stop conditions
 

@@ -7,8 +7,11 @@ The set uses SemVer (`MAJOR.MINOR.PATCH`). The version is in `CHANGELOG.md`, in 
 
 * A rule's identifier (`B-41`) is never reused for a different rule. A retired rule keeps its number and is listed in the changelog.
 * **PATCH**: wording fixes, clearer examples, better fix hints, tool bug fixes that do not change which deliveries pass or fail.
-* **MINOR**: new rules (they start as `RECOMMENDED` unless a defect cannot be avoided any other way), new optional extensions, new
-  profile parameters with defaults that keep existing deliveries passing, new tools, relaxed limits in `profiles/default.json`.
+* **MINOR**: new rules (they start as `RECOMMENDED` unless a defect cannot be avoided any other way, or they belong to a new optional
+  extension: a rule inside an extension may be `REQUIRED`, because it cannot affect a delivery unless the profile switches the
+  extension on), new optional extensions, new profile parameters with defaults that keep existing deliveries passing, new tools,
+  relaxed limits in `profiles/default.json`, and automation of a rule that was review-only when it can only warn (`RECOMMENDED`) and the
+  changelog says it is an estimate.
 * **MAJOR**: a rule's meaning changes, a rule is retired or its default level is raised, a default limit is tightened, a profile or
   report format changes incompatibly, or a tool changes which deliveries pass.
 * Every change that can alter a result is listed in `CHANGELOG.md` with the rule ids involved.

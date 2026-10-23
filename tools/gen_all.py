@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Generate every machine-readable artifact of the set from the human guides and tools/rules_meta.json.
 
-    python3 tools/gen_all.py --write     write the generated files
+    python3 tools/gen_all.py --write     write the generated files and MANIFEST.sha256
     python3 tools/gen_all.py --check     fail (exit 1) if any generated file on disk differs from what would be generated
 
-Generated: 06-rules-index.md, rules.json, chunks/*, llms.txt, llms-full.txt, skills/*/references/*, MANIFEST.json.
+With neither option it only prints this text (exit 2); it never writes by accident.
+Generated: 06-rules-index.md, rules.json, chunks/*, llms.txt, llms-full.txt, skills/*/references/*, MANIFEST.json, MANIFEST.sha256.
 Hand-written and never touched: the guides, AGENTS.md, REPAIR-LOOP.md, skills/*/SKILL.md, skills/*/scripts/*.
 """
 import hashlib
@@ -15,10 +16,11 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import fileset  # noqa: E402
 import rules_index  # noqa: E402
 
 ROOT = rules_index.ROOT = os.path.abspath(os.path.join(HERE, ".."))
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 MAX_CHUNK_CHARS = 6000          # about 1,500 tokens
 DOCS = [("readme", "README.md"), ("about", "ABOUT.md"), ("g1", "01-builders-and-architects-guide.md"), ("g2", "02-interior-decorators-guide.md"),
         ("g3", "03-furniture-and-fixtures-guide.md"), ("g4", "04-delivery-and-acceptance-guide.md"),
@@ -118,6 +120,9 @@ def rules_json(rules, order):
         tool = m.get("tool")
         if tool:
             how = {"tool": "tools/%s.py" % tool, "command": TOOL_CMD[tool], "method": "automated: the finding carries rule id %s" % rid}
+            if m.get("estimate"):
+                how["method"] = ("automated estimate: the finding carries rule id %s; the script approximates the rule (%s), so a person "
+                                 "confirms it and a consumer should not raise it to required lightly" % (rid, m["estimate"]))
         else:
             how = {"tool": None, "command": None, "method": "review: no script checks this rule; compare the finished work with the statement"}
         fix = m.get("fix_hint") or ""
@@ -170,7 +175,8 @@ def params_doc():
             "## Extensions", "",
             "An extension is an optional group of rules. It applies only when `extensions.<name>.enabled` is true: `walkability` "
             "(for consumers that place people or agents in rooms), `luminaires` (fixtures become lights), `signboards` (signs are "
-            "generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider). Rules that belong "
+            "generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider), `terrain` "
+            "(the consumer's terrain source supplies the ground; the file carries a derived, read-only terrain patch). Rules that belong "
             "to an extension carry its name after the level, for example `B-90 REQUIRED luminaires`, and `rules.json` lists it in "
             "`extension`.", ""]
     return "\n".join(out) + "\n"
@@ -258,12 +264,12 @@ def chunks():
 
 
 # ------------------------------------------------------------------ llms files
-def llms(index, skills_present):
+def llms(index, skills_present, count):
     L = ["# Authoring guide set: IFC buildings, materials and furniture", "",
          "> Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any "
          "compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.", "",
-         "Version %s. 179 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain "
-         "`python3 tools/...` lines; nothing here assumes a particular agent harness." % VERSION, "",
+         "Version %s. %d rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain "
+         "`python3 tools/...` lines; nothing here assumes a particular agent harness." % (VERSION, count), "",
          "## Start here", "",
          "- [AGENTS.md](AGENTS.md): what this set is, commands, working rules",
          "- [skills/orient/SKILL.md](skills/orient/SKILL.md): pick the right skill for the task",
@@ -333,13 +339,7 @@ def sha(b):
 
 def manifest(overlay):
     rows = []
-    paths = set(overlay)
-    for base, dirs, names in os.walk(ROOT):
-        dirs[:] = sorted(d for d in dirs if d not in (".git", "__pycache__", "dist"))
-        for n in names:
-            rel = os.path.relpath(os.path.join(base, n), ROOT).replace(os.sep, "/")
-            if rel not in ("MANIFEST.json", "MANIFEST.sha256") and not rel.endswith(".pyc"):
-                paths.add(rel)
+    paths = (set(overlay) | set(fileset.set_files(ROOT))) - {"MANIFEST.json"}
     for rel in sorted(paths):
         if rel in overlay:
             b = overlay[rel].encode("utf-8")
@@ -353,7 +353,7 @@ def manifest(overlay):
                 break
         rows.append({"path": rel, "purpose": purpose, "tags": tags, "sha256": sha(b), "bytes": len(b)})
     return json.dumps({"format": "set-manifest/1", "version": VERSION,
-                       "note": "Every file of the set except dist/ and MANIFEST.sha256 (see MANIFEST.sha256 and dist/SHA256SUMS.txt).",
+                       "note": "Every file of the set (the list is tools/fileset.py) except dist/ and MANIFEST.sha256 (see MANIFEST.sha256 and dist/SHA256SUMS.txt).",
                        "files": rows}, indent=1) + "\n"
 
 
@@ -371,7 +371,7 @@ def generate():
     cf, index = chunks()
     out.update(cf)
     skills_present = [s for s in SKILLS if os.path.exists(os.path.join(ROOT, "skills", s, "SKILL.md"))]
-    out["llms.txt"] = llms(index, skills_present)
+    out["llms.txt"] = llms(index, skills_present, robj["count"])
     out["llms-full.txt"] = llms_full(cf, index)
     out.update(skill_refs(cf, index, robj))
     out["MANIFEST.json"] = manifest(out)
@@ -393,6 +393,9 @@ def existing_generated(out):
 
 
 def main():
+    if "--check" not in sys.argv and "--write" not in sys.argv:
+        print(__doc__)
+        sys.exit(2)
     out = generate()
     stale = existing_generated(out)
     if "--check" in sys.argv:
@@ -401,6 +404,9 @@ def main():
             p = os.path.join(ROOT, rel)
             if not os.path.exists(p) or open(p, encoding="utf-8").read() != text:
                 bad.append(rel)
+        sums = os.path.join(ROOT, fileset.CHECKSUM_FILE)
+        if not os.path.exists(sums) or open(sums, encoding="utf-8").read() != fileset.checksum_text(ROOT):
+            bad.append(fileset.CHECKSUM_FILE)
         if bad or stale:
             print("generated files out of date: %s" % ", ".join((bad + ["(stale) " + s for s in stale])[:12]))
             sys.exit(1)
@@ -415,7 +421,9 @@ def main():
         os.makedirs(os.path.dirname(p), exist_ok=True)
         with open(p, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(text)
-    print("wrote %d generated files" % len(out))
+    with open(os.path.join(ROOT, fileset.CHECKSUM_FILE), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(fileset.checksum_text(ROOT))              # last: it hashes everything written above
+    print("wrote %d generated files and %s" % (len(out), fileset.CHECKSUM_FILE))
 
 
 if __name__ == "__main__":

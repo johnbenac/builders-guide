@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Site request",
+  "description": "What the building sends the terrain source: footprint, finished floor elevation and grading rule (guide 1, section 16). Written by tools/site_request.py. Coordinates are in the site frame: x east, y north, metres; heights above sea level.",
+  "type": "object",
+  "required": [
+    "format",
+    "frame",
+    "master",
+    "buildingOrigin",
+    "finishedFloorElevationMetres",
+    "footprint",
+    "grading",
+    "clearing",
+    "patch",
+    "buildingAzimuthDegrees"
+  ],
+  "properties": {
+    "format": {
+      "const": "site-request/1"
+    },
+    "frame": {
+      "type": "string",
+      "minLength": 1,
+      "description": "which frame the coordinates are in"
+    },
+    "master": {
+      "type": "object",
+      "required": [
+        "file",
+        "sha256"
+      ],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "buildingOrigin": {
+      "type": "object",
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "description": "site-frame position of the file origin (x east, y north)"
+    },
+    "finishedFloorElevationMetres": {
+      "type": "number",
+      "description": "height above sea level of file z = 0 (the lowest finished floor)"
+    },
+    "footprint": {
+      "type": "object",
+      "required": [
+        "method",
+        "polygons"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "union",
+            "hull"
+          ]
+        },
+        "polygons": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 3,
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "grading": {
+      "type": "object",
+      "required": [
+        "maxCutFillSlope"
+      ],
+      "properties": {
+        "maxCutFillSlope": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d+)?:\\d+(\\.\\d+)?$",
+          "description": "horizontal:vertical, for example 1:2"
+        }
+      }
+    },
+    "clearing": {
+      "type": "object",
+      "required": [
+        "marginMetres"
+      ],
+      "properties": {
+        "marginMetres": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "patch": {
+      "type": "object",
+      "required": [
+        "minMarginMetres",
+        "bounds"
+      ],
+      "properties": {
+        "minMarginMetres": {
+          "type": "number",
+          "minimum": 0
+        },
+        "bounds": {
+          "type": "object",
+          "required": [
+            "min",
+            "max"
+          ],
+          "properties": {
+            "min": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "max": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "buildingAzimuthDegrees": {
+      "type": "number",
+      "description": "angle from east, counter-clockwise, to the file's +X axis, degrees"
+    },
+    "levels": {
+      "type": "array",
+      "description": "the ground-contact levels (B-141), lowest first",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "elevationMetres",
+          "finishedFloorElevationMetres",
+          "footprint"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "elevationMetres": {
+            "type": "number",
+            "description": "level elevation in the file frame"
+          },
+          "finishedFloorElevationMetres": {
+            "type": "number",
+            "description": "height above sea level of this level's finished floor"
+          },
+          "footprint": {
+            "type": "object",
+            "required": [
+              "method",
+              "polygons"
+            ],
+            "properties": {
+              "method": {
+                "enum": [
+                  "union",
+                  "hull"
+                ]
+              },
+              "polygons": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "array",
+                  "minItems": 3,
+                  "items": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

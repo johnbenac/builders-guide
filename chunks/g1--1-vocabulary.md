@@ -10,4 +10,4 @@
 | room | a named area with a floor, modelled as an `IfcSpace` (the IFC entity name; here it always means "room or zone") |
 | zone | a named volume that is data only: an `IfcSpatialZone` |
 | declaration property | a named property this set asks you to write because consumers read it (for example `RoomId`); a profile can rename them |
-| extension | an optional group of rules a profile switches on when its consumer needs it: walkability, luminaires, signboards, furniture collision |
+| extension | an optional group of rules a profile switches on when its consumer needs it: walkability, luminaires, signboards, furniture collision, terrain |

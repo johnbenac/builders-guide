@@ -27,7 +27,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import report as rpt  # noqa: E402
 
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 ROOT = rpt.ROOT
 
 
@@ -114,6 +114,9 @@ def package(pkg, a):
         b = copy.copy(a)
         b.finish_schedule = b.finish_schedule or (sched if os.path.exists(sched) else None)
         reps += building(m, b)
+        for sch, rel in (("schemas/terrain-patch.schema.json", "terrain/patch.json"), ("schemas/site-request.schema.json", "terrain/site-request.json")):
+            if os.path.exists(os.path.join(pkg, rel)):
+                reps.append(validate(sch, os.path.join(pkg, rel), "B-137", "REQUIRED", rel))
         meta = os.path.join(pkg, "tables", "building.json")
         if os.path.exists(meta):
             reps.append(validate("schemas/building-metadata.schema.json", meta, "X-41", "RECOMMENDED", "building.json"))

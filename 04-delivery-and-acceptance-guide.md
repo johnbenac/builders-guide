@@ -28,6 +28,8 @@ example-room-1.0.0/
     SOURCES.csv               source and licence of every texture set
     textures/<set>/           albedo.png, normal.png, orm.png, set.json
   items/<itemId>/             <itemId>.ifc, <itemId>.item.json, optional preview.png (guide 3)
+  terrain/                    only with the terrain extension: the height patch (patch.tif), its sidecar (patch.json),
+                              and the site request (site-request.json) that produced it (guide 1, section 16)
   reports/                    the checker reports (section 5)
   notes/
     changes.md                what changed since the previous version
@@ -62,6 +64,7 @@ python3 tools/build_package.py verify example-room-1.0.0
 | `frame` | `units` (`metres`), `axes`, `levelOffsetMetres`, `localZero` |
 | `ifc` | `schema`, `entityNumberStart` |
 | `files[]` | for each file: `path`, `role`, `sha256`, `bytes`, optional `version` |
+| `terrain` | only with the terrain extension: `package` (`name`, `version`, `sha256` of the terrain source version used), `patch` (`path`, `sha256`), `sidecar` (`path`) |
 | `counts` | numbers the checker found (levels, rooms, triangles ...) |
 | `provenance[]` | for each asset group: `asset`, `type`, `source`, `author`, `licence`, `notes` |
 | `licence` | `statement` that covers everything not listed in `provenance` |
@@ -80,6 +83,8 @@ python3 tools/build_package.py verify example-room-1.0.0
 **X-20 · REQUIRED** - Give every IFC file, texture set and library item a `provenance` entry (what it is, where it came from: `original`, `procedural` with the script and seed, or a named source; who made it; the licence that applies) when the profile requires provenance (`package.requireProvenance`, default true).
 
 **X-21 · REQUIRED** - State a licence for every asset and a `licence.statement` for the package when the profile requires it (`package.requireLicence`, default true). A package whose licence terms are missing, or do not allow the receiving party to use, copy and adapt the work for the purpose of the assignment, cannot be accepted.
+
+**X-23 · REQUIRED · terrain** - When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states and to what the check report of the master file found in it, and keep the site request (its building origin, azimuth and floor height must be the file's). The terrain source can change between versions (shorelines in particular), so the delivery must say exactly which version its heights came from.
 
 **X-22 · RECOMMENDED** - Deliver only content you are free to hand over. Do not include material that is restricted, reproduced from another party's work without permission, or that carries identifying marks of a third party. If part of your work is restricted, say so in `notes/open-points.md` and leave it out.
 

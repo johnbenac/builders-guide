@@ -191,5 +191,17 @@ result: PASS (0 REQUIRED failure(s), 0 RECOMMENDED warning(s)); 1 levels, 1 room
 
 ## 5. What the example leaves out
 
-Stairs and a second level (B-60 to B-62), a free-standing sign (B-100), reservation volumes (B-80), several rooms with a room table
-of more than one row, and a library with several items. Each is a small extension of what is here; the rule text in guides 1 to 3 says how.
+A free-standing sign (B-100), reservation volumes (B-80) and a library with several items. Each is a small extension of what is here; the rule text in guides 1 to 3 says how.
+Stairs, several levels, several rooms, open-air rooms, sloped sites and non-rectangular forms are in the larger examples below.
+
+## 6. Larger examples
+
+`python3 tools/make_fixtures.py out/` builds three more buildings with the authoring kit `tools/ifc_author.py`. Each passes `check_ifc.py` without warnings; `tools/test_fixtures.py` also runs them through the terrain tools and breaks each of the rules they exercise.
+
+| Fixture | What it shows |
+|---|---|
+| `tray-house` | two levels of cantilevered trays over a watercourse: stacked slabs, open-air terraces (B-143), a stair through a slab well sized for head-room (B-61, B-53), a stone core, parapets |
+| `hillside-block` | a block stepped up a steep slope and turned 30 degrees from east: two ground-contact levels (B-141), footings and a retaining wall (B-142), a gable roof of sloped slabs (B-144), a stair that arrives on a roof terrace |
+| `courtyard` | four wings round an open courtyard on one level: battered outer walls (B-144), flat roofs with a courtyard opening, parapets, open-air circulation reached by doors (B-47) |
+
+To see a building, run `python3 tools/preview.py MASTER.ifc OUT_DIR`: one plan per level and an isometric view.

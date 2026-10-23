@@ -5,7 +5,7 @@ that the checker names the right rule each time.
 
     python3 selftest.py [WORK_DIR]
 
-Requires: pip install ifcopenshell numpy
+Requires: pip install -r tools/requirements-terrain.txt (and requirements-preview.txt for the preview check)
 """
 import json
 import os
@@ -160,6 +160,9 @@ try:
 except ImportError:
     print("jsonschema not installed: template checks skipped")
 subprocess.run([sys.executable, os.path.join(HERE, "test_map_properties.py"), os.path.join(work, "map")], check=True)
+subprocess.run([sys.executable, os.path.join(HERE, "test_terrain.py"), os.path.join(work, "terrain")], check=True)
+subprocess.run([sys.executable, os.path.join(HERE, "test_fixtures.py"), os.path.join(work, "fixtures")], check=True)
+subprocess.run([sys.executable, os.path.join(HERE, "test_hardening.py"), os.path.join(work, "hardening")], check=True)
 subprocess.run([sys.executable, os.path.join(HERE, "test_sync.py")], check=True)
 subprocess.run([sys.executable, os.path.join(HERE, "agent_harness.py"), os.path.join(work, "harness")], check=True, stdout=subprocess.DEVNULL)
 print("agent_harness: passed")

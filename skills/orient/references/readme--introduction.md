@@ -2,7 +2,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.0.0 (2026-10-22). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.1.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 

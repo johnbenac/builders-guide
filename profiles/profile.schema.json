@@ -171,6 +171,14 @@
         "maxCurveSegmentsPerCircle": {
           "type": "number",
           "description": "segments per full circle above which tessellation is wasteful"
+        },
+        "stairHeadroomMetres": {
+          "type": "number",
+          "description": "clear height required above every stair tread"
+        },
+        "roomOverlapToleranceMetres": {
+          "type": "number",
+          "description": "largest thickness by which two rooms on one level may overlap (a wall)"
         }
       }
     },
@@ -329,6 +337,66 @@
                 "box",
                 "mesh"
               ]
+            }
+          }
+        },
+        "terrain": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "consumer supplies terrain from its own source and wants a derived, read-only terrain patch in the file"
+            },
+            "crsName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "name of the consumer's site coordinate reference system, written as the IfcProjectedCRS name; it need not be a registry code; null accepts any non-empty name"
+            },
+            "patchFormat": {
+              "type": "string",
+              "description": "form of the height patch the consumer's terrain source delivers"
+            },
+            "maxErrorBoundMetres": {
+              "type": "number",
+              "description": "largest vertical difference allowed between the terrain triangles and the source samples"
+            },
+            "footprintMarginMetres": {
+              "type": "number",
+              "description": "margin by which the terrain patch must extend beyond the building footprint in plan"
+            },
+            "clearingMarginMetres": {
+              "type": "number",
+              "description": "margin round the footprint in which the terrain source clears vegetation"
+            },
+            "grading": {
+              "type": "object",
+              "description": "grading rule sent to the terrain source: maxCutFillSlope is the steepest cut or fill slope as horizontal:vertical text, for example 1:2"
+            },
+            "seaLevelMetres": {
+              "type": "number",
+              "description": "height of sea level in the consumer's vertical datum; terrain below it is seabed"
+            },
+            "floatToleranceMetres": {
+              "type": "number",
+              "description": "how far the lowest finished floor may stand above the terrain at every footprint point before the building counts as floating"
+            },
+            "buryToleranceMetres": {
+              "type": "number",
+              "description": "how far the lowest finished floor may stand below the terrain at every footprint point before the building counts as buried"
+            },
+            "siteElevationToleranceMetres": {
+              "type": "number",
+              "description": "largest difference between IfcSite.RefElevation and the terrain height at the building origin"
+            },
+            "maxTriangles": {
+              "type": "number",
+              "description": "most triangles in the terrain element"
+            },
+            "maxPatchSamples": {
+              "type": "number",
+              "description": "most samples read from one height patch; a larger patch is refused before it is loaded"
             }
           }
         }

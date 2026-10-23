@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.0.0 (2026-10-22). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.1.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -15,7 +15,7 @@ tool, an archive). **A profile** is the small JSON file a consumer publishes wit
 * **Profile parameters** hold everything numeric or consumer-specific: size and triangle limits, identifier lengths, clearances,
   property names, whether room identifiers are mandatory, and which optional extensions apply. See
   [07-profile-parameters.md](07-profile-parameters.md).
-* **Extensions** (`walkability`, `luminaires`, `signboards`, `furnitureCollision`) are optional rule groups a profile switches on.
+* **Extensions** (`walkability`, `luminaires`, `signboards`, `furnitureCollision`, `terrain`) are optional rule groups a profile switches on.
 
 Check anything against a profile: `python3 tools/check_all.py PATH --profile consumer.json --json`. Reports name the profile used.
 
@@ -94,10 +94,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.0.0.pdf` | all guides, the worked example, the parameters and the rules index in one document |
-| `builders-guide-2.0.0.html` | the same, as one web page |
-| `builders-guide-2.0.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.0.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.1.0.pdf` | all guides, the worked example, the parameters and the rules index in one document |
+| `builders-guide-2.1.0.html` | the same, as one web page |
+| `builders-guide-2.1.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.1.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.

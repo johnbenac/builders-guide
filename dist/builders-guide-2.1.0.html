@@ -32,7 +32,7 @@ a { color: #1f4e79; text-decoration: none; }
 <body>
 <h1 class="title first" style="border:none">Authoring Guide Set for
 Digital Buildings, Materials and Furniture (IFC)</h1>
-<div class="subtitle">Version 2.0.0, 2026-10-22. Application-neutral
+<div class="subtitle">Version 2.1.0, 2026-10-23. Application-neutral
 guides and tools for outside organisations and their agents.</div>
 <nav id="TOC">
 <ul>
@@ -110,6 +110,12 @@ id="toc-14-level-of-detail-and-budgets">14. Level of detail and
 budgets</a></li>
 <li><a href="#15-what-to-avoid" id="toc-15-what-to-avoid">15. What to
 avoid</a></li>
+<li><a href="#16-optional-extension-terrain-context"
+id="toc-16-optional-extension-terrain-context">16. Optional extension:
+terrain context</a></li>
+<li><a href="#17-terrain-context-the-rules"
+id="toc-17-terrain-context-the-rules">17. Terrain context: the
+rules</a></li>
 </ul></li>
 <li><a href="#guide-2-interior-decorators-guide"
 id="toc-guide-2-interior-decorators-guide">Guide 2: Interior Decorator's
@@ -196,6 +202,8 @@ try</a></li>
 <li><a href="#5-what-the-example-leaves-out"
 id="toc-5-what-the-example-leaves-out">5. What the example leaves
 out</a></li>
+<li><a href="#6-larger-examples" id="toc-6-larger-examples">6. Larger
+examples</a></li>
 </ul></li>
 <li><a href="#repair-loop" id="toc-repair-loop">Repair loop</a>
 <ul>
@@ -218,7 +226,7 @@ mini-loop</a></li>
 <h1
 id="authoring-guide-set-for-ifc-buildings-materials-and-furniture">Authoring
 Guide Set for IFC Buildings, Materials and Furniture</h1>
-<p>Version 2.0.0 (2026-10-22). Application-neutral guides, rules,
+<p>Version 2.1.0 (2026-10-23). Application-neutral guides, rules,
 checkers and examples for people and software agents who create digital
 buildings, finishes, wall coverings and furniture in the IFC
 building-data format, so that their work can be used by many different
@@ -241,8 +249,8 @@ which optional extensions apply. See <a
 href="#">07-profile-parameters.md</a>.</li>
 <li><strong>Extensions</strong> (<code>walkability</code>,
 <code>luminaires</code>, <code>signboards</code>,
-<code>furnitureCollision</code>) are optional rule groups a profile
-switches on.</li>
+<code>furnitureCollision</code>, <code>terrain</code>) are optional rule
+groups a profile switches on.</li>
 </ul>
 <p>Check anything against a profile:
 <code>python3 tools/check_all.py PATH --profile consumer.json --json</code>.
@@ -452,7 +460,7 @@ it</td>
 </tbody>
 </table>
 <h2 id="hand-over-files">Hand-over files</h2>
-<p><a href="dist/">dist/</a> holds the single-file versions:</p>
+<p>dist/ holds the single-file versions:</p>
 <table>
 <thead>
 <tr class="header">
@@ -462,21 +470,21 @@ it</td>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>builders-guide-2.0.0.pdf</code></td>
+<td><code>builders-guide-2.1.0.pdf</code></td>
 <td>all guides, the worked example, the parameters and the rules index
 in one document</td>
 </tr>
 <tr class="even">
-<td><code>builders-guide-2.0.0.html</code></td>
+<td><code>builders-guide-2.1.0.html</code></td>
 <td>the same, as one web page</td>
 </tr>
 <tr class="odd">
-<td><code>builders-guide-2.0.0.zip</code></td>
+<td><code>builders-guide-2.1.0.zip</code></td>
 <td>the whole set, with <code>MANIFEST.sha256</code></td>
 </tr>
 <tr class="even">
 <td><code>SHA256SUMS.txt</code>,
-<code>builders-guide-2.0.0.zip.sha256</code></td>
+<code>builders-guide-2.1.0.zip.sha256</code></td>
 <td>SHA-256 of the three files above</td>
 </tr>
 </tbody>
@@ -511,7 +519,7 @@ you which skill to load.</li>
 <code>skills/author-furniture-library</code>,
 <code>skills/accept-and-package-delivery</code>. Each skill points to
 small files under its <code>references/</code> for detail.</li>
-<li>Rules are in <code>rules.json</code> (181, stable ids like
+<li>Rules are in <code>rules.json</code> (197, stable ids like
 <code>B-41</code>). Each has a default <code>level</code>,
 <code>statement</code>, <code>rationale</code>, <code>parameters</code>,
 <code>extension</code>, <code>how_to_check</code>,
@@ -524,13 +532,22 @@ consumer's profile when you have one.</li>
 <code>MANIFEST.json</code> (every file with purpose and tags).</li>
 </ol>
 <h2 id="commands">Commands</h2>
-<pre><code>pip install -r tools/requirements.txt
+<pre><code>pip install -r tools/requirements.txt                        # core; add -r
+    tools/requirements-terrain.txt or -preview.txt for those tools
 python3 tools/check_all.py PATH --profile PROFILE.json --json --out report.json   # PATH: .ifc file,
     finishes/ folder, items/ folder, or package folder
 python3 tools/make_sample.py work/                            # a complete valid example to copy
     from
 python3 tools/map_properties.py in.ifc out.ifc --mapping PROFILE.json   # rename declaration
     properties to a consumer&#39;s names
+python3 tools/site_request.py MASTER.ifc --floor-elevation H --origin E N --out site-request.json
+    # only if the profile enables terrain: what the building sends its terrain source
+python3 tools/terrain_import.py patch.tif patch.json MASTER.ifc --request site-request.json --out
+    OUT.ifc   # only if the profile enables terrain: add the derived terrain patch
+python3 tools/make_fixtures.py fixtures/                      # three larger worked buildings, built
+    with tools/ifc_author.py
+python3 tools/preview.py MASTER.ifc preview/                  # plans and an isometric view, to see
+    your own work
 python3 tools/run_example.py example-out                      # build, check and package the example
     end to end
 python3 tools/selftest.py                                     # prove the checkers still catch every
@@ -632,7 +649,8 @@ it (for example <code>RoomId</code>); a profile can rename them</td>
 <tr class="even">
 <td>extension</td>
 <td>an optional group of rules a profile switches on when its consumer
-needs it: walkability, luminaires, signboards, furniture collision</td>
+needs it: walkability, luminaires, signboards, furniture collision,
+terrain</td>
 </tr>
 </tbody>
 </table>
@@ -683,7 +701,7 @@ supplies</td>
 <tr class="even">
 <td>extensions</td>
 <td>whether it walks people through rooms, turns fixtures into lights,
-generates signs, simplifies furniture</td>
+generates signs, simplifies furniture, supplies terrain</td>
 <td><code>extensions.*</code></td>
 </tr>
 <tr class="odd">
@@ -773,6 +791,12 @@ the building name (<code>Clinic - ground / +0 m</code>).</p>
 <p><strong>B-15 · RECOMMENDED</strong> - Keep floor-to-floor heights
 regular so that stairs, lifts and openings line up between levels; make
 tall halls an exception you can name.</p>
+<p><strong>B-142 · RECOMMENDED</strong> - Put nothing below the lowest
+finished floor except slabs, footings, piles, walls, stairs, ramps,
+openings, the terrain element and reservation volumes. Foundations,
+retaining walls and a stair that goes down into the ground are ordinary
+on a slope; a door, window, room or piece of furniture below the lowest
+floor means the origin was put at the wrong height.</p>
 <h2 id="5-rooms-and-zones">5. Rooms and zones</h2>
 <p>A room is the unit a consumer identifies, lists, lights, signs, and
 places people in.</p>
@@ -824,6 +848,14 @@ labels.</p>
 and park areas as rooms too, with an identifier and a
 <code>Function</code>, so that they can be referred to, lit and signed.
 Open floor that belongs to no room has no identity.</p>
+<p><strong>B-143 · RECOMMENDED</strong> - Model an open-air room
+(terrace, courtyard, deck, path, plaza) as an <code>IfcSpace</code> with
+<code>PredefinedType</code> <code>EXTERNAL</code> and the boolean
+property <code>Enclosed</code> set to false, and an internal room with
+<code>Enclosed</code> true or absent. Its volume rises to what covers
+it, or to a nominal height where it is open to the sky. Consumers that
+look for enclosed rooms (lighting, walkability, ceilings) skip open-air
+rooms.</p>
 <p><strong>B-30 · RECOMMENDED</strong> - Let rooms on one level touch
 along wall centre lines but not overlap by more than the wall thickness;
 overlapping floors make "which room is this point in" ambiguous.</p>
@@ -956,6 +988,12 @@ that merely leave a gap.</p>
 consumers draw no ceiling unless there is geometry; a room with nothing
 above it reads as open-topped. A ceiling is the underside of a slab or
 an <code>IfcCovering</code>.</p>
+<p><strong>B-144 · RECOMMENDED</strong> - Model a pitched or sloped roof
+with sloped <code>IfcSlab</code> <code>ROOF</code> pieces that follow
+the real pitch, and a wall whose faces lean (a battered wall) as one
+<code>IfcWall</code> with an inclined section, not as flat boxes or
+steps. Consumers that work out rain, snow, sight lines or shadows read
+the shape; a stepped approximation gives the wrong answer.</p>
 <p><strong>B-55 · RECOMMENDED</strong> - Keep your own structure clear
 of openings in surfaces the consumer supplies
 (<code>baseSurfaces</code>), with the margin the profile states.</p>
@@ -1271,7 +1309,9 @@ keep lamps and trees away from its face.</p>
 <p><strong>B-110 · REQUIRED</strong> - Keep all geometry inside the
 profile's build volume (<code>buildVolume</code>) and outside its
 keep-out regions (<code>keepOut</code>), when it gives them; check every
-vertex, not only footprints.</p>
+vertex, not only footprints. The terrain element of the terrain
+extension (section 16) is context supplied by the consumer's terrain
+source and is not checked against the build volume.</p>
 <p><strong>B-111 · RECOMMENDED</strong> - Make solids closed and
 consistently oriented: no missing faces, no inside-out solids, no
 zero-area or duplicate faces.</p>
@@ -1289,7 +1329,9 @@ segments per full circle.</p>
 <p><strong>B-115 · RECOMMENDED</strong> - Do not model terrain, soil or
 relief in IFC unless the profile says how. Trees and planting may be
 <code>IfcGeographicElement</code> markers; consumers differ on whether
-they are solid.</p>
+they are solid. The terrain extension (section 16) is how a profile says
+how: with it, the only terrain in the file is the derived patch it
+describes.</p>
 <p><strong>B-116 · RECOMMENDED</strong> - Do not model a thin layer at a
 height where the consumer adds its own surface layer (floor finishes
 laid on the room floor); two layers at one height flicker.</p>
@@ -1342,7 +1384,7 @@ recommended sizes are <code>budgets.*</code>.</p>
 <p><strong>B-120 · RECOMMENDED</strong> - Stay under the profile's
 recommended triangle count, <code>budgets.recommendedTriangles</code>. A
 constrained consumer publishes a much lower figure; build to the profile
-you were given.</p>
+you were given. Terrain triangles are counted separately (B-138).</p>
 <p><strong>B-121 · RECOMMENDED</strong> - Spend triangles where the
 viewer looks: entrances, interiors a person stands in, anything within
 arm's reach. Distant detail is wasted.</p>
@@ -1362,7 +1404,164 @@ reservation volume (B-80).</li>
 <li>Geometry readers drop silently (B-06).</li>
 <li>One-way glass promises: ordinary glass is two-way.</li>
 <li>Changing identifiers between revisions (B-75).</li>
+<li>Cutting a pad, a cut or a fill into the terrain element, or
+modelling water in the file (B-130, B-139).</li>
 </ul>
+<h2 id="16-optional-extension-terrain-context">16. Optional extension:
+terrain context</h2>
+<p>Some consumers place a building in a world whose ground comes from
+their own terrain source. There the terrain stays authoritative in the
+source. In IFC it is <strong>derived, read-only context</strong>: a
+terrain element built from a patch the source gives you, used for
+placement, clash and "is the building floating or buried" checks. The
+extension applies when <code>extensions.terrain.enabled</code> is true;
+its numbers are in <code>extensions.terrain.*</code>.</p>
+<p>The work flows like this:</p>
+<ol type="1">
+<li><strong>Send</strong> the source three things: the footprint polygon
+of every ground-contact level, the finished floor elevation of each
+(height above sea level of its finished floor) and a grading rule
+(<code>extensions.terrain.grading</code>, for example cut and fill
+slopes no steeper than 1:2). <code>tools/site_request.py</code> writes
+them from the master file.</li>
+<li><strong>Receive</strong> a height patch: a GeoTIFF with one float32
+band in metres, cut round the building with a margin, at one source
+level (one pixel size), and a JSON sidecar
+(<code>schemas/terrain-patch.schema.json</code>) with the source package
+version and hash, origin, pixel size, CRS definition, vertical datum and
+licence. The source grades the pad and clears vegetation inside the
+footprint plus a margin
+(<code>extensions.terrain.clearingMarginMetres</code>). Its baseline
+ground is natural, with no built features; the building is an overlay
+layer and never part of the terrain.</li>
+<li><strong>Import</strong> with <code>tools/terrain_import.py</code>:
+it reduces the samples to a triangulated network within a stated error
+bound, converts to the file frame and writes the elements the rules
+below describe.</li>
+<li><strong>Check</strong> with <code>check_ifc.py</code> and a profile
+that enables the extension.</li>
+</ol>
+<p>Say which frame each number is in:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Where</th>
+<th>Frame</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sidecar and site request</td>
+<td>site frame: x east, y north, z up, metres, centred on the site;
+heights above mean sea level, with sea level exactly 0</td>
+</tr>
+<tr class="even">
+<td>IFC file</td>
+<td>file frame: the site frame shifted by the building origin and turned
+by the building azimuth (the angle from east, counter-clockwise, to the
+file's +X axis), z measured from the lowest finished floor</td>
+</tr>
+<tr class="odd">
+<td>the consumer's own runtime</td>
+<td>whatever it uses (for example x east, y up, z south); the consumer
+converts, you never write it</td>
+</tr>
+</tbody>
+</table>
+<p>The site frame is a custom azimuthal frame on a sphere, not a
+registry code. <code>IfcProjectedCRS.Name</code> carries the profile's
+name for it (<code>extensions.terrain.crsName</code>) and
+<code>Description</code> carries the definition from the sidecar.</p>
+<h2 id="17-terrain-context-the-rules">17. Terrain context: the
+rules</h2>
+<p>These rules apply when <code>extensions.terrain.enabled</code> is
+true (section 16 explains the flow and the frames).</p>
+<p><strong>B-130 · REQUIRED · terrain</strong> - Deliver the terrain as
+exactly one <code>IfcGeographicElement</code> with
+<code>PredefinedType</code> <code>TERRAIN</code>, contained in the
+<code>IfcSite</code>, whose body is one
+<code>IfcTriangulatedFaceSet</code>. It is derived, read-only context:
+do not edit its heights, and do not cut pads, cuts, fills or building
+features into it. The terrain source does grading and clearing before it
+cuts the patch, so the world and the model agree.</p>
+<p><strong>B-131 · REQUIRED · terrain</strong> - Make the terrain a
+valid heightfield over a rectangular patch: every triangle faces up and
+has area, no edge belongs to more than two triangles, and the triangles
+cover the patch rectangle exactly once. Consumers sample the surface by
+plan position, so an overhang, a hole or an overlap gives two heights or
+none for one point.</p>
+<p><strong>B-132 · REQUIRED · terrain</strong> - Make the terrain cover
+the building: the plan points of the slabs and walls of every
+ground-contact level, grown by
+<code>extensions.terrain.footprintMarginMetres</code>, lie inside the
+patch. A patch that stops short of the footprint cannot answer where the
+ground is under the building.</p>
+<p><strong>B-133 · REQUIRED · terrain</strong> - Georeference the file
+with an <code>IfcMapConversion</code> from the model context to an
+<code>IfcProjectedCRS</code> named
+<code>extensions.terrain.crsName</code>, in metres, with the local X
+axis set to the building azimuth (a unit vector, east when the building
+is not turned), scale 1 and <code>OrthogonalHeight</code> equal to the
+height above sea level of the lowest finished floor (local z = 0). The
+name need not be a registry code. The profile's
+<code>frame.levelOffsetMetres</code> must be 0, because the floor height
+is carried here and not by an offset.</p>
+<p><strong>B-134 · REQUIRED · terrain</strong> - Set
+<code>IfcSite.RefElevation</code> to the terrain height at the building
+origin above sea level, within
+<code>extensions.terrain.siteElevationToleranceMetres</code> of the
+terrain element at that point. The site elevation and the terrain must
+tell one story about where the ground is.</p>
+<p><strong>B-135 · REQUIRED · terrain</strong> - Do not put a building
+in water: the terrain at every footprint point of every ground-contact
+level is at or above <code>extensions.terrain.seaLevelMetres</code>, and
+<code>FootprintInWater</code> is not true. Terrain below sea level is
+seabed.</p>
+<p><strong>B-136 · RECOMMENDED · terrain</strong> - Do not let the
+building float or sink: no ground-contact level's floor is above the
+terrain by more than
+<code>extensions.terrain.floatToleranceMetres</code> at every footprint
+point of that level, or below it by more than
+<code>extensions.terrain.buryToleranceMetres</code> at every one. A
+house on a slope may stand above the ground at one edge and below it at
+another; that is allowed. A building above or below the ground
+everywhere was placed at the wrong height. The check is an estimate from
+the footprint points, so it starts as a warning; a consumer that relies
+on it raises it in <code>ruleLevels</code>.</p>
+<p><strong>B-137 · REQUIRED · terrain</strong> - Pin the terrain source
+in a property set <code>Pset_Declaration_Terrain</code> on the terrain
+element: <code>Role</code> (<code>derived-context</code>),
+<code>PackageName</code>, <code>PackageVersion</code>,
+<code>PackageSha256</code>, <code>PatchSha256</code>,
+<code>PatchLevel</code>, <code>PixelSizeMetres</code>,
+<code>ErrorBoundMetres</code> (at most
+<code>extensions.terrain.maxErrorBoundMetres</code>), <code>Frame</code>
+and <code>VerticalDatum</code>. Heights near water can change between
+source versions, so a delivery says exactly which version it was built
+on and never carries numbers from an earlier one.</p>
+<p><strong>B-138 · RECOMMENDED · terrain</strong> - Keep the terrain
+within <code>extensions.terrain.maxTriangles</code>. Terrain triangles
+do not count against <code>budgets.recommendedTriangles</code>; they
+still count against the hard limits of B-05.</p>
+<p><strong>B-139 · RECOMMENDED · terrain</strong> - Keep water out of
+the file and declare it as metadata in
+<code>Pset_Declaration_Site</code> on the <code>IfcSite</code>:
+<code>SeaLevelMetres</code>, <code>FootprintInWater</code> and, when
+known, <code>DistanceToShoreMetres</code>. Sea and shoreline belong to
+the terrain source; the file only says how the building relates to
+them.</p>
+<p><strong>B-140 · RECOMMENDED · terrain</strong> - State the frame of
+the terrain numbers: <code>Pset_Declaration_Terrain.Frame</code> says
+that the file frame is x east, y north, z up and relative to the lowest
+finished floor. Never write coordinates in a consumer's runtime
+frame.</p>
+<p><strong>B-141 · RECOMMENDED · terrain</strong> - Declare every level
+that touches the ground with <code>GroundContact</code> true in
+<code>Pset_Declaration_Level</code>; without a declaration the lowest
+level is the only ground-contact level. On a stepped or terraced site
+several levels meet the ground, each at its own height, and the terrain
+source needs each footprint and floor elevation to grade them. The
+checker warns about an undeclared level that sits on the terrain.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="guide-2-interior-decorators-guide">Guide 2: Interior Decorator's
@@ -2166,6 +2365,10 @@ only the parts your assignment needs.</p>
     SOURCES.csv               source and licence of every texture set
     textures/&lt;set&gt;/           albedo.png, normal.png, orm.png, set.json
   items/&lt;itemId&gt;/             &lt;itemId&gt;.ifc, &lt;itemId&gt;.item.json, optional preview.png (guide 3)
+  terrain/                    only with the terrain extension: the height patch (patch.tif), its
+    sidecar (patch.json),
+                              and the site request (site-request.json) that produced it (guide 1,
+    section 16)
   reports/                    the checker reports (section 5)
   notes/
     changes.md                what changed since the previous version
@@ -2239,21 +2442,28 @@ against</td>
 <code>version</code></td>
 </tr>
 <tr class="even">
+<td><code>terrain</code></td>
+<td>only with the terrain extension: <code>package</code>
+(<code>name</code>, <code>version</code>, <code>sha256</code> of the
+terrain source version used), <code>patch</code> (<code>path</code>,
+<code>sha256</code>), <code>sidecar</code> (<code>path</code>)</td>
+</tr>
+<tr class="odd">
 <td><code>counts</code></td>
 <td>numbers the checker found (levels, rooms, triangles ...)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>provenance[]</code></td>
 <td>for each asset group: <code>asset</code>, <code>type</code>,
 <code>source</code>, <code>author</code>, <code>licence</code>,
 <code>notes</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>licence</code></td>
 <td><code>statement</code> that covers everything not listed in
 <code>provenance</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>checks</code></td>
 <td><code>tool</code>, <code>toolVersion</code>, <code>report</code>
 (path in the package), <code>result</code></td>
@@ -2287,6 +2497,16 @@ requires it (<code>package.requireLicence</code>, default true). A
 package whose licence terms are missing, or do not allow the receiving
 party to use, copy and adapt the work for the purpose of the assignment,
 cannot be accepted.</p>
+<p><strong>X-23 · REQUIRED · terrain</strong> - When the delivery has
+terrain, list the patch and its sidecar under <code>terrain/</code> with
+their roles, give each a provenance entry, and record the source package
+name, version and hash and the patch hash in the manifest
+<code>terrain</code> section, equal to what the sidecar states and to
+what the check report of the master file found in it, and keep the site
+request (its building origin, azimuth and floor height must be the
+file's). The terrain source can change between versions (shorelines in
+particular), so the delivery must say exactly which version its heights
+came from.</p>
 <p><strong>X-22 · RECOMMENDED</strong> - Deliver only content you are
 free to hand over. Do not include material that is restricted,
 reproduced from another party's work without permission, or that carries
@@ -3107,10 +3327,49 @@ strict profile).</li>
 </ul>
 <h2 id="5-what-the-example-leaves-out">5. What the example leaves
 out</h2>
-<p>Stairs and a second level (B-60 to B-62), a free-standing sign
-(B-100), reservation volumes (B-80), several rooms with a room table of
-more than one row, and a library with several items. Each is a small
-extension of what is here; the rule text in guides 1 to 3 says how.</p>
+<p>A free-standing sign (B-100), reservation volumes (B-80) and a
+library with several items. Each is a small extension of what is here;
+the rule text in guides 1 to 3 says how. Stairs, several levels, several
+rooms, open-air rooms, sloped sites and non-rectangular forms are in the
+larger examples below.</p>
+<h2 id="6-larger-examples">6. Larger examples</h2>
+<p><code>python3 tools/make_fixtures.py out/</code> builds three more
+buildings with the authoring kit <code>tools/ifc_author.py</code>. Each
+passes <code>check_ifc.py</code> without warnings;
+<code>tools/test_fixtures.py</code> also runs them through the terrain
+tools and breaks each of the rules they exercise.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Fixture</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>tray-house</code></td>
+<td>two levels of cantilevered trays over a watercourse: stacked slabs,
+open-air terraces (B-143), a stair through a slab well sized for
+head-room (B-61, B-53), a stone core, parapets</td>
+</tr>
+<tr class="even">
+<td><code>hillside-block</code></td>
+<td>a block stepped up a steep slope and turned 30 degrees from east:
+two ground-contact levels (B-141), footings and a retaining wall
+(B-142), a gable roof of sloped slabs (B-144), a stair that arrives on a
+roof terrace</td>
+</tr>
+<tr class="odd">
+<td><code>courtyard</code></td>
+<td>four wings round an open courtyard on one level: battered outer
+walls (B-144), flat roofs with a courtyard opening, parapets, open-air
+circulation reached by doors (B-47)</td>
+</tr>
+</tbody>
+</table>
+<p>To see a building, run
+<code>python3 tools/preview.py MASTER.ifc OUT_DIR</code>: one plan per
+level and an isometric view.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="repair-loop">Repair loop</h1>
@@ -3250,7 +3509,7 @@ deliver.</p>
 <code>tools/rules_index.py</code>; do not edit by hand.</p>
 <p>The same rules, with machine fields, are in
 <code>rules.json</code>.</p>
-<p><strong>181 rules: 51 REQUIRED and 130 RECOMMENDED.</strong></p>
+<p><strong>197 rules: 59 REQUIRED and 138 RECOMMENDED.</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -3263,9 +3522,9 @@ deliver.</p>
 <tbody>
 <tr class="odd">
 <td>1 Builder's and Architect's</td>
-<td style="text-align: right;">26</td>
-<td style="text-align: right;">61</td>
-<td style="text-align: right;">87</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">102</td>
 </tr>
 <tr class="even">
 <td>2 Interior Decorator's</td>
@@ -3281,15 +3540,15 @@ deliver.</p>
 </tr>
 <tr class="even">
 <td>4 Delivery and Acceptance</td>
-<td style="text-align: right;">9</td>
+<td style="text-align: right;">10</td>
 <td style="text-align: right;">8</td>
-<td style="text-align: right;">17</td>
+<td style="text-align: right;">18</td>
 </tr>
 <tr class="odd">
 <td><strong>All</strong></td>
-<td style="text-align: right;"><strong>51</strong></td>
-<td style="text-align: right;"><strong>130</strong></td>
-<td style="text-align: right;"><strong>181</strong></td>
+<td style="text-align: right;"><strong>59</strong></td>
+<td style="text-align: right;"><strong>138</strong></td>
+<td style="text-align: right;"><strong>197</strong></td>
 </tr>
 </tbody>
 </table>
@@ -3435,6 +3694,14 @@ openings line up between levels; make tall halls an exception you can
 name.</td>
 </tr>
 <tr class="odd">
+<td>B-142</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Put nothing below the lowest finished floor except slabs, footings,
+piles, walls, stairs, ramps, openings, the terrain element and
+reservation volumes.</td>
+</tr>
+<tr class="even">
 <td>B-20</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3443,13 +3710,13 @@ name.</td>
 room's floor outline: the lowest plane of the solid is the floor and the
 top is the underside of the ceiling or slab above.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-21</td>
 <td>REQUIRED</td>
 <td>1</td>
 <td>Give every <code>IfcSpace</code> geometry.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-22</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3458,7 +3725,7 @@ unique, and write it as an <code>IfcPropertySingleValue</code> inside an
 <code>IfcPropertySet</code> linked by
 <code>IfcRelDefinesByProperties</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-23</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3466,27 +3733,27 @@ unique, and write it as an <code>IfcPropertySingleValue</code> inside an
 <code>identifiers.roomIdMaxLength</code> characters and matching
 <code>identifiers.roomIdPattern</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-24</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Give every room an <code>Occupant</code> (text): the organisation or
 use it belongs to.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-25</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Give every room a <code>Function</code> (text) describing its
 use.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-26</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Give every room a <code>RoomId</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-27</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3494,20 +3761,30 @@ use.</td>
 <code>BaseLevelMetres</code> (number), <code>ClearHeightMetres</code>
 (number) and <code>Notes</code> (text).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-28</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Give each room a complete, human-readable <code>Name</code>; names
 appear in lists and on labels.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-29</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Declare streets, paths, plazas and park areas as rooms too, with an
 identifier and a <code>Function</code>, so that they can be referred to,
 lit and signed.</td>
+</tr>
+<tr class="even">
+<td>B-143</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Model an open-air room (terrace, courtyard, deck, path, plaza) as an
+<code>IfcSpace</code> with <code>PredefinedType</code>
+<code>EXTERNAL</code> and the boolean property <code>Enclosed</code> set
+to false, and an internal room with <code>Enclosed</code> true or
+absent.</td>
 </tr>
 <tr class="odd">
 <td>B-30</td>
@@ -3671,6 +3948,15 @@ merely leave a gap.</td>
 <td>Model ceilings or roofs.</td>
 </tr>
 <tr class="even">
+<td>B-144</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Model a pitched or sloped roof with sloped <code>IfcSlab</code>
+<code>ROOF</code> pieces that follow the real pitch, and a wall whose
+faces lean (a battered wall) as one <code>IfcWall</code> with an
+inclined section, not as flat boxes or steps.</td>
+</tr>
+<tr class="odd">
 <td>B-55</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3678,14 +3964,14 @@ merely leave a gap.</td>
 supplies (<code>baseSurfaces</code>), with the margin the profile
 states.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-60</td>
 <td>REQUIRED</td>
 <td>1</td>
 <td>Model each stair flight as an <code>IfcStairFlight</code> (a parent
 <code>IfcStair</code> without geometry is fine).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-61</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3693,13 +3979,13 @@ states.</td>
 with a landing and head-room; avoid winding and spiral stairs unless you
 have checked the consumer reads them.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-62</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Give every multi-level building at least one real stair.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-63</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3708,7 +3994,7 @@ have checked the consumer reads them.</td>
 as <code>Service</code>, <code>StopsMetres</code> and
 <code>ShaftWidthMetres</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-64</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3716,7 +4002,7 @@ as <code>Service</code>, <code>StopsMetres</code> and
 <code>geometry.rampMaxSlope</code> (rise over run) except stairs, and
 give ramps a clear width at least as wide as a doorway.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-65</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3725,14 +4011,14 @@ give ramps a clear width at least as wide as a doorway.</td>
 square-edged wedges) that a walker steps over unseen; ramp them or make
 them visible steps.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-66</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Model rails (<code>IfcRailing</code>) with cheap geometry: simple
 posts and one rail section.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-67</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3741,14 +4027,14 @@ posts and one rail section.</td>
 walk-through areas with those classes or with reservation volumes
 (B-80); everything else may block movement.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-70</td>
 <td>REQUIRED</td>
 <td>1</td>
 <td>Give every product a unique 22-character IFC <code>GlobalId</code>
 that does not change between exports.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-71</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3756,7 +4042,7 @@ that does not change between exports.</td>
 (<code>identifiers.entityNumberStart</code>, when set) so that files
 from several authors can be merged without clashes.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-72</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3765,7 +4051,7 @@ from several authors can be merged without clashes.</td>
 <code>IfcPropertySet</code> linked by
 <code>IfcRelDefinesByProperties</code> on the product itself.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-73</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3773,14 +4059,14 @@ from several authors can be merged without clashes.</td>
 (<code>Pset_Declaration_Room</code>, ...) and put only declaration
 properties in it.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-74</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>If your organisation uses a classification scheme, attach it with
 <code>IfcRelAssociatesClassification</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-75</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3788,7 +4074,7 @@ properties in it.</td>
 fixture keeps its <code>RoomId</code>, <code>GlobalId</code> and
 declaration ids.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-76</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3796,7 +4082,7 @@ declaration ids.</td>
 (<code>arch.entrance</code>, <code>clinic.lobby</code>), at most 160
 characters, no control characters.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-80</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3806,7 +4092,7 @@ line, a clearance, a service corridor) twice: as an
 <code>IfcBuildingElementProxy</code> with <code>PredefinedType</code>
 <code>PROVISIONFORSPACE</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-81</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3814,7 +4100,7 @@ line, a clearance, a service corridor) twice: as an
 missing, its <code>Name</code>) and its own geometry; a zone without
 geometry cannot be shown or selected.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-81a</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3822,7 +4108,7 @@ geometry cannot be shown or selected.</td>
 example <code>observation-sightline</code>) and <code>Requirement</code>
 (a sentence saying what must stay clear).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-82</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3830,7 +4116,7 @@ example <code>observation-sightline</code>) and <code>Requirement</code>
 mezzanine); ordinary glass cannot be one-way, and who may look is a
 consumer decision, not a file property.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-90</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3839,7 +4125,7 @@ aggregates two <code>IfcLightFixture</code> parts: a housing, and an
 emissive part whose <code>Name</code> ends in the profile's suffix
 (<code>extensions.luminaires.lensNameSuffix</code>).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-91</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3848,7 +4134,7 @@ emissive part whose <code>Name</code> ends in the profile's suffix
 make <code>LuminaireId</code> unique, and use a <code>LightType</code>
 from <code>extensions.luminaires.lightTypes</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-92</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3856,7 +4142,7 @@ from <code>extensions.luminaires.lightTypes</code>.</td>
 file-local point plus <code>frame.levelOffsetMetres</code> (same x and
 y, z plus the offset); the geometry stays file-local.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-92a</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3864,14 +4150,14 @@ y, z plus the offset); the geometry stays file-local.</td>
 (<code>LightPositionLocal</code>) so a reviewer can check the offset was
 applied once.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-93</td>
 <td>REQUIRED</td>
 <td>1</td>
 <td>Make <code>LightAim</code> a unit vector (length 1 within 1e-6) in
 the consumer's frame.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-94</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3879,7 +4165,7 @@ the consumer's frame.</td>
 <code>LuminaireTarget</code>), between the floor and the ceiling, in
 warm colours, not pointed at glazing.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-95</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3887,7 +4173,7 @@ warm colours, not pointed at glazing.</td>
 and the consumer may cap them per room
 (<code>extensions.luminaires.maxPerRoom</code>).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-100</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3896,7 +4182,7 @@ property in <code>extensions.signboards.requiredProperties</code>, with
 a <code>SignboardKind</code> from
 <code>extensions.signboards.kinds</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-101</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3905,7 +4191,7 @@ height of width per character plus a margin of 12 % of the board height
 on each side; text that cannot be fitted at a capital height of 0.05 m
 is an error.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-102</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3916,14 +4202,14 @@ with pixels from <code>extensions.signboards.minCapitalPixels</code>
 (primary text), and the distance within
 <code>extensions.signboards.readingDistanceMetres</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-103</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Declare an entrance board on the wall's outer face, not the wall
 centre plane, and keep lamps and trees away from its face.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-110</td>
 <td>REQUIRED</td>
 <td>1</td>
@@ -3932,28 +4218,28 @@ centre plane, and keep lamps and trees away from its face.</td>
 (<code>keepOut</code>), when it gives them; check every vertex, not only
 footprints.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-111</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Make solids closed and consistently oriented: no missing faces, no
 inside-out solids, no zero-area or duplicate faces.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-112</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Avoid coplanar overlapping faces (two walls sharing a face, a
 covering lying exactly on a wall, a slab exactly on a floor).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-113</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Use mapped items (<code>IfcMappedItem</code> with
 <code>IfcRepresentationMap</code>) for repeated parts.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-114</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3962,14 +4248,14 @@ hinge detail, text as geometry, curves with more than
 <code>geometry.maxCurveSegmentsPerCircle</code> segments per full
 circle.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-115</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Do not model terrain, soil or relief in IFC unless the profile says
 how.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-116</td>
 <td>RECOMMENDED</td>
 <td>1</td>
@@ -3977,35 +4263,148 @@ how.</td>
 own surface layer (floor finishes laid on the room floor); two layers at
 one height flicker.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>B-120</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Stay under the profile's recommended triangle count,
 <code>budgets.recommendedTriangles</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>B-121</td>
 <td>RECOMMENDED</td>
 <td>1</td>
 <td>Spend triangles where the viewer looks: entrances, interiors a
 person stands in, anything within arm's reach.</td>
 </tr>
+<tr class="odd">
+<td>B-130</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Deliver the terrain as exactly one <code>IfcGeographicElement</code>
+with <code>PredefinedType</code> <code>TERRAIN</code>, contained in the
+<code>IfcSite</code>, whose body is one
+<code>IfcTriangulatedFaceSet</code>.</td>
+</tr>
 <tr class="even">
+<td>B-131</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Make the terrain a valid heightfield over a rectangular patch: every
+triangle faces up and has area, no edge belongs to more than two
+triangles, and the triangles cover the patch rectangle exactly
+once.</td>
+</tr>
+<tr class="odd">
+<td>B-132</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Make the terrain cover the building: the plan points of the slabs
+and walls of every ground-contact level, grown by
+<code>extensions.terrain.footprintMarginMetres</code>, lie inside the
+patch.</td>
+</tr>
+<tr class="even">
+<td>B-133</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Georeference the file with an <code>IfcMapConversion</code> from the
+model context to an <code>IfcProjectedCRS</code> named
+<code>extensions.terrain.crsName</code>, in metres, with the local X
+axis set to the building azimuth (a unit vector, east when the building
+is not turned), scale 1 and <code>OrthogonalHeight</code> equal to the
+height above sea level of the lowest finished floor (local z = 0).</td>
+</tr>
+<tr class="odd">
+<td>B-134</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Set <code>IfcSite.RefElevation</code> to the terrain height at the
+building origin above sea level, within
+<code>extensions.terrain.siteElevationToleranceMetres</code> of the
+terrain element at that point.</td>
+</tr>
+<tr class="even">
+<td>B-135</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Do not put a building in water: the terrain at every footprint point
+of every ground-contact level is at or above
+<code>extensions.terrain.seaLevelMetres</code>, and
+<code>FootprintInWater</code> is not true.</td>
+</tr>
+<tr class="odd">
+<td>B-136</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Do not let the building float or sink: no ground-contact level's
+floor is above the terrain by more than
+<code>extensions.terrain.floatToleranceMetres</code> at every footprint
+point of that level, or below it by more than
+<code>extensions.terrain.buryToleranceMetres</code> at every one.</td>
+</tr>
+<tr class="even">
+<td>B-137</td>
+<td>REQUIRED</td>
+<td>1</td>
+<td>Pin the terrain source in a property set
+<code>Pset_Declaration_Terrain</code> on the terrain element:
+<code>Role</code> (<code>derived-context</code>),
+<code>PackageName</code>, <code>PackageVersion</code>,
+<code>PackageSha256</code>, <code>PatchSha256</code>,
+<code>PatchLevel</code>, <code>PixelSizeMetres</code>,
+<code>ErrorBoundMetres</code> (at most
+<code>extensions.terrain.maxErrorBoundMetres</code>), <code>Frame</code>
+and <code>VerticalDatum</code>.</td>
+</tr>
+<tr class="odd">
+<td>B-138</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Keep the terrain within
+<code>extensions.terrain.maxTriangles</code>.</td>
+</tr>
+<tr class="even">
+<td>B-139</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Keep water out of the file and declare it as metadata in
+<code>Pset_Declaration_Site</code> on the <code>IfcSite</code>:
+<code>SeaLevelMetres</code>, <code>FootprintInWater</code> and, when
+known, <code>DistanceToShoreMetres</code>.</td>
+</tr>
+<tr class="odd">
+<td>B-140</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>State the frame of the terrain numbers:
+<code>Pset_Declaration_Terrain.Frame</code> says that the file frame is
+x east, y north, z up and relative to the lowest finished floor.</td>
+</tr>
+<tr class="even">
+<td>B-141</td>
+<td>RECOMMENDED</td>
+<td>1</td>
+<td>Declare every level that touches the ground with
+<code>GroundContact</code> true in <code>Pset_Declaration_Level</code>;
+without a declaration the lowest level is the only ground-contact
+level.</td>
+</tr>
+<tr class="odd">
 <td>D-01</td>
 <td>REQUIRED</td>
 <td>2</td>
 <td>Give each distinct finish its own colour within an element
 class.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-02</td>
 <td>REQUIRED</td>
 <td>2</td>
 <td>Give the same finish the same colour and opacity on every element
 that uses it.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-03</td>
 <td>REQUIRED</td>
 <td>2</td>
@@ -4013,21 +4412,21 @@ that uses it.</td>
 (class, colour, opacity) combination that appears in your IFC
 files.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-04</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Use opacity below 1 only for glass and other see-through things
 (about 0.4 to 0.6 for glazing).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-05</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Keep the palette small: at most
 <code>budgets.maxDistinctColours</code> combinations (default 50).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-06</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4035,21 +4434,21 @@ files.</td>
 strongly it is blended into the texture (0 means the texture alone, 1
 the colour fully).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-07</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Avoid pure black, pure white and very dark large surfaces: they clip
 or disappear under typical lighting.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-08</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Choose neutral tints for fabrics; strongly coloured tints shift
 under lighting.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-10</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4058,7 +4457,7 @@ a floor finish: list them in the <code>floors</code> section by
 <code>Occupant</code>, by <code>RoomId</code> list or by pattern, plus a
 default.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-11</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4066,21 +4465,21 @@ default.</td>
 example <code>light warm-grey resilient floor; pale ivory walls</code>),
 so that the intent stays with the room.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-12</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Change floor finishes at door lines, not mid-room, and keep a
 visible threshold between unlike finishes.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-13</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Choose low-gloss, light floors for rooms people work in: dark glossy
 floors read as black under many lighting set-ups.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-20</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4088,21 +4487,21 @@ floors read as black under many lighting set-ups.</td>
 <code>bottom</code> face of the slab above is the ceiling of the room
 below.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-21</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Keep ceiling finishes matte and light; glossy ceilings amplify lamp
 hot spots.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-30</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Express a wall finish through the wall element's own colour (one
 colour per finish and per class).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-31</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4111,21 +4510,21 @@ colour per finish and per class).</td>
 <code>WRAPPING</code>) only when a finish covers part of a wall, or a
 surface that has no element of its own.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-32</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Do not rely on a texture pattern starting at an edge: consumers
 project textures differently.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-33</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Make skirtings, cornices, door frames, handrails and accent bands
 separate elements with their own colour, at least 1 cm thick.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-34</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4133,7 +4532,7 @@ separate elements with their own colour, at least 1 cm thick.</td>
 are a colour on the element in the same class as its neighbours, not an
 image inside the IFC.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-35</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4141,7 +4540,7 @@ image inside the IFC.</td>
 opacity, edge reflection (<code>fresnelAlpha</code>) and smudge
 roughness (<code>smudgeRough</code>).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-40</td>
 <td>REQUIRED</td>
 <td>2</td>
@@ -4150,35 +4549,35 @@ containing the maps the profile lists (<code>textures.maps</code>,
 default <code>albedo.png</code>, <code>normal.png</code>,
 <code>orm.png</code>) and <code>set.json</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-41</td>
 <td>REQUIRED</td>
 <td>2</td>
 <td>Use these encodings, so that every consumer reads the maps the same
 way:</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-42</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Make the texture tile seamlessly in both directions; consumers
 repeat it across large surfaces, and a seam repeats with it.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-43</td>
 <td>REQUIRED</td>
 <td>2</td>
 <td>Declare the physical size of one tile in <code>set.json</code> as
 <code>tileMetres</code>, so that a consumer can scale it correctly.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-44</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Use square, power-of-two images, all maps the same size, one of
 <code>textures.sizesPixels</code> (default 512, 1024, 2048).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-45</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4186,14 +4585,14 @@ repeat it across large surfaces, and a seam repeats with it.</td>
 <code>textures.densityPixelsPerMetre</code> (default 250 to 2500 pixels
 per metre): for 1024 pixels that is a tile of about 0.4 m to 4 m.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-46</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Avoid fine, regular weaves and stripes with a tile under 0.5 m: they
 produce moire at grazing angles.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-47</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4202,7 +4601,7 @@ produce moire at grazing angles.</td>
 is a near-neutral light map meant to be tinted by the IFC colour, or
 <code>authored</code> when the colour in the map is final.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-48</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4210,7 +4609,7 @@ is a near-neutral light map meant to be tinted by the IFC colour, or
 that would repeat visibly, and do not bake low-frequency variation in;
 consumers can add it.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-49</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4220,7 +4619,7 @@ which image axis it follows in <code>set.json</code>
 <code>none</code>); consumers decide how directional patterns are
 oriented on floors and walls.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-50</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4228,7 +4627,7 @@ oriented on floors and walls.</td>
 viewing distance: fine relief that reads as speckle should be
 softened.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-60</td>
 <td>REQUIRED</td>
 <td>2</td>
@@ -4242,14 +4641,14 @@ softened.</td>
 <code>libraries[]</code> (the texture-set folders it names, with
 versions).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-61</td>
 <td>REQUIRED</td>
 <td>2</td>
 <td>Name only texture sets that exist: each face entry names a set from
 your delivery or from a library the profile or consumer publishes.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-62</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4257,21 +4656,21 @@ your delivery or from a library the profile or consumer publishes.</td>
 markers) with <code>"keep": true</code> and a reason instead of giving
 them a texture.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-63</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Treat the schedule as a proposal: a consumer applies what it
 can.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-70</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Build the palette from a few families and give each organisation or
 zone a distinct tint rather than a distinct pattern.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-71</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4279,14 +4678,14 @@ zone a distinct tint rather than a distinct pattern.</td>
 resilient floor; pale ivory washable walls; low gloss"), so that a
 consumer with its own material library can choose.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-72</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Do not use texture or colour to carry meaning that labels already
 carry (room names, identifiers, directions).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-80</td>
 <td>REQUIRED</td>
 <td>2</td>
@@ -4294,14 +4693,14 @@ carry (room names, identifiers, directions).</td>
 in it in a <code>SOURCES.csv</code> next to the library with the columns
 <code>asset,type,source,licence,notes</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-81</td>
 <td>REQUIRED</td>
 <td>2</td>
 <td>Include the SHA-256 hash of every file in the manifest (guide
 4).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-82</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4309,7 +4708,7 @@ in it in a <code>SOURCES.csv</code> next to the library with the columns
 byte-identical output lets a consumer verify and regenerate the library
 and keeps the delivery small.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-83</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4317,7 +4716,7 @@ and keeps the delivery small.</td>
 (<code>limewash_mottled</code>) and finishes with dotted names
 (<code>wall.limewash.warm</code>).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>D-84</td>
 <td>RECOMMENDED</td>
 <td>2</td>
@@ -4325,21 +4724,21 @@ and keeps the delivery small.</td>
 roughness side by side, plus the tile size) so a reviewer sees the
 library at a glance.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>D-85</td>
 <td>RECOMMENDED</td>
 <td>2</td>
 <td>Keep the library independent of any one building: no file name,
 label or set name should refer to a particular project.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-01</td>
 <td>REQUIRED</td>
 <td>3</td>
 <td>Use these classes for items, because consumers and tools are written
 for them, and make the description's class agree with the model.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-02</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4352,7 +4751,7 @@ that reports and schedules can group items: <code>table</code>,
 <code>lamp</code>, <code>sign</code>, <code>accent</code>,
 <code>other</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-03</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4362,7 +4761,7 @@ properties <code>ItemId</code> (the library id, section 3),
 for, for example <code>work table</code>), and optionally
 <code>Occupant</code> and <code>PlanningStatus</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-10</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4370,7 +4769,7 @@ for, for example <code>work table</code>), and optionally
 one furniture or equipment element, placed at the origin with no
 rotation, in metres, with a stable <code>GlobalId</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-11</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4379,21 +4778,21 @@ rotation, in metres, with a stable <code>GlobalId</code>.</td>
 <code>seat.stool.450</code>), unique within the library and never reused
 for a different design.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-12</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Provide a description file <code>&lt;ItemId&gt;.item.json</code> for
 every item (section 3.1).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-20</td>
 <td>REQUIRED</td>
 <td>3</td>
 <td>Model in metres in the right-handed frame of guide 1 (B-02, B-10),
 with the item's own origin at its pivot (F-21).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-20a</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4401,35 +4800,35 @@ with the item's own origin at its pivot (F-21).</td>
 <code>IfcCartesianTransformationOperator</code> or any non-unit
 transform.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-21</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Put the pivot where the item meets the building, so placing it needs
 one point and one turn.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-22</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Declare the bounding dimensions in the description and keep them
 equal (within 1 cm) to the measured size of the geometry.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-23</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Use true-to-life sizes: a work table is about 1.6 by 0.8 by 0.74 m,
 a chair about 0.5 by 0.55 by 0.85 m.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-30</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Declare anchors in item coordinates (metres, relative to the
 pivot).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-31</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4442,7 +4841,7 @@ of use it suits, free words matching the <code>Function</code> text of
 rooms), <code>avoid</code> (kinds of room it must not go in), and
 <code>mountHeight</code> for wall items.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-32</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4450,7 +4849,7 @@ rooms), <code>avoid</code> (kinds of room it must not go in), and
 <code>back</code>, <code>left</code>, <code>right</code>,
 <code>top</code> (metres of free volume needed).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-33</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4458,28 +4857,28 @@ rooms), <code>avoid</code> (kinds of room it must not go in), and
 a door; a table in the doorway fails the doorway check (guide 1,
 B-42).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-34</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Do not place items so that they cover a room's whole free floor
 (guide 1, B-33).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-40</td>
 <td>REQUIRED</td>
 <td>3</td>
 <td>Assume the profile's collision mode
 (<code>extensions.furnitureCollision.mode</code>).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-41</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Place furniture with rotations in multiples of 90 degrees where you
 can; a box around a 45-degree table is larger than the table.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-42</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4487,7 +4886,7 @@ can; a box around a 45-degree table is larger than the table.</td>
 description (section 3.1), so a checker and a human can see what a
 consumer will do.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-43</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4495,7 +4894,7 @@ consumer will do.</td>
 open pergola, a chair with gaps between its legs); in <code>box</code>
 mode it is a solid block.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-44</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4504,7 +4903,7 @@ mode it is a solid block.</td>
 obviously steps (a floor box, a cable cover): a walker steps over them
 unnoticed.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-50</td>
 <td>REQUIRED</td>
 <td>3</td>
@@ -4512,20 +4911,20 @@ unnoticed.</td>
 <code>limits.maxFileMegabytes</code>, <code>limits.maxVertices</code>,
 <code>limits.maxTriangles</code>.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-51</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Keep each item small: at most <code>budgets.maxItemTriangles</code>
 triangles (default 2,000), far fewer for ordinary items.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-52</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Do not deliver textures with an item.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-53</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4533,13 +4932,13 @@ triangles (default 2,000), far fewer for ordinary items.</td>
 a feature item; every distinct colour of every item adds a
 material.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-60</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Describe variants in the description file.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-61</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4548,21 +4947,21 @@ its own (own <code>GlobalId</code>, own <code>ObjectPlacement</code>),
 sharing geometry through <code>IfcMappedItem</code> and
 <code>IfcRepresentationMap</code>.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-62</td>
 <td>REQUIRED</td>
 <td>3</td>
 <td>Give each instance its own unique <code>GlobalId</code> (guide 1,
 B-70) and a level to belong to (guide 1, B-13).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-62a</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Place every instance inside the room it serves, and do not let it
 extend through a wall or a floor.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-63</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4570,21 +4969,21 @@ extend through a wall or a floor.</td>
 (<code>ItemId</code>, <code>ItemVersion</code>, F-03) so that a revision
 of the library can be rolled out by replacing instances.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-70</td>
 <td>REQUIRED</td>
 <td>3</td>
 <td>Follow guide 1 exactly for light fixtures (section 11) and, when
 signboards are enabled, for signs (section 12).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>F-71</td>
 <td>RECOMMENDED</td>
 <td>3</td>
 <td>Make a fixture's housing and emissive part separate parts so that
 only the emissive part glows.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>F-72</td>
 <td>RECOMMENDED</td>
 <td>3</td>
@@ -4592,27 +4991,27 @@ only the emissive part glows.</td>
 planters) are small elements with their own colour, in the classes of
 section 2.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>X-01</td>
 <td>REQUIRED</td>
 <td>4</td>
 <td>Use this layout.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>X-02</td>
 <td>RECOMMENDED</td>
 <td>4</td>
 <td>Use lower-case ASCII file names without blanks, forward slashes in
 every path, and keep paths under 200 characters.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>X-10</td>
 <td>REQUIRED</td>
 <td>4</td>
 <td>Put a <code>manifest.json</code> at the top of the package that
 matches the schema.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>X-11</td>
 <td>REQUIRED</td>
 <td>4</td>
@@ -4621,28 +5020,28 @@ size in bytes of every file, and include a <code>SHA256SUMS.txt</code>
 in the plain two-column form (<code>hash</code>, two blanks,
 <code>path</code>).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>X-12</td>
 <td>REQUIRED</td>
 <td>4</td>
 <td>List every file in the package, and only those, in the
 manifest.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>X-13</td>
 <td>RECOMMENDED</td>
 <td>4</td>
 <td>A building delivery has exactly one master IFC file (guide 1, B-03);
 other files are alternates.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>X-14</td>
 <td>REQUIRED</td>
 <td>4</td>
 <td>Keep the whole package within the profile's cap,
 <code>package.maxPackageMegabytes</code>, when it sets one.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>X-20</td>
 <td>REQUIRED</td>
 <td>4</td>
@@ -4653,13 +5052,25 @@ or a named source; who made it; the licence that applies) when the
 profile requires provenance (<code>package.requireProvenance</code>,
 default true).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>X-21</td>
 <td>REQUIRED</td>
 <td>4</td>
 <td>State a licence for every asset and a <code>licence.statement</code>
 for the package when the profile requires it
 (<code>package.requireLicence</code>, default true).</td>
+</tr>
+<tr class="odd">
+<td>X-23</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>When the delivery has terrain, list the patch and its sidecar under
+<code>terrain/</code> with their roles, give each a provenance entry,
+and record the source package name, version and hash and the patch hash
+in the manifest <code>terrain</code> section, equal to what the sidecar
+states and to what the check report of the master file found in it, and
+keep the site request (its building origin, azimuth and floor height
+must be the file's).</td>
 </tr>
 <tr class="even">
 <td>X-22</td>

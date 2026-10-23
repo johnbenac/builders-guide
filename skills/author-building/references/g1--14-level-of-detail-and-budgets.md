@@ -12,6 +12,6 @@ Triangle count drives load time; the number of distinct materials and objects dr
 | triangles, recommended | `budgets.recommendedTriangles` | 1,000,000 |
 | distinct (class, colour, opacity) combinations | `budgets.maxDistinctColours` | 50 |
 
-**B-120 · RECOMMENDED** - Stay under the profile's recommended triangle count, `budgets.recommendedTriangles`. A constrained consumer publishes a much lower figure; build to the profile you were given.
+**B-120 · RECOMMENDED** - Stay under the profile's recommended triangle count, `budgets.recommendedTriangles`. A constrained consumer publishes a much lower figure; build to the profile you were given. Terrain triangles are counted separately (B-138).
 
 **B-121 · RECOMMENDED** - Spend triangles where the viewer looks: entrances, interiors a person stands in, anything within arm's reach. Distant detail is wasted.

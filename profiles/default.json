@@ -2,7 +2,7 @@
   "_license": "Apache-2.0",
   "format": "profile/1",
   "name": "default",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "General-purpose values for exchanging IFC buildings, finishes and furniture. Publicly defensible defaults, not any one consumer's contract. A consumer publishes its own profile in the same shape.",
   "frame": {
     "horizontalAxes": "+X forward, +Y left (right-handed with Z up)",
@@ -45,7 +45,9 @@
     ],
     "stairRiserLimitMetres": 0.19,
     "rampMaxSlope": 0.0833,
-    "maxCurveSegmentsPerCircle": 48
+    "maxCurveSegmentsPerCircle": 48,
+    "stairHeadroomMetres": 2.0,
+    "roomOverlapToleranceMetres": 0.5
   },
   "baseSurfaces": [],
   "buildVolume": null,
@@ -119,6 +121,23 @@
     "furnitureCollision": {
       "enabled": false,
       "mode": "box"
+    },
+    "terrain": {
+      "enabled": false,
+      "crsName": null,
+      "patchFormat": "geotiff-float32-metres",
+      "maxErrorBoundMetres": 0.05,
+      "footprintMarginMetres": 10.0,
+      "clearingMarginMetres": 2.0,
+      "grading": {
+        "maxCutFillSlope": "1:2"
+      },
+      "seaLevelMetres": 0.0,
+      "floatToleranceMetres": 0.5,
+      "buryToleranceMetres": 0.5,
+      "siteElevationToleranceMetres": 0.1,
+      "maxTriangles": 200000,
+      "maxPatchSamples": 25000000
     }
   },
   "textures": {

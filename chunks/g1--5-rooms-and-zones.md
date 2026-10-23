@@ -1,4 +1,4 @@
-<!-- chunk: g1--5-rooms-and-zones | source: 01-builders-and-architects-guide.md | title: 5. Rooms and zones | rules: B-20,B-21,B-22,B-23,B-24,B-25,B-26,B-27,B-28,B-29,B-30,B-31,B-32,B-33,B-34 -->
+<!-- chunk: g1--5-rooms-and-zones | source: 01-builders-and-architects-guide.md | title: 5. Rooms and zones | rules: B-143,B-20,B-21,B-22,B-23,B-24,B-25,B-26,B-27,B-28,B-29,B-30,B-31,B-32,B-33,B-34 -->
 ## 5. Rooms and zones
 
 A room is the unit a consumer identifies, lists, lights, signs, and places people in.
@@ -22,6 +22,8 @@ A room is the unit a consumer identifies, lists, lights, signs, and places peopl
 **B-28 · RECOMMENDED** - Give each room a complete, human-readable `Name`; names appear in lists and on labels.
 
 **B-29 · RECOMMENDED** - Declare streets, paths, plazas and park areas as rooms too, with an identifier and a `Function`, so that they can be referred to, lit and signed. Open floor that belongs to no room has no identity.
+
+**B-143 · RECOMMENDED** - Model an open-air room (terrace, courtyard, deck, path, plaza) as an `IfcSpace` with `PredefinedType` `EXTERNAL` and the boolean property `Enclosed` set to false, and an internal room with `Enclosed` true or absent. Its volume rises to what covers it, or to a nominal height where it is open to the sky. Consumers that look for enclosed rooms (lighting, walkability, ceilings) skip open-air rooms.
 
 **B-30 · RECOMMENDED** - Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make "which room is this point in" ambiguous.
 

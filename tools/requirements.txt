@@ -1,4 +1,6 @@
-ifcopenshell
-numpy
-pillow
-jsonschema
+# core: every checker (shapely is used by check_ifc.py since 2.1.0)
+ifcopenshell>=0.8.0,<0.10
+numpy>=1.24,<3
+pillow>=10.0,<14
+jsonschema>=4.0,<5
+shapely>=2.0,<3

@@ -1,0 +1,3 @@
+# building the hand-over files: build_dist.py (also needs pandoc and a Chromium-based browser on the path)
+-r requirements.txt
+pikepdf>=8.0,<11

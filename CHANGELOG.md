@@ -3,6 +3,62 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
+## 2.1.0
+
+An authoring kit, automated checks for rules that were review-only, rules for sites and forms the one-room example did not cover, and an
+optional terrain extension. MINOR under `VERSIONING.md`: no default-profile delivery changes from pass to fail (every new automated
+check is RECOMMENDED and only warns; the REQUIRED rules are inside the new extension, which is off by default).
+
+**Added**
+
+* **Authoring kit** `tools/ifc_author.py`: levels, slabs, walls with openings, stairs with wells sized for head-room, gable roofs, battered
+  walls, internal and open-air rooms, footings, deterministic output. It fails loudly (unknown opening kind, repeated key, opening outside
+  its wall, nonsense stair) and takes its numbers (riser limit, head-room, circulation prefix) from a profile. `tools/make_fixtures.py` builds
+  three generic buildings with it (cantilevered trays, a rotated stepped hillside block, a courtyard with battered walls). `tools/preview.py`
+  draws plans and an isometric view and lists what it could not draw.
+* **New rules:** `B-142` (nothing but slabs, footings, piles, walls, stairs, ramps, openings, terrain and reservation volumes below the
+  lowest floor), `B-143` (open-air rooms are `EXTERNAL` with `Enclosed` false), `B-144` (sloped roofs and leaning walls are modelled as
+  such; review only).
+* **Terrain extension** (`extensions.terrain`, off by default): `B-130` to `B-141` and `X-23`. The terrain source stays authoritative; the
+  file carries a derived, read-only terrain element built from a GeoTIFF height patch and its sidecar, a georeference to a named custom CRS
+  (with the building azimuth), the site elevation, water as metadata only, and a pinned source version that the package check compares with
+  the sidecar, the site request and what the check report found in the master file. Rules inside the extension may be REQUIRED
+  (`VERSIONING.md` now says so); `B-136` (float or bury) is an estimate and starts RECOMMENDED. Tools: `site_request.py`, `terrain_import.py`
+  (error-bounded triangle network, strict GeoTIFF checks, size and triangle limits), `make_sample_terrain.py` (a plane or slope, for tests
+  only), `terrain_lib.py`. Several levels may touch the ground (`GroundContact` per level) and the building may be turned from east. New
+  profile parameters under `extensions.terrain` and `geometry.stairHeadroomMetres`, `geometry.roomOverlapToleranceMetres`; defaults for
+  margins and tolerances are working values for each consumer to confirm.
+* Schemas `terrain-patch` and `site-request`; the manifest gains the file roles `terrain-patch`, `terrain-sidecar`, `site-request` and a
+  `terrain` section.
+* Requirements are split: `requirements.txt` (core, now with shapely and lower bounds), `requirements-terrain.txt` (scipy),
+  `requirements-preview.txt` (matplotlib). `MANIFEST.sha256` is now written by `gen_all.py --write`, checked by `test_sync.py` and built from
+  the same file list (`tools/fileset.py`) as `MANIFEST.json` and the zip.
+
+* **Release hygiene:** `tools/leakscan.py` (run by `test_sync.py`, with a seeded-leak check) fails when any file of the set, the hand-over
+  files, the zip members or the PDF streams and links hold a local-file address or an absolute local path. `build_dist.py` now renders the PDF
+  from a neutral folder and removes local-file link annotations (needs `requirements-dist.txt`); the 2.0.0 hand-over files are no longer
+  shipped. Requirement files carry loose upper bounds.
+* Hardening tests: an archway, a thick-wall archway and a too-high opening for `B-47`; malformed and disagreeing terrain pins for `X-23`;
+  passing cases for `B-138` and `B-139` (`B-138` now reports a pass when the terrain is within its cap).
+
+**Changed (existing rules whose checks behave differently; none can fail a delivery under the default profile)**
+
+* `B-30`, `B-47`, `B-54` and the head-room half of `B-61` were review-only and are now automated as estimates (RECOMMENDED). Raising them
+  to required in a profile is not advisable yet. `B-47` follows doors, stairs, open edges and empty through-openings in walls (an archway; the opening's sill must be within 0.7 m of the floor); `B-54` samples a grid of points in each room.
+* `B-33` and `B-94` now skip open-air rooms. Their text already said "enclosed room"; the checker had applied them to every room.
+* `B-115` keeps its meaning. The terrain extension is how a profile "says how"; a terrain element in a file whose profile does not enable the
+  extension now warns. `B-110` and `B-120` leave the terrain element out (it has its own cap, `B-138`).
+* `Enclosed` and `GroundContact` are now declaration properties (they must be single values).
+* `how_to_check.method` in `rules.json` says "automated estimate" for the rules that approximate (`estimate` in `tools/rules_meta.json`).
+
+**Fixed**
+
+* `build_package.py verify` no longer crashes on a manifest whose terrain section holds a non-object; `X-23` reports it.
+* `B-47` no longer reports a room behind an empty wall opening as unreachable.
+
+* `gen_all.py` with no option no longer writes files; `llms.txt` states the real rule count (it said 179); `MANIFEST.sha256` was stale;
+  `test_sync.py` now also checks the hand-written rule counts, each skill's rule range and the version.
+
 ## 2.0.0
 
 The set was made portable: core practice is separated from consumer parameters.

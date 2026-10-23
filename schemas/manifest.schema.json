@@ -165,6 +165,9 @@
               "item-ifc",
               "item-description",
               "item-preview",
+              "terrain-patch",
+              "terrain-sidecar",
+              "site-request",
               "table",
               "report",
               "note",
@@ -212,6 +215,7 @@
               "ifc-model",
               "texture-set",
               "item",
+              "terrain-patch",
               "table",
               "document",
               "other"
@@ -270,6 +274,64 @@
             "pass",
             "fail"
           ]
+        }
+      }
+    },
+    "terrain": {
+      "type": "object",
+      "description": "present with the terrain extension: the terrain source version the patch was cut from, equal to the sidecar and to what the check report found in the master file (guide 4, X-23)",
+      "required": [
+        "package",
+        "patch",
+        "sidecar"
+      ],
+      "properties": {
+        "package": {
+          "type": "object",
+          "required": [
+            "name",
+            "version",
+            "sha256"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "patch": {
+          "type": "object",
+          "required": [
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "sidecar": {
+          "type": "object",
+          "required": [
+            "path"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          }
         }
       }
     }

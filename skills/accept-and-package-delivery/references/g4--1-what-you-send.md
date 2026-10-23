@@ -19,6 +19,8 @@ example-room-1.0.0/
     SOURCES.csv               source and licence of every texture set
     textures/<set>/           albedo.png, normal.png, orm.png, set.json
   items/<itemId>/             <itemId>.ifc, <itemId>.item.json, optional preview.png (guide 3)
+  terrain/                    only with the terrain extension: the height patch (patch.tif), its sidecar (patch.json),
+                              and the site request (site-request.json) that produced it (guide 1, section 16)
   reports/                    the checker reports (section 5)
   notes/
     changes.md                what changed since the previous version

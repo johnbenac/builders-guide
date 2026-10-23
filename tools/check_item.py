@@ -41,7 +41,7 @@ def main():
     a = ap.parse_args()
     prof = rpt.load_profile(a.profile)
     if not os.path.isdir(a.item_dir):
-        rep = rpt.make_report("check_item.py", "2.0.0", {"path": a.item_dir}, [], error="input not found: %s" % a.item_dir)
+        rep = rpt.make_report("check_item.py", "2.1.0", {"path": a.item_dir}, [], error="input not found: %s" % a.item_dir)
         print(json.dumps(rep, indent=1) if a.json else "ERROR input not found: %s" % a.item_dir)
         sys.exit(rep["exitCode"])
     item_id = os.path.basename(os.path.abspath(a.item_dir))
@@ -117,7 +117,7 @@ def main():
 
 def end(a):
     name = os.path.basename(os.path.abspath(a.item_dir))
-    rep = rpt.make_report("check_item.py", "2.0.0", {"path": name}, rpt.from_rows(rows, name), extra={"item": name})
+    rep = rpt.make_report("check_item.py", "2.1.0", {"path": name}, rpt.from_rows(rows, name), extra={"item": name})
     if a.report:
         rpt.write(rep, a.report)
     if a.json:
