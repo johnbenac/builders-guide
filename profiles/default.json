@@ -119,6 +119,22 @@
     "furnitureCollision": {
       "enabled": false,
       "mode": "box"
+    },
+    "terrain": {
+      "enabled": false,
+      "crsName": null,
+      "patchFormat": "geotiff-float32-metres",
+      "maxErrorBoundMetres": 0.05,
+      "footprintMarginMetres": 10.0,
+      "clearingMarginMetres": 2.0,
+      "grading": {
+        "maxCutFillSlope": "1:2"
+      },
+      "seaLevelMetres": 0.0,
+      "floatToleranceMetres": 0.5,
+      "buryToleranceMetres": 0.5,
+      "siteElevationToleranceMetres": 0.1,
+      "maxTriangles": 200000
     }
   },
   "textures": {

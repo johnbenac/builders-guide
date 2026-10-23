@@ -2,7 +2,7 @@
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
 | `frame.horizontalAxes` | which horizontal directions +X and +Y mean to this consumer (Z is up, right-handed) | `"+X forward, +Y left (right-handed with Z up)"` | `"+X forward, +Y left (right-handed with Z up)"` | B-10 |
-| `frame.levelOffsetMetres` | height, in the consumer's global frame, of the file's local z = 0; declared positions in the optional extensions add it | `0.0` | `12.0` | B-12, B-92 |
+| `frame.levelOffsetMetres` | height, in the consumer's global frame, of the file's local z = 0; declared positions in the optional extensions add it | `0.0` | `12.0` | B-12, B-92, B-133 |
 | `frame.placement` | final: the consumer applies no offset or rotation to the file; the file is authored in its final placement frame | `"final"` | `"final"` | B-11 |
 | `schema.allowed` | IFC schema identifiers the consumer accepts | `["IFC4"]` | `["IFC4"]` | B-01 |
 | `limits.maxFileMegabytes` | hard size cap of one IFC file, in megabytes | `250` | `100` | B-05, F-50 |

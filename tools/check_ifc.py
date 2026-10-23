@@ -29,11 +29,15 @@ import ifcopenshell.util.placement
 import ifcopenshell.util.unit
 
 import report as rpt
+import terrain_lib
 
 TOOL_VERSION = "2.0.0"
 
 DECLARED_BASE = {"RoomId", "Occupant", "Function", "ZoneId", "ZoneClass", "Requirement", "NetAreaSquareMetres", "BaseLevelMetres"}
-NOT_SOLID = {"IFCDOOR", "IFCOPENINGELEMENT", "IFCSPACE", "IFCSPATIALZONE", "IFCLIGHTFIXTURE", "IFCELEMENTASSEMBLY"}
+TERRAIN_PROPS = ["Role", "PackageName", "PackageVersion", "PackageSha256", "PatchSha256", "PatchLevel", "PixelSizeMetres",
+                 "ErrorBoundMetres", "Frame", "VerticalDatum"]
+SITE_PROPS = ["SeaLevelMetres", "FootprintInWater", "DistanceToShoreMetres", "FloorHeightAboveSeaMetres"]
+NOT_SOLID = {"IFCDOOR", "IFCOPENINGELEMENT", "IFCSPACE", "IFCSPATIALZONE", "IFCLIGHTFIXTURE", "IFCELEMENTASSEMBLY", "IFCGEOGRAPHICELEMENT"}
 SOLID_NOT_GLASS = {"IfcWall", "IfcWallStandardCase", "IfcFurnishingElement", "IfcStairFlight", "IfcCovering"}
 
 
@@ -145,6 +149,170 @@ def segment_hits(tris, p0, p1):
         t = f * np.einsum("ij,ij->i", e2, q)
         hit = ok & (u >= 0) & (v >= 0) & (u + v <= 1) & (t >= 0) & (t <= 1)
     return bool(hit.any())
+
+
+def footprint_points(model, geo, storeys, cap=500):
+    """Plan points (file frame) of the slabs and walls of the lowest level: where the building touches the ground."""
+    low = min(storeys, key=lambda s: s.Elevation if s.Elevation is not None else 0.0)
+    pts = [geo[e.id()]["v"][:, :2] for e in list(model.by_type("IfcSlab")) + list(model.by_type("IfcWall"))
+           if e.id() in geo and container_of(e) == low]
+    if not pts:
+        return low, np.zeros((0, 2))
+    u = np.unique(np.round(np.vstack(pts), 3), axis=0)
+    if len(u) > cap:
+        u = u[np.linspace(0, len(u) - 1, cap).astype(int)]
+    return low, u
+
+
+def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
+    """Terrain context (B-130 to B-140): one derived, read-only terrain element, its georeference and its relation to the building."""
+    if len(terrains) != 1:
+        R.fail("B-130", "the file has %d terrain elements; exactly one IfcGeographicElement TERRAIN is required" % len(terrains))
+        return
+    t = terrains[0]
+    items = [i for r in (t.Representation.Representations if t.Representation else []) for i in r.Items]
+    problems = []
+    cont = container_of(t)
+    if cont is None or not cont.is_a("IfcSite"):
+        problems.append("it is not contained in the IfcSite")
+    if len(items) != 1 or not items[0].is_a("IfcTriangulatedFaceSet"):
+        problems.append("its body is not one IfcTriangulatedFaceSet")
+    if problems:
+        R.fail("B-130", "terrain: " + "; ".join(problems), t.GlobalId)
+    else:
+        R.ok("B-130", "one terrain element on the site, a triangulated face set")
+    g = geo.get(t.id())
+    if g is None or not len(g["f"]):
+        R.fail("B-131", "the terrain yields no triangles", t.GlobalId)
+        return
+    V, F = g["v"], g["f"]
+    tri = V[F]
+    n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+    plan_area = n[:, 2] / 2.0
+    bad_tri = int(np.sum(plan_area <= 1e-9))
+    key = np.unique(np.round(V, 6), axis=0, return_inverse=True)[1].reshape(-1)
+    fk = key[F]
+    edges = np.sort(np.concatenate([fk[:, [0, 1]], fk[:, [1, 2]], fk[:, [2, 0]]]), axis=1)
+    _, ecount = np.unique(edges, axis=0, return_counts=True)
+    lo, hi = V[:, :2].min(0), V[:, :2].max(0)
+    rect = float((hi[0] - lo[0]) * (hi[1] - lo[1]))
+    covered = float(plan_area[plan_area > 0].sum())
+    msgs = []
+    if bad_tri:
+        msgs.append("%d triangle(s) do not face up or have no area" % bad_tri)
+    if (ecount > 2).any():
+        msgs.append("%d edge(s) belong to more than two triangles" % int((ecount > 2).sum()))
+    if abs(covered - rect) > 1e-6 * max(rect, 1.0):
+        msgs.append("the triangles cover %.3f m2 of a %.3f m2 patch rectangle (overlap or hole)" % (covered, rect))
+    if msgs:
+        R.fail("B-131", "terrain is not a valid heightfield: " + "; ".join(msgs), t.GlobalId)
+    else:
+        R.ok("B-131", "terrain is a heightfield of %d triangles covering %.1f m2 once" % (len(F), rect))
+
+    low, fp = footprint_points(model, geo, storeys)
+    margin = float(tcfg["footprintMarginMetres"])
+    if len(fp):
+        short = int(np.sum(np.any(fp - margin < lo - 1e-9, axis=1) | np.any(fp + margin > hi + 1e-9, axis=1)))
+        if short:
+            R.fail("B-132", "%d footprint point(s) of the lowest level are less than %g m from the edge of the terrain patch" % (short, margin), t.GlobalId)
+        else:
+            R.ok("B-132", "the patch extends at least %g m beyond the footprint" % margin)
+
+    convs = model.by_type("IfcMapConversion")
+    prof = rpt.profile()
+    ortho = None
+    if len(convs) != 1:
+        R.fail("B-133", "the file has %d IfcMapConversion; exactly one is required" % len(convs))
+    else:
+        c = convs[0]
+        crs = c.TargetCRS
+        probs = []
+        if not crs.is_a("IfcProjectedCRS") or not (crs.Name or "").strip():
+            probs.append("the target is not an IfcProjectedCRS with a name")
+        elif tcfg["crsName"] and crs.Name != tcfg["crsName"]:
+            probs.append("the CRS is named %r, the profile expects %r" % (crs.Name, tcfg["crsName"]))
+        if crs.is_a("IfcProjectedCRS") and not (crs.MapUnit is not None and crs.MapUnit.is_a("IfcSIUnit") and crs.MapUnit.Name == "METRE"
+                                                and crs.MapUnit.Prefix is None):
+            probs.append("the map unit is not plain metres")
+        if abs((c.XAxisAbscissa if c.XAxisAbscissa is not None else 1.0) - 1.0) > 1e-9 or abs(c.XAxisOrdinate or 0.0) > 1e-9:
+            probs.append("the local X axis does not point east")
+        if abs((c.Scale if c.Scale is not None else 1.0) - 1.0) > 1e-9:
+            probs.append("the scale is not 1")
+        if c.OrthogonalHeight is None:
+            probs.append("OrthogonalHeight (floor height above sea level) is missing")
+        else:
+            ortho = float(c.OrthogonalHeight)
+        if abs(args.level_offset) > 1e-12:
+            probs.append("frame.levelOffsetMetres is %g; it must be 0 because the floor height is carried by OrthogonalHeight" % args.level_offset)
+        if probs:
+            R.fail("B-133", "georeference: " + "; ".join(probs), c.GlobalId if hasattr(c, "GlobalId") else None)
+        else:
+            R.ok("B-133", "georeference to %s, floor %.3f m above sea level" % (crs.Name, ortho))
+
+    site = (model.by_type("IfcSite") or [None])[0]
+    zt0 = terrain_lib.heights_at(V, F, np.array([[0.0, 0.0]]))[0]
+    if site is not None and ortho is not None:
+        if site.RefElevation is None:
+            R.fail("B-134", "IfcSite.RefElevation is not set", site.GlobalId)
+        elif np.isnan(zt0):
+            R.fail("B-134", "the terrain does not cover the building origin", site.GlobalId)
+        elif abs(site.RefElevation - (zt0 + ortho)) > tcfg["siteElevationToleranceMetres"]:
+            R.fail("B-134", "IfcSite.RefElevation is %.3f m but the terrain at the building origin is %.3f m above sea level" % (
+                site.RefElevation, zt0 + ortho), site.GlobalId)
+        else:
+            R.ok("B-134", "site elevation %.3f m matches the terrain at the origin" % site.RefElevation)
+
+    if len(fp) and ortho is not None:
+        zt = terrain_lib.heights_at(V, F, fp)
+        have = ~np.isnan(zt)
+        sea = float(tcfg["seaLevelMetres"])
+        flag = bool(P[site.id()].get("FootprintInWater")) if site is not None else False
+        wet = int(np.sum(zt[have] + ortho < sea - 1e-9))
+        if wet or flag:
+            R.fail("B-135", "the building stands in water: %d footprint point(s) are on terrain below sea level (%g m)%s" % (
+                wet, sea, "; FootprintInWater is true" if flag else ""), site.GlobalId if site is not None else None)
+        else:
+            R.ok("B-135", "every footprint point is at or above sea level")
+        if have.any():
+            gap = float(low.Elevation or 0.0) - zt[have]
+            ft, bt = float(tcfg["floatToleranceMetres"]), float(tcfg["buryToleranceMetres"])
+            if gap.min() > ft:
+                R.fail("B-136", "the building floats: the lowest floor is %.2f to %.2f m above the terrain at every footprint point" % (gap.min(), gap.max()))
+            elif gap.max() < -bt:
+                R.fail("B-136", "the building is buried: the lowest floor is %.2f to %.2f m below the terrain at every footprint point" % (-gap.max(), -gap.min()))
+            else:
+                R.ok("B-136", "floor %.2f m above to %.2f m below the terrain across the footprint (estimate)" % (gap.max(), -gap.min()))
+
+    tp = P[t.id()]
+    miss = [k for k in TERRAIN_PROPS if k not in tp]
+    probs = []
+    if miss:
+        probs.append("lacks " + ", ".join(miss))
+    else:
+        if tp["Role"] != "derived-context":
+            probs.append("Role is %r, not 'derived-context'" % tp["Role"])
+        try:
+            if float(tp["ErrorBoundMetres"]) > tcfg["maxErrorBoundMetres"] + 1e-12:
+                probs.append("ErrorBoundMetres %g is above the profile's %g" % (float(tp["ErrorBoundMetres"]), tcfg["maxErrorBoundMetres"]))
+        except (TypeError, ValueError):
+            probs.append("ErrorBoundMetres is not a number")
+    if probs:
+        R.fail("B-137", "Pset_Declaration_Terrain: " + "; ".join(probs), t.GlobalId)
+    else:
+        R.ok("B-137", "source pinned: %s %s" % (tp["PackageName"], tp["PackageVersion"]))
+    if len(F) > tcfg["maxTriangles"]:
+        R.fail("B-138", "the terrain has %d triangles; the profile allows at most %d" % (len(F), tcfg["maxTriangles"]), t.GlobalId)
+    sp = P[site.id()] if site is not None else {}
+    missing_site = [k for k in ("SeaLevelMetres", "FootprintInWater") if k not in sp]
+    if missing_site:
+        R.fail("B-139", "Pset_Declaration_Site lacks " + ", ".join(missing_site), site.GlobalId if site is not None else None)
+    else:
+        R.ok("B-139", "water declared as metadata on the site")
+    frame = str(tp.get("Frame", "")).lower()
+    if "east" not in frame or "north" not in frame:
+        R.fail("B-140", "Pset_Declaration_Terrain.Frame does not state the frame (x east, y north, z up)", t.GlobalId)
+    else:
+        R.ok("B-140", "the frame of the terrain numbers is stated")
 
 
 def main():
@@ -261,7 +429,7 @@ def main():
             REFERENCED[el.id()] = rel.RelatingStructure
     read = own_props(args.property_prefix)
     lum_cfg, sign_cfg = prof["extensions"]["luminaires"], prof["extensions"]["signboards"]
-    declared = DECLARED_BASE | set(lum_cfg["requiredProperties"]) | set(sign_cfg["requiredProperties"])
+    declared = DECLARED_BASE | set(lum_cfg["requiredProperties"]) | set(sign_cfg["requiredProperties"]) | set(TERRAIN_PROPS) | set(SITE_PROPS)
     products = [e for e in model.by_type("IfcProduct")]
     P = {}
     ignored_declared = []
@@ -338,8 +506,10 @@ def main():
     if verts_total > prof["limits"]["maxVertices"] or tris_total > prof["limits"]["maxTriangles"]:
         R.fail("B-05", "%d vertices and %d triangles exceed the profile's limits of %d and %d" % (
             verts_total, tris_total, prof["limits"]["maxVertices"], prof["limits"]["maxTriangles"]))
-    if tris_total > prof["budgets"]["recommendedTriangles"]:
-        R.fail("B-120", "%d triangles; the profile recommends at most %d" % (tris_total, prof["budgets"]["recommendedTriangles"]))
+    terrain_ids = {e.id() for e in model.by_type("IfcGeographicElement") if getattr(e, "PredefinedType", None) == "TERRAIN"}
+    budget_tris = tris_total - sum(len(geo[i]["f"]) for i in terrain_ids if i in geo)      # terrain has its own cap (B-138)
+    if budget_tris > prof["budgets"]["recommendedTriangles"]:
+        R.fail("B-120", "%d triangles; the profile recommends at most %d" % (budget_tris, prof["budgets"]["recommendedTriangles"]))
     else:
         R.ok("B-05", "%d vertices, %d triangles" % (verts_total, tris_total))
 
@@ -666,7 +836,7 @@ def main():
         bad = 0
         first = None
         for e in products:
-            if e.is_a().upper() in ("IFCSPACE", "IFCSPATIALZONE", "IFCOPENINGELEMENT") or e.id() not in geo:
+            if e.is_a().upper() in ("IFCSPACE", "IFCSPATIALZONE", "IFCOPENINGELEMENT") or e.id() not in geo or e.id() in terrain_ids:
                 continue
             v = geo[e.id()]["v"] + np.array([0, 0, args.level_offset])
             inside = np.ones(len(v), bool)
@@ -688,11 +858,20 @@ def main():
     else:
         R.info("B-110", "the profile gives no build volume; it was not checked")
 
+    # ---------------------------------------------------------------- terrain context (extension; B-130 to B-140)
+    tcfg = prof["extensions"]["terrain"]
+    if not tcfg["enabled"]:
+        R.info("B-130", "terrain extension not enabled by the profile; terrain context was not checked")
+        if terrain_ids:
+            R.fail("B-115", "the file has a terrain element but the profile does not enable the terrain extension")
+    else:
+        check_terrain(R, model, tcfg, geo, P, storeys, [model.by_id(i) for i in sorted(terrain_ids)], args)
+
     # ---------------------------------------------------------------- finish keys (D-03 to D-05)
     keys = collections.Counter()
     for e in products:
         g = geo.get(e.id())
-        if g is None or e.is_a().upper() in ("IFCSPACE", "IFCSPATIALZONE", "IFCOPENINGELEMENT"):
+        if g is None or e.is_a().upper() in ("IFCSPACE", "IFCSPATIALZONE", "IFCOPENINGELEMENT") or e.id() in terrain_ids:
             continue
         used = set(g["mid"].tolist()) if len(g["mid"]) else set()
         for i in used:

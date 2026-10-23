@@ -3,6 +3,23 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
+## Unreleased
+
+Terrain context for consumers whose ground comes from their own terrain source (optional extension `terrain`, off by default).
+
+* **New rules** `B-130` to `B-140` (guide 1, section 16) and `X-23` (guide 4): one derived, read-only terrain element, a valid
+  heightfield, cover of the footprint, a georeference to a named custom CRS, site elevation, no building in water, no floating or
+  buried building, a pinned source, a triangle cap, water as metadata only, a stated frame; the package pins the terrain source version.
+* **Changed:** `B-115` now allows the terrain patch of the extension and forbids pads, cuts, fills and water in the file; `B-110` and
+  `B-120` leave the terrain element out (it has its own cap).
+* **Profile:** `extensions.terrain` (CRS name, error bound, margins, grading rule, sea level, float and bury tolerances, site elevation
+  tolerance, triangle cap). Defaults for margins and tolerances are working values, to be confirmed by each consumer.
+* **Tools:** `site_request.py`, `terrain_import.py`, `make_sample_terrain.py` (plane or slope, tests only), `terrain_lib.py`,
+  `test_terrain.py`. New dependencies `scipy` and `shapely`.
+* **Schemas:** `terrain-patch` (sidecar), `site-request`; the manifest gains the file roles `terrain-patch`, `terrain-sidecar`,
+  `site-request` and a `terrain` section.
+* `tools/gen_all.py` leaves the `work/` folder out of the manifest, and `llms.txt` states the real rule count.
+
 ## 2.0.0
 
 The set was made portable: core practice is separated from consumer parameters.

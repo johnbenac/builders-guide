@@ -21,11 +21,12 @@ not as a measured reproduction.
 
 1. **Source data and a way to bring it in.** No plans, sections, elevations or dimension tables, and no guidance on turning them into
    an IFC (scale, tracing, tolerances). Fidelity cannot be checked: `check_ifc.py` tests rules, not likeness.
-2. **Site, terrain and water.** B-115 says not to model terrain or relief unless the profile says how, and no profile does. The rock
-   ledge, the stream and the waterfall, which the house exists for, cannot be expressed. `baseSurfaces` in the profile schema looks like
-   the hook, but nothing says how a consumer-supplied ground or water surface is described or how a building sits on it.
-3. **Below the lowest level.** B-11/B-12 define local z = 0 as the finished floor of the lowest level. The hatch stair drops 2.6 m below
-   it and ends in the air at the stream. No rule covers elements below level 0, open-air stairs, or landings at a natural surface.
+2. **Site, terrain and water.** Now covered by the terrain extension (guide 1, sections 16 and 17): the terrain source owns the ground and
+   the water; the file carries a derived, read-only terrain patch plus water metadata. `add_terrain.sh` runs the whole chain on this house
+   with synthetic sloped ground standing in for the source's patch (`out/ifc/fallingwater-terrain.ifc`, checked against
+   `profile-terrain.json`). The real rock ledge, stream and waterfall would come from the source; the house is not graded to them here.
+3. **Below the lowest level.** Partly open: the georeference now carries the floor height above sea level (`OrthogonalHeight`), but there is
+   still no rule for stairs or landings below level 0, such as the hatch stair that ends in the air at the stream.
 4. **Open-air rooms.** B-29 wants terraces declared as rooms, but B-20 makes a room an extrusion to a ceiling. I gave terraces a nominal
    2.65 m height. There is no property or class for "unroofed", so `enclosed: no` lives only in `rooms.csv`.
 5. **Structure and glazing systems.** Only `IfcSlab`/`IfcWall` are covered. Nothing on beams, posts, reinforced trays or cantilever
@@ -39,6 +40,15 @@ not as a measured reproduction.
 9. **Packaging inputs.** I did not write finishes, a finish schedule or a delivery package, so D-03 (finish coverage) is unchecked.
    That is work left undone, not a repo limit.
 
+## Terrain test run
+
+```
+work/fallingwater/add_terrain.sh
+```
+
+Floor at 412.0 m above sea level, building origin at the site centre, ground rising 0.1 m per metre to the north. The synthetic patch
+reduces to 2 triangles; the checker's terrain rules B-130 to B-140 pass. `out/preview-terrain.png` is the render.
+
 ## Left out by me (scope, not a repo limit)
 
 The entry bridge and carport, the guest house with its covered walk, the stair from the master terrace down to the living terrace,
@@ -46,5 +56,5 @@ luminaires (the default profile has the extension off) and furniture.
 
 ## Changed outside `work/`
 
-`tools/gen_all.py` now skips `work/` when building the manifest. `AGENTS.md` tells agents to write output to `work/`, and any file
+`tools/gen_all.py` now skips `work/` when building the manifest (this was done before the terrain work). `AGENTS.md` tells agents to write output to `work/`, and any file
 there made `test_sync.py` fail. `MANIFEST.json` was regenerated to match.

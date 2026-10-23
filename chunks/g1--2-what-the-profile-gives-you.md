@@ -11,5 +11,5 @@ your delivery notes. If a number your work depends on is missing, ask the consum
 | identifiers | room identifier length and pattern, assigned entity-number range, allowed occupants | `identifiers.*`, `propertyNames` |
 | geometry | doorway, stair and ramp values | `geometry.*` |
 | volumes | the region to stay inside, regions to keep out, floors the consumer supplies | `buildVolume`, `keepOut`, `baseSurfaces` |
-| extensions | whether it walks people through rooms, turns fixtures into lights, generates signs, simplifies furniture | `extensions.*` |
+| extensions | whether it walks people through rooms, turns fixtures into lights, generates signs, simplifies furniture, supplies terrain | `extensions.*` |
 | rule levels | rules it makes stricter or switches off | `ruleLevels` |

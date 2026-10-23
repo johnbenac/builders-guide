@@ -1,0 +1,67 @@
+{
+  "format": "site-request/1",
+  "frame": "site: x east, y north, z up, metres; heights above mean sea level",
+  "master": {
+    "file": "fallingwater-master.ifc",
+    "sha256": "39c83ad1817ca18623f2b6577820d22f944d761a35db26c2835332167e45d1c9"
+  },
+  "buildingOrigin": {
+    "x": 0.0,
+    "y": 0.0
+  },
+  "finishedFloorElevationMetres": 412.0,
+  "footprint": {
+    "method": "union",
+    "polygons": [
+      [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          10.0
+        ],
+        [
+          15.0,
+          10.0
+        ],
+        [
+          15.0,
+          -4.8
+        ],
+        [
+          3.0,
+          -4.8
+        ],
+        [
+          3.0,
+          0.0
+        ]
+      ]
+    ]
+  },
+  "grading": {
+    "maxCutFillSlope": "1:2"
+  },
+  "clearing": {
+    "marginMetres": 2.0
+  },
+  "patch": {
+    "minMarginMetres": 10.0,
+    "bounds": {
+      "min": [
+        -10.0,
+        -14.8
+      ],
+      "max": [
+        25.0,
+        20.0
+      ]
+    }
+  },
+  "profile": {
+    "name": "terrain-demo",
+    "version": "1.0.0"
+  }
+}

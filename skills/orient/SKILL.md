@@ -17,7 +17,7 @@ conventions (`profiles/default.json` if it has none).
 
 | The task is about | Load |
 |---|---|
-| a building: levels, rooms, walls, doors, windows, floors, stairs, optional lights and signs | `skills/author-building/SKILL.md` |
+| a building: levels, rooms, walls, doors, windows, floors, stairs, optional lights, signs and terrain context | `skills/author-building/SKILL.md` |
 | finishes: wall coverings, floors, ceilings, accents, texture sets, a material library | `skills/decorate-interior/SKILL.md` |
 | furniture or fixtures as reusable items | `skills/author-furniture-library/SKILL.md` |
 | packaging, versions, licences, final checks, accepting or sending back a delivery | `skills/accept-and-package-delivery/SKILL.md` |
@@ -35,7 +35,7 @@ A job with several parts: do the parts in this order, then package: building, fi
 
 ## Facts to keep in mind
 
-* 181 rules in `rules.json`. Each has a default `level` (`required` or `recommended`), `applies_to`, `parameters` (profile values it
+* 193 rules in `rules.json`. Each has a default `level` (`required` or `recommended`), `applies_to`, `parameters` (profile values it
   uses), `extension` (null, or the optional group it belongs to), `statement`, `rationale`, `how_to_check`, `fix_hint`, `examples`.
   A profile can change levels (`ruleLevels`) and switch extensions on.
 * Every checker takes `--profile FILE` and `--json` and prints one report (`schemas/check-report.schema.json`) that names the profile.

@@ -2,3 +2,5 @@ ifcopenshell
 numpy
 pillow
 jsonschema
+scipy
+shapely

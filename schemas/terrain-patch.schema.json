@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Terrain patch sidecar",
+  "description": "The JSON file that travels with a terrain height patch (GeoTIFF, one float32 band, metres). Written by the terrain source, read by tools/terrain_import.py (guide 1, section 16). Coordinates are in the site frame: x east, y north, metres; heights above sea level.",
+  "type": "object",
+  "required": [
+    "format",
+    "package",
+    "patch",
+    "crs",
+    "frame",
+    "verticalDatum",
+    "licence"
+  ],
+  "properties": {
+    "format": {
+      "const": "terrain-patch/1"
+    },
+    "package": {
+      "type": "object",
+      "description": "the terrain source version the patch was cut from",
+      "required": [
+        "name",
+        "version",
+        "sha256"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "name of the terrain source package"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "version of the package"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "hash of the package version"
+        }
+      }
+    },
+    "patch": {
+      "type": "object",
+      "required": [
+        "file",
+        "sha256",
+        "level",
+        "pixelSizeMetres",
+        "width",
+        "height",
+        "origin"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1,
+          "description": "file name of the GeoTIFF next to this sidecar"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "hash of the GeoTIFF"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "source level the patch was cut at (0 is the finest)"
+        },
+        "pixelSizeMetres": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "origin": {
+          "type": "object",
+          "required": [
+            "x",
+            "y"
+          ],
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "description": "site-frame position of the outer north-west corner of the north-west pixel"
+        }
+      }
+    },
+    "crs": {
+      "type": "object",
+      "required": [
+        "name",
+        "definition"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "name of the site coordinate reference system; not a registry code"
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "the definition: projection, sphere radius and centre, in words or parameters"
+        },
+        "geodeticDatum": {
+          "type": "string"
+        },
+        "mapProjection": {
+          "type": "string"
+        }
+      }
+    },
+    "frame": {
+      "type": "string",
+      "minLength": 1,
+      "description": "which frame the coordinates are in, for example 'site: x east, y north, z up, metres'"
+    },
+    "verticalDatum": {
+      "type": "object",
+      "required": [
+        "name",
+        "seaLevelMetres"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "for example mean sea level"
+        },
+        "seaLevelMetres": {
+          "type": "number",
+          "description": "height of sea level in this datum (0)"
+        }
+      }
+    },
+    "water": {
+      "type": "object",
+      "description": "metadata only; water is not modelled in IFC",
+      "properties": {
+        "distanceToShoreMetres": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "licence": {
+      "type": "object",
+      "required": [
+        "statement"
+      ],
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "description": "the licence of the heights"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

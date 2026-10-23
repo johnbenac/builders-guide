@@ -170,7 +170,8 @@ def params_doc():
             "## Extensions", "",
             "An extension is an optional group of rules. It applies only when `extensions.<name>.enabled` is true: `walkability` "
             "(for consumers that place people or agents in rooms), `luminaires` (fixtures become lights), `signboards` (signs are "
-            "generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider). Rules that belong "
+            "generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider), `terrain` "
+            "(the consumer's terrain source supplies the ground; the file carries a derived, read-only terrain patch). Rules that belong "
             "to an extension carry its name after the level, for example `B-90 REQUIRED luminaires`, and `rules.json` lists it in "
             "`extension`.", ""]
     return "\n".join(out) + "\n"
@@ -258,12 +259,12 @@ def chunks():
 
 
 # ------------------------------------------------------------------ llms files
-def llms(index, skills_present):
+def llms(index, skills_present, count):
     L = ["# Authoring guide set: IFC buildings, materials and furniture", "",
          "> Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any "
          "compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.", "",
-         "Version %s. 179 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain "
-         "`python3 tools/...` lines; nothing here assumes a particular agent harness." % VERSION, "",
+         "Version %s. %d rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain "
+         "`python3 tools/...` lines; nothing here assumes a particular agent harness." % (VERSION, count), "",
          "## Start here", "",
          "- [AGENTS.md](AGENTS.md): what this set is, commands, working rules",
          "- [skills/orient/SKILL.md](skills/orient/SKILL.md): pick the right skill for the task",
@@ -371,7 +372,7 @@ def generate():
     cf, index = chunks()
     out.update(cf)
     skills_present = [s for s in SKILLS if os.path.exists(os.path.join(ROOT, "skills", s, "SKILL.md"))]
-    out["llms.txt"] = llms(index, skills_present)
+    out["llms.txt"] = llms(index, skills_present, robj["count"])
     out["llms-full.txt"] = llms_full(cf, index)
     out.update(skill_refs(cf, index, robj))
     out["MANIFEST.json"] = manifest(out)

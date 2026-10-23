@@ -4,7 +4,7 @@ description: Author an IFC4 building (levels, rooms, walls, doors, windows, floo
 license: CC-BY-4.0
 metadata:
   version: "2.0.0"
-  rules: "B-01 to B-121"
+  rules: "B-01 to B-140"
 ---
 
 # Author a building
@@ -34,7 +34,13 @@ metadata:
 6. **Reservations.** Volumes that must stay clear: `IfcSpatialZone` plus a proxy with `PredefinedType` `PROVISIONFORSPACE` (B-80, B-81).
 7. **Extensions, only if the profile enables them.** Luminaires: an assembly of a housing and an emissive part with all the
    profile's properties, positions in the consumer's global frame (B-90 to B-93). Signboards: B-100 to B-102. Walkability: free
-   standing points (B-33).
+   standing points (B-33). Terrain context: see step 7a.
+7a. **Terrain context, only if the profile enables `extensions.terrain`.** Terrain belongs to the profile's terrain source, not to
+   you: never author it, cut a pad into it or model water (B-115, B-130, B-139). Run `tools/site_request.py` (ask for the finished
+   floor elevation above sea level and the building origin in the site frame; do not guess them) and send the request to the source;
+   it returns a GeoTIFF height patch and a sidecar after grading the pad. Run `tools/terrain_import.py` with both and the request. For
+   tests only, `tools/make_sample_terrain.py` writes a plane or slope. Keep `frame.levelOffsetMetres` at 0 (B-133). The importer
+   refuses a patch whose hash differs from its sidecar and a request made for another version of the master file.
 8. **Colours.** Distinct finish, distinct colour per class (D-01); opacity below 1 only for glass (D-04).
 9. **Check and repair.** Run the command below; follow `REPAIR-LOOP.md`.
 10. **Summaries.** Write `tables/rooms.csv` (`templates/rooms.template.csv`) and `tables/building.json`
@@ -46,6 +52,8 @@ metadata:
 python3 tools/check_all.py work/ifc/MASTER.ifc --profile PROFILE.json --json --out report.json
 python3 tools/check_ifc.py work/ifc/MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json
 python3 scripts/run_tool.py check_all work/ifc/MASTER.ifc --json
+python3 tools/site_request.py work/ifc/MASTER.ifc --floor-elevation H --origin E N --out site-request.json    # terrain extension
+python3 tools/terrain_import.py patch.tif patch.json work/ifc/MASTER.ifc --request site-request.json --out work/ifc/MASTER-terrain.ifc
 ```
 
 If the consumer's profile renames declaration properties, write the neutral names and run
@@ -82,5 +90,6 @@ decorating step.
 | reservations | `references/g1--10-zones-and-reserved-volumes.md` |
 | lights (extension) | `references/g1--11-optional-extension-lighting-fixtures.md` |
 | signs (extension) | `references/g1--12-optional-extension-signboards.md` |
+| terrain context (extension): flow and frames, rules | `references/g1--16-optional-extension-terrain-context.md`, `references/g1--17-terrain-context-the-rules.md` |
 | hygiene and budgets | `references/g1--13-geometry-hygiene.md`, `references/g1--14-level-of-detail-and-budgets.md` |
 | a complete small example | `references/g5--2-what-is-modelled.md` |

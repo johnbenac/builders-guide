@@ -1,0 +1,401 @@
+{
+ "schema": "check-report/1",
+ "tool": "check_ifc.py",
+ "toolVersion": "2.0.0",
+ "target": {
+  "path": "fallingwater-terrain.ifc",
+  "sha256": "c4a3cf8498346e97bf2d19d2e562f2a7d08897f36082aac2e6f2ab82ed61ffda"
+ },
+ "result": "pass",
+ "exitCode": 0,
+ "summary": {
+  "requiredFailures": 0,
+  "recommendedWarnings": 0,
+  "passes": 22,
+  "info": 6
+ },
+ "profile": {
+  "name": "terrain-demo",
+  "version": "1.0.0",
+  "sha256": "5bb1a55837cf7ffad1c6d2f7d8bbe2543e4d2deee5a10ca22c9f713c08612c77"
+ },
+ "counts": {
+  "levels": 3,
+  "rooms": 10,
+  "doors": 12,
+  "windows": 19,
+  "luminaires": 0,
+  "triangles": 2398,
+  "vertices": 1386,
+  "furniture": 0,
+  "finishKeys": 9
+ },
+ "findings": [
+  {
+   "id": "B-04@98faa4c8",
+   "rule": "B-04",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "ASCII only"
+  },
+  {
+   "id": "B-08@f2e35e86",
+   "rule": "B-08",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "every entity is on one line"
+  },
+  {
+   "id": "B-05@751f6e54",
+   "rule": "B-05",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "file size 0.1 MB"
+  },
+  {
+   "id": "B-01@cf216e19",
+   "rule": "B-01",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "schema IFC4"
+  },
+  {
+   "id": "B-02@b776ef77",
+   "rule": "B-02",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "length unit is metre"
+  },
+  {
+   "id": "B-70@56789571",
+   "rule": "B-70",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "233 GlobalId values, unique, 22 characters"
+  },
+  {
+   "id": "B-71@5cb8f01e",
+   "rule": "B-71",
+   "level": "RECOMMENDED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "lowest entity number is #1 (the profile assigns no start)"
+  },
+  {
+   "id": "B-72@fe96260e",
+   "rule": "B-72",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "all declaration properties are single values"
+  },
+  {
+   "id": "B-13@11ffa603",
+   "rule": "B-13",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "3 level(s); every element belongs to a level"
+  },
+  {
+   "id": "B-06@a3269f1d",
+   "rule": "B-06",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "every represented product yields triangles"
+  },
+  {
+   "id": "B-05@c07cfd20",
+   "rule": "B-05",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "1386 vertices, 2398 triangles"
+  },
+  {
+   "id": "B-22@70473ba6",
+   "rule": "B-22",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "10 room(s), RoomId values unique in this file"
+  },
+  {
+   "id": "B-33@35b463d7",
+   "rule": "B-33",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "walkability extension not enabled by the profile; standing points were not checked"
+  },
+  {
+   "id": "B-41@092ace2e",
+   "rule": "B-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "12 door(s), each fills an opening that voids a wall"
+  },
+  {
+   "id": "B-90@9547bcc1",
+   "rule": "B-90",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "luminaires extension not enabled by the profile; fixtures were not checked"
+  },
+  {
+   "id": "B-100@1b51873d",
+   "rule": "B-100",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "signboards extension not enabled by the profile; boards were not checked"
+  },
+  {
+   "id": "B-110@61afaffe",
+   "rule": "B-110",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "the profile gives no build volume; it was not checked"
+  },
+  {
+   "id": "B-130@bfb6256f",
+   "rule": "B-130",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "one terrain element on the site, a triangulated face set"
+  },
+  {
+   "id": "B-131@46589fae",
+   "rule": "B-131",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "terrain is a heightfield of 2 triangles covering 1242.6 m2 once"
+  },
+  {
+   "id": "B-132@287943a5",
+   "rule": "B-132",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "the patch extends at least 10 m beyond the footprint"
+  },
+  {
+   "id": "B-133@6ba2ed34",
+   "rule": "B-133",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "georeference to SYNTHETIC-SITE, floor 412.000 m above sea level"
+  },
+  {
+   "id": "B-134@a1997a59",
+   "rule": "B-134",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "site elevation 412.000 m matches the terrain at the origin"
+  },
+  {
+   "id": "B-135@f8eb23da",
+   "rule": "B-135",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "every footprint point is at or above sea level"
+  },
+  {
+   "id": "B-136@b65560c4",
+   "rule": "B-136",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "floor 0.48 m above to 1.00 m below the terrain across the footprint (estimate)"
+  },
+  {
+   "id": "B-137@cb322fc5",
+   "rule": "B-137",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "source pinned: synthetic-test-ground 0.0.0"
+  },
+  {
+   "id": "B-139@1fde641b",
+   "rule": "B-139",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "water declared as metadata on the site"
+  },
+  {
+   "id": "B-140@8ae516d9",
+   "rule": "B-140",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "the frame of the terrain numbers is stated"
+  },
+  {
+   "id": "D-03@f60d5351",
+   "rule": "D-03",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "9 (class, colour, opacity) combinations found; give --finish-schedule to check coverage"
+  }
+ ],
+ "finishKeys": [
+  {
+   "class": "IfcBuildingElementProxy",
+   "colour": "#7d776b",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcDoor",
+   "colour": "#8fb8b8",
+   "opacity": 0.45,
+   "elements": 12
+  },
+  {
+   "class": "IfcSlab",
+   "colour": "#c9bfa6",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcSlab",
+   "colour": "#d9cdb0",
+   "opacity": 1.0,
+   "elements": 5
+  },
+  {
+   "class": "IfcStairFlight",
+   "colour": "#b9a584",
+   "opacity": 1.0,
+   "elements": 3
+  },
+  {
+   "class": "IfcWall",
+   "colour": "#a98d63",
+   "opacity": 1.0,
+   "elements": 15
+  },
+  {
+   "class": "IfcWall",
+   "colour": "#e6dcc3",
+   "opacity": 1.0,
+   "elements": 10
+  },
+  {
+   "class": "IfcWall",
+   "colour": "#efe9db",
+   "opacity": 1.0,
+   "elements": 4
+  },
+  {
+   "class": "IfcWindow",
+   "colour": "#91c8d0",
+   "opacity": 0.45,
+   "elements": 19
+  }
+ ],
+ "file": "fallingwater-terrain.ifc",
+ "sha256": "c4a3cf8498346e97bf2d19d2e562f2a7d08897f36082aac2e6f2ab82ed61ffda"
+}

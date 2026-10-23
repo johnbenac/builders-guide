@@ -15,6 +15,10 @@ Install once: `pip install -r tools/requirements.txt` (IFC reading, arrays, imag
 | `build_package.py` | `init` writes the manifest and checksum file; `verify` runs the package checks (guide 4) |
 | `map_properties.py` | consumer intake: renames declaration properties between the neutral names and a consumer's names, using a mapping file the receiving party keeps outside this set (`--reverse` undoes it). `test_map_properties.py` tests it |
 | `make_sample.py`, `make_sample_item.py`, `make_sample_texture_set.py` | generate the pieces of the worked example (guide 5) |
+| `site_request.py` | terrain extension: writes the request a building sends its terrain source (footprint polygon, finished floor elevation, grading rule, clearing margin, smallest patch) from a master file |
+| `terrain_import.py` | terrain extension: reads a height patch (GeoTIFF) with its sidecar and a site request, reduces it to a triangulated network within an error bound and adds the derived terrain element, georeference and site data to a copy of the master file |
+| `make_sample_terrain.py` | writes a trivial synthetic plane or slope patch and sidecar for tests and examples; real terrain comes from the terrain source |
+| `terrain_lib.py`, `test_terrain.py` | shared terrain helpers (GeoTIFF reader, error-bounded reduction, height lookup) and their tests |
 | `run_example.py` | builds, checks and packages the whole worked example in one go |
 | `selftest.py` | builds the worked example, breaks it eleven ways, tests the property mapper, the generated files and the agent harness and confirms the checker names the right rule each time |
 | `rules_index.py` | regenerates `06-rules-index.md` and cross-checks every rule id used in the guides and scripts |

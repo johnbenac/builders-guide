@@ -6,7 +6,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
 | `frame.horizontalAxes` | which horizontal directions +X and +Y mean to this consumer (Z is up, right-handed) | `"+X forward, +Y left (right-handed with Z up)"` | `"+X forward, +Y left (right-handed with Z up)"` | B-10 |
-| `frame.levelOffsetMetres` | height, in the consumer's global frame, of the file's local z = 0; declared positions in the optional extensions add it | `0.0` | `12.0` | B-12, B-92 |
+| `frame.levelOffsetMetres` | height, in the consumer's global frame, of the file's local z = 0; declared positions in the optional extensions add it | `0.0` | `12.0` | B-12, B-92, B-133 |
 | `frame.placement` | final: the consumer applies no offset or rotation to the file; the file is authored in its final placement frame | `"final"` | `"final"` | B-11 |
 | `schema.allowed` | IFC schema identifiers the consumer accepts | `["IFC4"]` | `["IFC4"]` | B-01 |
 | `limits.maxFileMegabytes` | hard size cap of one IFC file, in megabytes | `250` | `100` | B-05, F-50 |
@@ -53,6 +53,18 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.signboards.readingDistanceMetres` | smallest and largest accepted reading distance | `[5, 18]` | `[5, 18]` | B-102 |
 | `extensions.furnitureCollision.enabled` | consumer approximates furniture with a simple collider | `false` | `true` | - |
 | `extensions.furnitureCollision.mode` | box: one axis-aligned box per furniture element; mesh: exact triangles | `"box"` | `"box"` | F-40 |
+| `extensions.terrain.enabled` | consumer supplies terrain from its own source and wants a derived, read-only terrain patch in the file | `false` | `false` | - |
+| `extensions.terrain.crsName` | name of the consumer's site coordinate reference system, written as the IfcProjectedCRS name; it need not be a registry code; null accepts any non-empty name | `null` | `null` | B-133 |
+| `extensions.terrain.patchFormat` | form of the height patch the consumer's terrain source delivers | `"geotiff-float32-metres"` | `"geotiff-float32-metres"` | - |
+| `extensions.terrain.maxErrorBoundMetres` | largest vertical difference allowed between the terrain triangles and the source samples | `0.05` | `0.05` | B-137 |
+| `extensions.terrain.footprintMarginMetres` | margin by which the terrain patch must extend beyond the building footprint in plan | `10.0` | `10.0` | B-132 |
+| `extensions.terrain.clearingMarginMetres` | margin round the footprint in which the terrain source clears vegetation | `2.0` | `2.0` | - |
+| `extensions.terrain.grading` | grading rule sent to the terrain source: maxCutFillSlope is the steepest cut or fill slope as horizontal:vertical text, for example 1:2 | `{"maxCutFillSlope": "1:2"}` | `{"maxCutFillSlope": "1:2"}` | - |
+| `extensions.terrain.seaLevelMetres` | height of sea level in the consumer's vertical datum; terrain below it is seabed | `0.0` | `0.0` | B-135 |
+| `extensions.terrain.floatToleranceMetres` | how far the lowest finished floor may stand above the terrain at every footprint point before the building counts as floating | `0.5` | `0.5` | B-136 |
+| `extensions.terrain.buryToleranceMetres` | how far the lowest finished floor may stand below the terrain at every footprint point before the building counts as buried | `0.5` | `0.5` | B-136 |
+| `extensions.terrain.siteElevationToleranceMetres` | largest difference between IfcSite.RefElevation and the terrain height at the building origin | `0.1` | `0.1` | B-134 |
+| `extensions.terrain.maxTriangles` | most triangles in the terrain element | `200000` | `200000` | B-138 |
 | `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
 | `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
 | `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |
@@ -68,5 +80,5 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 
 ## Extensions
 
-An extension is an optional group of rules. It applies only when `extensions.<name>.enabled` is true: `walkability` (for consumers that place people or agents in rooms), `luminaires` (fixtures become lights), `signboards` (signs are generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider). Rules that belong to an extension carry its name after the level, for example `B-90 REQUIRED luminaires`, and `rules.json` lists it in `extension`.
+An extension is an optional group of rules. It applies only when `extensions.<name>.enabled` is true: `walkability` (for consumers that place people or agents in rooms), `luminaires` (fixtures become lights), `signboards` (signs are generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider), `terrain` (the consumer's terrain source supplies the ground; the file carries a derived, read-only terrain patch). Rules that belong to an extension carry its name after the level, for example `B-90 REQUIRED luminaires`, and `rules.json` lists it in `extension`.
 

@@ -2,7 +2,7 @@
 
 > Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.
 
-Version 2.0.0. 179 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
+Version 2.0.0. 193 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
 
 ## Start here
 
@@ -62,6 +62,8 @@ Version 2.0.0. 179 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [g1--13-geometry-hygiene](chunks/g1--13-geometry-hygiene.md): 13. Geometry hygiene; rules B-110, B-111, B-112, B-113, B-114, B-115 ...
 - [g1--14-level-of-detail-and-budgets](chunks/g1--14-level-of-detail-and-budgets.md): 14. Level of detail and budgets; rules B-120, B-121
 - [g1--15-what-to-avoid](chunks/g1--15-what-to-avoid.md): 15. What to avoid
+- [g1--16-optional-extension-terrain-context](chunks/g1--16-optional-extension-terrain-context.md): 16. Optional extension: terrain context
+- [g1--17-terrain-context-the-rules](chunks/g1--17-terrain-context-the-rules.md): 17. Terrain context: the rules; rules B-130, B-131, B-132, B-133, B-134, B-135 ...
 - [g2--introduction](chunks/g2--introduction.md): Introduction
 - [g2--1-how-consumers-decide-what-a-surface-looks-like](chunks/g2--1-how-consumers-decide-what-a-surface-looks-like.md): 1. How consumers decide what a surface looks like
 - [g2--2-colour-rules](chunks/g2--2-colour-rules.md): 2. Colour rules; rules D-01, D-02, D-03, D-04, D-05, D-06 ...

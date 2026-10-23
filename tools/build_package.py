@@ -56,6 +56,12 @@ def role_of(rel):
         if name.endswith(".item.json"):
             return "item-description"
         return "item-preview"
+    if rel.startswith("terrain/"):
+        if name.endswith(".tif") or name.endswith(".tiff"):
+            return "terrain-patch"
+        if name == "site-request.json":
+            return "site-request"
+        return "terrain-sidecar" if name.endswith(".json") else "other"
     if rel.startswith("tables/"):
         return "table"
     if rel.startswith("reports/"):
@@ -188,7 +194,7 @@ def verify(root):
             groups.add(os.path.dirname(rel))
         if f["role"] in ("item-ifc", "item-description", "item-preview"):
             groups.add(os.path.dirname(rel))
-        if f["role"] in ("master-ifc", "alternate-ifc"):
+        if f["role"] in ("master-ifc", "alternate-ifc", "terrain-patch", "terrain-sidecar"):
             groups.add(rel)
     lacking = sorted(g for g in groups if g not in prov)
     need_prov = rpt.param("package.requireProvenance", True)
@@ -200,6 +206,39 @@ def verify(root):
           "provenance entry without source or licence: %s" % nolic[0])
     lic = man.get("licence", {})
     R.add("X-21", "REQUIRED", bool(str(lic.get("statement", "")).strip()) or not need_lic, "a licence statement is present" if lic.get("statement") else "no licence statement")
+
+    # terrain: the source version is pinned (X-23)
+    terrain_files = [p for p, f in listed.items() if f["role"] in ("terrain-patch", "terrain-sidecar", "site-request")]
+    mt = man.get("terrain")
+    if rpt.extension_enabled("terrain") or mt or terrain_files:
+        probs = []
+        if not mt:
+            probs.append("the manifest has no terrain section")
+        else:
+            side = None
+            sp = mt.get("sidecar", {}).get("path")
+            pp = mt.get("patch", {}).get("path")
+            if pp not in listed or listed[pp]["role"] != "terrain-patch":
+                probs.append("terrain.patch.path %r is not a listed terrain patch" % pp)
+            elif listed[pp]["sha256"] != mt["patch"].get("sha256"):
+                probs.append("terrain.patch.sha256 differs from the listed patch file")
+            if sp not in listed or listed[sp]["role"] != "terrain-sidecar":
+                probs.append("terrain.sidecar.path %r is not a listed sidecar" % sp)
+            else:
+                try:
+                    with open(os.path.join(root, sp), encoding="utf-8") as fh:
+                        side = json.load(fh)
+                except (OSError, ValueError):
+                    probs.append("the sidecar cannot be read as JSON")
+            if side is not None:
+                if side.get("package") != mt.get("package"):
+                    probs.append("terrain.package differs from the sidecar's package (name, version, hash)")
+                if side.get("patch", {}).get("sha256") != mt.get("patch", {}).get("sha256"):
+                    probs.append("the sidecar's patch hash differs from terrain.patch.sha256")
+            for q in (pp, sp):
+                if q in listed and q not in prov:
+                    probs.append("no provenance entry for %s" % q)
+        R.add("X-23", "REQUIRED", not probs, "terrain source pinned in the manifest and equal to the sidecar" if not probs else probs[0])
 
     # the check report belongs to the master file (X-40)
     chk = man.get("checks", {})

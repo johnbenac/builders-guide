@@ -13,3 +13,4 @@
 * Geometry readers drop silently (B-06).
 * One-way glass promises: ordinary glass is two-way.
 * Changing identifiers between revisions (B-75).
+* Cutting a pad, a cut or a fill into the terrain element, or modelling water in the file (B-130, B-139).

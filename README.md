@@ -15,7 +15,7 @@ tool, an archive). **A profile** is the small JSON file a consumer publishes wit
 * **Profile parameters** hold everything numeric or consumer-specific: size and triangle limits, identifier lengths, clearances,
   property names, whether room identifiers are mandatory, and which optional extensions apply. See
   [07-profile-parameters.md](07-profile-parameters.md).
-* **Extensions** (`walkability`, `luminaires`, `signboards`, `furnitureCollision`) are optional rule groups a profile switches on.
+* **Extensions** (`walkability`, `luminaires`, `signboards`, `furnitureCollision`, `terrain`) are optional rule groups a profile switches on.
 
 Check anything against a profile: `python3 tools/check_all.py PATH --profile consumer.json --json`. Reports name the profile used.
 
