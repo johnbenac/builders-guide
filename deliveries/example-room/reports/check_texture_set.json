@@ -1,0 +1,146 @@
+{
+ "schema": "check-report/1",
+ "tool": "check_texture_set.py",
+ "toolVersion": "2.2.0",
+ "target": {
+  "path": "plaster_example"
+ },
+ "result": "pass",
+ "exitCode": 0,
+ "summary": {
+  "requiredFailures": 0,
+  "recommendedWarnings": 0,
+  "passes": 11,
+  "info": 0
+ },
+ "profile": {
+  "name": "default",
+  "version": "1.2.0",
+  "sha256": "e634c132ebb0edb81310d8a94ab191c650228abb657e2f29ef49e2d3c3114e43"
+ },
+ "counts": {},
+ "findings": [
+  {
+   "id": "D-41@ffc17194",
+   "rule": "D-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "albedo.png is 8-bit RGB, 1024 by 1024"
+  },
+  {
+   "id": "D-41@edff6425",
+   "rule": "D-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "normal.png is 8-bit RGB, 1024 by 1024"
+  },
+  {
+   "id": "D-41@8a69b6be",
+   "rule": "D-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "orm.png is 8-bit RGB, 1024 by 1024"
+  },
+  {
+   "id": "D-43@de601469",
+   "rule": "D-43",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "tileMetres 2"
+  },
+  {
+   "id": "D-44@ca45eb9e",
+   "rule": "D-44",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "all maps have the same size"
+  },
+  {
+   "id": "D-44@7a30d5f7",
+   "rule": "D-44",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "square, power of two (1024)"
+  },
+  {
+   "id": "D-45@eeef5cc8",
+   "rule": "D-45",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "512 pixels per metre"
+  },
+  {
+   "id": "D-07@fc976297",
+   "rule": "D-07",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "mean linear luminance 0.792"
+  },
+  {
+   "id": "D-42@9cb36141",
+   "rule": "D-42",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "albedo wrap seam ratio 0.29 (about 1 is invisible; look at the preview)"
+  },
+  {
+   "id": "D-41@1e816a08",
+   "rule": "D-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "normal map: mean length 1.00, mean z 1.00"
+  },
+  {
+   "id": "D-41@6c614eb0",
+   "rule": "D-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "plaster_example"
+   },
+   "message": "orm map: occlusion mean 0.96, roughness mean 0.85, metalness mean 0.00"
+  }
+ ],
+ "set": "plaster_example"
+}

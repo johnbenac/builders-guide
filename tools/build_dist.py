@@ -21,11 +21,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fileset  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-VERSION = "2.1.0"
+VERSION = "2.2.0"
 NAME = "builders-guide-" + VERSION
 DIST = os.path.join(ROOT, "dist")
 ORDER = ["README.md", "AGENTS.md", "01-builders-and-architects-guide.md", "02-interior-decorators-guide.md",
-         "03-furniture-and-fixtures-guide.md", "04-delivery-and-acceptance-guide.md", "05-worked-example.md", "REPAIR-LOOP.md", "06-rules-index.md"]
+         "03-furniture-and-fixtures-guide.md", "04-delivery-and-acceptance-guide.md", "05-worked-example.md", "08-submissions-and-ingest.md", "REPAIR-LOOP.md", "06-rules-index.md"]
 
 
 def slug(title):

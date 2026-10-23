@@ -1,0 +1,29 @@
+{
+  "format": "building-metadata/1",
+  "building": {
+    "id": "B-EXAMPLE",
+    "name": "Example building",
+    "layer": "interim"
+  },
+  "frame": {
+    "units": "metres",
+    "axes": "+X forward, +Y left, +Z up",
+    "levelOffsetMetres": 12.0
+  },
+  "ifc": {
+    "path": "ifc/example-room-master.ifc",
+    "schema": "IFC4",
+    "entityNumberStart": 700001
+  },
+  "levels": [
+    {
+      "name": "Example building - ground / +0 m",
+      "elevationMetres": 0.0,
+      "rooms": 1
+    }
+  ],
+  "occupants": [
+    "Example Occupant"
+  ],
+  "roomIdPrefix": "EX"
+}

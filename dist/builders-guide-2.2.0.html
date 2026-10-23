@@ -32,7 +32,7 @@ a { color: #1f4e79; text-decoration: none; }
 <body>
 <h1 class="title first" style="border:none">Authoring Guide Set for
 Digital Buildings, Materials and Furniture (IFC)</h1>
-<div class="subtitle">Version 2.1.0, 2026-10-23. Application-neutral
+<div class="subtitle">Version 2.2.0, 2026-10-23. Application-neutral
 guides and tools for outside organisations and their agents.</div>
 <nav id="TOC">
 <ul>
@@ -46,6 +46,7 @@ profile</a></li>
 <li><a href="#for-agents" id="toc-for-agents">For agents</a></li>
 <li><a href="#the-five-guides" id="toc-the-five-guides">The five
 guides</a></li>
+<li><a href="#submissions" id="toc-submissions">Submissions</a></li>
 <li><a href="#how-rules-are-written" id="toc-how-rules-are-written">How
 rules are written</a></li>
 <li><a href="#reading-order" id="toc-reading-order">Reading
@@ -187,6 +188,9 @@ id="toc-6-pre-submission-checklist">6. Pre-submission checklist</a></li>
 <li><a href="#7-how-a-receiving-party-accepts-returns-or-refuses"
 id="toc-7-how-a-receiving-party-accepts-returns-or-refuses">7. How a
 receiving party accepts, returns or refuses</a></li>
+<li><a href="#8-submitting-a-delivery-as-a-pull-request"
+id="toc-8-submitting-a-delivery-as-a-pull-request">8. Submitting a
+delivery as a pull request</a></li>
 </ul></li>
 <li><a href="#guide-5-worked-example"
 id="toc-guide-5-worked-example">Guide 5: Worked example</a>
@@ -204,6 +208,21 @@ id="toc-5-what-the-example-leaves-out">5. What the example leaves
 out</a></li>
 <li><a href="#6-larger-examples" id="toc-6-larger-examples">6. Larger
 examples</a></li>
+</ul></li>
+<li><a href="#how-submissions-and-ingest-work"
+id="toc-how-submissions-and-ingest-work">How submissions and ingest
+work</a>
+<ul>
+<li><a href="#the-path-of-a-delivery"
+id="toc-the-path-of-a-delivery">The path of a delivery</a></li>
+<li><a href="#what-a-delivery-folder-holds"
+id="toc-what-a-delivery-folder-holds">What a delivery folder
+holds</a></li>
+<li><a href="#limits" id="toc-limits">Limits</a></li>
+<li><a href="#the-automatic-check" id="toc-the-automatic-check">The
+automatic check</a></li>
+<li><a href="#ingest" id="toc-ingest">Ingest</a></li>
+<li><a href="#for-agents-1" id="toc-for-agents-1">For agents</a></li>
 </ul></li>
 <li><a href="#repair-loop" id="toc-repair-loop">Repair loop</a>
 <ul>
@@ -226,7 +245,7 @@ mini-loop</a></li>
 <h1
 id="authoring-guide-set-for-ifc-buildings-materials-and-furniture">Authoring
 Guide Set for IFC Buildings, Materials and Furniture</h1>
-<p>Version 2.1.0 (2026-10-23). Application-neutral guides, rules,
+<p>Version 2.2.0 (2026-10-23). Application-neutral guides, rules,
 checkers and examples for people and software agents who create digital
 buildings, finishes, wall coverings and furniture in the IFC
 building-data format, so that their work can be used by many different
@@ -276,9 +295,10 @@ kind. Static files only; no service is needed.</p>
 </tr>
 <tr class="odd">
 <td><code>skills/</code></td>
-<td>five skills (orient, author-building, decorate-interior,
-author-furniture-library, accept-and-package-delivery), each with a
-short <code>SKILL.md</code> and on-demand <code>references/</code></td>
+<td>six skills (orient, author-building, decorate-interior,
+author-furniture-library, accept-and-package-delivery, submit-delivery),
+each with a short <code>SKILL.md</code> and on-demand
+<code>references/</code></td>
 </tr>
 <tr class="even">
 <td><code>rules.json</code></td>
@@ -303,7 +323,8 @@ purpose and tags</td>
 <tr class="even">
 <td><code>schemas/</code></td>
 <td>JSON Schemas: profile, rules, checker report, delivery manifest,
-material library, furniture item, building summary, finish schedule</td>
+submission block, catalogue, material library, furniture item, building
+summary, finish schedule</td>
 </tr>
 </tbody>
 </table>
@@ -360,8 +381,19 @@ light, with a generator script and checker</td>
 </tr>
 </tbody>
 </table>
+<h2 id="submissions">Submissions</h2>
+<p>The same repository takes outside deliveries as pull requests from
+forks: fork it, build the delivery in a branch of your fork under
+<code>deliveries/&lt;slug&gt;/</code>, open a pull request against
+<code>main</code>. Acceptance is a merge to <code>main</code>;
+<code>tools/ingest.py</code> then turns the merged delivery into
+component assets and a neutral catalogue. See <a
+href="#how-submissions-and-ingest-work">08-submissions-and-ingest.md</a>
+and <a href="#">CONTRIBUTING.md</a>. Deliveries are not part of the
+guide set and are not in its hand-over files.</p>
 <p>Also: <a href="#rules-index">06-rules-index.md</a> (every rule in one
-table, with counts), <a href="#">07-profile-parameters.md</a>,
+table, with counts), <a href="#">07-profile-parameters.md</a>, <a
+href="#how-submissions-and-ingest-work">08-submissions-and-ingest.md</a>,
 templates/ (starting files), tools/ (scripts), <a
 href="#">CHANGELOG.md</a>, <a href="#">VERSIONING.md</a>, <a
 href="#">CONTRIBUTING.md</a>, <a href="#">LICENSE.md</a>.</p>
@@ -470,21 +502,21 @@ it</td>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>builders-guide-2.1.0.pdf</code></td>
-<td>all guides, the worked example, the parameters and the rules index
-in one document</td>
+<td><code>builders-guide-2.2.0.pdf</code></td>
+<td>all guides, the worked example, the submissions page and the rules
+index in one document</td>
 </tr>
 <tr class="even">
-<td><code>builders-guide-2.1.0.html</code></td>
+<td><code>builders-guide-2.2.0.html</code></td>
 <td>the same, as one web page</td>
 </tr>
 <tr class="odd">
-<td><code>builders-guide-2.1.0.zip</code></td>
+<td><code>builders-guide-2.2.0.zip</code></td>
 <td>the whole set, with <code>MANIFEST.sha256</code></td>
 </tr>
 <tr class="even">
 <td><code>SHA256SUMS.txt</code>,
-<code>builders-guide-2.1.0.zip.sha256</code></td>
+<code>builders-guide-2.2.0.zip.sha256</code></td>
 <td>SHA-256 of the three files above</td>
 </tr>
 </tbody>
@@ -517,9 +549,10 @@ you which skill to load.</li>
 <li>Load only the skill you need: <code>skills/author-building</code>,
 <code>skills/decorate-interior</code>,
 <code>skills/author-furniture-library</code>,
-<code>skills/accept-and-package-delivery</code>. Each skill points to
-small files under its <code>references/</code> for detail.</li>
-<li>Rules are in <code>rules.json</code> (197, stable ids like
+<code>skills/accept-and-package-delivery</code>,
+<code>skills/submit-delivery</code>. Each skill points to small files
+under its <code>references/</code> for detail.</li>
+<li>Rules are in <code>rules.json</code> (206, stable ids like
 <code>B-41</code>). Each has a default <code>level</code>,
 <code>statement</code>, <code>rationale</code>, <code>parameters</code>,
 <code>extension</code>, <code>how_to_check</code>,
@@ -554,6 +587,12 @@ python3 tools/selftest.py                                     # prove the checke
     deliberate fault
 python3 tools/agent_harness.py                                # prove a fresh agent can pass using
     only this set, under two profiles
+python3 tools/check_submission.py deliveries/SLUG --json      # form checks of a submitted delivery
+    (X-70 to X-78); check_all.py runs them too
+python3 tools/ingest.py deliveries/SLUG --commit HASH --out OUT --dry-run   # maintainers: split a
+    MERGED delivery into components and a catalogue
+python3 tools/test_submission.py                              # prove the submission checks and
+    ingest still behave
 python3 tools/gen_all.py --write                              # regenerate rules.json, chunks, llms
     files, references, MANIFEST.json</code></pre>
 <p>Exit codes of every checker: 0 no REQUIRED failure, 1 at least one
@@ -576,6 +615,12 @@ change a delivered version in place.</li>
 <code>tools/rules_meta.json</code> and the profiles; edit those, then
 run <code>gen_all.py --write</code>.
 <code>python3 tools/test_sync.py</code> fails if they differ.</li>
+<li>To contribute a delivery, fork the repository, build it in a branch
+of your fork under <code>deliveries/&lt;slug&gt;/</code> and open a pull
+request against <code>main</code>
+(<code>skills/submit-delivery/SKILL.md</code>). Change only your
+delivery folder. Acceptance is a merge; ingest runs on merged commits
+only.</li>
 <li>Describe requirements as what any consumer needs ("the consumer",
 "the profile"). Do not name products, vendors or projects, and do not
 claim conformance to or endorsement by any standard or body.</li>
@@ -587,7 +632,10 @@ default and example; <code>schemas/</code> JSON Schemas;
 <code>templates/</code> starting files; <code>chunks/</code> guide
 sections of about 1,500 tokens or less; <code>01</code>-<code>05</code>
 guides; <code>REPAIR-LOOP.md</code>; <code>ABOUT.md</code>;
-<code>dist/</code> PDF, HTML, zip and checksums.</p>
+<code>dist/</code> PDF, HTML, zip and checksums;
+<code>deliveries/</code> submitted deliveries (not part of the set or
+its hand-over files); <code>.github/</code> pull request template and
+workflow.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="guide-1-builders-and-architects-guide">Guide 1: Builder's and
@@ -2960,6 +3008,83 @@ identifiers of everything that stays; references the receiving party
 holds (which room is a start room, which sign belongs to which building)
 then keep working. Nothing in an accepted version is edited by the
 receiving party: if it needs a change, it asks for a new version.</p>
+<h2 id="8-submitting-a-delivery-as-a-pull-request">8. Submitting a
+delivery as a pull request</h2>
+<p>Outside contributors can offer a delivery (a building, interior,
+furniture, materials, fixtures or hardware) to this repository. The
+process, in one line: fork the repository, build the delivery in a
+branch of your fork under <code>deliveries/&lt;slug&gt;/</code>, and
+open a pull request against <code>main</code>.
+<code>08-submissions-and-ingest.md</code> walks through it; this section
+holds the rules the checks enforce. Limits are the
+<code>submission</code> group of the profile
+(<code>07-profile-parameters.md</code>); the numbers below are the
+defaults.</p>
+<p>A submitted delivery is an ordinary package (section 1) with three
+differences: its folder is <code>deliveries/&lt;slug&gt;/</code> and the
+slug equals <code>delivery.id</code>; its manifest is named
+<code>delivery.json</code> and carries an extra <code>submission</code>
+object (<code>schemas/submission.schema.json</code>); and it may hold
+preview pictures under <code>previews/</code>.
+<code>python3 tools/check_submission.py deliveries/&lt;slug&gt;</code>
+checks the form,
+<code>python3 tools/check_all.py deliveries/&lt;slug&gt;</code> checks
+everything (it runs <code>check_submission.py</code> and the package
+checks).</p>
+<p><strong>X-70 · REQUIRED</strong> - Put a submitted delivery in
+<code>deliveries/&lt;slug&gt;/</code> with a <code>delivery.json</code>
+whose <code>delivery.id</code> equals the slug and whose
+<code>submission</code> object states the title, the submitter handle,
+the licence, the profile used, the tool versions and the attestation.
+Reviewers and the intake tool find a delivery by its folder and its
+manifest, and a handle ties it to its author.</p>
+<p><strong>X-71 · REQUIRED</strong> - Offer the delivery under a licence
+the profile lists (<code>submission.allowedLicences</code>; by default
+CC BY 4.0, or CC0 when the delivery says so). A delivery under other
+terms cannot be taken in, because anyone who uses a catalogue entry
+later needs the terms to be uniform and known.</p>
+<p><strong>X-72 · REQUIRED</strong> - Include only files of the types
+the profile lists (<code>submission.allowedExtensions</code>; by default
+ifc, glb, png, jpg, json, md, csv and txt), with no program, script or
+archive and no executable file mode. A delivery is data; anything that
+can run or unpack itself is a risk for every person and tool that opens
+the delivery.</p>
+<p><strong>X-73 · REQUIRED</strong> - Keep a delivery within the
+profile's limits: at most <code>submission.maxFiles</code> files (200),
+<code>submission.maxFileBytes</code> per file (25 MiB) and
+<code>submission.maxDeliveryBytes</code> in total (100 MiB). Review and
+intake run on shared machines with fixed time and memory.</p>
+<p><strong>X-74 · REQUIRED</strong> - Use only relative, portable paths:
+no leading slash, no <code>..</code>, no backslash or drive letter,
+names of letters, digits, dot, hyphen and underscore that do not start
+with a dot, no reserved device names, no two names that differ only by
+case, and no path longer than <code>submission.maxPathLength</code>, in
+the folder and in every path the manifest and the checksum list name. A
+path that leaves the delivery folder or collides on another system can
+overwrite or hide a file.</p>
+<p><strong>X-75 · REQUIRED</strong> - Include no symbolic link and no
+special file, only plain files and folders. A link can point outside the
+delivery and make a reader open a file that was never submitted.</p>
+<p><strong>X-76 · REQUIRED</strong> - Have the submitter attest in
+<code>submission.attestation</code> that the work is their own or they
+may offer it, that they may license it under the stated licence, and
+that it holds no restricted third-party content. The maintainers cannot
+check ownership, so the statement is on record with the delivery.</p>
+<p><strong>X-77 · REQUIRED</strong> - Make every file what its name
+says: PNG and JPEG images that are real images within
+<code>submission.maxImagePixels</code>, GLB files that are binary glTF 2
+of the stated length, IFC files that are IFC text files, JSON that
+parses, text in UTF-8 without NUL bytes or active markup (script,
+iframe, object, embed). A renamed file can hide content from review and
+can crash a reader.</p>
+<p><strong>X-78 · RECOMMENDED</strong> - Add at least one preview
+picture under <code>previews/</code> (or
+<code>items/&lt;id&gt;/preview.png</code>) so a reviewer sees the work
+before opening a model.</p>
+<p>Acceptance of a submission is a merge to <code>main</code>; see
+<code>08-submissions-and-ingest.md</code> for what happens next. The
+checks cannot judge quality, ownership or taste: a person reviews those,
+and may decline a delivery that passes every check.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="guide-5-worked-example">Guide 5: Worked example</h1>
@@ -3372,6 +3497,216 @@ circulation reached by doors (B-47)</td>
 level and an isometric view.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
+<h1 id="how-submissions-and-ingest-work">How submissions and ingest
+work</h1>
+<p>This repository holds the guide set and it is also where outside
+contributors offer <strong>deliveries</strong>: buildings, interiors,
+furniture, materials, fixtures and hardware. A delivery is reviewed as a
+pull request. When the maintainers merge it, a separate tool turns the
+accepted delivery into separate, content-addressed component assets and
+a neutral catalogue. This page is for people and for software agents;
+the rules the automatic checks enforce are X-70 to X-78 in guide 4,
+section 8.</p>
+<h2 id="the-path-of-a-delivery">The path of a delivery</h2>
+<ol type="1">
+<li><strong>Fork</strong> this repository (your own copy on the hosting
+service).</li>
+<li><strong>Build</strong> the delivery in a branch of your fork, in the
+folder <code>deliveries/&lt;slug&gt;/</code>. The slug is lower-case
+letters, digits and single hyphens, for example <code>oak-study</code>.
+Follow guides 1 to 4 and the worked example (guide 5);
+<code>deliveries/example-room/</code> is a small accepted-looking
+delivery to copy from.</li>
+<li><strong>Check</strong> it yourself:
+<code>python3 tools/check_all.py deliveries/&lt;slug&gt; --json</code>
+must exit 0 (this also runs <code>tools/check_submission.py</code>).
+<code>tools/ci/run_checks.sh &lt;slug&gt;</code> runs exactly what the
+automatic check runs.</li>
+<li><strong>Open a pull request</strong> from your branch against
+<code>main</code>. Fill in the checklist in the pull request
+template.</li>
+<li><strong>Automatic check.</strong> A workflow checks the changed
+delivery folders (see below). Fix every REQUIRED finding and push
+again.</li>
+<li><strong>Review.</strong> A maintainer reads the delivery. The checks
+cannot judge quality, ownership or fit, so a delivery that passes can
+still be declined or sent back with notes.</li>
+<li><strong>Acceptance is a merge to <code>main</code>.</strong> Nothing
+else counts as acceptance, and no tool takes in a delivery from a branch
+or a fork.</li>
+<li><strong>Ingest</strong> runs afterwards, on the merged commit (see
+"Ingest"). The commit hash is the provenance of everything it
+produces.</li>
+</ol>
+<p>Only the folder <code>deliveries/&lt;slug&gt;/</code> should change
+in a delivery pull request. One delivery per pull request. A correction
+after acceptance is a new pull request with a new version in the same
+folder (X-50: never edit a delivered version in place; add a new
+<code>delivery.version</code>).</p>
+<h2 id="what-a-delivery-folder-holds">What a delivery folder holds</h2>
+<p>A delivery is an ordinary package (guide 4, section 1) with these
+differences:</p>
+<pre><code>deliveries/oak-study/
+  delivery.json            the manifest (schemas/manifest.schema.json) plus a `submission` object
+    (schemas/submission.schema.json)
+  SHA256SUMS.txt           hashes of every file, as in any package
+  ifc/&lt;name&gt;-master.ifc    the master IFC file, when the delivery has a building or room
+  items/&lt;itemId&gt;/          furniture, fixtures and hardware as items (guide 3): &lt;itemId&gt;.ifc and
+    &lt;itemId&gt;.item.json
+  finishes/                finish schedule, library.json and textures/&lt;set&gt;/ (guide 2)
+  previews/                pictures of the work (png or jpg) so a reviewer sees it first
+  reports/ notes/ tables/  the check reports, the change notes and the room table, as in guide 4</code></pre>
+<p><code>delivery.json</code> is built with
+<code>python3 tools/build_package.py init DIR meta.json --manifest-name delivery.json</code>;
+the meta file carries the <code>delivery</code>, <code>author</code>,
+<code>profile</code>, <code>frame</code>, <code>provenance</code>,
+<code>licence</code> and <code>checks</code> parts of guide 4, section
+3, and the <code>submission</code> object:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>title</code>, <code>summary</code></td>
+<td>what the delivery is, in a sentence</td>
+</tr>
+<tr class="even">
+<td><code>submitter.handle</code></td>
+<td>the account the pull request is opened from (no personal data is
+needed)</td>
+</tr>
+<tr class="odd">
+<td><code>licence</code></td>
+<td><code>CC-BY-4.0</code> (the default), or <code>CC0-1.0</code> when
+the delivery says so; the profile lists the licences it takes</td>
+</tr>
+<tr class="even">
+<td><code>profile</code></td>
+<td>name and version of the profile the delivery was checked
+against</td>
+</tr>
+<tr class="odd">
+<td><code>toolVersions</code></td>
+<td>the tools and libraries used (this guide set's version, the IFC
+library)</td>
+</tr>
+<tr class="even">
+<td><code>attestation</code></td>
+<td><code>ownWork</code>, <code>mayLicense</code>,
+<code>noRestrictedContent</code>, all <code>true</code></td>
+</tr>
+</tbody>
+</table>
+<p>Contributed assets are offered under CC BY 4.0 unless the delivery
+states CC0. By opening the pull request the contributor attests that
+they own the work or may license it, and that it contains no restricted
+third-party content (X-22, X-76).</p>
+<h2 id="limits">Limits</h2>
+<p>Defaults, all parameters of the profile (<code>submission</code>
+group, see <code>07-profile-parameters.md</code>): at most 200 files, 25
+MiB per file, 100 MiB per delivery; file types ifc, glb, png, jpg, json,
+md, csv and txt only (csv and txt exist because the room table and
+<code>SHA256SUMS.txt</code> need them); no program, script, archive or
+executable file mode; no symbolic links; relative, portable, case-unique
+paths of at most 200 characters; images of at most 64 million pixels. A
+consumer that accepts submissions can set other values in its own
+profile.</p>
+<h2 id="the-automatic-check">The automatic check</h2>
+<p><code>.github/workflows/check-delivery.yml</code> (a copy of the same
+steps without any workflow system is
+<code>tools/ci/run_checks.sh</code>) runs on pull requests that touch
+<code>deliveries/**</code>. It installs the pinned requirements
+(<code>tools/requirements-ci.txt</code>), then for each changed delivery
+runs <code>check_submission.py</code> and <code>check_all.py</code>
+under <code>profiles/default.json</code>, and again under
+<code>profiles/&lt;name&gt;.json</code> when <code>delivery.json</code>
+names a profile that exists there. It uploads the JSON reports as an
+artifact, writes a summary to the run, and fails on any REQUIRED
+finding.</p>
+<p>Pull requests from forks run with a read-only token and no secrets,
+and the workflow never uses <code>pull_request_target</code>. A
+first-time contributor's run may wait until a maintainer approves it. A
+fork's token cannot write comments, so the result is the run summary and
+the artifact; for pull requests from branches of this repository the
+workflow also posts the summary as a comment.</p>
+<h2 id="ingest">Ingest</h2>
+<p><code>python3 tools/ingest.py deliveries/&lt;slug&gt; --commit &lt;merged commit hash&gt; --out &lt;output folder&gt;</code>
+is run by a maintainer or an automation, on a checkout of the merged
+commit of <code>main</code>
+(<code>--require-ancestor-of origin/main</code> makes it refuse anything
+else). It never uploads and uses no network. In order, it:</p>
+<ol type="1">
+<li>copies the delivery (plain files only) to a temporary folder, with a
+time limit (<code>submission.ingestMaxSeconds</code>) and an optional
+memory limit;</li>
+<li>re-runs <code>check_submission.py</code> and
+<code>check_all.py</code> on the copy, and refuses on any REQUIRED
+finding;</li>
+<li>splits the delivery into <strong>components</strong>: each item
+under <code>items/</code>; from the master IFC each furniture element,
+covering (wall, floor or ceiling), fixture or luminaire assembly,
+hardware piece, door and window; each texture set as a material
+set;</li>
+<li>exports each geometry component as a binary glTF (GLB, units metres,
+Y up) and reads it back to verify it;</li>
+<li>stores every file as
+<code>blobs/sha256/&lt;hash&gt;.&lt;ext&gt;</code>; identical bytes (for
+example a table in <code>items/</code> and the same table in the master,
+or the same part in two deliveries) are stored once;</li>
+<li>writes <code>catalogue/index.json</code> (one entry per distinct
+component, with every occurrence),
+<code>catalogue/deliveries/&lt;slug&gt;@&lt;commit12&gt;.json</code> and
+the handoff manifest
+<code>handoff/&lt;slug&gt;@&lt;commit12&gt;.json</code>, shaped by
+<code>schemas/catalogue.schema.json</code>.</li>
+</ol>
+<p>Each component carries: kind and category; dimensions and bounds; the
+pivot (items keep the pivot their description declares, master elements
+are moved to the centre of their footprint at their lowest point);
+anchors; the material references that link surface colours to the finish
+schedule and to the material-set components; and, per occurrence, the
+delivery slug, commit hash, submitter, licence, source path and IFC
+identifier, and its placement in the building file. The output depends
+only on the delivery bytes and the commit hash, so a second run gives
+the same bytes. <code>--dry-run</code> shows what would be stored and
+what the output folder already holds, and writes nothing.</p>
+<p>The handoff manifest lists the blobs to publish and the components
+with their files, licences and submitters. Publishing them anywhere is a
+separate step owned by whoever runs the catalogue; this repository
+defines no destination.</p>
+<p>Limits of this version: components from the master IFC are exported
+as GLB only (no per-component IFC file; item components also keep their
+source IFC); walls, slabs, stairs and roofs are not components, only
+furnishing, coverings, fixtures, hardware, doors and windows; rotations
+are recorded as an angle about the vertical axis; textures are carried
+as material sets and are not baked into the GLB.</p>
+<h2 id="for-agents-1">For agents</h2>
+<p>Harness-neutral steps; each command exits non-zero on failure.
+Replace <code>UPSTREAM</code> with the repository you were asked to
+contribute to.</p>
+<pre><code>gh repo fork UPSTREAM --clone --default-branch-only        # your fork, cloned; or fork in the web
+    page
+cd REPO &amp;&amp; git checkout -b delivery-SLUG
+pip install -r tools/requirements.txt
+# build deliveries/SLUG/ (skills/submit-delivery/SKILL.md), then:
+python3 tools/check_all.py deliveries/SLUG --json --out report.json   # exit 0 required
+git add deliveries/SLUG &amp;&amp; git commit -m &quot;feat(deliveries): add SLUG&quot; -m &quot;What it is and what it was
+    checked against.&quot;
+git push -u origin delivery-SLUG
+gh pr create --repo UPSTREAM --base main --title &quot;Delivery: SLUG&quot; --body-file
+    .github/pull_request_template.md</code></pre>
+<p>Fill in the checklist honestly; do not tick the attestation boxes
+unless they are true, and do not set <code>attestation</code> fields to
+<code>true</code> for work you cannot vouch for. Never edit tools,
+profiles or schemas in a delivery pull request. Stop and report if the
+same REQUIRED finding remains after three runs
+(<code>REPAIR-LOOP.md</code>).</p>
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
 <h1 id="repair-loop">Repair loop</h1>
 <p>How to get a deliverable to zero REQUIRED findings. The same loop
 works for a building, a material library, a furniture library and a
@@ -3509,7 +3844,7 @@ deliver.</p>
 <code>tools/rules_index.py</code>; do not edit by hand.</p>
 <p>The same rules, with machine fields, are in
 <code>rules.json</code>.</p>
-<p><strong>197 rules: 59 REQUIRED and 138 RECOMMENDED.</strong></p>
+<p><strong>206 rules: 67 REQUIRED and 139 RECOMMENDED.</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -3540,15 +3875,15 @@ deliver.</p>
 </tr>
 <tr class="even">
 <td>4 Delivery and Acceptance</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">8</td>
 <td style="text-align: right;">18</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">27</td>
 </tr>
 <tr class="odd">
 <td><strong>All</strong></td>
-<td style="text-align: right;"><strong>59</strong></td>
-<td style="text-align: right;"><strong>138</strong></td>
-<td style="text-align: right;"><strong>197</strong></td>
+<td style="text-align: right;"><strong>67</strong></td>
+<td style="text-align: right;"><strong>139</strong></td>
+<td style="text-align: right;"><strong>206</strong></td>
 </tr>
 </tbody>
 </table>
@@ -5135,6 +5470,87 @@ can add its rules before intake.</td>
 <td>When you send a revision, change only what the findings and your own
 notes name, bump the version (section 4), list what changed in
 <code>notes/changes.md</code>, and keep every unchanged identifier.</td>
+</tr>
+<tr class="even">
+<td>X-70</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Put a submitted delivery in <code>deliveries/&lt;slug&gt;/</code>
+with a <code>delivery.json</code> whose <code>delivery.id</code> equals
+the slug and whose <code>submission</code> object states the title, the
+submitter handle, the licence, the profile used, the tool versions and
+the attestation.</td>
+</tr>
+<tr class="odd">
+<td>X-71</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Offer the delivery under a licence the profile lists
+(<code>submission.allowedLicences</code>; by default CC BY 4.0, or CC0
+when the delivery says so).</td>
+</tr>
+<tr class="even">
+<td>X-72</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Include only files of the types the profile lists
+(<code>submission.allowedExtensions</code>; by default ifc, glb, png,
+jpg, json, md, csv and txt), with no program, script or archive and no
+executable file mode.</td>
+</tr>
+<tr class="odd">
+<td>X-73</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Keep a delivery within the profile's limits: at most
+<code>submission.maxFiles</code> files (200),
+<code>submission.maxFileBytes</code> per file (25 MiB) and
+<code>submission.maxDeliveryBytes</code> in total (100 MiB).</td>
+</tr>
+<tr class="even">
+<td>X-74</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Use only relative, portable paths: no leading slash, no
+<code>..</code>, no backslash or drive letter, names of letters, digits,
+dot, hyphen and underscore that do not start with a dot, no reserved
+device names, no two names that differ only by case, and no path longer
+than <code>submission.maxPathLength</code>, in the folder and in every
+path the manifest and the checksum list name.</td>
+</tr>
+<tr class="odd">
+<td>X-75</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Include no symbolic link and no special file, only plain files and
+folders.</td>
+</tr>
+<tr class="even">
+<td>X-76</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Have the submitter attest in <code>submission.attestation</code>
+that the work is their own or they may offer it, that they may license
+it under the stated licence, and that it holds no restricted third-party
+content.</td>
+</tr>
+<tr class="odd">
+<td>X-77</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Make every file what its name says: PNG and JPEG images that are
+real images within <code>submission.maxImagePixels</code>, GLB files
+that are binary glTF 2 of the stated length, IFC files that are IFC text
+files, JSON that parses, text in UTF-8 without NUL bytes or active
+markup (script, iframe, object, embed).</td>
+</tr>
+<tr class="even">
+<td>X-78</td>
+<td>RECOMMENDED</td>
+<td>4</td>
+<td>Add at least one preview picture under <code>previews/</code> (or
+<code>items/&lt;id&gt;/preview.png</code>) so a reviewer sees the work
+before opening a model.</td>
 </tr>
 </tbody>
 </table>

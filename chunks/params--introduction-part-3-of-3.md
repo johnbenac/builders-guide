@@ -31,3 +31,12 @@
 | `package.maxPackageMegabytes` | upload size cap of a whole package, or null | `null` | `500` | X-14 |
 | `package.requireProvenance` | every asset needs a provenance entry | `true` | `true` | X-20 |
 | `package.requireLicence` | every asset and the package need a licence | `true` | `true` | X-21 |
+| `submission.maxFiles` | most files in one delivery folder | `200` | `null` | X-73 |
+| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73 |
+| `submission.maxDeliveryBytes` | largest total size of a delivery folder, in bytes | `104857600` | `null` | X-73 |
+| `submission.maxPathLength` | longest relative path inside a delivery, in characters | `200` | `null` | X-74 |
+| `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
+| `submission.allowedLicences` | licence identifiers a submitter may offer the delivery under | `["CC-BY-4.0", "CC0-1.0"]` | `null` | X-71 |
+| `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
+| `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
+| `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |

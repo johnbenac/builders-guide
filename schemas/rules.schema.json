@@ -57,7 +57,8 @@
                 "room",
                 "material",
                 "furniture",
-                "package"
+                "package",
+                "submission"
               ]
             }
           },

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Submission block",
+  "description": "The `submission` object inside delivery.json of a delivery offered as a pull request (guide 4, section 8). The rest of delivery.json is a delivery manifest (manifest.schema.json).",
+  "type": "object",
+  "required": ["title", "submitter", "licence", "profile", "toolVersions", "attestation"],
+  "properties": {
+    "title": {"type": "string", "minLength": 3, "maxLength": 120},
+    "summary": {"type": "string", "maxLength": 1000},
+    "submitter": {
+      "type": "object",
+      "required": ["handle"],
+      "properties": {
+        "handle": {"type": "string", "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$", "description": "the public account name the pull request is opened from; no personal data is needed"},
+        "name": {"type": "string", "maxLength": 120}
+      }
+    },
+    "licence": {"type": "string", "pattern": "^[A-Za-z0-9.+-]{3,40}$", "description": "licence identifier of the whole delivery; the profile lists the ones it takes (submission.allowedLicences)"},
+    "profile": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {"name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}, "version": {"type": "string"}},
+      "description": "the profile the delivery was checked against; when profiles/<name>.json exists, CI checks against it as well as against the default"
+    },
+    "toolVersions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string"},
+      "description": "tool or library name to version, for example the guide set and the IFC library used to write the files"
+    },
+    "attestation": {
+      "type": "object",
+      "required": ["ownWork", "mayLicense", "noRestrictedContent"],
+      "properties": {
+        "ownWork": {"const": true, "description": "the submitter made the work, or has the right to offer it"},
+        "mayLicense": {"const": true, "description": "the submitter may license it under the licence stated above"},
+        "noRestrictedContent": {"const": true, "description": "the delivery contains no third-party restricted content"}
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

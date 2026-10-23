@@ -1,0 +1,15 @@
+{
+  "name": "plaster_example",
+  "version": "1.0.0",
+  "sizePixels": 1024,
+  "tileMetres": 2.0,
+  "tintMode": "multiply",
+  "direction": "none",
+  "description": "fine plaster with low relief, near-neutral light albedo",
+  "maps": {
+    "albedo": "albedo.png",
+    "normal": "normal.png",
+    "orm": "orm.png"
+  },
+  "generator": "tools/make_sample_texture_set.py, seed 7"
+}

@@ -1,7 +1,7 @@
 {
  "format": "rules/1",
- "version": "2.1.0",
- "count": 197,
+ "version": "2.2.0",
+ "count": 206,
  "rules": [
   {
    "id": "B-01",
@@ -5049,6 +5049,245 @@
    "examples": {
     "good": "",
     "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-70",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Put a submitted delivery in `deliveries/<slug>/` with a `delivery.json` whose `delivery.id` equals the slug and whose `submission` object states the title, the submitter handle, the licence, the profile used, the tool versions and the attestation.",
+   "rationale": "Reviewers and the intake tool find a delivery by its folder and its manifest, and a handle ties it to its author.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-70"
+   },
+   "automated": true,
+   "fix_hint": "Rename the folder to the slug used as delivery.id, add the missing fields to the submission object of delivery.json (schemas/submission.schema.json) and rerun.",
+   "examples": {
+    "good": "deliveries/oak-study/delivery.json with delivery.id oak-study",
+    "bad": "deliveries/My Study/ with no submission object"
+   },
+   "related": [
+    "X-10",
+    "X-76"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-71",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Offer the delivery under a licence the profile lists (`submission.allowedLicences`; by default CC BY 4.0, or CC0 when the delivery says so).",
+   "rationale": "A catalogue entry must carry uniform, known terms for everyone who uses it later.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-71"
+   },
+   "automated": true,
+   "fix_hint": "Set submission.licence to one of the licences the profile lists (CC-BY-4.0 or CC0-1.0 by default) and make the provenance entries agree.",
+   "examples": {
+    "good": "CC-BY-4.0",
+    "bad": "All rights reserved"
+   },
+   "related": [
+    "X-21"
+   ],
+   "parameters": [
+    "submission.allowedLicences"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-72",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Include only files of the types the profile lists (`submission.allowedExtensions`; by default ifc, glb, png, jpg, json, md, csv and txt), with no program, script or archive and no executable file mode.",
+   "rationale": "A delivery is data; anything that can run or unpack itself is a risk to every person and tool that opens it.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-72"
+   },
+   "automated": true,
+   "fix_hint": "Remove the file, or convert the content to a listed type (ifc, glb, png, jpg, json, md, csv, txt); clear the executable bit with chmod -x.",
+   "examples": {
+    "good": "ifc/room.ifc, previews/view.png",
+    "bad": "tools/build.sh, assets.zip"
+   },
+   "related": [],
+   "parameters": [
+    "submission.allowedExtensions"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-73",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Keep a delivery within the profile's limits: at most `submission.maxFiles` files (200), `submission.maxFileBytes` per file (25 MiB) and `submission.maxDeliveryBytes` in total (100 MiB).",
+   "rationale": "Review and intake run on shared machines with fixed time and memory.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-73"
+   },
+   "automated": true,
+   "fix_hint": "Remove files that are not needed, reduce texture sizes or geometry, or split the delivery into two deliveries.",
+   "examples": {
+    "good": "60 files, 18 MB in total",
+    "bad": "900 files or a single 80 MB texture"
+   },
+   "related": [
+    "X-14"
+   ],
+   "parameters": [
+    "submission.maxFiles",
+    "submission.maxFileBytes",
+    "submission.maxDeliveryBytes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-74",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Use only relative, portable paths: no leading slash, no `..`, no backslash or drive letter, names of letters, digits, dot, hyphen and underscore that do not start with a dot, no reserved device names, no two names that differ only by case, and no path longer than `submission.maxPathLength`, in the folder and in every path the manifest and the checksum list name.",
+   "rationale": "A path that leaves the delivery folder or collides on another system can overwrite or hide a file.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-74"
+   },
+   "automated": true,
+   "fix_hint": "Rename the file to letters, digits, dot, hyphen and underscore, without a leading dot, and make every path in delivery.json and SHA256SUMS.txt relative with forward slashes.",
+   "examples": {
+    "good": "items/table.work.1600/preview.png",
+    "bad": "../outside.png, Items/A.png next to items/a.png"
+   },
+   "related": [
+    "X-02"
+   ],
+   "parameters": [
+    "submission.maxPathLength"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-75",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Include no symbolic link and no special file, only plain files and folders.",
+   "rationale": "A link can point outside the delivery and make a reader open a file that was never submitted.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-75"
+   },
+   "automated": true,
+   "fix_hint": "Replace the link by a copy of the file it points to.",
+   "examples": {
+    "good": "plain files only",
+    "bad": "previews/view.png as a symbolic link"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-76",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Have the submitter attest in `submission.attestation` that the work is their own or they may offer it, that they may license it under the stated licence, and that it holds no restricted third-party content.",
+   "rationale": "The maintainers cannot check ownership, so the statement is on record with the delivery.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-76"
+   },
+   "automated": true,
+   "fix_hint": "Set the three attestation fields to true only if they are true, otherwise do not submit the delivery.",
+   "examples": {
+    "good": "ownWork, mayLicense and noRestrictedContent all true",
+    "bad": "noRestrictedContent missing"
+   },
+   "related": [
+    "X-22"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-77",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Make every file what its name says: PNG and JPEG images that are real images within `submission.maxImagePixels`, GLB files that are binary glTF 2 of the stated length, IFC files that are IFC text files, JSON that parses, text in UTF-8 without NUL bytes or active markup (script, iframe, object, embed).",
+   "rationale": "A renamed file can hide content from review and can crash a reader.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-77"
+   },
+   "automated": true,
+   "fix_hint": "Re-export the file in the type its name says, within the pixel limit, or rename it to its real type if that is allowed.",
+   "examples": {
+    "good": "a PNG with a PNG header",
+    "bad": "a text file named view.png"
+   },
+   "related": [],
+   "parameters": [
+    "submission.maxImagePixels"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-78",
+   "level": "recommended",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Add at least one preview picture under `previews/` (or `items/<id>/preview.png`) so a reviewer sees the work before opening a model.",
+   "rationale": "A reviewer sees the work before opening a model.",
+   "how_to_check": {
+    "tool": "tools/check_submission.py",
+    "command": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-78"
+   },
+   "automated": true,
+   "fix_hint": "Add a rendered or plotted picture to previews/ (tools/preview.py draws plans and an isometric view).",
+   "examples": {
+    "good": "previews/plan.png",
+    "bad": "no picture"
    },
    "related": [],
    "parameters": [],

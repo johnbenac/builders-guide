@@ -3,6 +3,38 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
+## 2.2.0
+
+Outside contributors can offer deliveries to the same repository as pull requests from forks, with automatic checks, and a merged delivery can be
+turned into component assets and a neutral catalogue. MINOR under `VERSIONING.md`: new tools, new rules that apply only to submitted deliveries,
+new profile parameters with defaults; no existing package or building passes or fails differently.
+
+**Added**
+
+* **Submissions.** `deliveries/<slug>/` holds a delivery (a package whose manifest is `delivery.json` with a `submission` object,
+  `schemas/submission.schema.json`); `deliveries/example-room/` is a small sample built from the worked example. Deliveries are left out of the
+  set's file list, `MANIFEST.json`, the zip and the generated documents (`tools/fileset.py`). Contributors fork, build in a branch of the fork and open
+  a pull request against `main`; `.github/pull_request_template.md` carries the licence and sign-off checklist (CC BY 4.0 unless CC0 is stated;
+  ownership and no restricted content attested).
+* **New rules `X-70` to `X-78`** (`applies_to` `submission`, checked by `tools/check_submission.py`, run by `check_all.py` on any folder with a
+  `delivery.json`): layout and submission block, licence, allowed file types (no programs, scripts, archives, executable modes), counts and sizes,
+  safe paths, no links, attestation, file contents match their type, preview picture (`X-78` RECOMMENDED; the rest REQUIRED for submitted deliveries only).
+* **Profile `submission` group** (default profile 1.2.0): `maxFiles`, `maxFileBytes`, `maxDeliveryBytes`, `maxPathLength`, `allowedExtensions`,
+  `allowedLicences`, `maxImagePixels`, `ingestMaxComponents`, `ingestMaxSeconds`.
+* **Checks in CI.** `.github/workflows/check-delivery.yml` (pull requests touching `deliveries/**`; read-only token, no secrets, no
+  `pull_request_target`; JSON reports as an artifact) and the workflow-free `tools/ci/run_checks.sh`; `tools/requirements-ci.txt` pins the libraries.
+* **Ingest** `tools/ingest.py`: runs on a merged commit, re-runs the checks, splits a delivery into components (items, furniture, coverings, fixtures,
+  luminaire assemblies, hardware, doors, windows, material sets), exports verified GLB geometry, stores blobs by SHA-256 (deduplicated across
+  deliveries), writes `catalogue/index.json`, per-delivery records and a handoff manifest (`schemas/catalogue.schema.json`). Deterministic, limited in
+  time and memory, `--dry-run`, never uploads.
+* **Documents:** `08-submissions-and-ingest.md`, guide 4 section 8, the skill `skills/submit-delivery`, `deliveries/README.md`.
+* **Tests:** `tools/test_submission.py`.
+
+**Changed**
+
+* `build_package.py` reads `delivery.json` when a package has no `manifest.json` (`init --manifest-name`).
+* `schemas/rules.schema.json` allows `applies_to` `submission`.
+
 ## 2.1.0
 
 An authoring kit, automated checks for rules that were review-only, rules for sites and forms the one-room example did not cover, and an

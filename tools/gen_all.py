@@ -20,16 +20,17 @@ import fileset  # noqa: E402
 import rules_index  # noqa: E402
 
 ROOT = rules_index.ROOT = os.path.abspath(os.path.join(HERE, ".."))
-VERSION = "2.1.0"
+VERSION = "2.2.0"
 MAX_CHUNK_CHARS = 6000          # about 1,500 tokens
 DOCS = [("readme", "README.md"), ("about", "ABOUT.md"), ("g1", "01-builders-and-architects-guide.md"), ("g2", "02-interior-decorators-guide.md"),
         ("g3", "03-furniture-and-fixtures-guide.md"), ("g4", "04-delivery-and-acceptance-guide.md"),
-        ("g5", "05-worked-example.md"), ("params", "07-profile-parameters.md"), ("repair", "REPAIR-LOOP.md")]
+        ("g5", "05-worked-example.md"), ("params", "07-profile-parameters.md"), ("sub", "08-submissions-and-ingest.md"), ("repair", "REPAIR-LOOP.md")]
 TOOL_CMD = {
     "check_ifc": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
     "check_texture_set": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
     "check_item": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
     "build_package": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "check_submission": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
 }
 SKILLS = {
     "orient": {"docs": ["readme", "about", "repair", "params"], "rules": None},
@@ -37,6 +38,7 @@ SKILLS = {
     "decorate-interior": {"docs": ["g2"], "rules": ["material"]},
     "author-furniture-library": {"docs": ["g3"], "rules": ["furniture"]},
     "accept-and-package-delivery": {"docs": ["g4"], "rules": ["package"]},
+    "submit-delivery": {"docs": ["sub"], "rules": ["submission"]},
 }
 PURPOSE = [
     (r"^AGENTS\.md$", "agent entry point: what the set is, where to start, commands", ["entry", "agent"]),
@@ -50,6 +52,7 @@ PURPOSE = [
     (r"^profiles/", "consumer profile (parameters and rule levels)", ["profile", "machine"]),
     (r"^REPAIR-LOOP\.md$", "run, read findings, fix, rerun procedure with stop conditions", ["procedure", "agent"]),
     (r"^0[1-5]-.*\.md$", "human guide", ["guide", "human"]),
+    (r"^08-submissions-and-ingest\.md$", "how outside deliveries are submitted as pull requests and ingested after a merge", ["guide", "human", "submission"]),
     (r"^06-rules-index\.md$", "all rules in one table (generated)", ["rules", "generated"]),
     (r"^rules\.json$", "machine-readable rule registry (generated)", ["rules", "generated", "machine"]),
     (r"^chunks/index\.json$", "index of the content chunks (generated)", ["index", "generated", "machine"]),
@@ -286,9 +289,13 @@ def llms(index, skills_present, count):
           "- [schemas/item.schema.json](schemas/item.schema.json): furniture item description",
           "- [schemas/building-metadata.schema.json](schemas/building-metadata.schema.json): building summary",
           "- [schemas/finish-schedule.schema.json](schemas/finish-schedule.schema.json): finish schedule",
-          "- [schemas/set.schema.json](schemas/set.schema.json): texture set description", "",
+          "- [schemas/set.schema.json](schemas/set.schema.json): texture set description",
+          "- [schemas/submission.schema.json](schemas/submission.schema.json): the submission block of a submitted delivery",
+          "- [schemas/catalogue.schema.json](schemas/catalogue.schema.json): the neutral catalogue written by tools/ingest.py", "",
           "## Tools", "",
           "- [tools/check_all.py](tools/check_all.py): one command, one JSON report, per deliverable type",
+          "- [tools/check_submission.py](tools/check_submission.py): form checks of a submitted delivery (X-70 to X-78)",
+          "- [tools/ingest.py](tools/ingest.py): turns an accepted (merged) delivery into component assets and a catalogue",
           "- [tools/README.md](tools/README.md): every tool", "",
           "## Guide sections (each file is about 1,500 tokens or less)", ""]
     for c in index:

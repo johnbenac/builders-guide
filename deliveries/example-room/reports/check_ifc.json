@@ -1,0 +1,335 @@
+{
+ "schema": "check-report/1",
+ "tool": "check_ifc.py",
+ "toolVersion": "2.2.0",
+ "target": {
+  "path": "example-room-master.ifc",
+  "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+ },
+ "result": "pass",
+ "exitCode": 0,
+ "summary": {
+  "requiredFailures": 0,
+  "recommendedWarnings": 0,
+  "passes": 15,
+  "info": 7
+ },
+ "profile": {
+  "name": "default",
+  "version": "1.2.0",
+  "sha256": "e634c132ebb0edb81310d8a94ab191c650228abb657e2f29ef49e2d3c3114e43"
+ },
+ "counts": {
+  "levels": 1,
+  "rooms": 1,
+  "doors": 1,
+  "windows": 1,
+  "luminaires": 0,
+  "triangles": 216,
+  "vertices": 136,
+  "furniture": 1,
+  "finishKeys": 9
+ },
+ "findings": [
+  {
+   "id": "B-04@c1c5f397",
+   "rule": "B-04",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "ASCII only"
+  },
+  {
+   "id": "B-08@a8e336d9",
+   "rule": "B-08",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "every entity is on one line"
+  },
+  {
+   "id": "B-05@cfdeb4e0",
+   "rule": "B-05",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "file size 0.0 MB"
+  },
+  {
+   "id": "B-01@35b2429a",
+   "rule": "B-01",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "schema IFC4"
+  },
+  {
+   "id": "B-02@4ed22b55",
+   "rule": "B-02",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "length unit is metre"
+  },
+  {
+   "id": "B-70@f96c610e",
+   "rule": "B-70",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "40 GlobalId values, unique, 22 characters"
+  },
+  {
+   "id": "B-71@dc35b1c6",
+   "rule": "B-71",
+   "level": "RECOMMENDED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "lowest entity number is #700001 (the profile assigns no start)"
+  },
+  {
+   "id": "B-72@94f11727",
+   "rule": "B-72",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "all declaration properties are single values"
+  },
+  {
+   "id": "B-13@eaf72ef7",
+   "rule": "B-13",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "1 level(s); every element belongs to a level"
+  },
+  {
+   "id": "B-06@d90cce9f",
+   "rule": "B-06",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "every represented product yields triangles"
+  },
+  {
+   "id": "B-05@6768e2b8",
+   "rule": "B-05",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "136 vertices, 216 triangles"
+  },
+  {
+   "id": "B-22@dd5317a6",
+   "rule": "B-22",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "1 room(s), RoomId values unique in this file"
+  },
+  {
+   "id": "B-33@1edbb044",
+   "rule": "B-33",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "walkability extension not enabled by the profile; standing points were not checked"
+  },
+  {
+   "id": "B-41@a07a9a45",
+   "rule": "B-41",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "1 door(s), each fills an opening that voids a wall"
+  },
+  {
+   "id": "B-54@bfbefaab",
+   "rule": "B-54",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "every enclosed room has a slab, roof or ceiling over most of its floor (estimate)"
+  },
+  {
+   "id": "B-47@4278465d",
+   "rule": "B-47",
+   "level": "RECOMMENDED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "no room declares a Function starting 'circulation'; reachability was not checked"
+  },
+  {
+   "id": "B-142@e1e95d66",
+   "rule": "B-142",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "nothing but foundations, walls, stairs, ramps, openings, terrain and reservation volumes reaches below the lowest floor"
+  },
+  {
+   "id": "B-90@d6c4ad3d",
+   "rule": "B-90",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "luminaires extension not enabled by the profile; fixtures were not checked"
+  },
+  {
+   "id": "B-100@b2e73a40",
+   "rule": "B-100",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "signboards extension not enabled by the profile; boards were not checked"
+  },
+  {
+   "id": "B-110@0aada8c2",
+   "rule": "B-110",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "the profile gives no build volume; it was not checked"
+  },
+  {
+   "id": "B-130@b96b87f8",
+   "rule": "B-130",
+   "level": "REQUIRED",
+   "status": "info",
+   "severity": "info",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "terrain extension not enabled by the profile; terrain context was not checked"
+  },
+  {
+   "id": "D-03@93e84da8",
+   "rule": "D-03",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "example-room-master.ifc"
+   },
+   "message": "every combination is in the finish schedule"
+  }
+ ],
+ "finishKeys": [
+  {
+   "class": "IfcCovering",
+   "colour": "#8c6f4e",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcDoor",
+   "colour": "#977353",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcFurnishingElement",
+   "colour": "#ccbba0",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcLightFixture",
+   "colour": "#3d4348",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcLightFixture",
+   "colour": "#fff0cf",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcSlab",
+   "colour": "#c9c4b8",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcSlab",
+   "colour": "#e8e4da",
+   "opacity": 1.0,
+   "elements": 1
+  },
+  {
+   "class": "IfcWall",
+   "colour": "#d9d2c3",
+   "opacity": 1.0,
+   "elements": 4
+  },
+  {
+   "class": "IfcWindow",
+   "colour": "#91c8d0",
+   "opacity": 0.45,
+   "elements": 1
+  }
+ ],
+ "file": "example-room-master.ifc",
+ "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+}

@@ -1,0 +1,7 @@
+# Exact versions used by the delivery checks in continuous integration (tools/ci/). The ranges in requirements.txt say what the code is
+# written for; these say what the checks are run with, so a result does not change when a library publishes a new release.
+ifcopenshell==0.9.0.post1
+jsonschema==4.26.0
+numpy==2.4.6
+pillow==13.0.0
+shapely==2.2.0

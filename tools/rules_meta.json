@@ -3481,6 +3481,173 @@
    ],
    "parameters": [],
    "extension": null
+  },
+  "X-70": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "Reviewers and the intake tool find a delivery by its folder and its manifest, and a handle ties it to its author.",
+   "fix_hint": "Rename the folder to the slug used as delivery.id, add the missing fields to the submission object of delivery.json (schemas/submission.schema.json) and rerun.",
+   "examples": {
+    "good": "deliveries/oak-study/delivery.json with delivery.id oak-study",
+    "bad": "deliveries/My Study/ with no submission object"
+   },
+   "related": [
+    "X-10",
+    "X-76"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-71": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "A catalogue entry must carry uniform, known terms for everyone who uses it later.",
+   "fix_hint": "Set submission.licence to one of the licences the profile lists (CC-BY-4.0 or CC0-1.0 by default) and make the provenance entries agree.",
+   "examples": {
+    "good": "CC-BY-4.0",
+    "bad": "All rights reserved"
+   },
+   "related": [
+    "X-21"
+   ],
+   "parameters": [
+    "submission.allowedLicences"
+   ],
+   "extension": null
+  },
+  "X-72": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "A delivery is data; anything that can run or unpack itself is a risk to every person and tool that opens it.",
+   "fix_hint": "Remove the file, or convert the content to a listed type (ifc, glb, png, jpg, json, md, csv, txt); clear the executable bit with chmod -x.",
+   "examples": {
+    "good": "ifc/room.ifc, previews/view.png",
+    "bad": "tools/build.sh, assets.zip"
+   },
+   "related": [],
+   "parameters": [
+    "submission.allowedExtensions"
+   ],
+   "extension": null
+  },
+  "X-73": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "Review and intake run on shared machines with fixed time and memory.",
+   "fix_hint": "Remove files that are not needed, reduce texture sizes or geometry, or split the delivery into two deliveries.",
+   "examples": {
+    "good": "60 files, 18 MB in total",
+    "bad": "900 files or a single 80 MB texture"
+   },
+   "related": [
+    "X-14"
+   ],
+   "parameters": [
+    "submission.maxFiles",
+    "submission.maxFileBytes",
+    "submission.maxDeliveryBytes"
+   ],
+   "extension": null
+  },
+  "X-74": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "A path that leaves the delivery folder or collides on another system can overwrite or hide a file.",
+   "fix_hint": "Rename the file to letters, digits, dot, hyphen and underscore, without a leading dot, and make every path in delivery.json and SHA256SUMS.txt relative with forward slashes.",
+   "examples": {
+    "good": "items/table.work.1600/preview.png",
+    "bad": "../outside.png, Items/A.png next to items/a.png"
+   },
+   "related": [
+    "X-02"
+   ],
+   "parameters": [
+    "submission.maxPathLength"
+   ],
+   "extension": null
+  },
+  "X-75": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "A link can point outside the delivery and make a reader open a file that was never submitted.",
+   "fix_hint": "Replace the link by a copy of the file it points to.",
+   "examples": {
+    "good": "plain files only",
+    "bad": "previews/view.png as a symbolic link"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-76": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "The maintainers cannot check ownership, so the statement is on record with the delivery.",
+   "fix_hint": "Set the three attestation fields to true only if they are true, otherwise do not submit the delivery.",
+   "examples": {
+    "good": "ownWork, mayLicense and noRestrictedContent all true",
+    "bad": "noRestrictedContent missing"
+   },
+   "related": [
+    "X-22"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-77": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "A renamed file can hide content from review and can crash a reader.",
+   "fix_hint": "Re-export the file in the type its name says, within the pixel limit, or rename it to its real type if that is allowed.",
+   "examples": {
+    "good": "a PNG with a PNG header",
+    "bad": "a text file named view.png"
+   },
+   "related": [],
+   "parameters": [
+    "submission.maxImagePixels"
+   ],
+   "extension": null
+  },
+  "X-78": {
+   "applies_to": [
+    "submission"
+   ],
+   "automated": true,
+   "tool": "check_submission",
+   "rationale": "A reviewer sees the work before opening a model.",
+   "fix_hint": "Add a rendered or plotted picture to previews/ (tools/preview.py draws plans and an isometric view).",
+   "examples": {
+    "good": "previews/plan.png",
+    "bad": "no picture"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
   }
  }
 }

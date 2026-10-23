@@ -462,6 +462,61 @@
           "description": "every asset and the package need a licence"
         }
       }
+    },
+    "submission": {
+      "type": "object",
+      "description": "limits and requirements for deliveries offered by outside contributors as pull requests (guide 4, section 8; tools/check_submission.py); a consumer that accepts no submissions can ignore the group",
+      "properties": {
+        "maxFiles": {
+          "type": "integer",
+          "description": "most files in one delivery folder",
+          "minimum": 1
+        },
+        "maxFileBytes": {
+          "type": "integer",
+          "description": "largest single file in a delivery, in bytes",
+          "minimum": 1
+        },
+        "maxDeliveryBytes": {
+          "type": "integer",
+          "description": "largest total size of a delivery folder, in bytes",
+          "minimum": 1
+        },
+        "maxPathLength": {
+          "type": "integer",
+          "description": "longest relative path inside a delivery, in characters",
+          "minimum": 20
+        },
+        "allowedExtensions": {
+          "type": "array",
+          "description": "file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedLicences": {
+          "type": "array",
+          "description": "licence identifiers a submitter may offer the delivery under",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ingestMaxComponents": {
+          "type": "integer",
+          "description": "most component assets one delivery may be split into by tools/ingest.py",
+          "minimum": 1
+        },
+        "ingestMaxSeconds": {
+          "type": "integer",
+          "description": "time limit of one tools/ingest.py run, in seconds",
+          "minimum": 1
+        },
+        "maxImagePixels": {
+          "type": "integer",
+          "description": "most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs",
+          "minimum": 1
+        }
+      }
     }
   }
 }

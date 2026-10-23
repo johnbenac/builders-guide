@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Catalogue files written by tools/ingest.py",
+  "description": "Three file shapes, told apart by `format`: catalogue-index/1 (catalogue/index.json), catalogue-delivery/1 (catalogue/deliveries/<slug>@<commit12>.json) and ingest-handoff/1 (handoff/<slug>@<commit12>.json). Components are identified by the SHA-256 of their primary file; blobs are stored as blobs/sha256/<hash>.<ext>. All lengths are metres in the IFC frame (Z up); the GLB files are Y up.",
+  "oneOf": [
+    {"$ref": "#/definitions/index"},
+    {"$ref": "#/definitions/deliveryRecord"},
+    {"$ref": "#/definitions/handoff"}
+  ],
+  "definitions": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "componentId": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "blobPath": {"type": "string", "pattern": "^blobs/sha256/[0-9a-f]{64}\\.(glb|ifc|png|jpg|json)$"},
+    "vec3": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+    "kind": {"enum": ["furniture", "covering", "fixture", "hardware", "door", "window", "material-set"]},
+    "generator": {"type": "object", "required": ["tool", "version"], "properties": {"tool": {"const": "ingest.py"}, "version": {"type": "string"}}},
+    "file": {
+      "type": "object",
+      "required": ["role", "blob", "sha256", "bytes", "mediaType"],
+      "properties": {
+        "role": {"type": "string"}, "blob": {"$ref": "#/definitions/blobPath"}, "sha256": {"$ref": "#/definitions/sha"},
+        "bytes": {"type": "integer", "minimum": 0}, "mediaType": {"type": "string"}
+      }
+    },
+    "occurrence": {
+      "type": "object",
+      "description": "one appearance of a component in one delivery at one commit; the same bytes from another delivery add an occurrence, not a copy",
+      "required": ["delivery", "commit", "submitter", "licence", "name", "sourcePath"],
+      "properties": {
+        "delivery": {"type": "string"}, "commit": {"type": "string", "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"},
+        "submitter": {"type": "string"}, "licence": {"type": "string"}, "name": {"type": "string"}, "sourcePath": {"type": "string"},
+        "sourceId": {"type": "string"}, "ifcClass": {"type": "string"},
+        "placement": {
+          "type": "object", "required": ["frame", "position", "rotationZDegrees"],
+          "properties": {"frame": {"const": "building-file"}, "position": {"$ref": "#/definitions/vec3"}, "rotationZDegrees": {"type": "number"}}
+        },
+        "properties": {"type": "object"}, "item": {"type": "object"}
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": ["id", "kind", "category", "name", "files", "occurrences"],
+      "properties": {
+        "id": {"$ref": "#/definitions/componentId"}, "kind": {"$ref": "#/definitions/kind"}, "category": {"type": "string"}, "name": {"type": "string"},
+        "files": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/file"}},
+        "geometry": {
+          "type": "object",
+          "required": ["format", "units", "glbAxes", "frame", "bounds", "dimensions", "pivot", "triangles"],
+          "properties": {
+            "format": {"const": "glb"}, "units": {"const": "metres"}, "glbAxes": {"const": "y-up"}, "frame": {"const": "ifc-z-up"},
+            "bounds": {"type": "object", "required": ["min", "max"], "properties": {"min": {"$ref": "#/definitions/vec3"}, "max": {"$ref": "#/definitions/vec3"}}},
+            "dimensions": {"type": "object", "required": ["x", "y", "z"], "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "z": {"type": "number"}}},
+            "pivot": {"type": "object", "required": ["kind", "position"], "properties": {"kind": {"type": "string"}, "description": {"type": "string"}, "position": {"$ref": "#/definitions/vec3"}}},
+            "triangles": {"type": "integer", "minimum": 1}, "primitives": {"type": "integer", "minimum": 1}, "declaredDimensions": {}
+          }
+        },
+        "anchors": {"type": "array", "items": {"type": "object", "required": ["id", "kind", "position"]}},
+        "materialRefs": {
+          "type": "array",
+          "items": {"type": "object", "required": ["colour", "opacity", "sets"],
+                    "properties": {"colour": {"type": "string", "pattern": "^#[0-9a-f]{6}$"}, "opacity": {"type": "number"}, "finishRoles": {"type": "array", "items": {"type": "string"}},
+                                   "sets": {"type": "array", "items": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}, "component": {"type": ["string", "null"]}}}}}}
+        },
+        "material": {"type": "object"},
+        "occurrences": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/occurrence"}}
+      }
+    },
+    "index": {
+      "type": "object",
+      "required": ["format", "generator", "components", "deliveries"],
+      "properties": {
+        "format": {"const": "catalogue-index/1"}, "generator": {"$ref": "#/definitions/generator"},
+        "components": {"type": "array", "items": {"$ref": "#/definitions/component"}},
+        "deliveries": {"type": "array", "items": {"type": "object", "required": ["delivery", "commit", "record", "components"],
+                       "properties": {"delivery": {"type": "string"}, "commit": {"type": "string"}, "record": {"type": "string"},
+                                      "components": {"type": "array", "items": {"$ref": "#/definitions/componentId"}}}}}
+      }
+    },
+    "deliveryInfo": {
+      "type": "object",
+      "required": ["slug", "id", "version", "title", "commit", "commitVerified", "submitter", "licence"],
+      "properties": {"slug": {"type": "string"}, "id": {"type": "string"}, "version": {"type": "string"}, "title": {"type": "string"}, "commit": {"type": "string"},
+                     "commitVerified": {"type": "boolean"}, "submitter": {"type": "string"}, "licence": {"type": "string"}, "kinds": {"type": "array"},
+                     "profile": {"type": "object"}, "toolVersions": {"type": "object"}}
+    },
+    "deliveryRecord": {
+      "type": "object",
+      "required": ["format", "delivery", "checks", "sources", "componentIds", "components", "generator"],
+      "properties": {
+        "format": {"const": "catalogue-delivery/1"}, "delivery": {"$ref": "#/definitions/deliveryInfo"},
+        "checks": {"type": "array", "items": {"type": "object", "required": ["profile", "tool", "result", "requiredFailures"]}},
+        "sources": {"type": "array", "items": {"type": "object", "required": ["path", "role", "sha256", "bytes"], "properties": {"blob": {"$ref": "#/definitions/blobPath"}}}},
+        "componentIds": {"type": "array", "items": {"$ref": "#/definitions/componentId"}},
+        "components": {"type": "array", "items": {"type": "object", "required": ["id", "kind", "category", "name", "sourcePath"]}},
+        "generator": {"$ref": "#/definitions/generator"}
+      }
+    },
+    "blobRef": {"type": "object", "required": ["blob", "sha256", "bytes"], "properties": {"blob": {"$ref": "#/definitions/blobPath"}, "sha256": {"$ref": "#/definitions/sha"}, "bytes": {"type": "integer"}}},
+    "handoff": {
+      "type": "object",
+      "description": "what a downstream publisher needs: the blobs to publish, the components with their files and licences, and the catalogue files. ingest.py itself never uploads (`uploaded` is always false).",
+      "required": ["format", "delivery", "blobsToPublish", "blobsAlreadyPresent", "components", "catalogue", "counts", "uploaded", "generator"],
+      "properties": {
+        "format": {"const": "ingest-handoff/1"}, "delivery": {"$ref": "#/definitions/deliveryInfo"},
+        "blobsToPublish": {"type": "array", "items": {"$ref": "#/definitions/blobRef"}},
+        "blobsAlreadyPresent": {"type": "array", "items": {"$ref": "#/definitions/blobRef"}},
+        "components": {"type": "array", "items": {"type": "object", "required": ["id", "kind", "category", "name", "files", "licence", "submitter", "commit", "alreadyInCatalogue"],
+                       "properties": {"id": {"$ref": "#/definitions/componentId"}, "files": {"type": "array", "items": {"$ref": "#/definitions/file"}}, "alreadyInCatalogue": {"type": "boolean"}}}},
+        "catalogue": {"type": "object", "required": ["index", "indexSha256", "record", "recordSha256"]},
+        "counts": {"type": "object", "required": ["components", "uniqueComponents", "blobsNew", "blobsExisting", "bytesNew"]},
+        "uploaded": {"const": false}, "generator": {"$ref": "#/definitions/generator"}
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}
