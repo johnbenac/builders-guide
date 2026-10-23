@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Build and verify a delivery package (guide 4).
 
-    python3 build_package.py init   DIR meta.json     write DIR/manifest.json and DIR/SHA256SUMS.txt
+    python3 build_package.py init   DIR meta.json [--manifest-name delivery.json]   write DIR/manifest.json (or the named file) and DIR/SHA256SUMS.txt
     python3 build_package.py verify DIR [--json] [--report FILE]   check layout, hashes, versions, provenance, licence
 
+A submitted delivery (guide 4, section 8) keeps its manifest in `delivery.json`; `verify` accepts that name when there is no `manifest.json`.
 `meta.json` carries the fields a person writes (see templates/package-meta.template.json); the tool adds the file
 list, hashes and sizes. `verify` exits 1 when any REQUIRED rule fails.
 
@@ -21,7 +22,8 @@ import report as rpt
 
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$")
 STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
-SKIP = {"manifest.json", "SHA256SUMS.txt"}
+MANIFEST_NAMES = ("manifest.json", "delivery.json")
+SKIP = {"manifest.json", "delivery.json", "SHA256SUMS.txt"}
 MAPS = {"albedo.png", "normal.png", "orm.png"}
 
 
@@ -84,20 +86,30 @@ def scan(root):
     return out
 
 
-def init(root, meta_path):
+def manifest_name(root):
+    """manifest.json, or delivery.json in a submitted delivery that has no manifest.json."""
+    for n in MANIFEST_NAMES:
+        if os.path.exists(os.path.join(root, n)):
+            return n
+    return MANIFEST_NAMES[0]
+
+
+def init(root, meta_path, name="manifest.json"):
+    if name not in MANIFEST_NAMES:
+        sys.exit("--manifest-name must be one of %s" % ", ".join(MANIFEST_NAMES))
     with open(meta_path, encoding="utf-8") as fh:
         meta = json.load(fh)
     files = scan(root)
     man = {"format": "delivery-manifest/1"}
     man.update(meta)
     man["files"] = files
-    with open(os.path.join(root, "manifest.json"), "w", encoding="utf-8", newline="\n") as fh:
+    with open(os.path.join(root, name), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(man, fh, indent=2, ensure_ascii=True)
         fh.write("\n")
     with open(os.path.join(root, "SHA256SUMS.txt"), "w", newline="\n") as fh:
-        for f in files + [{"path": "manifest.json", "sha256": sha256_of(os.path.join(root, "manifest.json"))}]:
+        for f in files + [{"path": name, "sha256": sha256_of(os.path.join(root, name))}]:
             fh.write("%s  %s\n" % (f["sha256"], f["path"]))
-    print("wrote manifest.json (%d files) and SHA256SUMS.txt" % len(files))
+    print("wrote %s (%d files) and SHA256SUMS.txt" % (name, len(files)))
 
 
 class Result:
@@ -114,9 +126,9 @@ class Result:
 
 def verify(root):
     R = Result()
-    mpath = os.path.join(root, "manifest.json")
+    mpath = os.path.join(root, manifest_name(root))
     if not os.path.exists(mpath):
-        R.add("X-10", "REQUIRED", False, "no manifest.json at the top of the package")
+        R.add("X-10", "REQUIRED", False, "no manifest.json (or delivery.json in a submitted delivery) at the top of the package")
         return report(R)
     with open(mpath, encoding="utf-8") as fh:
         man = json.load(fh)
@@ -308,8 +320,8 @@ def report(R):
         lvl = rpt.level_of(rule)
         if lvl == "OFF":
             continue
-        fs.append(rpt.finding(rule, "pass" if ok else ("fail" if lvl == "REQUIRED" else "warn"), msg, file="manifest.json", level=lvl))
-    rep = rpt.make_report("build_package.py", "2.1.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
+        fs.append(rpt.finding(rule, "pass" if ok else ("fail" if lvl == "REQUIRED" else "warn"), msg, file=manifest_name(OPTS["root"]), level=lvl))
+    rep = rpt.make_report("build_package.py", "2.2.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
     if OPTS["report"]:
         rpt.write(rep, OPTS["report"])
     if OPTS["json"]:
@@ -332,12 +344,17 @@ if __name__ == "__main__":
         i = argv.index("--report")
         OPTS["report"] = argv[i + 1]
         del argv[i:i + 2]
+    mname = "manifest.json"
+    if "--manifest-name" in argv:
+        i = argv.index("--manifest-name")
+        mname = argv[i + 1]
+        del argv[i:i + 2]
     if len(argv) >= 3 and argv[0] == "init":
-        init(argv[1], argv[2])
+        init(argv[1], argv[2], mname)
     elif len(argv) == 2 and argv[0] == "verify":
         OPTS["root"] = argv[1]
         if not os.path.isdir(argv[1]):
-            rep = rpt.make_report("build_package.py", "2.1.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
+            rep = rpt.make_report("build_package.py", "2.2.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
             print(json.dumps(rep, indent=1) if OPTS["json"] else "ERROR input not found: " + argv[1])
             sys.exit(rep["exitCode"])
         verify(argv[1])

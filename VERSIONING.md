@@ -10,7 +10,8 @@ The set uses SemVer (`MAJOR.MINOR.PATCH`). The version is in `CHANGELOG.md`, in 
 * **MINOR**: new rules (they start as `RECOMMENDED` unless a defect cannot be avoided any other way, or they belong to a new optional
   extension: a rule inside an extension may be `REQUIRED`, because it cannot affect a delivery unless the profile switches the
   extension on), new optional extensions, new profile parameters with defaults that keep existing deliveries passing, new tools,
-  relaxed limits in `profiles/default.json`, and automation of a rule that was review-only when it can only warn (`RECOMMENDED`) and the
+  rules that apply only to deliveries submitted as pull requests (`applies_to` `submission`; they may be `REQUIRED` because they cannot affect
+  a package that is not a submitted delivery), relaxed limits in `profiles/default.json`, and automation of a rule that was review-only when it can only warn (`RECOMMENDED`) and the
   changelog says it is an estimate.
 * **MAJOR**: a rule's meaning changes, a rule is retired or its default level is raised, a default limit is tightened, a profile or
   report format changes incompatibly, or a tool changes which deliveries pass.
@@ -28,4 +29,4 @@ A delivery's version follows guide 4 (X-30 to X-31). A delivered version is neve
 ## Formats
 
 `profile/1`, `check-report/1`, `rules/1`, `delivery-manifest/1`, `finish-schedule/1`, `item/1`, `material-library/1` and
-`building-metadata/1` are format identifiers. An incompatible change gets a new number (`profile/2`) and a MAJOR release of the set.
+`building-metadata/1`, `catalogue-index/1`, `catalogue-delivery/1` and `ingest-handoff/1` are format identifiers. An incompatible change gets a new number (`profile/2`) and a MAJOR release of the set.

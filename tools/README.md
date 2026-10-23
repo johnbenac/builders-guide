@@ -15,7 +15,11 @@ matplotlib 3.11.2; the file lists give the lowest versions the code is written f
 | `check_ifc.py` | acceptance checks for a master IFC file (guide 4, section 5). Options: `--profile`, `--finish-schedule`, `--level-offset`, `--known-room-ids`, `--report`, `--json` |
 | `check_texture_set.py` | checks for one texture set folder (guide 2, section 4); `--preview` writes a three-by-three wrap picture |
 | `check_item.py` | checks for one library item folder (guide 3) |
-| `build_package.py` | `init` writes the manifest and checksum file; `verify` runs the package checks (guide 4) |
+| `build_package.py` | `init` writes the manifest and checksum file (`--manifest-name delivery.json` for a submitted delivery); `verify` runs the package checks (guide 4) |
+| `check_submission.py` | form checks of a submitted delivery folder `deliveries/<slug>/`: layout, licence and attestation, file types, counts and sizes, safe paths, links, file contents (X-70 to X-78); `check_all.py` runs it on any folder that has a `delivery.json` |
+| `ingest.py` | turns a merged delivery into component assets (GLB), content-addressed blobs, a neutral catalogue and a handoff manifest; `--dry-run`, limits, never uploads (`08-submissions-and-ingest.md`) |
+| `make_sample_delivery.py`, `test_submission.py` | build the sample delivery `deliveries/example-room/`; test the submission checks (28 broken deliveries) and ingest (catalogue, hashes, deduplication, determinism, refusals) |
+| `ci/` | `run_checks.sh` runs the delivery checks the pull-request workflow runs, without any workflow system; `check-delivery.yml` is the workflow itself (`requirements-ci.txt` pins the libraries it uses) |
 | `map_properties.py` | consumer intake: renames declaration properties between the neutral names and a consumer's names, using a mapping file the receiving party keeps outside this set (`--reverse` undoes it). `test_map_properties.py` tests it |
 | `make_sample.py`, `make_sample_item.py`, `make_sample_texture_set.py` | generate the pieces of the worked example (guide 5) |
 | `site_request.py` | terrain extension: writes the request a building sends its terrain source (footprint polygon, finished floor elevation, grading rule, clearing margin, smallest patch) from a master file |

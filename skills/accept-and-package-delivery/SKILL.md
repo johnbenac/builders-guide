@@ -3,7 +3,7 @@ name: accept-and-package-delivery
 description: Package a delivery (master IFC, finish schedule, texture sets, items, tables, reports) with a manifest of SHA-256 hashes, versions, provenance and licences, run the final checks against a consumer profile, and decide whether to accept, ask for revision or reject someone else's delivery. Use when assembling or verifying a delivery package, writing manifest.json, choosing a version number, or when a check reports an X-rule finding.
 license: CC-BY-4.0
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   rules: "X-01 to X-60"
 ---
 

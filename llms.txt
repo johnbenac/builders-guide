@@ -2,7 +2,7 @@
 
 > Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.
 
-Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
+Version 2.2.0. 206 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
 
 ## Start here
 
@@ -17,6 +17,7 @@ Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [skills/decorate-interior/SKILL.md](skills/decorate-interior/SKILL.md)
 - [skills/author-furniture-library/SKILL.md](skills/author-furniture-library/SKILL.md)
 - [skills/accept-and-package-delivery/SKILL.md](skills/accept-and-package-delivery/SKILL.md)
+- [skills/submit-delivery/SKILL.md](skills/submit-delivery/SKILL.md)
 
 ## Rules and schemas
 
@@ -29,10 +30,14 @@ Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [schemas/building-metadata.schema.json](schemas/building-metadata.schema.json): building summary
 - [schemas/finish-schedule.schema.json](schemas/finish-schedule.schema.json): finish schedule
 - [schemas/set.schema.json](schemas/set.schema.json): texture set description
+- [schemas/submission.schema.json](schemas/submission.schema.json): the submission block of a submitted delivery
+- [schemas/catalogue.schema.json](schemas/catalogue.schema.json): the neutral catalogue written by tools/ingest.py
 
 ## Tools
 
 - [tools/check_all.py](tools/check_all.py): one command, one JSON report, per deliverable type
+- [tools/check_submission.py](tools/check_submission.py): form checks of a submitted delivery (X-70 to X-78)
+- [tools/ingest.py](tools/ingest.py): turns an accepted (merged) delivery into component assets and a catalogue
 - [tools/README.md](tools/README.md): every tool
 
 ## Guide sections (each file is about 1,500 tokens or less)
@@ -41,6 +46,7 @@ Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [readme--core-and-profile](chunks/readme--core-and-profile.md): Core and profile
 - [readme--for-agents](chunks/readme--for-agents.md): For agents
 - [readme--the-five-guides](chunks/readme--the-five-guides.md): The five guides
+- [readme--submissions](chunks/readme--submissions.md): Submissions
 - [readme--how-rules-are-written](chunks/readme--how-rules-are-written.md): How rules are written; rules B-12, B-90
 - [readme--reading-order](chunks/readme--reading-order.md): Reading order
 - [readme--words-used-in-a-fixed-sense](chunks/readme--words-used-in-a-fixed-sense.md): Words used in a fixed sense
@@ -92,6 +98,7 @@ Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [g4--5-acceptance-checks](chunks/g4--5-acceptance-checks.md): 5. Acceptance checks; rules X-40
 - [g4--6-pre-submission-checklist](chunks/g4--6-pre-submission-checklist.md): 6. Pre-submission checklist; rules X-41
 - [g4--7-how-a-receiving-party-accepts-returns-or-refus](chunks/g4--7-how-a-receiving-party-accepts-returns-or-refus.md): 7. How a receiving party accepts, returns or refuses; rules X-60
+- [g4--8-submitting-a-delivery-as-a-pull-request](chunks/g4--8-submitting-a-delivery-as-a-pull-request.md): 8. Submitting a delivery as a pull request; rules X-70, X-71, X-72, X-73, X-74, X-75 ...
 - [g5--introduction](chunks/g5--introduction.md): Introduction
 - [g5--1-the-profiles](chunks/g5--1-the-profiles.md): 1. The profiles
 - [g5--2-what-is-modelled](chunks/g5--2-what-is-modelled.md): 2. What is modelled
@@ -114,6 +121,13 @@ Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [params--introduction-part-3-of-3](chunks/params--introduction-part-3-of-3.md): Introduction (part 3 of 3)
 - [params--rule-levels-in-a-profile](chunks/params--rule-levels-in-a-profile.md): Rule levels in a profile
 - [params--extensions](chunks/params--extensions.md): Extensions
+- [sub--introduction](chunks/sub--introduction.md): Introduction
+- [sub--the-path-of-a-delivery](chunks/sub--the-path-of-a-delivery.md): The path of a delivery
+- [sub--what-a-delivery-folder-holds](chunks/sub--what-a-delivery-folder-holds.md): What a delivery folder holds
+- [sub--limits](chunks/sub--limits.md): Limits
+- [sub--the-automatic-check](chunks/sub--the-automatic-check.md): The automatic check
+- [sub--ingest](chunks/sub--ingest.md): Ingest
+- [sub--for-agents](chunks/sub--for-agents.md): For agents
 - [repair--introduction](chunks/repair--introduction.md): Introduction
 - [repair--the-loop](chunks/repair--the-loop.md): The loop
 - [repair--report-fields](chunks/repair--report-fields.md): Report fields

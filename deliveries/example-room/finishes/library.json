@@ -1,0 +1,14 @@
+{
+  "format": "material-library/1",
+  "name": "example-finishes",
+  "version": "1.0.0",
+  "description": "one plaster set and the finish schedule of the example room",
+  "sets": [
+    {
+      "name": "plaster_example",
+      "version": "1.0.0",
+      "path": "textures/plaster_example"
+    }
+  ],
+  "schedule": "finish-schedule.json"
+}

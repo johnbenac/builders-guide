@@ -91,7 +91,7 @@ except Exception as exc:
 
 # 3 automation honesty
 tools = {"check_ifc": "tools/check_ifc.py", "check_texture_set": "tools/check_texture_set.py", "check_item": "tools/check_item.py",
-         "build_package": "tools/build_package.py"}
+         "build_package": "tools/build_package.py", "check_submission": "tools/check_submission.py"}
 emitted = {}
 for name, rel in tools.items():
     src = load(rel)
@@ -156,7 +156,11 @@ check(m2 is not None and int(m2.group(1)) == n_rules, "skills/orient/SKILL.md st
 for name in gen_all.SKILLS:
     fm = re.search(r'rules:\s*"([A-Z])-(\d+) to ([A-Z])-(\d+)"', load("skills/%s/SKILL.md" % name))
     if fm:
-        top = max(int(re.match(r"[A-Z]-(\d+)", r["id"]).group(1)) for r in rj["rules"] if r["id"].startswith(fm.group(3) + "-"))
+        mine = set(gen_all.SKILLS[name]["rules"] or [])
+        pool = [r for r in rj["rules"] if r["id"].startswith(fm.group(3) + "-")]
+        if fm.group(3) == "X" and mine:         # the X rules are shared by two skills: the packaging rules and the submission rules
+            pool = [r for r in pool if set(r["applies_to"]) & mine]
+        top = max(int(re.match(r"[A-Z]-(\d+)", r["id"]).group(1)) for r in pool)
         check(int(fm.group(4)) == top, "skills/%s/SKILL.md says rules up to %s-%s but the last rule is %s-%02d" % (name, fm.group(3), fm.group(4), fm.group(3), top))
 check(f'version: "{gen_all.VERSION}"' in load("skills/orient/SKILL.md"), "skills/orient/SKILL.md does not carry version %s" % gen_all.VERSION)
 check(rj["version"] == gen_all.VERSION, "rules.json version is not %s" % gen_all.VERSION)

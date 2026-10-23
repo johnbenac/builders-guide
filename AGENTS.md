@@ -9,8 +9,8 @@ people can read the PDF or HTML in `dist/`. Everything is static files and Pytho
 
 1. Read `skills/orient/SKILL.md` (about 70 lines). It tells you which skill to load.
 2. Load only the skill you need: `skills/author-building`, `skills/decorate-interior`, `skills/author-furniture-library`,
-   `skills/accept-and-package-delivery`. Each skill points to small files under its `references/` for detail.
-3. Rules are in `rules.json` (197, stable ids like `B-41`). Each has a default `level`, `statement`, `rationale`, `parameters`,
+   `skills/accept-and-package-delivery`, `skills/submit-delivery`. Each skill points to small files under its `references/` for detail.
+3. Rules are in `rules.json` (206, stable ids like `B-41`). Each has a default `level`, `statement`, `rationale`, `parameters`,
    `extension`, `how_to_check`, `fix_hint`, `examples`, `related`.
 4. Consumer-specific numbers are in a **profile** (`profiles/profile.schema.json`; default `profiles/default.json`). Build and check
    against the consumer's profile when you have one.
@@ -30,6 +30,9 @@ python3 tools/preview.py MASTER.ifc preview/                  # plans and an iso
 python3 tools/run_example.py example-out                      # build, check and package the example end to end
 python3 tools/selftest.py                                     # prove the checkers still catch every deliberate fault
 python3 tools/agent_harness.py                                # prove a fresh agent can pass using only this set, under two profiles
+python3 tools/check_submission.py deliveries/SLUG --json      # form checks of a submitted delivery (X-70 to X-78); check_all.py runs them too
+python3 tools/ingest.py deliveries/SLUG --commit HASH --out OUT --dry-run   # maintainers: split a MERGED delivery into components and a catalogue
+python3 tools/test_submission.py                              # prove the submission checks and ingest still behave
 python3 tools/gen_all.py --write                              # regenerate rules.json, chunks, llms files, references, MANIFEST.json
 ```
 
@@ -45,6 +48,8 @@ Exit codes of every checker: 0 no REQUIRED failure, 1 at least one REQUIRED fail
 * Generated files (`rules.json`, `chunks/`, `llms*.txt`, `skills/*/references/`, `MANIFEST.json`, `06-rules-index.md`,
   `07-profile-parameters.md`) come from the guides, `tools/rules_meta.json` and the profiles; edit those, then run
   `gen_all.py --write`. `python3 tools/test_sync.py` fails if they differ.
+* To contribute a delivery, fork the repository, build it in a branch of your fork under `deliveries/<slug>/` and open a pull request against
+  `main` (`skills/submit-delivery/SKILL.md`). Change only your delivery folder. Acceptance is a merge; ingest runs on merged commits only.
 * Describe requirements as what any consumer needs ("the consumer", "the profile"). Do not name products, vendors or projects, and do
   not claim conformance to or endorsement by any standard or body.
 
@@ -52,4 +57,4 @@ Exit codes of every checker: 0 no REQUIRED failure, 1 at least one REQUIRED fail
 
 `skills/` skills; `tools/` scripts and `rules_meta.json`; `profiles/` profile schema, default and example; `schemas/` JSON Schemas;
 `templates/` starting files; `chunks/` guide sections of about 1,500 tokens or less; `01`-`05` guides; `REPAIR-LOOP.md`; `ABOUT.md`;
-`dist/` PDF, HTML, zip and checksums.
+`dist/` PDF, HTML, zip and checksums; `deliveries/` submitted deliveries (not part of the set or its hand-over files); `.github/` pull request template and workflow.

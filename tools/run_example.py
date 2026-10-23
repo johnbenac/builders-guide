@@ -108,7 +108,7 @@ meta = {
         {"asset": "finishes/textures/plaster_example", "type": "texture-set", "source": "procedural: tools/make_sample_texture_set.py, seed 7", "author": "Example organisation", "licence": "free to reuse (example)"},
         {"asset": "items/table.work.1600", "type": "item", "source": "original: tools/make_sample_item.py", "author": "Example organisation", "licence": "free to reuse (example)"}],
     "licence": {"statement": "Everything in this package is an example and is free to reuse."},
-    "checks": {"tool": "check_ifc.py", "toolVersion": "2.1.0", "report": "reports/check_ifc.json", "result": "pass"}}
+    "checks": {"tool": "check_ifc.py", "toolVersion": "2.2.0", "report": "reports/check_ifc.json", "result": "pass"}}
 meta_path = os.path.join(out, "package-meta.json")
 write_json(meta_path, meta)
 run("build_package.py", "init", pkg, meta_path)

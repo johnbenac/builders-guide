@@ -6,7 +6,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.1.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.2.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -38,12 +38,12 @@ The set is also written to be read and run by software agents of any kind. Stati
 |---|---|
 | [AGENTS.md](AGENTS.md) | short entry point: what the set is, commands, working rules |
 | `llms.txt`, `llms-full.txt` | index of the set, and all content in marked chunks |
-| `skills/` | five skills (orient, author-building, decorate-interior, author-furniture-library, accept-and-package-delivery), each with a short `SKILL.md` and on-demand `references/` |
+| `skills/` | six skills (orient, author-building, decorate-interior, author-furniture-library, accept-and-package-delivery, submit-delivery), each with a short `SKILL.md` and on-demand `references/` |
 | `rules.json` | all rules with level, applies_to, parameters, extension, how to check, fix hint, examples |
 | [REPAIR-LOOP.md](REPAIR-LOOP.md) | run, read findings, fix, rerun until no REQUIRED finding remains |
 | `profiles/` | the profile schema, the default profile, and an example of a strict consumer profile |
 | `chunks/`, `MANIFEST.json` | the guides in pieces of about 1,500 tokens or less; every file with purpose and tags |
-| `schemas/` | JSON Schemas: profile, rules, checker report, delivery manifest, material library, furniture item, building summary, finish schedule |
+| `schemas/` | JSON Schemas: profile, rules, checker report, delivery manifest, submission block, catalogue, material library, furniture item, building summary, finish schedule |
 
 ---
 
@@ -58,7 +58,17 @@ The set is also written to be read and run by software agents of any kind. Stati
 | 4 | [04-delivery-and-acceptance-guide.md](04-delivery-and-acceptance-guide.md) | everyone who sends or receives | package layout, manifest with hashes, versions, provenance and licences, checklist, acceptance checks, outcomes |
 | 5 | [05-worked-example.md](05-worked-example.md) | everyone | one room with a door, a window, a table, a wall covering and a light, with a generator script and checker |
 
-Also: [06-rules-index.md](06-rules-index.md) (every rule in one table, with counts), [07-profile-parameters.md](07-profile-parameters.md),
+---
+
+<!-- chunk: readme--submissions | source: README.md | title: Submissions | rules: - -->
+## Submissions
+
+The same repository takes outside deliveries as pull requests from forks: fork it, build the delivery in a branch of your fork under
+`deliveries/<slug>/`, open a pull request against `main`. Acceptance is a merge to `main`; `tools/ingest.py` then turns the merged delivery into
+component assets and a neutral catalogue. See [08-submissions-and-ingest.md](08-submissions-and-ingest.md) and
+[CONTRIBUTING.md](CONTRIBUTING.md). Deliveries are not part of the guide set and are not in its hand-over files.
+
+Also: [06-rules-index.md](06-rules-index.md) (every rule in one table, with counts), [07-profile-parameters.md](07-profile-parameters.md), [08-submissions-and-ingest.md](08-submissions-and-ingest.md),
 [templates/](templates/) (starting files), [tools/](tools/) (scripts), [CHANGELOG.md](CHANGELOG.md), [VERSIONING.md](VERSIONING.md),
 [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md).
 
@@ -120,10 +130,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.1.0.pdf` | all guides, the worked example, the parameters and the rules index in one document |
-| `builders-guide-2.1.0.html` | the same, as one web page |
-| `builders-guide-2.1.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.1.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.2.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
+| `builders-guide-2.2.0.html` | the same, as one web page |
+| `builders-guide-2.2.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.2.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.
@@ -196,6 +206,17 @@ The set separates **core practice** from **consumer parameters**.
 5. Switch on the extensions you implement: `walkability`, `luminaires`, `signboards`, `furnitureCollision`, `terrain`.
 6. Validate the file against `profiles/profile.schema.json` and publish it at a stable address. Tell authors its name and version.
 7. When you receive a delivery, run `check_all.py` with your profile; send findings back as they are (rule, element, fix hint).
+
+---
+
+<!-- chunk: about--submissions | source: ABOUT.md | title: Submissions | rules: - -->
+## Submissions
+
+The repository that holds this set also takes outside **deliveries** (buildings, interiors, furniture, materials, fixtures, hardware). A
+contributor forks the repository, builds the delivery in a branch of the fork under `deliveries/<slug>/`, and opens a pull request against
+`main`. A workflow checks it; a maintainer reviews it; a merge to `main` is the acceptance. A separate tool, `tools/ingest.py`, then turns a merged
+delivery into content-addressed component assets and a neutral catalogue, without uploading anything. Deliveries are not part of the guide set
+and are left out of the hand-over files. See `08-submissions-and-ingest.md`.
 
 ---
 
@@ -1393,6 +1414,42 @@ An accepted version is held by its hashes. If you later replace a building, deli
 
 ---
 
+<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request | rules: X-70,X-71,X-72,X-73,X-74,X-75,X-76,X-77,X-78 -->
+## 8. Submitting a delivery as a pull request
+
+Outside contributors can offer a delivery (a building, interior, furniture, materials, fixtures or hardware) to this repository. The process, in
+one line: fork the repository, build the delivery in a branch of your fork under `deliveries/<slug>/`, and open a pull request against `main`.
+`08-submissions-and-ingest.md` walks through it; this section holds the rules the checks enforce. Limits are the `submission` group of the
+profile (`07-profile-parameters.md`); the numbers below are the defaults.
+
+A submitted delivery is an ordinary package (section 1) with three differences: its folder is `deliveries/<slug>/` and the slug equals
+`delivery.id`; its manifest is named `delivery.json` and carries an extra `submission` object (`schemas/submission.schema.json`); and it may
+hold preview pictures under `previews/`. `python3 tools/check_submission.py deliveries/<slug>` checks the form,
+`python3 tools/check_all.py deliveries/<slug>` checks everything (it runs `check_submission.py` and the package checks).
+
+**X-70 · REQUIRED** - Put a submitted delivery in `deliveries/<slug>/` with a `delivery.json` whose `delivery.id` equals the slug and whose `submission` object states the title, the submitter handle, the licence, the profile used, the tool versions and the attestation. Reviewers and the intake tool find a delivery by its folder and its manifest, and a handle ties it to its author.
+
+**X-71 · REQUIRED** - Offer the delivery under a licence the profile lists (`submission.allowedLicences`; by default CC BY 4.0, or CC0 when the delivery says so). A delivery under other terms cannot be taken in, because anyone who uses a catalogue entry later needs the terms to be uniform and known.
+
+**X-72 · REQUIRED** - Include only files of the types the profile lists (`submission.allowedExtensions`; by default ifc, glb, png, jpg, json, md, csv and txt), with no program, script or archive and no executable file mode. A delivery is data; anything that can run or unpack itself is a risk for every person and tool that opens the delivery.
+
+**X-73 · REQUIRED** - Keep a delivery within the profile's limits: at most `submission.maxFiles` files (200), `submission.maxFileBytes` per file (25 MiB) and `submission.maxDeliveryBytes` in total (100 MiB). Review and intake run on shared machines with fixed time and memory.
+
+**X-74 · REQUIRED** - Use only relative, portable paths: no leading slash, no `..`, no backslash or drive letter, names of letters, digits, dot, hyphen and underscore that do not start with a dot, no reserved device names, no two names that differ only by case, and no path longer than `submission.maxPathLength`, in the folder and in every path the manifest and the checksum list name. A path that leaves the delivery folder or collides on another system can overwrite or hide a file.
+
+**X-75 · REQUIRED** - Include no symbolic link and no special file, only plain files and folders. A link can point outside the delivery and make a reader open a file that was never submitted.
+
+**X-76 · REQUIRED** - Have the submitter attest in `submission.attestation` that the work is their own or they may offer it, that they may license it under the stated licence, and that it holds no restricted third-party content. The maintainers cannot check ownership, so the statement is on record with the delivery.
+
+**X-77 · REQUIRED** - Make every file what its name says: PNG and JPEG images that are real images within `submission.maxImagePixels`, GLB files that are binary glTF 2 of the stated length, IFC files that are IFC text files, JSON that parses, text in UTF-8 without NUL bytes or active markup (script, iframe, object, embed). A renamed file can hide content from review and can crash a reader.
+
+**X-78 · RECOMMENDED** - Add at least one preview picture under `previews/` (or `items/<id>/preview.png`) so a reviewer sees the work before opening a model.
+
+Acceptance of a submission is a merge to `main`; see `08-submissions-and-ingest.md` for what happens next. The checks cannot judge quality,
+ownership or taste: a person reviews those, and may decline a delivery that passes every check.
+
+---
+
 <!-- chunk: g5--introduction | source: 05-worked-example.md | title: Introduction | rules: - -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Guide 5: Worked example
@@ -1740,6 +1797,15 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `package.maxPackageMegabytes` | upload size cap of a whole package, or null | `null` | `500` | X-14 |
 | `package.requireProvenance` | every asset needs a provenance entry | `true` | `true` | X-20 |
 | `package.requireLicence` | every asset and the package need a licence | `true` | `true` | X-21 |
+| `submission.maxFiles` | most files in one delivery folder | `200` | `null` | X-73 |
+| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73 |
+| `submission.maxDeliveryBytes` | largest total size of a delivery folder, in bytes | `104857600` | `null` | X-73 |
+| `submission.maxPathLength` | longest relative path inside a delivery, in characters | `200` | `null` | X-74 |
+| `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
+| `submission.allowedLicences` | licence identifiers a submitter may offer the delivery under | `["CC-BY-4.0", "CC0-1.0"]` | `null` | X-71 |
+| `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
+| `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
+| `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |
 
 ---
 
@@ -1754,6 +1820,149 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 ## Extensions
 
 An extension is an optional group of rules. It applies only when `extensions.<name>.enabled` is true: `walkability` (for consumers that place people or agents in rooms), `luminaires` (fixtures become lights), `signboards` (signs are generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider), `terrain` (the consumer's terrain source supplies the ground; the file carries a derived, read-only terrain patch). Rules that belong to an extension carry its name after the level, for example `B-90 REQUIRED luminaires`, and `rules.json` lists it in `extension`.
+
+---
+
+<!-- chunk: sub--introduction | source: 08-submissions-and-ingest.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# How submissions and ingest work
+
+This repository holds the guide set and it is also where outside contributors offer **deliveries**: buildings, interiors, furniture,
+materials, fixtures and hardware. A delivery is reviewed as a pull request. When the maintainers merge it, a separate tool turns the
+accepted delivery into separate, content-addressed component assets and a neutral catalogue. This page is for people and for software
+agents; the rules the automatic checks enforce are X-70 to X-78 in guide 4, section 8.
+
+---
+
+<!-- chunk: sub--the-path-of-a-delivery | source: 08-submissions-and-ingest.md | title: The path of a delivery | rules: - -->
+## The path of a delivery
+
+1. **Fork** this repository (your own copy on the hosting service).
+2. **Build** the delivery in a branch of your fork, in the folder `deliveries/<slug>/`. The slug is lower-case letters, digits and single
+   hyphens, for example `oak-study`. Follow guides 1 to 4 and the worked example (guide 5); `deliveries/example-room/` is a small accepted-looking
+   delivery to copy from.
+3. **Check** it yourself: `python3 tools/check_all.py deliveries/<slug> --json` must exit 0 (this also runs `tools/check_submission.py`).
+   `tools/ci/run_checks.sh <slug>` runs exactly what the automatic check runs.
+4. **Open a pull request** from your branch against `main`. Fill in the checklist in the pull request template.
+5. **Automatic check.** A workflow checks the changed delivery folders (see below). Fix every REQUIRED finding and push again.
+6. **Review.** A maintainer reads the delivery. The checks cannot judge quality, ownership or fit, so a delivery that passes can still be
+   declined or sent back with notes.
+7. **Acceptance is a merge to `main`.** Nothing else counts as acceptance, and no tool takes in a delivery from a branch or a fork.
+8. **Ingest** runs afterwards, on the merged commit (see "Ingest"). The commit hash is the provenance of everything it produces.
+
+Only the folder `deliveries/<slug>/` should change in a delivery pull request. One delivery per pull request. A correction after
+acceptance is a new pull request with a new version in the same folder (X-50: never edit a delivered version in place; add a new `delivery.version`).
+
+---
+
+<!-- chunk: sub--what-a-delivery-folder-holds | source: 08-submissions-and-ingest.md | title: What a delivery folder holds | rules: - -->
+## What a delivery folder holds
+
+A delivery is an ordinary package (guide 4, section 1) with these differences:
+
+```
+deliveries/oak-study/
+  delivery.json            the manifest (schemas/manifest.schema.json) plus a `submission` object (schemas/submission.schema.json)
+  SHA256SUMS.txt           hashes of every file, as in any package
+  ifc/<name>-master.ifc    the master IFC file, when the delivery has a building or room
+  items/<itemId>/          furniture, fixtures and hardware as items (guide 3): <itemId>.ifc and <itemId>.item.json
+  finishes/                finish schedule, library.json and textures/<set>/ (guide 2)
+  previews/                pictures of the work (png or jpg) so a reviewer sees it first
+  reports/ notes/ tables/  the check reports, the change notes and the room table, as in guide 4
+```
+
+`delivery.json` is built with `python3 tools/build_package.py init DIR meta.json --manifest-name delivery.json`; the meta file carries the
+`delivery`, `author`, `profile`, `frame`, `provenance`, `licence` and `checks` parts of guide 4, section 3, and the `submission` object:
+
+| Field | Content |
+|---|---|
+| `title`, `summary` | what the delivery is, in a sentence |
+| `submitter.handle` | the account the pull request is opened from (no personal data is needed) |
+| `licence` | `CC-BY-4.0` (the default), or `CC0-1.0` when the delivery says so; the profile lists the licences it takes |
+| `profile` | name and version of the profile the delivery was checked against |
+| `toolVersions` | the tools and libraries used (this guide set's version, the IFC library) |
+| `attestation` | `ownWork`, `mayLicense`, `noRestrictedContent`, all `true` |
+
+Contributed assets are offered under CC BY 4.0 unless the delivery states CC0. By opening the pull request the contributor attests that they
+own the work or may license it, and that it contains no restricted third-party content (X-22, X-76).
+
+---
+
+<!-- chunk: sub--limits | source: 08-submissions-and-ingest.md | title: Limits | rules: - -->
+## Limits
+
+Defaults, all parameters of the profile (`submission` group, see `07-profile-parameters.md`): at most 200 files, 25 MiB per file, 100 MiB per
+delivery; file types ifc, glb, png, jpg, json, md, csv and txt only (csv and txt exist because the room table and `SHA256SUMS.txt` need them);
+no program, script, archive or executable file mode; no symbolic links; relative, portable, case-unique paths of at most 200 characters; images of
+at most 64 million pixels. A consumer that accepts submissions can set other values in its own profile.
+
+---
+
+<!-- chunk: sub--the-automatic-check | source: 08-submissions-and-ingest.md | title: The automatic check | rules: - -->
+## The automatic check
+
+`.github/workflows/check-delivery.yml` (a copy of the same steps without any workflow system is `tools/ci/run_checks.sh`) runs on pull requests
+that touch `deliveries/**`. It installs the pinned requirements (`tools/requirements-ci.txt`), then for each changed delivery runs
+`check_submission.py` and `check_all.py` under `profiles/default.json`, and again under `profiles/<name>.json` when `delivery.json` names a profile
+that exists there. It uploads the JSON reports as an artifact, writes a summary to the run, and fails on any REQUIRED finding.
+
+Pull requests from forks run with a read-only token and no secrets, and the workflow never uses `pull_request_target`. A first-time
+contributor's run may wait until a maintainer approves it. A fork's token cannot write comments, so the result is the run summary and the
+artifact; for pull requests from branches of this repository the workflow also posts the summary as a comment.
+
+---
+
+<!-- chunk: sub--ingest | source: 08-submissions-and-ingest.md | title: Ingest | rules: - -->
+## Ingest
+
+`python3 tools/ingest.py deliveries/<slug> --commit <merged commit hash> --out <output folder>` is run by a maintainer or an automation, on a
+checkout of the merged commit of `main` (`--require-ancestor-of origin/main` makes it refuse anything else). It never uploads and uses no
+network. In order, it:
+
+1. copies the delivery (plain files only) to a temporary folder, with a time limit (`submission.ingestMaxSeconds`) and an optional memory limit;
+2. re-runs `check_submission.py` and `check_all.py` on the copy, and refuses on any REQUIRED finding;
+3. splits the delivery into **components**: each item under `items/`; from the master IFC each furniture element, covering (wall, floor or
+   ceiling), fixture or luminaire assembly, hardware piece, door and window; each texture set as a material set;
+4. exports each geometry component as a binary glTF (GLB, units metres, Y up) and reads it back to verify it;
+5. stores every file as `blobs/sha256/<hash>.<ext>`; identical bytes (for example a table in `items/` and the same table in the master, or the
+   same part in two deliveries) are stored once;
+6. writes `catalogue/index.json` (one entry per distinct component, with every occurrence), `catalogue/deliveries/<slug>@<commit12>.json`
+   and the handoff manifest `handoff/<slug>@<commit12>.json`, shaped by `schemas/catalogue.schema.json`.
+
+Each component carries: kind and category; dimensions and bounds; the pivot (items keep the pivot their description declares, master elements are
+moved to the centre of their footprint at their lowest point); anchors; the material references that link surface colours to the finish schedule and
+to the material-set components; and, per occurrence, the delivery slug, commit hash, submitter, licence, source path and IFC identifier, and its
+placement in the building file. The output depends only on the delivery bytes and the commit hash, so a second run gives the same bytes. `--dry-run` shows what
+would be stored and what the output folder already holds, and writes nothing.
+
+The handoff manifest lists the blobs to publish and the components with their files, licences and submitters. Publishing them anywhere is a
+separate step owned by whoever runs the catalogue; this repository defines no destination.
+
+Limits of this version: components from the master IFC are exported as GLB only (no per-component IFC file; item components also keep their source
+IFC); walls, slabs, stairs and roofs are not components, only furnishing, coverings, fixtures, hardware, doors and windows; rotations are recorded
+as an angle about the vertical axis; textures are carried as material sets and are not baked into the GLB.
+
+---
+
+<!-- chunk: sub--for-agents | source: 08-submissions-and-ingest.md | title: For agents | rules: - -->
+## For agents
+
+Harness-neutral steps; each command exits non-zero on failure. Replace `UPSTREAM` with the repository you were asked to contribute to.
+
+```
+gh repo fork UPSTREAM --clone --default-branch-only        # your fork, cloned; or fork in the web page
+cd REPO && git checkout -b delivery-SLUG
+pip install -r tools/requirements.txt
+# build deliveries/SLUG/ (skills/submit-delivery/SKILL.md), then:
+python3 tools/check_all.py deliveries/SLUG --json --out report.json   # exit 0 required
+git add deliveries/SLUG && git commit -m "feat(deliveries): add SLUG" -m "What it is and what it was checked against."
+git push -u origin delivery-SLUG
+gh pr create --repo UPSTREAM --base main --title "Delivery: SLUG" --body-file .github/pull_request_template.md
+```
+
+Fill in the checklist honestly; do not tick the attestation boxes unless they are true, and do not set `attestation` fields to `true` for work you
+cannot vouch for. Never edit tools, profiles or schemas in a delivery pull request. Stop and report if the same REQUIRED finding remains after
+three runs (`REPAIR-LOOP.md`).
 
 ---
 

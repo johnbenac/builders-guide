@@ -1,0 +1,2 @@
+roomId,name,occupant,kind,enclosed,level,levelElevationMetres,floorAreaM2,clearHeightM,buildingId,layer
+EX-001,Example work room,Example Occupant,room,yes,Example building - ground / +0 m,0.0,18.24,3.0,B-EXAMPLE,interim

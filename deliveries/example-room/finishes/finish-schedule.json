@@ -1,0 +1,176 @@
+{
+  "format": "finish-schedule/1",
+  "delivery": "example-room-1.0.0",
+  "version": "1.0.0",
+  "materials": [
+    {
+      "key": {
+        "class": "IfcWall",
+        "colour": "#d9d2c3",
+        "opacity": 1.0
+      },
+      "role": "room walls",
+      "usedBy": "example room",
+      "faces": {
+        "all": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.55,
+          "normalScale": 0.6
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcSlab",
+        "colour": "#c9c4b8",
+        "opacity": 1.0
+      },
+      "role": "floor slab",
+      "usedBy": "example room",
+      "faces": {
+        "top": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.25
+        },
+        "side": {
+          "set": "plaster_example"
+        },
+        "bottom": {
+          "set": "plaster_example"
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcSlab",
+        "colour": "#e8e4da",
+        "opacity": 1.0
+      },
+      "role": "roof slab (ceiling underneath)",
+      "usedBy": "example room",
+      "faces": {
+        "top": {
+          "set": "plaster_example"
+        },
+        "side": {
+          "set": "plaster_example"
+        },
+        "bottom": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.2
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcDoor",
+        "colour": "#977353",
+        "opacity": 1.0
+      },
+      "role": "timber door leaf",
+      "usedBy": "example room",
+      "faces": {
+        "all": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.9
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcFurnishingElement",
+        "colour": "#ccbba0",
+        "opacity": 1.0
+      },
+      "role": "oak work table",
+      "usedBy": "example room",
+      "faces": {
+        "all": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.8
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcCovering",
+        "colour": "#8c6f4e",
+        "opacity": 1.0
+      },
+      "role": "timber wall covering",
+      "usedBy": "example room",
+      "faces": {
+        "all": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.9
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcLightFixture",
+        "colour": "#3d4348",
+        "opacity": 1.0
+      },
+      "role": "luminaire housing",
+      "usedBy": "example room",
+      "faces": {
+        "all": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.9
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcWindow",
+        "colour": "#91c8d0",
+        "opacity": 0.45
+      },
+      "role": "window glass",
+      "usedBy": "example room",
+      "glass": {
+        "fresnelAlpha": 0.5,
+        "smudgeRough": 0.4
+      }
+    },
+    {
+      "key": {
+        "class": "IfcLightFixture",
+        "colour": "#fff0cf",
+        "opacity": 1.0
+      },
+      "role": "luminaire lens",
+      "usedBy": "example room",
+      "keep": true,
+      "reason": "emissive lens: the consumer supplies the glow"
+    }
+  ],
+  "floors": [
+    {
+      "id": "floor-work",
+      "where": {
+        "occupant": "Example Occupant"
+      },
+      "finish": {
+        "set": "plaster_example",
+        "tint": "#b08d63",
+        "tintStrength": 0.6
+      },
+      "note": "oak plank floor intent; the consumer picks its own timber set"
+    }
+  ],
+  "libraries": [
+    {
+      "name": "plaster_example",
+      "version": "1.0.0"
+    }
+  ]
+}

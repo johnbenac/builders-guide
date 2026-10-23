@@ -1,0 +1,168 @@
+{
+ "schema": "check-report/1",
+ "tool": "check_item.py",
+ "toolVersion": "2.2.0",
+ "target": {
+  "path": "table.work.1600"
+ },
+ "result": "pass",
+ "exitCode": 0,
+ "summary": {
+  "requiredFailures": 0,
+  "recommendedWarnings": 0,
+  "passes": 13,
+  "info": 0
+ },
+ "profile": {
+  "name": "default",
+  "version": "1.2.0",
+  "sha256": "e634c132ebb0edb81310d8a94ab191c650228abb657e2f29ef49e2d3c3114e43"
+ },
+ "counts": {},
+ "findings": [
+  {
+   "id": "B-01@ab1bfe37",
+   "rule": "B-01",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "schema IFC4"
+  },
+  {
+   "id": "B-02@15ffcf6e",
+   "rule": "B-02",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "length unit resolves to 1 metres"
+  },
+  {
+   "id": "F-10@58795999",
+   "rule": "F-10",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "exactly one furniture or equipment element"
+  },
+  {
+   "id": "F-10@de57b14b",
+   "rule": "F-10",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "placed at the origin without rotation"
+  },
+  {
+   "id": "F-12@b0645c85",
+   "rule": "F-12",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "description matches the schema"
+  },
+  {
+   "id": "F-11@98fc173f",
+   "rule": "F-11",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "itemId equals the folder name"
+  },
+  {
+   "id": "F-22@c6cb3e09",
+   "rule": "F-22",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "declared dimensions match the geometry (1.60 x 0.80 x 0.74 m)"
+  },
+  {
+   "id": "F-21@d2e53d09",
+   "rule": "F-21",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "pivot is the footprint centre on the floor"
+  },
+  {
+   "id": "F-42@bc60def5",
+   "rule": "F-42",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "declared collision box matches the geometry"
+  },
+  {
+   "id": "F-51@cc87fa9d",
+   "rule": "F-51",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "12 triangles"
+  },
+  {
+   "id": "F-51@51dacaf9",
+   "rule": "F-51",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "declared triangle budget equals the model"
+  },
+  {
+   "id": "F-03@589e876c",
+   "rule": "F-03",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "ItemId property equals the item id"
+  },
+  {
+   "id": "F-01@090e0b7b",
+   "rule": "F-01",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "table.work.1600"
+   },
+   "message": "class IfcFurnishingElement"
+  }
+ ],
+ "item": "table.work.1600"
+}

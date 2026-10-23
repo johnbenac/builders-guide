@@ -12,14 +12,29 @@ some consumer.
 * A **tool change**: keep `--json` output and exit codes stable (`schemas/check-report.schema.json`).
 * A **correction**: wrong, unclear or out-of-date text.
 
+## Offering a delivery
+
+Besides changes to the guide set, this repository takes **deliveries**: buildings, interiors, furniture, materials, fixtures and hardware
+made to the guides. Contributors use forks, never branches of this repository:
+
+1. Fork the repository.
+2. In a branch of your fork, build the delivery in `deliveries/<slug>/` (`deliveries/README.md`, `08-submissions-and-ingest.md`).
+3. Run `python3 tools/check_all.py deliveries/<slug>` until it exits 0.
+4. Open a pull request against `main`, change only your delivery folder, and complete the checklist in the template.
+
+A workflow checks the pull request; the first run of a first-time contributor may wait for a maintainer's approval. Accepted deliveries are
+merged to `main`, and a separate tool (`tools/ingest.py`) then splits them into component assets and a catalogue. Contributed assets are offered
+under CC BY 4.0 unless the delivery states CC0, and you attest that you own the work or may license it and that it holds no restricted
+third-party content. Agents: `skills/submit-delivery/SKILL.md`.
+
 ## How to change things
 
 1. Edit the guides (`01`-`05`), `tools/rules_meta.json`, profiles, schemas, templates, skills or tools. Do not edit generated files
    (`rules.json`, `06-rules-index.md`, `07-profile-parameters.md`, `chunks/`, `llms.txt`, `llms-full.txt`, `skills/*/references/`,
    `MANIFEST.json`).
 2. Regenerate: `python3 tools/gen_all.py --write`.
-3. Run the tests: `python3 tools/test_sync.py`, `python3 tools/selftest.py` and `python3 tools/agent_harness.py`
-   (`pip install -r tools/requirements.txt` first).
+3. Run the tests: `python3 tools/test_sync.py`, `python3 tools/selftest.py`, `python3 tools/agent_harness.py` and
+   `python3 tools/test_submission.py` (`pip install -r tools/requirements.txt` first; the last also needs `requirements-preview.txt`).
 4. Add a line to `CHANGELOG.md` and follow `VERSIONING.md`.
 
 ## Style
@@ -32,5 +47,6 @@ some consumer.
 
 ## Licence of contributions
 
-Contributions are accepted under the licences of the set (see `LICENSE.md`): text under CC BY 4.0, code and machine-readable files
-under Apache-2.0. By contributing you confirm you have the right to do so.
+Contributions to the guide set are accepted under the licences of the set (see `LICENSE.md`): text under CC BY 4.0, code and machine-readable
+files under Apache-2.0. Deliveries under `deliveries/` are not part of the guide set and keep the licence they state (CC BY 4.0 or CC0).
+By contributing you confirm you have the right to do so.
