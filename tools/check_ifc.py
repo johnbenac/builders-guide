@@ -363,6 +363,8 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         R.ok("B-137", "source pinned: %s %s" % (tp["PackageName"], tp["PackageVersion"]))
     if len(F) > tcfg["maxTriangles"]:
         R.fail("B-138", "the terrain has %d triangles; the profile allows at most %d" % (len(F), tcfg["maxTriangles"]), t.GlobalId)
+    else:
+        R.ok("B-138", "the terrain has %d triangles, within the profile's %d" % (len(F), tcfg["maxTriangles"]))
     sp = P[site.id()] if site is not None else {}
     missing_site = [k for k in ("SeaLevelMetres", "FootprintInWater") if k not in sp]
     if missing_site:
@@ -519,6 +521,22 @@ def check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris
         lv = container_of(d)
         lv = lv.id() if lv is not None else None
         join(rooms_at(c[0] + n[0] * dist, c[1] + n[1] * dist, level=lv), rooms_at(c[0] - n[0] * dist, c[1] - n[1] * dist, level=lv))
+    for op in model.by_type("IfcOpeningElement"):               # a through-opening in a wall with nothing in it (an archway) joins the rooms on both sides
+        og = geo.get(op.id())
+        if og is None or not len(og["v"]) or getattr(op, "HasFillings", None):
+            continue
+        hosts = [r.RelatingBuildingElement for r in (getattr(op, "VoidsElements", None) or []) if r.RelatingBuildingElement.is_a("IfcWall")]
+        if not hosts:
+            continue
+        wg = geo.get(hosts[0].id())
+        n, thick = thin_axis((wg or og)["v"])
+        lo, hi = og["v"].min(0), og["v"].max(0)
+        c = (lo[:2] + hi[:2]) / 2.0
+        dist = thick / 2.0 + 0.3
+        lv = container_of(hosts[0])
+        lv = lv.id() if lv is not None else None
+        join([i for i in rooms_at(c[0] + n[0] * dist, c[1] + n[1] * dist, level=lv, z=lo[2], tol_z=0.7)],
+             [i for i in rooms_at(c[0] - n[0] * dist, c[1] - n[1] * dist, level=lv, z=lo[2], tol_z=0.7)])
     for f in flights:
         g = geo.get(f.id())
         if g is None:

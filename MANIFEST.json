@@ -109,8 +109,8 @@
     "policy",
     "human"
    ],
-   "sha256": "47b98b8506a9e633789adb186d916d3ab19b55b13303cace29cee32eee1ad6d0",
-   "bytes": 6817
+   "sha256": "1bbfae5ccb6b5a0d2c3245f1bec22dbd0084bfbeccd076de7bca94de8630e5b9",
+   "bytes": 7836
   },
   {
    "path": "CONTRIBUTING.md",
@@ -2480,8 +2480,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "e1b383215d3d65f4e8efcd5235ca3094311b41a3ea0061a1c4fd484800bfef11",
-   "bytes": 4770
+   "sha256": "4fec465c021ba408bd1d0c4bd4dff1913ac81c2b72b3f0efbe2a22a11f436d36",
+   "bytes": 5239
   },
   {
    "path": "tools/agent_harness.py",
@@ -2500,8 +2500,8 @@
     "tool",
     "script"
    ],
-   "sha256": "346f47ade70990f6f87291d4dfbf59a5aded387895c959d502838fff0894b825",
-   "bytes": 5302
+   "sha256": "56bd68da76ec3b5b608b05ffb48b113b5b48bd47027a30f63bb91345668f9712",
+   "bytes": 6704
   },
   {
    "path": "tools/build_package.py",
@@ -2510,8 +2510,8 @@
     "tool",
     "script"
    ],
-   "sha256": "082a840a2e6603641ec83977ddf1d9c949a8a53d5b0eabb1913b74e8b4e8aec5",
-   "bytes": 16425
+   "sha256": "a027110b6c8c60a2786f36ff542a98d85fac98cc73762d25f92385c4d21b5a71",
+   "bytes": 16603
   },
   {
    "path": "tools/check_all.py",
@@ -2530,8 +2530,8 @@
     "tool",
     "script"
    ],
-   "sha256": "9deb7950c7fdbdf36d3fa36d5799100f7a980d2a16064f6ba8401c78ea661ba6",
-   "bytes": 66263
+   "sha256": "76f309184791972fd8fdb961abaf401fd67d0ce9d337be252396e86a1f52a269",
+   "bytes": 67351
   },
   {
    "path": "tools/check_item.py",
@@ -2582,6 +2582,16 @@
    ],
    "sha256": "406df8bb40b662e69032f0fff5debfbca16e512f4e9a50ac4e73e04553db65f3",
    "bytes": 27472
+  },
+  {
+   "path": "tools/leakscan.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "9980e6337ced57edc6b31cad8729fbd096ca11cb41511979428763f3729df508",
+   "bytes": 3836
   },
   {
    "path": "tools/make_fixtures.py",
@@ -2664,13 +2674,22 @@
    "bytes": 5630
   },
   {
+   "path": "tools/requirements-dist.txt",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "7dc8aeb05df017342d4e09585ae3522ab0eea32f5f202ef707ded1deb20e52b7",
+   "bytes": 144
+  },
+  {
    "path": "tools/requirements-preview.txt",
    "purpose": "tool support file",
    "tags": [
     "tool"
    ],
-   "sha256": "62eb5cdf987d1a2e68a19d02a03b03a59050f5f12684b7c646130ce730dcfc95",
-   "bytes": 49
+   "sha256": "f892e78e78dc34f51152d53764f2674828f2107d79e9fcac1e2741007237c80b",
+   "bytes": 52
   },
   {
    "path": "tools/requirements-terrain.txt",
@@ -2678,8 +2697,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "dc8dde470428ee7e5317fc0c8a36e7f5d92355fea4e1df8a8efd24f1a6035af6",
-   "bytes": 99
+   "sha256": "fe58d01536369bbf86844c976ba445ac974ff8d50528faa724c54949687041ff",
+   "bytes": 102
   },
   {
    "path": "tools/requirements.txt",
@@ -2687,8 +2706,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "ff9e24843ace8b62fa165175924b55e81ef25af6d40afc39e46f6256d4ebfbaa",
-   "bytes": 142
+   "sha256": "1aab8afd4259ce0876259f25e20c02be80b0358e5921979011b42a3d912fe054",
+   "bytes": 161
   },
   {
    "path": "tools/rules_index.py",
@@ -2786,8 +2805,8 @@
     "tool",
     "script"
    ],
-   "sha256": "3a2fe5fbf9b7b686816fd2151b92c7f1deea42d9bfbf10510962f49e639443f4",
-   "bytes": 18291
+   "sha256": "349f29cb160af3709bca2927250ccf7c0dab3c2f7b06326d6bc34cf859006c17",
+   "bytes": 18947
   },
   {
    "path": "tools/test_map_properties.py",
@@ -2806,8 +2825,8 @@
     "tool",
     "script"
    ],
-   "sha256": "b7349f41bc8fbcc607796f097798d0cd48e42ca7b1dd21ac3592bdb82cbbef31",
-   "bytes": 8702
+   "sha256": "6c17d4f7d1455b54379e317cac2e9451a9d891f22afd29de389e7da51ffbdf64",
+   "bytes": 9446
   },
   {
    "path": "tools/test_terrain.py",
@@ -2816,8 +2835,8 @@
     "tool",
     "script"
    ],
-   "sha256": "c977b1303bada59326a8651ea4bc6a846e8fdd8e8efc19c8372ebf6be96b1367",
-   "bytes": 10282
+   "sha256": "f19149171c9b44515c4167b287e3a4f3ce5591b8a0515f306e10741743b0d53c",
+   "bytes": 11514
   }
  ]
 }

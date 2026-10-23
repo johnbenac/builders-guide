@@ -34,10 +34,17 @@ check is RECOMMENDED and only warns; the REQUIRED rules are inside the new exten
   `requirements-preview.txt` (matplotlib). `MANIFEST.sha256` is now written by `gen_all.py --write`, checked by `test_sync.py` and built from
   the same file list (`tools/fileset.py`) as `MANIFEST.json` and the zip.
 
+* **Release hygiene:** `tools/leakscan.py` (run by `test_sync.py`, with a seeded-leak check) fails when any file of the set, the hand-over
+  files, the zip members or the PDF streams and links hold a local-file address or an absolute local path. `build_dist.py` now renders the PDF
+  from a neutral folder and removes local-file link annotations (needs `requirements-dist.txt`); the 2.0.0 hand-over files are no longer
+  shipped. Requirement files carry loose upper bounds.
+* Hardening tests: an archway, a thick-wall archway and a too-high opening for `B-47`; malformed and disagreeing terrain pins for `X-23`;
+  passing cases for `B-138` and `B-139` (`B-138` now reports a pass when the terrain is within its cap).
+
 **Changed (existing rules whose checks behave differently; none can fail a delivery under the default profile)**
 
 * `B-30`, `B-47`, `B-54` and the head-room half of `B-61` were review-only and are now automated as estimates (RECOMMENDED). Raising them
-  to required in a profile is not advisable yet. `B-47` follows doors, stairs and open edges; `B-54` samples a grid of points in each room.
+  to required in a profile is not advisable yet. `B-47` follows doors, stairs, open edges and empty through-openings in walls (an archway; the opening's sill must be within 0.7 m of the floor); `B-54` samples a grid of points in each room.
 * `B-33` and `B-94` now skip open-air rooms. Their text already said "enclosed room"; the checker had applied them to every room.
 * `B-115` keeps its meaning. The terrain extension is how a profile "says how"; a terrain element in a file whose profile does not enable the
   extension now warns. `B-110` and `B-120` leave the terrain element out (it has its own cap, `B-138`).
@@ -45,6 +52,9 @@ check is RECOMMENDED and only warns; the REQUIRED rules are inside the new exten
 * `how_to_check.method` in `rules.json` says "automated estimate" for the rules that approximate (`estimate` in `tools/rules_meta.json`).
 
 **Fixed**
+
+* `build_package.py verify` no longer crashes on a manifest whose terrain section holds a non-object; `X-23` reports it.
+* `B-47` no longer reports a room behind an empty wall opening as unreachable.
 
 * `gen_all.py` with no option no longer writes files; `llms.txt` states the real rule count (it said 179); `MANIFEST.sha256` was stale;
   `test_sync.py` now also checks the hand-written rule counts, each skill's rule range and the version.

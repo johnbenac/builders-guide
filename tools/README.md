@@ -7,7 +7,7 @@ checked, and exit with status 1 when a REQUIRED rule fails.
 Install once: `pip install -r tools/requirements.txt` (IFC reading, arrays, images, JSON schema checks, footprint geometry). The terrain
 tools also need `requirements-terrain.txt` (scipy) and `preview.py` needs `requirements-preview.txt` (matplotlib); each file includes the core
 list. The set is tested with ifcopenshell 0.9.0.post1, numpy 2.5.3, pillow 12.3.0, jsonschema 4.26.0, shapely 2.2.0, scipy 1.18.1 and
-matplotlib 3.11.2; the file lists give the lowest versions the code is written for.
+matplotlib 3.11.2; the file lists give the lowest versions the code is written for and a loose upper bound (the next major version, or for ifcopenshell the next minor one). Building the hand-over files needs `requirements-dist.txt` (pikepdf), pandoc and a Chromium-based browser.
 
 | Script | Use |
 |---|---|
@@ -28,10 +28,11 @@ matplotlib 3.11.2; the file lists give the lowest versions the code is written f
 | `run_example.py` | builds, checks and packages the whole worked example in one go |
 | `selftest.py` | builds the worked example, breaks it eleven ways, tests the property mapper, the generated files and the agent harness and confirms the checker names the right rule each time |
 | `rules_index.py` | regenerates `06-rules-index.md` and cross-checks every rule id used in the guides and scripts |
-| `build_dist.py` | builds the combined HTML and PDF and the zip with its checksums |
+| `build_dist.py` | builds the combined HTML and PDF and the zip with its checksums; renders from a neutral folder and removes local-file links from the PDF |
+| `leakscan.py` | finds local-file addresses and absolute local paths in the set and in the hand-over files (zip members, PDF streams and links); run by `test_sync.py` |
 | `gen_all.py` | writes or checks every generated file: `rules.json`, `chunks/`, `llms.txt`, `llms-full.txt`, `skills/*/references/`, `06-rules-index.md`, `MANIFEST.json` |
 | `rules_meta.json` | machine fields of the rules (rationale, fix hint, examples, related, which tool checks them); with the guides it is the source of `rules.json` |
-| `test_sync.py` | fails if the guides and the generated files differ, or a skill, link or hash is wrong |
+| `test_sync.py` | fails if the guides and the generated files differ, or a skill, link or hash is wrong, or a file holds a local path |
 | `agent_harness.py` | simulates a fresh agent: builds a building, a material library, an item and a package from the set alone, repairs one finding, then breaks each rule category and checks the findings |
 | `report.py` | shared report format |
 

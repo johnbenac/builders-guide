@@ -226,10 +226,12 @@ def verify(root):
             return doc
         if not isinstance(mt, dict):
             probs.append("the manifest has no terrain section")
+        elif not all(isinstance(mt.get(k), dict) for k in ("patch", "sidecar", "package")):
+            probs.append("terrain.patch, terrain.sidecar and terrain.package must each be an object")
         else:
             side = None
-            sp = mt.get("sidecar", {}).get("path")
-            pp = mt.get("patch", {}).get("path")
+            sp = mt["sidecar"].get("path")
+            pp = mt["patch"].get("path")
             if pp not in listed or listed[pp]["role"] != "terrain-patch":
                 probs.append("terrain.patch.path %r is not a listed terrain patch" % pp)
             elif listed[pp]["sha256"] != mt["patch"].get("sha256"):

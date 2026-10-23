@@ -4,7 +4,7 @@
 
     python3 tools/build_dist.py
 
-Needs `pandoc` and a Chromium-based browser (`google-chrome`) on the path. Writes into dist/:
+Needs `pandoc`, a Chromium-based browser (`google-chrome`) on the path and `pikepdf` (tools/requirements-dist.txt). Writes into dist/:
     builders-guide-1.0.0.html, builders-guide-1.0.0.pdf, builders-guide-1.0.0.zip, builders-guide-1.0.0.zip.sha256, SHA256SUMS.txt
 and MANIFEST.sha256 (the hash of every file in the set) at the top.
 """
@@ -55,7 +55,7 @@ def combined_markdown():
         t = texts[fn]
         # links to other guides become in-document links; links to folders become plain text
         t = re.sub(r"\[([^\]]+)\]\(([0-9A-Za-z._-]+\.md)\)", lambda m: "[%s](#%s)" % (m.group(1), anchors.get(m.group(2), "")), t)
-        t = re.sub(r"\[([^\]]+)\]\((?:templates|tools|schemas)/[^)]*\)", r"\1", t)
+        t = re.sub(r"\[([^\]]+)\]\((?:templates|tools|schemas|dist)/[^)]*\)", r"\1", t)
         # wrap long lines inside fenced code blocks (the page is narrower than a terminal)
         lines, inside = [], False
         for ln in t.split("\n"):
@@ -70,8 +70,28 @@ def combined_markdown():
     return "\n\n".join(out) + "\n"
 
 
+def scrub_pdf(src, dst):
+    """Copy a PDF, removing every URI action that is not http(s) or mailto (a local-file link would record a path of this machine)."""
+    import pikepdf
+    with pikepdf.open(src) as doc:
+        for page in doc.pages:
+            if "/Annots" not in page:
+                continue
+            keep = []
+            for a in page.Annots:
+                act = a.get("/A")
+                uri = str(act.get("/URI", "")) if act is not None else ""
+                if uri and not re.match(r"(https?:|mailto:)", uri):
+                    continue
+                keep.append(a)
+            page.Annots = doc.make_indirect(pikepdf.Array(keep))
+        doc.save(dst, deterministic_id=True)
+
+
 def main():
     os.makedirs(DIST, exist_ok=True)
+    for n in os.listdir(DIST):                      # earlier outputs are rebuilt, never checked or kept
+        os.remove(os.path.join(DIST, n))
     subprocess.run([sys.executable, os.path.join(ROOT, "tools", "gen_all.py"), "--write"], check=True)
     subprocess.run([sys.executable, os.path.join(ROOT, "tools", "test_sync.py")], check=True)
     md = os.path.join(DIST, NAME + ".combined.md")
@@ -87,8 +107,15 @@ def main():
     chrome = shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
     if not chrome:
         sys.exit("no Chromium-based browser found for the PDF")
-    subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer", "--print-to-pdf=" + pdf,
-                    "file://" + html], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Render from a neutral temporary folder with the HTML copied in, so that the browser never records a path of this machine,
+    # then drop every link annotation that is not an in-document link or a web address (a local-file link would leak a path).
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="render-") as tmp:
+        shutil.copyfile(html, os.path.join(tmp, "guide.html"))
+        out_pdf = os.path.join(tmp, "guide.pdf")
+        subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer", "--print-to-pdf=" + out_pdf,
+                        "guide.html"], check=True, cwd=tmp, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        scrub_pdf(out_pdf, pdf)
     # the file list of the set
     members = fileset.set_files(ROOT) + fileset.dist_files(ROOT)      # the same list as MANIFEST.json and MANIFEST.sha256
     with open(os.path.join(ROOT, fileset.CHECKSUM_FILE), "w", newline="\n") as fh:

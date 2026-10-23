@@ -106,7 +106,7 @@ for name, kw, expect_status in (("roof-full", dict(roof="full"), "pass"), ("roof
 
 # B-47: a door joins a hall to a cell however thick the wall or high the threshold; without a way through the cell is lost; touching
 # rooms with no wall are joined by an open edge
-def two_rooms(name, t=0.3, sill=0.0, door=True, open_edge=False):
+def two_rooms(name, t=0.3, sill=0.0, door=True, open_edge=False, arch=False, arch_sill=0.0):
     b = ifc_author.Builder("hardening/" + name, name, "Site", name, "B-" + name.upper())
     L = b.level("Building - ground / +0 m", 0.0)
     b.at(L)
@@ -116,14 +116,19 @@ def two_rooms(name, t=0.3, sill=0.0, door=True, open_edge=False):
     b.slab("floor", "Floor", [b.box(-0.3, -0.3, -0.3, 8.6 + gap, 4.6, 0.3, c["tray"])])
     b.slab("roof", "Roof", [b.box(-0.3, -0.3, H + 0.65, 8.6 + gap, 4.6, 0.3, c["tray"])], kind="ROOF")
     if not open_edge:
-        b.wall("p", "Partition", (4.0, 0.0, 4.0 + t, 4.0), H + 0.6, c["wall"], [("door", 1.0, 1.0, sill, sill + 2.1)] if door else [], along="y", opening_styles=ops)
+        w = b.wall("p", "Partition", (4.0, 0.0, 4.0 + t, 4.0), H + 0.6, c["wall"], [("door", 1.0, 1.0, sill, sill + 2.1)] if door and not arch else [],
+                   along="y", opening_styles=ops)
+        if arch:               # a through-opening with nothing in it
+            b.opening("arch", w, 4.0 - 0.02, 1.0, arch_sill, t + 0.04, 1.0, 2.1, c["room"])
     b.room("T-HALL", "Hall", "hall", [(0, 0), (4, 0), (4, 4), (0, 4)], "f", c["room"], circulation=True, height=H + 0.6)
     b.room("T-CELL", "Cell", "cell", [(4 + gap, 0), (8 + gap, 0), (8 + gap, 4), (4 + gap, 4)], "f", c["room"], height=H + 0.6)
     return b
 
 
 for name, kw, expect_status in (("wall-thin", dict(), "pass"), ("wall-1200", dict(t=1.2), "pass"), ("raised-threshold", dict(sill=0.6), "pass"),
-                                ("open-edge", dict(open_edge=True), "pass"), ("no-way-through", dict(door=False), "warn")):
+                                ("open-edge", dict(open_edge=True), "pass"), ("no-way-through", dict(door=False), "warn"),
+                                ("archway", dict(arch=True), "pass"), ("archway-thick-wall", dict(arch=True, t=1.2), "pass"),
+                                ("opening-too-high-to-walk", dict(arch=True, arch_sill=1.5), "warn")):
     want(name, build(two_rooms(name, **kw), name), "B-47", expect_status, absent=("warn",) if expect_status == "pass" else ())
 
 # B-142: a proxy is not exempt, a reservation volume and a footing are
@@ -278,6 +283,8 @@ json.dump({"format": "profile/1", "name": "t", "version": "1", "extensions": {"t
 importer("rough-patch-over-triangle-cap", os.path.join(work, "rough.tif"), profile=cap_tri)
 out = importer("rough-patch-site-elevation", os.path.join(work, "rough.tif"), expect=0)
 want("rough-patch passes its own B-134", out, "B-134", "pass", absent=("fail",), profile=PROFILE)
+want("terrain within its triangle cap", out, "B-138", "pass", absent=("warn", "fail"), profile=PROFILE)
+want("water declared on the site", out, "B-139", "pass", absent=("warn", "fail"), profile=PROFILE)
 
 # B-131 cannot be fooled by an overlap and a hole of equal area
 good_ifc = os.path.join(work, "case-control-ok", "out.ifc")

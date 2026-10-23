@@ -222,4 +222,23 @@ tool("build_package.py", "init", pkg, meta_path)
 f = verify()
 assert f and f[0]["status"] == "pass", "a pinned terrain was refused: %s" % f
 print("terrain pinned in the manifest: X-23 pass")
+
+# X-23 must also refuse a manifest whose terrain section is malformed or disagrees with the files (never crash)
+def broken_pin(label, edit):
+    m2 = json.loads(json.dumps(meta))
+    edit(m2["terrain"])
+    json.dump(m2, open(meta_path, "w"))
+    tool("build_package.py", "init", pkg, meta_path)
+    p = subprocess.run([sys.executable, os.path.join(HERE, "build_package.py"), "verify", pkg, "--profile", PROFILE, "--json"], capture_output=True, text=True)
+    assert p.returncode == 1 and "Traceback" not in p.stderr, "%s: verify exited %d: %s" % (label, p.returncode, p.stderr[-300:])
+    got = [f for f in json.loads(p.stdout)["findings"] if f["rule"] == "X-23"]
+    assert got and got[0]["status"] == "fail", "%s was accepted: %s" % (label, got)
+    print("%-26s expects %-5s -> caught" % (label, "X-23"))
+
+
+broken_pin("patch-not-an-object", lambda t: t.__setitem__("patch", "terrain/patch.tif"))
+broken_pin("sidecar-not-an-object", lambda t: t.__setitem__("sidecar", ["terrain/patch.json"]))
+broken_pin("package-missing", lambda t: t.pop("package"))
+broken_pin("patch-hash-wrong", lambda t: t["patch"].__setitem__("sha256", "0" * 64))
+broken_pin("package-version-wrong", lambda t: t["package"].__setitem__("version", "9.9.9"))
 print("test_terrain: all checks behaved as expected")
