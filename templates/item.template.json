@@ -1,0 +1,126 @@
+{
+  "_license": "Apache-2.0",
+  "format": "item/1",
+  "itemId": "table.work.1600",
+  "version": "1.0.0",
+  "name": "Work table, 1.6 m",
+  "category": "table",
+  "class": "IfcFurnishingElement",
+  "pivot": {
+    "kind": "floor",
+    "description": "centre of the footprint, on the floor"
+  },
+  "front": [
+    1,
+    0,
+    0
+  ],
+  "dimensions": {
+    "x": 1.6,
+    "y": 0.8,
+    "z": 0.74
+  },
+  "footprint": [
+    [
+      -0.8,
+      -0.4
+    ],
+    [
+      0.8,
+      -0.4
+    ],
+    [
+      0.8,
+      0.4
+    ],
+    [
+      -0.8,
+      0.4
+    ]
+  ],
+  "collision": {
+    "kind": "box",
+    "min": [
+      -0.8,
+      -0.4,
+      0.0
+    ],
+    "max": [
+      0.8,
+      0.4,
+      0.74
+    ]
+  },
+  "clearance": {
+    "front": 0.9,
+    "back": 0.0,
+    "left": 0.45,
+    "right": 0.45,
+    "top": 0.0
+  },
+  "anchors": [
+    {
+      "id": "seat-1",
+      "kind": "seat",
+      "position": [
+        0.0,
+        -0.7,
+        0.45
+      ],
+      "direction": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "work-surface",
+      "kind": "surface",
+      "position": [
+        0.0,
+        0.0,
+        0.74
+      ],
+      "direction": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "placement": {
+    "mounting": "floor",
+    "againstWall": false,
+    "minWallDistance": 0.0,
+    "rotations": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "roomUses": [
+      "work",
+      "meeting",
+      "study"
+    ],
+    "avoid": [
+      "circulation"
+    ]
+  },
+  "variants": [
+    {
+      "id": "oak",
+      "colour": "#ccbba0",
+      "finish": "furniture.oak.veneer"
+    }
+  ],
+  "budget": {
+    "triangles": 12,
+    "textures": 0
+  },
+  "provenance": {
+    "author": "Replace with the author",
+    "licence": "Replace with the licence",
+    "source": "original"
+  }
+}

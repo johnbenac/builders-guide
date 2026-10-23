@@ -1,0 +1,2609 @@
+{
+ "format": "set-manifest/1",
+ "version": "2.0.0",
+ "note": "Every file of the set except dist/ and MANIFEST.sha256 (see MANIFEST.sha256 and dist/SHA256SUMS.txt).",
+ "files": [
+  {
+   "path": ".gitignore",
+   "purpose": "version control ignore list",
+   "tags": [
+    "config"
+   ],
+   "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
+   "bytes": 19
+  },
+  {
+   "path": "01-builders-and-architects-guide.md",
+   "purpose": "human guide",
+   "tags": [
+    "guide",
+    "human"
+   ],
+   "sha256": "b1b8f35f1b003cd911d26d86c44190ff31ac494a0ebe65fd96fa41b8b6a1ed54",
+   "bytes": 26539
+  },
+  {
+   "path": "02-interior-decorators-guide.md",
+   "purpose": "human guide",
+   "tags": [
+    "guide",
+    "human"
+   ],
+   "sha256": "76fe96edc04330d3ebb9d3fd9b7aacb0779fc59fb7732a11b08897dae81261fa",
+   "bytes": 15199
+  },
+  {
+   "path": "03-furniture-and-fixtures-guide.md",
+   "purpose": "human guide",
+   "tags": [
+    "guide",
+    "human"
+   ],
+   "sha256": "8a11accdb3cded4e12539a27c23fbdaf69111949f49a69ffa1ad68edf3de4199",
+   "bytes": 13058
+  },
+  {
+   "path": "04-delivery-and-acceptance-guide.md",
+   "purpose": "human guide",
+   "tags": [
+    "guide",
+    "human"
+   ],
+   "sha256": "63ddd06f6a1869f1872e545c92801dd6333f9eed6361ea12be07135fbabcf0aa",
+   "bytes": 18707
+  },
+  {
+   "path": "05-worked-example.md",
+   "purpose": "human guide",
+   "tags": [
+    "guide",
+    "human"
+   ],
+   "sha256": "a578f665864d3aae41e5160a7482f8a72c4f7a4289306ace1fc04b22f358a950",
+   "bytes": 10676
+  },
+  {
+   "path": "06-rules-index.md",
+   "purpose": "all rules in one table (generated)",
+   "tags": [
+    "rules",
+    "generated"
+   ],
+   "sha256": "7764ca476c187a94c930b4ed249e3a6aa05848c2a09fce8060730f524399fc09",
+   "bytes": 30160
+  },
+  {
+   "path": "07-profile-parameters.md",
+   "purpose": "every profile parameter with defaults (generated)",
+   "tags": [
+    "profile",
+    "generated"
+   ],
+   "sha256": "fd3a6e6c240266e80140d5a4dc8fd4cbba4e894346da536268bd819a5ffa878c",
+   "bytes": 9168
+  },
+  {
+   "path": "ABOUT.md",
+   "purpose": "what the set is, who it is for, how a consumer adopts it",
+   "tags": [
+    "entry",
+    "human"
+   ],
+   "sha256": "6af87a804724ad9c12eb7c03fd023ccb136d798361f6f12051ad87b5f43b3a9e",
+   "bytes": 3688
+  },
+  {
+   "path": "AGENTS.md",
+   "purpose": "agent entry point: what the set is, where to start, commands",
+   "tags": [
+    "entry",
+    "agent"
+   ],
+   "sha256": "10c75d6f8ad1d66d94f630ad22c8bba28bff6156e505d614bb7ae63f43c05576",
+   "bytes": 3655
+  },
+  {
+   "path": "CHANGELOG.md",
+   "purpose": "project policy document",
+   "tags": [
+    "policy",
+    "human"
+   ],
+   "sha256": "9fb1db4b13c68e7d8da1bd5356f77c655e0a7fe16642bb1a40a9ccce144892e6",
+   "bytes": 2560
+  },
+  {
+   "path": "CONTRIBUTING.md",
+   "purpose": "project policy document",
+   "tags": [
+    "policy",
+    "human"
+   ],
+   "sha256": "e7a105fbe35f55f8904b61fb75cf8d86e40e44ee97e1b41aec6a7181e38f1042",
+   "bytes": 2048
+  },
+  {
+   "path": "LICENSE.md",
+   "purpose": "project policy document",
+   "tags": [
+    "policy",
+    "human"
+   ],
+   "sha256": "e05f82d8ca4f84ea1724b8cfba9e6463fff698870144ad1822a36b70a1063dbd",
+   "bytes": 1828
+  },
+  {
+   "path": "README.md",
+   "purpose": "human index of the set and rule levels",
+   "tags": [
+    "entry",
+    "human"
+   ],
+   "sha256": "3bfeb8c996d08dbed96850959115994da2fc61d15542f7e1d2fbe933dbe20c40",
+   "bytes": 7244
+  },
+  {
+   "path": "REPAIR-LOOP.md",
+   "purpose": "run, read findings, fix, rerun procedure with stop conditions",
+   "tags": [
+    "procedure",
+    "agent"
+   ],
+   "sha256": "e5473ebeb37086c7f309fe76d8b48ed9c3255357564f4e62ad5fa0bcde4a270f",
+   "bytes": 4439
+  },
+  {
+   "path": "VERSIONING.md",
+   "purpose": "project policy document",
+   "tags": [
+    "policy",
+    "human"
+   ],
+   "sha256": "edc3bf663bdc0c389b7dfc1493b25ecc229b74a2e368196a4915a7deed7a862c",
+   "bytes": 1728
+  },
+  {
+   "path": "chunks/about--how-a-consumer-adopts-it.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "8a7ca4dd48373f20e76a3a16b7ff37e003007dbab338af0af359a32ecdd31ced",
+   "bytes": 1080
+  },
+  {
+   "path": "chunks/about--how-it-is-organised.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b5c23fb210a172e314bcbedeed2186b6362992716a0c348bdfb76582acccc52e",
+   "bytes": 1170
+  },
+  {
+   "path": "chunks/about--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "9842747017ca38637f779dd068a24ed8f6b553f7a9e9830fe15ee2f2bbd503be",
+   "bytes": 149
+  },
+  {
+   "path": "chunks/about--what-it-does-not-do.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "3533b9771c71f72969e22829c3977e6b420d753b198f685d594a8be6e5841515",
+   "bytes": 462
+  },
+  {
+   "path": "chunks/about--what-it-is.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "ca9c3d854fac73867064279681e565597899148e14dd94b7f40ba05ae2ca66cf",
+   "bytes": 860
+  },
+  {
+   "path": "chunks/about--who-it-is-for.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "e905196388bdea07d0304ca5412d46fd2cc02c8a00f230c3632cf3e99613e49b",
+   "bytes": 540
+  },
+  {
+   "path": "chunks/g1--1-vocabulary.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "85eef33d2c8c8b32961cafc3d2a3d15307dab1c7a7460938cd59d30eef36890c",
+   "bytes": 1083
+  },
+  {
+   "path": "chunks/g1--10-zones-and-reserved-volumes.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "f0cabc6106f503b240009bdb08acd2fb3c657a259304db4f521fd71df61aa183",
+   "bytes": 1169
+  },
+  {
+   "path": "chunks/g1--11-optional-extension-lighting-fixtures.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b3d5430ddc9d40ea98cbd16c8122d5a0b14bcebe824ab81976c37cba7589b5d8",
+   "bytes": 2751
+  },
+  {
+   "path": "chunks/g1--12-optional-extension-signboards.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "144a3a58f39342b3a5c2663343a0c1b0ec06b10e3459bd37ec6c36be91e1d5f1",
+   "bytes": 1919
+  },
+  {
+   "path": "chunks/g1--13-geometry-hygiene.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "d449d60a73c2b1e5647af07daa965884d94612b96e7f5bd9620b9bbe3dab84db",
+   "bytes": 1552
+  },
+  {
+   "path": "chunks/g1--14-level-of-detail-and-budgets.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "67ad29becaaf9fb6e6e2fe6b31c94351cf2bc2f862ee1ed388519fe7dbcb53d6",
+   "bytes": 1188
+  },
+  {
+   "path": "chunks/g1--15-what-to-avoid.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "2b2e91bd12c110c3364fb3221675fcbca4676f5308f93e2575f32c5a79af88f3",
+   "bytes": 784
+  },
+  {
+   "path": "chunks/g1--2-what-the-profile-gives-you.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "1aeb9c762bde7acad98a455ac6c51ed03559292455b5ff77bbe87e64d27c7b9f",
+   "bytes": 1299
+  },
+  {
+   "path": "chunks/g1--3-file-and-schema.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "42e47e9f7694a14a752a0450834311d825b19018a6d6b36fc3c0004bfc08bf8f",
+   "bytes": 2555
+  },
+  {
+   "path": "chunks/g1--4-units-axes-origin-and-levels.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "281f7d703ae570e38a3831a7d68023a6b675edb63f1919ea42d3d63265f2e18f",
+   "bytes": 1881
+  },
+  {
+   "path": "chunks/g1--5-rooms-and-zones.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "c1631e8258314fd80fc20d410736108fb02f6c92b2e9134cf4d50850b1c428a0",
+   "bytes": 4540
+  },
+  {
+   "path": "chunks/g1--6-walls-doors-windows-and-openings.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "9066873bf86284208a3c4a90a4e0b435bd4cc9de18c5bfcad5955bd5acb4bfe7",
+   "bytes": 1974
+  },
+  {
+   "path": "chunks/g1--7-floors-roofs-ceilings-and-slab-openings.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "61a1ab85502daa12fa2c674c34179b060b9bb8e5c29c20cf12238a9e873b7696",
+   "bytes": 1586
+  },
+  {
+   "path": "chunks/g1--8-circulation-stairs-ramps-lifts-rails.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "3d37a779c0cb1bcd09b89e605db8dbf9167fa049c867c04fbfe42ee0441aac58",
+   "bytes": 2558
+  },
+  {
+   "path": "chunks/g1--9-names-identifiers-property-sets-and-classifica.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "20f97f1ca27877d72b974eeac717bea078b9b49e9ee0ed8c78d92a6be3698da1",
+   "bytes": 1706
+  },
+  {
+   "path": "chunks/g1--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "97f62798dcd89e9fb273f09ea12c3e790c9068a4f0e8aeaa0ea26fe86b4e5fd7",
+   "bytes": 733
+  },
+  {
+   "path": "chunks/g2--1-how-consumers-decide-what-a-surface-looks-like.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "9872ac63c5b576b58802aea6fcaf8450500236411afea6468c630a5d6952d3cc",
+   "bytes": 1742
+  },
+  {
+   "path": "chunks/g2--2-colour-rules.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "a2f2750a5922db42396cd2451865c1db68e8511c5cc358f416122a00800897c9",
+   "bytes": 1870
+  },
+  {
+   "path": "chunks/g2--3-floors-ceilings-wall-coverings-accents-and-tri.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b049b652b8e83839f2e01e4ff68641e12c160c3dbf0851ad8315535b0d74d476",
+   "bytes": 3042
+  },
+  {
+   "path": "chunks/g2--4-texture-sets.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "e00b9e80ea642f4d94dbdf9eb0c0073f0414d3e7b4367427fc32507c0de3cabd",
+   "bytes": 3181
+  },
+  {
+   "path": "chunks/g2--5-the-finish-schedule.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "32277480b1b708f9abb3ea00774e6f416b5ed996c6667e2c35fdf62fa3b53d5c",
+   "bytes": 2837
+  },
+  {
+   "path": "chunks/g2--6-palettes.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "906673c29c177fa160a0855d3936b5dd28e03c5c907f50748949e318726728ff",
+   "bytes": 691
+  },
+  {
+   "path": "chunks/g2--7-delivering-a-reusable-material-library.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "4e14dfaf3c6ad53494e154ef69fe2992cca314df91b783e95cec4104b0e7c1c4",
+   "bytes": 1694
+  },
+  {
+   "path": "chunks/g2--8-defects-commonly-seen.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "52e258eeb38d0dade9ff501df82b1b9dd6a1c35e1da14f48bf5116022c6e7963",
+   "bytes": 895
+  },
+  {
+   "path": "chunks/g2--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "c07d3d97e8b1350bb077eaae833639be9ae4e6da01f24d855a9c958e3f7e9df8",
+   "bytes": 676
+  },
+  {
+   "path": "chunks/g3--1-what-consumers-do-with-an-item.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "9687c4b3dba4f5036d616568f89ad45a9bba8edb9ef758600b608af0ab4bab09",
+   "bytes": 1398
+  },
+  {
+   "path": "chunks/g3--10-what-to-avoid.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "129ef8bf443a20030ce99198b148d11699d811ebed48e79237f871411f71e6a5",
+   "bytes": 691
+  },
+  {
+   "path": "chunks/g3--2-classes-and-categories.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "80cc421851511388f309023c42af070da90d6df6d3c4eaebd95a3dd2504e2226",
+   "bytes": 1690
+  },
+  {
+   "path": "chunks/g3--3-item-library-format.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "26e54b30801c340678487d0d6c22e0052b9670f38919f53fb523458c7fd22753",
+   "bytes": 2631
+  },
+  {
+   "path": "chunks/g3--4-dimensions-origin-and-pivot.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "073790cb13a0df3bfaecb1a9d75f1c13a0c3cf185d7d67669bc5a0113698d35f",
+   "bytes": 1557
+  },
+  {
+   "path": "chunks/g3--5-placement-points-anchors-and-where-an-item-may.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "1419dee881852103549c599be9b94a3ccc9ed05d41e708a983c6766878995c5e",
+   "bytes": 1821
+  },
+  {
+   "path": "chunks/g3--6-collision-and-footprint.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "8680138bf41ba119ff70ef76c6f99938278f8bbc7331e24b8a586726331da1a2",
+   "bytes": 1370
+  },
+  {
+   "path": "chunks/g3--7-polygon-and-texture-budgets.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "5568d694782ffc96501fd3bd5a88be5becb24cb9cb4fce2ec296b3e28395e938",
+   "bytes": 1001
+  },
+  {
+   "path": "chunks/g3--8-variants-and-instancing.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "26c6f67890baea2b778abb04cc7351c315cc757e1b998e58a70def9346560e75",
+   "bytes": 1133
+  },
+  {
+   "path": "chunks/g3--9-fixtures.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "080839308315efc7fde714940ac51984347269cb1e5c9c995d81ab392311fc72",
+   "bytes": 837
+  },
+  {
+   "path": "chunks/g3--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "81856e16e42d4a6cf088778484bf2df612ec97460548b2aafcb72e714c67b8a8",
+   "bytes": 591
+  },
+  {
+   "path": "chunks/g4--1-what-you-send.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "d77fb4a2fec72379123ccc9d0c0d8d6f4fc4ecad827224321ff04823abb13b2d",
+   "bytes": 1758
+  },
+  {
+   "path": "chunks/g4--2-packaging-the-work.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "2ade8d7efe3c3810ad1bc395127de03e13b18b19ab315a9ad6d7ce5effa3b87a",
+   "bytes": 546
+  },
+  {
+   "path": "chunks/g4--3-the-manifest.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "ec35f86bc2ef7d6521f765516d0e2960822f36a16a29bf3360c3f786aaff70dc",
+   "bytes": 3807
+  },
+  {
+   "path": "chunks/g4--4-versions.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "0a50cdf8915b0a5549f4809f3ec9a1c4a8df439f30f1e599d2540fe90b0502bf",
+   "bytes": 1191
+  },
+  {
+   "path": "chunks/g4--5-acceptance-checks.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "9e6ef4afad735d814cdd53cf2ecfd98d1c5455c8ce06090ea068919991f71d5e",
+   "bytes": 5214
+  },
+  {
+   "path": "chunks/g4--6-pre-submission-checklist.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "5b807e4e1ad63558ed98a24ddea54e0f0615a9d815a85bd5ff0a900958468acd",
+   "bytes": 3463
+  },
+  {
+   "path": "chunks/g4--7-how-a-receiving-party-accepts-returns-or-refus.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "0ac4a065d0eace3c32af91d3cce8507fcd10760336e7260975f623d73ac9fbae",
+   "bytes": 3103
+  },
+  {
+   "path": "chunks/g4--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b7c2ffb05a580de928de1a7aa9b5985f2a30fd70f9c0438450b764ceade8e6f1",
+   "bytes": 733
+  },
+  {
+   "path": "chunks/g5--1-the-profiles.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "db499e9b6e67d30ce37001b4bc4b67b62b05073a9e7b4a86424784f969909f79",
+   "bytes": 921
+  },
+  {
+   "path": "chunks/g5--2-what-is-modelled.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "fc18c92aa6e016e7b1f4da013f0932a7ea9d4987cd2c9d34a08bccb418a5f30d",
+   "bytes": 1597
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-1-frame-level-and-identity-b-10.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "d3d31d0921f050fc2eb80fce0747d9b7f6c97f5fee7d75ba54923613fda93d12",
+   "bytes": 604
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-10-package-manifest-and-checks.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "dd7f59f45ff611e90567358ab29507cd55e910f3156ffdae2afac912fb83b3da",
+   "bytes": 1043
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-2-walls-openings-door-and-windo.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b1896080c92c01ff219b553b32b4085bae99726857b8d0236a5bf855cff11878",
+   "bytes": 784
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "cee16da1e4b0e3c248e6fb8da4988337525cac15038ecd051281318de34f99d1",
+   "bytes": 500
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-4-the-room-b-20-to-b-27.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "14ee53bbfbab235eb93bf43d65b62d8704ea8848a829b190aaad0608ca4c531a",
+   "bytes": 985
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-5-the-table-guide-3.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "73655b0fe893168220a18f155868c56eaba387662e4e20b5918fab5daaa3ebc5",
+   "bytes": 616
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b5fd1104f36e9418dc8a061536d8a780ed78db902a8843ed9c312aeac07bcc48",
+   "bytes": 650
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-7-the-luminaire-optional-extens.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "893a680c5f66fa079ec62d07247f80ca87c7845da7eeb50d29069ce858b1ccbe",
+   "bytes": 1211
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-8-colours-and-the-finish-schedu.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b703cf56ea66d9052accf93e4c460482c8eb056affa941741a2c89d9553339e1",
+   "bytes": 1093
+  },
+  {
+   "path": "chunks/g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "1c407d1990999809f60b5f082870ce5296ac8f5a49bb3d80a28c347e5fa81bf3",
+   "bytes": 601
+  },
+  {
+   "path": "chunks/g5--3-step-by-step.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "e8b0399bb8d21f29b9fdec92e039913cd7499e357be11cdea0f448d4344fb194",
+   "bytes": 121
+  },
+  {
+   "path": "chunks/g5--4-things-to-try.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "3687450a3c281e3345ca4f77fe32218a8f056a5f498df9296c1a483aa2764afe",
+   "bytes": 663
+  },
+  {
+   "path": "chunks/g5--5-what-the-example-leaves-out.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "ef1f8d90e0fecec896b53d1d3738b17e1ec78b7b4aa463a90e803b225cc249e5",
+   "bytes": 439
+  },
+  {
+   "path": "chunks/g5--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "af9d1fef3bca0af1a8237596c692cefae49c08ec47a04eed1102564e68dcdf16",
+   "bytes": 1251
+  },
+  {
+   "path": "chunks/index.json",
+   "purpose": "index of the content chunks (generated)",
+   "tags": [
+    "index",
+    "generated",
+    "machine"
+   ],
+   "sha256": "a2d7782a1c2ac4588d2b689084d83124ba20e527dd2c735f8a778467183d2a78",
+   "bytes": 22304
+  },
+  {
+   "path": "chunks/params--extensions.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "2704d0386545c1ac5f0bbd3490c7233795625aeb19647b855741dafc80c84dd1",
+   "bytes": 601
+  },
+  {
+   "path": "chunks/params--introduction-part-1-of-3.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "865d6276ec3fb6a512988835a2dd4b362aa390ad2753bdcd95e61b704f164648",
+   "bytes": 595
+  },
+  {
+   "path": "chunks/params--introduction-part-2-of-3.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "413400ca5d6308438d54c537104ca7e996f14c0c3fe5769375c9a21a748542c7",
+   "bytes": 6062
+  },
+  {
+   "path": "chunks/params--introduction-part-3-of-3.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "ba0fbb60ad23eb703b794b6409a2f2c9ab58dc0a61a33a7b6bdd23af9856ae80",
+   "bytes": 2288
+  },
+  {
+   "path": "chunks/params--rule-levels-in-a-profile.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "6d8637bffe50b30e34a38653e0813ecb5d8537f7cde51f3f39ada67201b8279f",
+   "bytes": 314
+  },
+  {
+   "path": "chunks/readme--core-and-profile.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "cb0c4dc78a39c3b33b4f9404594aa777245e74fba7e498a4af8928c6f3b576bc",
+   "bytes": 781
+  },
+  {
+   "path": "chunks/readme--for-agents.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "1ed92f00bf446de5376225725d07b328a4bb75344e6d346b41929154a5dca4a6",
+   "bytes": 1187
+  },
+  {
+   "path": "chunks/readme--hand-over-files.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "4fbc716fa937fc24d2286db543d62a25465c773c740805ce7bb8c2d4777c5eaf",
+   "bytes": 741
+  },
+  {
+   "path": "chunks/readme--how-rules-are-written.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "af2314aed263d546a4a0ec4b67e40270af4c93189bf6a08b649bb695d6113fd8",
+   "bytes": 1191
+  },
+  {
+   "path": "chunks/readme--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "518cc65b5588441ba3532fa705bac231e75b92ab282d9c08504267f566b6c8ee",
+   "bytes": 896
+  },
+  {
+   "path": "chunks/readme--reading-order.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "b79bc50be8745dc51de1586018fea95df8e8ace0f9b157b6fac8cd7e5d75cebd",
+   "bytes": 337
+  },
+  {
+   "path": "chunks/readme--the-five-guides.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "66d01eb1607555d5433fd54718d45f6061da201552eff0eba35068c50228f676",
+   "bytes": 1632
+  },
+  {
+   "path": "chunks/readme--what-this-set-does-not-cover.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "9c10dd7a265bf73a0337dacb0ae0bf4ad627d39d9c4a8babbd8e4242142d6baf",
+   "bytes": 396
+  },
+  {
+   "path": "chunks/readme--words-used-in-a-fixed-sense.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "2f41ebb4b08f6e43bfcd3121deb20549cdffea6b7207cbcb2bed7389fe444a7f",
+   "bytes": 991
+  },
+  {
+   "path": "chunks/repair--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "eae4ae12bf5d0ddc18204dde00ddb41b78b819914c72bd6b40ee6a19c8a849db",
+   "bytes": 361
+  },
+  {
+   "path": "chunks/repair--never-do-these-to-get-a-pass.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "44255d50911fbb0874434f32d0136197244034e088ae863cdf61da3a2869ccaa",
+   "bytes": 598
+  },
+  {
+   "path": "chunks/repair--report-fields.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "58e8712db4b3c44d98fd9369d2e4d88d9e8f1969ebb62889f7adf648c4ce6bf8",
+   "bytes": 1041
+  },
+  {
+   "path": "chunks/repair--stop-conditions.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "50cfd8dea6b3ddebd6aadaeb6812d43a0e0f7d81cc6dca5f08d70f3819e92ca1",
+   "bytes": 830
+  },
+  {
+   "path": "chunks/repair--the-loop.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "0671e8bd4b6f2c9c6594501b5035a9bbdbbe854d9c4a1f0301b7c3dd7b6c19fa",
+   "bytes": 1479
+  },
+  {
+   "path": "chunks/repair--worked-mini-loop.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "7a6da05b5b6a6ef28d27c5cebe5ba1c3461db5adc9fdaafb075be7dc7f3bdad9",
+   "bytes": 735
+  },
+  {
+   "path": "llms-full.txt",
+   "purpose": "all guide content in marked chunks, one file",
+   "tags": [
+    "agent",
+    "content"
+   ],
+   "sha256": "9ecc92fed84175dd1bb4b4212ef4ce0f5719a33e3ec64529e1a18ef881ab81c7",
+   "bytes": 121601
+  },
+  {
+   "path": "llms.txt",
+   "purpose": "index of the set for language-model readers",
+   "tags": [
+    "entry",
+    "agent",
+    "index"
+   ],
+   "sha256": "63e02292bdff6b911ab4fa752f82101450809b0e24154cabbe8fc3e04d84cedf",
+   "bytes": 12213
+  },
+  {
+   "path": "profiles/default.json",
+   "purpose": "consumer profile (parameters and rule levels)",
+   "tags": [
+    "profile",
+    "machine"
+   ],
+   "sha256": "6389373e6bba151701c9713797efbe386569e97cf73cf3a5809d29cfa051f690",
+   "bytes": 3272
+  },
+  {
+   "path": "profiles/example-strict.json",
+   "purpose": "consumer profile (parameters and rule levels)",
+   "tags": [
+    "profile",
+    "machine"
+   ],
+   "sha256": "b688bf556144ec9957c6a06a5ed9e527f71ef4ab8f7070f518923dc9073d2f15",
+   "bytes": 4460
+  },
+  {
+   "path": "profiles/profile.schema.json",
+   "purpose": "JSON Schema of a consumer profile",
+   "tags": [
+    "profile",
+    "schema",
+    "machine"
+   ],
+   "sha256": "c7cfbd68b9550f8a55bca50563c927a4ceb03e7671880be402f74d6bd77680cf",
+   "bytes": 12506
+  },
+  {
+   "path": "rules.json",
+   "purpose": "machine-readable rule registry (generated)",
+   "tags": [
+    "rules",
+    "generated",
+    "machine"
+   ],
+   "sha256": "144fe2f096a66f167b5dd36763e7500a5c9ac96e0b8c61bad728ae4089eb3096",
+   "bytes": 164109
+  },
+  {
+   "path": "schemas/building-metadata.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "6211780c90ca930389e163b7a8f2e340bbbff9db256774890668da1aa00305e8",
+   "bytes": 2258
+  },
+  {
+   "path": "schemas/check-report.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "166e1f40c3a74cd8276640b4808e36743762d708a0aaee1bbf43953894abfa69",
+   "bytes": 3582
+  },
+  {
+   "path": "schemas/finish-schedule.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "4bd980b151703441ab13302eaf165d379d31eb44aa425e6a2e19b857430f3605",
+   "bytes": 4645
+  },
+  {
+   "path": "schemas/item.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "9f9a24c94f46c63945eaf953355dd0a9c814aaafc2c21c405a36d762ddae5146",
+   "bytes": 5802
+  },
+  {
+   "path": "schemas/manifest.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "a0309e5fb9a75924e46d69d1f949dd37135591f1a7666b20bfc9fee5ea82b8e0",
+   "bytes": 5765
+  },
+  {
+   "path": "schemas/material-library.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "1699a72c6c100a0343350907c3355763fc48153b14cb6acf31d388756fb8edb6",
+   "bytes": 1307
+  },
+  {
+   "path": "schemas/rules.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "feb79dbead5c5159c2a7b846bc7487ff0ea2a1dbdcdb330620c35c067624e9c8",
+   "bytes": 3465
+  },
+  {
+   "path": "schemas/set.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "738b5dcf518950cddb907b6aecc089b821343970ef728be72327920e9d931cca",
+   "bytes": 1321
+  },
+  {
+   "path": "skills/accept-and-package-delivery/SKILL.md",
+   "purpose": "skill: when to use, ordered procedure, commands, definition of done",
+   "tags": [
+    "skill",
+    "agent"
+   ],
+   "sha256": "04268ca4a565fb7d15fb65f924fe82118c9aedda8387877c51268d40742f47e6",
+   "bytes": 4633
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--1-what-you-send.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "d77fb4a2fec72379123ccc9d0c0d8d6f4fc4ecad827224321ff04823abb13b2d",
+   "bytes": 1758
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--2-packaging-the-work.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "2ade8d7efe3c3810ad1bc395127de03e13b18b19ab315a9ad6d7ce5effa3b87a",
+   "bytes": 546
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--3-the-manifest.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "ec35f86bc2ef7d6521f765516d0e2960822f36a16a29bf3360c3f786aaff70dc",
+   "bytes": 3807
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--4-versions.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "0a50cdf8915b0a5549f4809f3ec9a1c4a8df439f30f1e599d2540fe90b0502bf",
+   "bytes": 1191
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--5-acceptance-checks.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "9e6ef4afad735d814cdd53cf2ecfd98d1c5455c8ce06090ea068919991f71d5e",
+   "bytes": 5214
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--6-pre-submission-checklist.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "5b807e4e1ad63558ed98a24ddea54e0f0615a9d815a85bd5ff0a900958468acd",
+   "bytes": 3463
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--7-how-a-receiving-party-accepts-returns-or-refus.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "0ac4a065d0eace3c32af91d3cce8507fcd10760336e7260975f623d73ac9fbae",
+   "bytes": 3103
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/g4--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b7c2ffb05a580de928de1a7aa9b5985f2a30fd70f9c0438450b764ceade8e6f1",
+   "bytes": 733
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/rules.md",
+   "purpose": "rules for this skill with fix hints (generated)",
+   "tags": [
+    "skill",
+    "rules",
+    "generated"
+   ],
+   "sha256": "9bce0879326a5b2abdc75d8bc71458b46a14c67ade8a67ae69b0c73aea8b5094",
+   "bytes": 8686
+  },
+  {
+   "path": "skills/accept-and-package-delivery/scripts/run_tool.py",
+   "purpose": "wrapper that runs the set's tools",
+   "tags": [
+    "skill",
+    "script"
+   ],
+   "sha256": "918b73f8c36b88930a018bb0dd4bff79133399f716f5641256abcc3f9df1e307",
+   "bytes": 1405
+  },
+  {
+   "path": "skills/author-building/SKILL.md",
+   "purpose": "skill: when to use, ordered procedure, commands, definition of done",
+   "tags": [
+    "skill",
+    "agent"
+   ],
+   "sha256": "1726e5da2696017285bbb7abd5fc81636dc18bcfab189ae3368fac7935017ac9",
+   "bytes": 5519
+  },
+  {
+   "path": "skills/author-building/references/g1--1-vocabulary.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "85eef33d2c8c8b32961cafc3d2a3d15307dab1c7a7460938cd59d30eef36890c",
+   "bytes": 1083
+  },
+  {
+   "path": "skills/author-building/references/g1--10-zones-and-reserved-volumes.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "f0cabc6106f503b240009bdb08acd2fb3c657a259304db4f521fd71df61aa183",
+   "bytes": 1169
+  },
+  {
+   "path": "skills/author-building/references/g1--11-optional-extension-lighting-fixtures.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b3d5430ddc9d40ea98cbd16c8122d5a0b14bcebe824ab81976c37cba7589b5d8",
+   "bytes": 2751
+  },
+  {
+   "path": "skills/author-building/references/g1--12-optional-extension-signboards.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "144a3a58f39342b3a5c2663343a0c1b0ec06b10e3459bd37ec6c36be91e1d5f1",
+   "bytes": 1919
+  },
+  {
+   "path": "skills/author-building/references/g1--13-geometry-hygiene.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "d449d60a73c2b1e5647af07daa965884d94612b96e7f5bd9620b9bbe3dab84db",
+   "bytes": 1552
+  },
+  {
+   "path": "skills/author-building/references/g1--14-level-of-detail-and-budgets.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "67ad29becaaf9fb6e6e2fe6b31c94351cf2bc2f862ee1ed388519fe7dbcb53d6",
+   "bytes": 1188
+  },
+  {
+   "path": "skills/author-building/references/g1--15-what-to-avoid.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "2b2e91bd12c110c3364fb3221675fcbca4676f5308f93e2575f32c5a79af88f3",
+   "bytes": 784
+  },
+  {
+   "path": "skills/author-building/references/g1--2-what-the-profile-gives-you.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "1aeb9c762bde7acad98a455ac6c51ed03559292455b5ff77bbe87e64d27c7b9f",
+   "bytes": 1299
+  },
+  {
+   "path": "skills/author-building/references/g1--3-file-and-schema.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "42e47e9f7694a14a752a0450834311d825b19018a6d6b36fc3c0004bfc08bf8f",
+   "bytes": 2555
+  },
+  {
+   "path": "skills/author-building/references/g1--4-units-axes-origin-and-levels.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "281f7d703ae570e38a3831a7d68023a6b675edb63f1919ea42d3d63265f2e18f",
+   "bytes": 1881
+  },
+  {
+   "path": "skills/author-building/references/g1--5-rooms-and-zones.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "c1631e8258314fd80fc20d410736108fb02f6c92b2e9134cf4d50850b1c428a0",
+   "bytes": 4540
+  },
+  {
+   "path": "skills/author-building/references/g1--6-walls-doors-windows-and-openings.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "9066873bf86284208a3c4a90a4e0b435bd4cc9de18c5bfcad5955bd5acb4bfe7",
+   "bytes": 1974
+  },
+  {
+   "path": "skills/author-building/references/g1--7-floors-roofs-ceilings-and-slab-openings.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "61a1ab85502daa12fa2c674c34179b060b9bb8e5c29c20cf12238a9e873b7696",
+   "bytes": 1586
+  },
+  {
+   "path": "skills/author-building/references/g1--8-circulation-stairs-ramps-lifts-rails.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "3d37a779c0cb1bcd09b89e605db8dbf9167fa049c867c04fbfe42ee0441aac58",
+   "bytes": 2558
+  },
+  {
+   "path": "skills/author-building/references/g1--9-names-identifiers-property-sets-and-classifica.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "20f97f1ca27877d72b974eeac717bea078b9b49e9ee0ed8c78d92a6be3698da1",
+   "bytes": 1706
+  },
+  {
+   "path": "skills/author-building/references/g1--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "97f62798dcd89e9fb273f09ea12c3e790c9068a4f0e8aeaa0ea26fe86b4e5fd7",
+   "bytes": 733
+  },
+  {
+   "path": "skills/author-building/references/g5--1-the-profiles.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "db499e9b6e67d30ce37001b4bc4b67b62b05073a9e7b4a86424784f969909f79",
+   "bytes": 921
+  },
+  {
+   "path": "skills/author-building/references/g5--2-what-is-modelled.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "fc18c92aa6e016e7b1f4da013f0932a7ea9d4987cd2c9d34a08bccb418a5f30d",
+   "bytes": 1597
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-1-frame-level-and-identity-b-10.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "d3d31d0921f050fc2eb80fce0747d9b7f6c97f5fee7d75ba54923613fda93d12",
+   "bytes": 604
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-10-package-manifest-and-checks.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "dd7f59f45ff611e90567358ab29507cd55e910f3156ffdae2afac912fb83b3da",
+   "bytes": 1043
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-2-walls-openings-door-and-windo.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b1896080c92c01ff219b553b32b4085bae99726857b8d0236a5bf855cff11878",
+   "bytes": 784
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "cee16da1e4b0e3c248e6fb8da4988337525cac15038ecd051281318de34f99d1",
+   "bytes": 500
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-4-the-room-b-20-to-b-27.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "14ee53bbfbab235eb93bf43d65b62d8704ea8848a829b190aaad0608ca4c531a",
+   "bytes": 985
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-5-the-table-guide-3.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "73655b0fe893168220a18f155868c56eaba387662e4e20b5918fab5daaa3ebc5",
+   "bytes": 616
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b5fd1104f36e9418dc8a061536d8a780ed78db902a8843ed9c312aeac07bcc48",
+   "bytes": 650
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-7-the-luminaire-optional-extens.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "893a680c5f66fa079ec62d07247f80ca87c7845da7eeb50d29069ce858b1ccbe",
+   "bytes": 1211
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-8-colours-and-the-finish-schedu.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b703cf56ea66d9052accf93e4c460482c8eb056affa941741a2c89d9553339e1",
+   "bytes": 1093
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "1c407d1990999809f60b5f082870ce5296ac8f5a49bb3d80a28c347e5fa81bf3",
+   "bytes": 601
+  },
+  {
+   "path": "skills/author-building/references/g5--3-step-by-step.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "e8b0399bb8d21f29b9fdec92e039913cd7499e357be11cdea0f448d4344fb194",
+   "bytes": 121
+  },
+  {
+   "path": "skills/author-building/references/g5--4-things-to-try.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "3687450a3c281e3345ca4f77fe32218a8f056a5f498df9296c1a483aa2764afe",
+   "bytes": 663
+  },
+  {
+   "path": "skills/author-building/references/g5--5-what-the-example-leaves-out.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "ef1f8d90e0fecec896b53d1d3738b17e1ec78b7b4aa463a90e803b225cc249e5",
+   "bytes": 439
+  },
+  {
+   "path": "skills/author-building/references/g5--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "af9d1fef3bca0af1a8237596c692cefae49c08ec47a04eed1102564e68dcdf16",
+   "bytes": 1251
+  },
+  {
+   "path": "skills/author-building/references/rules.md",
+   "purpose": "rules for this skill with fix hints (generated)",
+   "tags": [
+    "skill",
+    "rules",
+    "generated"
+   ],
+   "sha256": "261d9cdc5928fa36e5548bf4cb9950405c4a017017ca21f0f26a6ed8f2cf1960",
+   "bytes": 29180
+  },
+  {
+   "path": "skills/author-building/scripts/run_tool.py",
+   "purpose": "wrapper that runs the set's tools",
+   "tags": [
+    "skill",
+    "script"
+   ],
+   "sha256": "918b73f8c36b88930a018bb0dd4bff79133399f716f5641256abcc3f9df1e307",
+   "bytes": 1405
+  },
+  {
+   "path": "skills/author-furniture-library/SKILL.md",
+   "purpose": "skill: when to use, ordered procedure, commands, definition of done",
+   "tags": [
+    "skill",
+    "agent"
+   ],
+   "sha256": "696c59de35c561883f0b0aea250a5ba7b6a72bf2e5881c53d9d8f83f13130b15",
+   "bytes": 4224
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--1-what-consumers-do-with-an-item.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "9687c4b3dba4f5036d616568f89ad45a9bba8edb9ef758600b608af0ab4bab09",
+   "bytes": 1398
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--10-what-to-avoid.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "129ef8bf443a20030ce99198b148d11699d811ebed48e79237f871411f71e6a5",
+   "bytes": 691
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--2-classes-and-categories.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "80cc421851511388f309023c42af070da90d6df6d3c4eaebd95a3dd2504e2226",
+   "bytes": 1690
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--3-item-library-format.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "26e54b30801c340678487d0d6c22e0052b9670f38919f53fb523458c7fd22753",
+   "bytes": 2631
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--4-dimensions-origin-and-pivot.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "073790cb13a0df3bfaecb1a9d75f1c13a0c3cf185d7d67669bc5a0113698d35f",
+   "bytes": 1557
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--5-placement-points-anchors-and-where-an-item-may.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "1419dee881852103549c599be9b94a3ccc9ed05d41e708a983c6766878995c5e",
+   "bytes": 1821
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--6-collision-and-footprint.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "8680138bf41ba119ff70ef76c6f99938278f8bbc7331e24b8a586726331da1a2",
+   "bytes": 1370
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--7-polygon-and-texture-budgets.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "5568d694782ffc96501fd3bd5a88be5becb24cb9cb4fce2ec296b3e28395e938",
+   "bytes": 1001
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--8-variants-and-instancing.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "26c6f67890baea2b778abb04cc7351c315cc757e1b998e58a70def9346560e75",
+   "bytes": 1133
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--9-fixtures.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "080839308315efc7fde714940ac51984347269cb1e5c9c995d81ab392311fc72",
+   "bytes": 837
+  },
+  {
+   "path": "skills/author-furniture-library/references/g3--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "81856e16e42d4a6cf088778484bf2df612ec97460548b2aafcb72e714c67b8a8",
+   "bytes": 591
+  },
+  {
+   "path": "skills/author-furniture-library/references/rules.md",
+   "purpose": "rules for this skill with fix hints (generated)",
+   "tags": [
+    "skill",
+    "rules",
+    "generated"
+   ],
+   "sha256": "216af15cb8096f76f51a9c58efb8dc65f5d24fe215ef8f7bc4e00261a66075f3",
+   "bytes": 14171
+  },
+  {
+   "path": "skills/author-furniture-library/scripts/run_tool.py",
+   "purpose": "wrapper that runs the set's tools",
+   "tags": [
+    "skill",
+    "script"
+   ],
+   "sha256": "918b73f8c36b88930a018bb0dd4bff79133399f716f5641256abcc3f9df1e307",
+   "bytes": 1405
+  },
+  {
+   "path": "skills/decorate-interior/SKILL.md",
+   "purpose": "skill: when to use, ordered procedure, commands, definition of done",
+   "tags": [
+    "skill",
+    "agent"
+   ],
+   "sha256": "c7061c4132635c93a79faf862a4dde64f7703f81ad0dfdc5b44452e12e65a788",
+   "bytes": 4534
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--1-how-consumers-decide-what-a-surface-looks-like.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "9872ac63c5b576b58802aea6fcaf8450500236411afea6468c630a5d6952d3cc",
+   "bytes": 1742
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--2-colour-rules.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "a2f2750a5922db42396cd2451865c1db68e8511c5cc358f416122a00800897c9",
+   "bytes": 1870
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--3-floors-ceilings-wall-coverings-accents-and-tri.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b049b652b8e83839f2e01e4ff68641e12c160c3dbf0851ad8315535b0d74d476",
+   "bytes": 3042
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--4-texture-sets.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "e00b9e80ea642f4d94dbdf9eb0c0073f0414d3e7b4367427fc32507c0de3cabd",
+   "bytes": 3181
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--5-the-finish-schedule.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "32277480b1b708f9abb3ea00774e6f416b5ed996c6667e2c35fdf62fa3b53d5c",
+   "bytes": 2837
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--6-palettes.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "906673c29c177fa160a0855d3936b5dd28e03c5c907f50748949e318726728ff",
+   "bytes": 691
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--7-delivering-a-reusable-material-library.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "4e14dfaf3c6ad53494e154ef69fe2992cca314df91b783e95cec4104b0e7c1c4",
+   "bytes": 1694
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--8-defects-commonly-seen.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "52e258eeb38d0dade9ff501df82b1b9dd6a1c35e1da14f48bf5116022c6e7963",
+   "bytes": 895
+  },
+  {
+   "path": "skills/decorate-interior/references/g2--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "c07d3d97e8b1350bb077eaae833639be9ae4e6da01f24d855a9c958e3f7e9df8",
+   "bytes": 676
+  },
+  {
+   "path": "skills/decorate-interior/references/rules.md",
+   "purpose": "rules for this skill with fix hints (generated)",
+   "tags": [
+    "skill",
+    "rules",
+    "generated"
+   ],
+   "sha256": "d9a109978488222b4502b0845ae3ce8c7b67a21b7914bab66ad6d339cc26ac16",
+   "bytes": 14473
+  },
+  {
+   "path": "skills/decorate-interior/scripts/run_tool.py",
+   "purpose": "wrapper that runs the set's tools",
+   "tags": [
+    "skill",
+    "script"
+   ],
+   "sha256": "918b73f8c36b88930a018bb0dd4bff79133399f716f5641256abcc3f9df1e307",
+   "bytes": 1405
+  },
+  {
+   "path": "skills/orient/SKILL.md",
+   "purpose": "skill: when to use, ordered procedure, commands, definition of done",
+   "tags": [
+    "skill",
+    "agent"
+   ],
+   "sha256": "e6c70cf015b57f353bf9e5953b11cad611900d78f5c947272c226901a007f67a",
+   "bytes": 4573
+  },
+  {
+   "path": "skills/orient/references/about--how-a-consumer-adopts-it.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "8a7ca4dd48373f20e76a3a16b7ff37e003007dbab338af0af359a32ecdd31ced",
+   "bytes": 1080
+  },
+  {
+   "path": "skills/orient/references/about--how-it-is-organised.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b5c23fb210a172e314bcbedeed2186b6362992716a0c348bdfb76582acccc52e",
+   "bytes": 1170
+  },
+  {
+   "path": "skills/orient/references/about--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "9842747017ca38637f779dd068a24ed8f6b553f7a9e9830fe15ee2f2bbd503be",
+   "bytes": 149
+  },
+  {
+   "path": "skills/orient/references/about--what-it-does-not-do.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "3533b9771c71f72969e22829c3977e6b420d753b198f685d594a8be6e5841515",
+   "bytes": 462
+  },
+  {
+   "path": "skills/orient/references/about--what-it-is.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "ca9c3d854fac73867064279681e565597899148e14dd94b7f40ba05ae2ca66cf",
+   "bytes": 860
+  },
+  {
+   "path": "skills/orient/references/about--who-it-is-for.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "e905196388bdea07d0304ca5412d46fd2cc02c8a00f230c3632cf3e99613e49b",
+   "bytes": 540
+  },
+  {
+   "path": "skills/orient/references/params--extensions.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "2704d0386545c1ac5f0bbd3490c7233795625aeb19647b855741dafc80c84dd1",
+   "bytes": 601
+  },
+  {
+   "path": "skills/orient/references/params--introduction-part-1-of-3.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "865d6276ec3fb6a512988835a2dd4b362aa390ad2753bdcd95e61b704f164648",
+   "bytes": 595
+  },
+  {
+   "path": "skills/orient/references/params--introduction-part-2-of-3.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "413400ca5d6308438d54c537104ca7e996f14c0c3fe5769375c9a21a748542c7",
+   "bytes": 6062
+  },
+  {
+   "path": "skills/orient/references/params--introduction-part-3-of-3.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "ba0fbb60ad23eb703b794b6409a2f2c9ab58dc0a61a33a7b6bdd23af9856ae80",
+   "bytes": 2288
+  },
+  {
+   "path": "skills/orient/references/params--rule-levels-in-a-profile.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "6d8637bffe50b30e34a38653e0813ecb5d8537f7cde51f3f39ada67201b8279f",
+   "bytes": 314
+  },
+  {
+   "path": "skills/orient/references/readme--core-and-profile.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "cb0c4dc78a39c3b33b4f9404594aa777245e74fba7e498a4af8928c6f3b576bc",
+   "bytes": 781
+  },
+  {
+   "path": "skills/orient/references/readme--for-agents.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "1ed92f00bf446de5376225725d07b328a4bb75344e6d346b41929154a5dca4a6",
+   "bytes": 1187
+  },
+  {
+   "path": "skills/orient/references/readme--hand-over-files.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "4fbc716fa937fc24d2286db543d62a25465c773c740805ce7bb8c2d4777c5eaf",
+   "bytes": 741
+  },
+  {
+   "path": "skills/orient/references/readme--how-rules-are-written.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "af2314aed263d546a4a0ec4b67e40270af4c93189bf6a08b649bb695d6113fd8",
+   "bytes": 1191
+  },
+  {
+   "path": "skills/orient/references/readme--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "518cc65b5588441ba3532fa705bac231e75b92ab282d9c08504267f566b6c8ee",
+   "bytes": 896
+  },
+  {
+   "path": "skills/orient/references/readme--reading-order.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "b79bc50be8745dc51de1586018fea95df8e8ace0f9b157b6fac8cd7e5d75cebd",
+   "bytes": 337
+  },
+  {
+   "path": "skills/orient/references/readme--the-five-guides.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "66d01eb1607555d5433fd54718d45f6061da201552eff0eba35068c50228f676",
+   "bytes": 1632
+  },
+  {
+   "path": "skills/orient/references/readme--what-this-set-does-not-cover.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "9c10dd7a265bf73a0337dacb0ae0bf4ad627d39d9c4a8babbd8e4242142d6baf",
+   "bytes": 396
+  },
+  {
+   "path": "skills/orient/references/readme--words-used-in-a-fixed-sense.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "2f41ebb4b08f6e43bfcd3121deb20549cdffea6b7207cbcb2bed7389fe444a7f",
+   "bytes": 991
+  },
+  {
+   "path": "skills/orient/references/repair--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "eae4ae12bf5d0ddc18204dde00ddb41b78b819914c72bd6b40ee6a19c8a849db",
+   "bytes": 361
+  },
+  {
+   "path": "skills/orient/references/repair--never-do-these-to-get-a-pass.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "44255d50911fbb0874434f32d0136197244034e088ae863cdf61da3a2869ccaa",
+   "bytes": 598
+  },
+  {
+   "path": "skills/orient/references/repair--report-fields.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "58e8712db4b3c44d98fd9369d2e4d88d9e8f1969ebb62889f7adf648c4ce6bf8",
+   "bytes": 1041
+  },
+  {
+   "path": "skills/orient/references/repair--stop-conditions.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "50cfd8dea6b3ddebd6aadaeb6812d43a0e0f7d81cc6dca5f08d70f3819e92ca1",
+   "bytes": 830
+  },
+  {
+   "path": "skills/orient/references/repair--the-loop.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "0671e8bd4b6f2c9c6594501b5035a9bbdbbe854d9c4a1f0301b7c3dd7b6c19fa",
+   "bytes": 1479
+  },
+  {
+   "path": "skills/orient/references/repair--worked-mini-loop.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "7a6da05b5b6a6ef28d27c5cebe5ba1c3461db5adc9fdaafb075be7dc7f3bdad9",
+   "bytes": 735
+  },
+  {
+   "path": "skills/orient/scripts/run_tool.py",
+   "purpose": "wrapper that runs the set's tools",
+   "tags": [
+    "skill",
+    "script"
+   ],
+   "sha256": "918b73f8c36b88930a018bb0dd4bff79133399f716f5641256abcc3f9df1e307",
+   "bytes": 1405
+  },
+  {
+   "path": "templates/finish-schedule.template.json",
+   "purpose": "starting file",
+   "tags": [
+    "template"
+   ],
+   "sha256": "52f73cb983b9acae26571691675eab71a626c7a072cc0cbe3742a27b2213e366",
+   "bytes": 1081
+  },
+  {
+   "path": "templates/item.template.json",
+   "purpose": "starting file",
+   "tags": [
+    "template"
+   ],
+   "sha256": "7c95a94e9c5046ee288a966566378563828b73a6a140c56c14c59cdcdb0c2896",
+   "bytes": 1800
+  },
+  {
+   "path": "templates/package-meta.template.json",
+   "purpose": "starting file",
+   "tags": [
+    "template"
+   ],
+   "sha256": "6f0c7e71b6bcb052b1b5461ce662d4caf63488fb3e5610b2bfef0846e74d18bc",
+   "bytes": 1324
+  },
+  {
+   "path": "templates/rooms.template.csv",
+   "purpose": "starting file",
+   "tags": [
+    "template"
+   ],
+   "sha256": "8283c1d15f5c3db70ca6278415efd53c6b1e4950b87dba58c036ce8c09eed3b6",
+   "bytes": 220
+  },
+  {
+   "path": "tools/README.md",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "c136d59cb48a62bcb578d7251aecd89c4fb5b38978b893e838cee4a67235d7c0",
+   "bytes": 3065
+  },
+  {
+   "path": "tools/agent_harness.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "1532023f6b2086f5b70da10d93a9c9695c3ab56f5f323a630a3f37b2ba857ae6",
+   "bytes": 19857
+  },
+  {
+   "path": "tools/build_dist.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "1f7aaa4ac963462b785336f82e653ff6b7acfd9b9127e5e793d04ba6e49757b1",
+   "bytes": 5581
+  },
+  {
+   "path": "tools/build_package.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "1a42c14b7865ce4cb03d5e1ec0fddb229369915af662ff8932265698e5f1c004",
+   "bytes": 11344
+  },
+  {
+   "path": "tools/check_all.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "ad4127ba13af6439d8d5fcc93c923c5301ffc884091fc98277f17619ea31358d",
+   "bytes": 8742
+  },
+  {
+   "path": "tools/check_ifc.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "1fce23ca054ee430125c65f80fc6490c135ddcdfed37da9e38510360a0c13d6a",
+   "bytes": 37859
+  },
+  {
+   "path": "tools/check_item.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "f71e02481fc3e863f12fe6bc8d4f912d757165cb3d930a0b8b062a03a1a4bb85",
+   "bytes": 7170
+  },
+  {
+   "path": "tools/check_texture_set.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "6b28749600a23f1205adc2ec49cfe35be333065e63d0390b083b360ee8a8487d",
+   "bytes": 7603
+  },
+  {
+   "path": "tools/gen_all.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "c1bf1a70f7372ecc46c47979c5704c806407997f3b1e0e382fff1f4bdb500317",
+   "bytes": 21763
+  },
+  {
+   "path": "tools/make_sample.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "58bc5b90a21aa044d80bc4bf818e760a43d6771118488342cdd2d6f087ea3ba0",
+   "bytes": 16220
+  },
+  {
+   "path": "tools/make_sample_item.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "ee013a56c7567576470935a921ef527933bb01b18573acfc0c2e711c411eb12b",
+   "bytes": 4261
+  },
+  {
+   "path": "tools/make_sample_texture_set.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "70b260493ddc1082c0541a31b82399beae43d4af051f3e25b207856147eea46b",
+   "bytes": 3138
+  },
+  {
+   "path": "tools/map_properties.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "f779522596a1030c47ca8b37a2381f757fa0e02788f82b0354f69b83c18b074b",
+   "bytes": 2746
+  },
+  {
+   "path": "tools/report.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "312edc8ee0cfc267095934a6603ce331b962635e89f5f09c6c9379c119168d26",
+   "bytes": 5630
+  },
+  {
+   "path": "tools/requirements.txt",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "8d959bd01e64f76f5e46d456a6b6b47a2a242a077fca57eccf4d765a11f10915",
+   "bytes": 37
+  },
+  {
+   "path": "tools/rules_index.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "c5c1142153c48e1834c285dec8a471c12834c9395a1f41d81b23c62c53ec4d8c",
+   "bytes": 4910
+  },
+  {
+   "path": "tools/rules_meta.json",
+   "purpose": "machine fields of the rules (source of truth with the guides)",
+   "tags": [
+    "rules",
+    "source"
+   ],
+   "sha256": "2f0cf35e464b3193c16bd259e8fadfd34a94091591841c0c1bea31a5955abb0c",
+   "bytes": 83294
+  },
+  {
+   "path": "tools/run_example.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "24a31bfbe93e764277405fac0258affbde187bfbae99851d7b2de9cce0937316",
+   "bytes": 8291
+  },
+  {
+   "path": "tools/selftest.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "7e3f16aa3b45e19a6e267ecf989cc7191f6b24702898d331c39beb237a84669c",
+   "bytes": 6124
+  },
+  {
+   "path": "tools/template.html",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "532894d30e1a5ce90eb5908e4e68b3480b5ad48156c48e674d088167d4d83b05",
+   "bytes": 1800
+  },
+  {
+   "path": "tools/test_map_properties.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "2ddf7cd02bc7f9a255234e2dcbbb27e953494f3e4e5239fe174ada137db421ab",
+   "bytes": 2408
+  },
+  {
+   "path": "tools/test_sync.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "2e36161dcfe67a9d32f4acf26ee76de5d42826d6624dfb25176ad0749a0e7eac",
+   "bytes": 6784
+  }
+ ]
+}

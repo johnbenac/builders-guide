@@ -1,0 +1,4609 @@
+{
+ "format": "rules/1",
+ "version": "2.0.0",
+ "count": 181,
+ "rules": [
+  {
+   "id": "B-01",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Deliver an IFC schema edition the profile accepts (`schema.allowed`, default IFC4).",
+   "rationale": "Readers support different schema editions; a file in an unlisted edition may not open or may lose data.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-01"
+   },
+   "automated": true,
+   "fix_hint": "Export the file in an IFC schema edition the profile accepts (schema.allowed).",
+   "examples": {
+    "good": "FILE_SCHEMA(('IFC4'));",
+    "bad": "FILE_SCHEMA(('IFC2X3'));"
+   },
+   "related": [],
+   "parameters": [
+    "schema.allowed"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-02",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Declare the length unit as metres (an `IfcSIUnit` `LENGTHUNIT` `METRE`, or a prefixed or conversion-based unit that resolves to metres) and model in it.",
+   "rationale": "Without a declared unit a reader must guess; a wrong guess rescales the whole building.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-02"
+   },
+   "automated": true,
+   "fix_hint": "Declare an IfcSIUnit LENGTHUNIT METRE in the project's unit assignment and model in metres.",
+   "examples": {
+    "good": "IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.)",
+    "bad": "no length unit, or .MILLI. METRE with metre-sized numbers"
+   },
+   "related": [
+    "B-02a"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-02a",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Prefer plain metres (a `METRE` unit with no prefix) over a prefixed or conversion-based unit, which some tools mishandle.",
+   "rationale": "Plain metres avoid conversion mistakes.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-02a"
+   },
+   "automated": true,
+   "fix_hint": "Use an unprefixed METRE unit.",
+   "examples": {
+    "good": "IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.)",
+    "bad": "IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.)"
+   },
+   "related": [
+    "B-02"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-03",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Deliver one coordinated master file per placement area, and send per-building files only as alternates.",
+   "rationale": "A consumer ingests one source file per placement area; others are ignored.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Merge everything into one master IFC file; keep per-building files only under ifc/alternates/.",
+   "examples": {
+    "good": "ifc/site-master.ifc",
+    "bad": "three building files all in ifc/"
+   },
+   "related": [
+    "X-13"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-04",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep the file plain ASCII: write every non-ASCII character with the format's escape (`\\X2\\00B7\\X0\\` for a middle dot, `\\X2\\2014\\X0\\` for a long dash).",
+   "rationale": "Raw non-ASCII bytes are decoded differently by different tools, so names and text change.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-04"
+   },
+   "automated": true,
+   "fix_hint": "Re-export with one entity per line and encode non-ASCII characters with the format escapes (for example \\X2\\00B7\\X0\\).",
+   "examples": {
+    "good": "#12=IFCPROPERTYSINGLEVALUE('RoomId',$,IFCTEXT('A-101'),$);",
+    "bad": "an entity broken over two lines, or a raw 0xB7 byte"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-05",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Stay within the profile's hard limits: `limits.maxFileMegabytes`, `limits.maxVertices` and `limits.maxTriangles`.",
+   "rationale": "Every reader has memory and time limits; a file over them is refused or truncated.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-05"
+   },
+   "automated": true,
+   "fix_hint": "Reduce geometry (simpler rails, fewer segments, drop hidden detail) or split the work into several placement areas until the file is within the profile's limits.",
+   "examples": {
+    "good": "1.2 MB file, 20,000 triangles",
+    "bad": "130 MB file"
+   },
+   "related": [
+    "B-09",
+    "B-120"
+   ],
+   "parameters": [
+    "limits.maxFileMegabytes",
+    "limits.maxVertices",
+    "limits.maxTriangles"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-06",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use geometry that every common reader can display: swept solids (`IfcExtrudedAreaSolid` with rectangle, circle, arbitrary closed or arbitrary-with-voids profiles), faceted breps or polygonal face sets, and mapped items.",
+   "rationale": "Many readers drop representations they cannot tessellate, silently, so the element vanishes.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-06"
+   },
+   "automated": true,
+   "fix_hint": "Rebuild the product from extruded profiles, faceted breps or mapped items; avoid swept disks and boolean-heavy breps.",
+   "examples": {
+    "good": "IfcExtrudedAreaSolid with a rectangle profile",
+    "bad": "IfcSweptDiskSolid railing"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-07",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make the export deterministic: the same inputs give a byte-identical file (fixed timestamps, stable ordering, `GlobalId` values derived from stable keys).",
+   "rationale": "Re-ingesting a revision must reproduce the same result or saved references break.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Make the exporter deterministic: fixed header time, stable ordering, GlobalIds derived from stable keys.",
+   "examples": {
+    "good": "two exports are byte-identical",
+    "bad": "GlobalIds regenerated randomly each export"
+   },
+   "related": [
+    "B-70",
+    "X-50"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-08",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Write each STEP entity on a single line when the profile asks (`file.singleLineEntities`).",
+   "rationale": "Line-oriented tools, diff tools and simple readers handle one-entity-per-line files; wrapped entities are valid but can be missed.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-08"
+   },
+   "automated": true,
+   "fix_hint": "Re-export with one entity per line, or reformat the file so each entity stays on a single line.",
+   "examples": {
+    "good": "#12=IFCWALL(...);",
+    "bad": "an entity continued on the next line"
+   },
+   "related": [],
+   "parameters": [
+    "file.singleLineEntities"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-09",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep the file below the profile's recommended size, `budgets.recommendedFileMegabytes`.",
+   "rationale": "Very large files load slowly and are hard to review.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-09"
+   },
+   "automated": true,
+   "fix_hint": "Reduce the file below the profile's budgets.recommendedFileMegabytes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "B-05"
+   ],
+   "parameters": [
+    "budgets.recommendedFileMegabytes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-10",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use a right-handed frame with Z up and the horizontal axes the profile states (`frame.horizontalAxes`), in metres.",
+   "rationale": "A different up axis or handedness turns or mirrors the building.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Re-export with Z up, +X forward, +Y left, in metres.",
+   "examples": {
+    "good": "",
+    "bad": "a model with Y up"
+   },
+   "related": [
+    "B-11"
+   ],
+   "parameters": [
+    "frame.horizontalAxes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-11",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Author in the placement the profile expects (`frame.placement`): with `final`, local z = 0 is the finished floor of the lowest level and the consumer applies no offset or rotation, so author in the final placement frame.",
+   "rationale": "A consumer attaches the file with zero offset and rotation.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Move the geometry into the final placement frame; do not rely on the consumer to shift or turn it.",
+   "examples": {
+    "good": "local z = 0 at the finished floor of the lowest level",
+    "bad": "geometry authored 12 m too low and expected to be lifted"
+   },
+   "related": [
+    "B-12"
+   ],
+   "parameters": [
+    "frame.placement"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-12",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "State your frame in the file: a property set on the `IfcProject` with a text property `FrameNote` (\"metres; +X forward; +Y left; +Z up; local z = 0 at the finished floor of the lowest level\") and a number `LevelOffsetMetres`.",
+   "rationale": "A written frame note lets a reviewer verify the frame.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-12"
+   },
+   "automated": true,
+   "fix_hint": "Add a property set on the IfcProject with FrameNote (text) and LevelOffsetMetres (number).",
+   "examples": {
+    "good": "FrameNote: metres; +X forward; +Y left; +Z up; local z = 0 at the finished floor",
+    "bad": ""
+   },
+   "related": [
+    "B-11"
+   ],
+   "parameters": [
+    "frame.levelOffsetMetres"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-13",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Create one `IfcBuildingStorey` for every level of every building, with a `Name` and a numeric `Elevation` equal to the level's finished-floor height in your file's frame, and make every element belong to one: contained (`IfcRelContainedInSpatialStructure`), aggregated (`IfcRelAggregates`) or, for zones, referenced (`IfcRelReferencedInSpatialStructure`).",
+   "rationale": "Tools that work level by level drop elements that belong to no level.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-13"
+   },
+   "automated": true,
+   "fix_hint": "Create an IfcBuildingStorey per level with Name and Elevation and put every element in one (IfcRelContainedInSpatialStructure or IfcRelAggregates).",
+   "examples": {
+    "good": "every wall contained in its storey",
+    "bad": "loose walls with no storey"
+   },
+   "related": [
+    "B-14"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-14",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use the full hierarchy `IfcProject` > `IfcSite` > `IfcBuilding` > `IfcBuildingStorey`, one `IfcBuilding` per building, and level names that start with the building name (`Clinic - ground / +0 m`).",
+   "rationale": "The full hierarchy keeps levels grouped by building.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-14"
+   },
+   "automated": true,
+   "fix_hint": "Add IfcSite and IfcBuilding and aggregate them under the project.",
+   "examples": {
+    "good": "Project > Site > Building > Storey",
+    "bad": "storeys directly under the project"
+   },
+   "related": [
+    "B-13"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-15",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-20",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model every room as an `IfcSpace` (internal, `ELEMENT`) whose geometry is an upward extrusion of the room's floor outline: the lowest plane of the solid is the floor and the top is the underside of the ceiling or slab above.",
+   "rationale": "Tools derive a room's floor, area and position from its solid; without a flat floor they cannot.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-20"
+   },
+   "automated": true,
+   "fix_hint": "Model each room as an IfcSpace whose solid is an upward extrusion of the floor outline, floor flat at the lowest plane.",
+   "examples": {
+    "good": "IfcSpace extruded 3.0 m from the floor outline",
+    "bad": "IfcSpace with no representation"
+   },
+   "related": [
+    "B-21"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-21",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every `IfcSpace` geometry.",
+   "rationale": "A room without geometry cannot be located, measured or shown.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-21"
+   },
+   "automated": true,
+   "fix_hint": "Give the IfcSpace a Body representation (an extruded solid).",
+   "examples": {
+    "good": "",
+    "bad": "IfcSpace with Representation $"
+   },
+   "related": [
+    "B-20"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-22",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every room that has a `RoomId` a value that is unique, and write it as an `IfcPropertySingleValue` inside an `IfcPropertySet` linked by `IfcRelDefinesByProperties`.",
+   "rationale": "Duplicate identifiers make every reference to a room ambiguous.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-22"
+   },
+   "automated": true,
+   "fix_hint": "Add RoomId (IfcPropertySingleValue in an IfcPropertySet linked by IfcRelDefinesByProperties) and make every value unique across the consumer model.",
+   "examples": {
+    "good": "RoomId A-101 on one room only",
+    "bad": "two rooms both A-101"
+   },
+   "related": [
+    "B-23",
+    "B-26"
+   ],
+   "parameters": [
+    "propertyNames"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-23",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make room identifiers meet the profile: at most `identifiers.roomIdMaxLength` characters and matching `identifiers.roomIdPattern`.",
+   "rationale": "Identifiers are printed on labels and stored in fixed-width fields.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-23"
+   },
+   "automated": true,
+   "fix_hint": "Change the room identifier to meet the profile (identifiers.roomIdMaxLength and identifiers.roomIdPattern).",
+   "examples": {
+    "good": "A-101",
+    "bad": "ENTRANCE-HALL-1"
+   },
+   "related": [
+    "B-22"
+   ],
+   "parameters": [
+    "identifiers.roomIdMaxLength",
+    "identifiers.roomIdPattern"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-24",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every room an `Occupant` (text): the organisation or use it belongs to.",
+   "rationale": "Occupant selects the organisation rules for finishes, lights and counts.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-24"
+   },
+   "automated": true,
+   "fix_hint": "Set Occupant to one string from the profile's identifiers.occupants, spelled exactly (or to a clear organisation or use when the profile lists none).",
+   "examples": {
+    "good": "Example Occupant",
+    "bad": "example occupant "
+   },
+   "related": [
+    "X-41"
+   ],
+   "parameters": [
+    "identifiers.occupants"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-25",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every room a `Function` (text) describing its use.",
+   "rationale": "A consumer's rules read the word Circulation at the start of Function.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-25"
+   },
+   "automated": true,
+   "fix_hint": "Add Function text; start circulation rooms with the profile's identifiers.circulationPrefix when it names one.",
+   "examples": {
+    "good": "Circulation: main corridor",
+    "bad": ""
+   },
+   "related": [
+    "B-24"
+   ],
+   "parameters": [
+    "identifiers.circulationPrefix"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-26",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every room a `RoomId`.",
+   "rationale": "Tools that find no identifier invent one from the name, which changes when the name changes.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-26"
+   },
+   "automated": true,
+   "fix_hint": "Add a RoomId property to the named room.",
+   "examples": {
+    "good": "",
+    "bad": "room without RoomId"
+   },
+   "related": [
+    "B-22"
+   ],
+   "parameters": [
+    "propertyNames",
+    "ruleLevels"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-27",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Also supply, when known: `NetAreaSquareMetres` (number), `BaseLevelMetres` (number), `ClearHeightMetres` (number) and `Notes` (text).",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Also supply, when known: `NetAreaSquareMetres` (number), `BaseLevelMetres` (number), `ClearHeightMetres` (number) and `Notes` (text).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-28",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give each room a complete, human-readable `Name`; names appear in lists and on labels.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give each room a complete, human-readable `Name`; names appear in lists and on labels.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-29",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Declare streets, paths, plazas and park areas as rooms too, with an identifier and a `Function`, so that they can be referred to, lit and signed.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Declare streets, paths, plazas and park areas as rooms too, with an identifier and a `Function`, so that they can be referred to, lit and signed.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-30",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make \"which room is this point in\" ambiguous.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make \"which room is this point in\" ambiguous.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-31",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Draw the room outline at the inside wall faces so the floor area is the usable area.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Draw the room outline at the inside wall faces so the floor area is the usable area.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-32",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Group rooms into buildings with a `BuildingId` property, and mark long-lived content separately from replaceable content with a `Layer` property (`permanent` or `interim`), so that a building can be swapped without touching its surroundings.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Group rooms into buildings with a `BuildingId` property, and mark long-lived content separately from replaceable content with a `Layer` property (`permanent` or `interim`), so that a building can be swapped without touching its surroundings.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-33",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Leave every enclosed room a floor area where a person can stand: at least `extensions.walkability.standingClearanceMetres` clear of furniture, equipment, rails and transport elements.",
+   "rationale": "A simulator needs a free spot to place a person; furniture can leave none.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-33"
+   },
+   "automated": true,
+   "fix_hint": "Move or remove furniture so that part of the floor stays at least extensions.walkability.standingClearanceMetres clear of every item.",
+   "examples": {
+    "good": "a free 1.2 m circle in the room",
+    "bad": "table filling the whole floor"
+   },
+   "related": [
+    "B-34",
+    "F-34"
+   ],
+   "parameters": [
+    "extensions.walkability.standingClearanceMetres"
+   ],
+   "extension": "walkability"
+  },
+  {
+   "id": "B-34",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep a free floor circle of `extensions.walkability.freeCircleMetres` in every room, and leave clear aisles from seating to doors.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep a free floor circle of `extensions.walkability.freeCircleMetres` in every room, and leave clear aisles from seating to doors.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.freeCircleMetres"
+   ],
+   "extension": "walkability"
+  },
+  {
+   "id": "B-40",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model walls as `IfcWall` (`IfcWallStandardCase` is also read), not as generic proxies; consumers select, colour and count by class.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Model walls as `IfcWall` (`IfcWallStandardCase` is also read), not as generic proxies; consumers select, colour and count by class.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-40a",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use one element per maximal straight run rather than one per room edge.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use one element per maximal straight run rather than one per room edge.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-41",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model every door as an `IfcDoor` that fills an `IfcOpeningElement` in the wall, linked with `IfcRelVoidsElement` (wall to opening) and `IfcRelFillsElement` (opening to door).",
+   "rationale": "Tools find doorways from the opening that a door fills; without it the door is a picture on a solid wall.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-41"
+   },
+   "automated": true,
+   "fix_hint": "Add an IfcOpeningElement in the wall with IfcRelVoidsElement (wall to opening) and IfcRelFillsElement (opening to door).",
+   "examples": {
+    "good": "wall -> opening -> door chain",
+    "bad": "door placed in a wall with no opening"
+   },
+   "related": [
+    "B-42",
+    "B-44"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-42",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep every doorway passable: its clear height is at least `geometry.doorMinClearHeightMetres`, and nothing solid (a sill, a bar, a glazed panel, furniture) crosses the opening centre line at the heights in `geometry.doorwayProbeHeightsMetres`.",
+   "rationale": "A doorway that is too low or blocked cannot be passed by a person, a camera path or a simulator.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-42"
+   },
+   "automated": true,
+   "fix_hint": "Make the doorway opening at least geometry.doorMinClearHeightMetres high and remove anything (sill, bar, furniture) that crosses the opening centre line at geometry.doorwayProbeHeightsMetres.",
+   "examples": {
+    "good": "2.3 m high opening, clear floor in front",
+    "bad": "table standing in the doorway"
+   },
+   "related": [
+    "B-43"
+   ],
+   "parameters": [
+    "geometry.doorMinClearHeightMetres",
+    "geometry.doorwayProbeHeightsMetres"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-43",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make doorways at least `geometry.doorMinClearWidthMetres` wide.",
+   "rationale": "Narrow doorways block wheelchairs, trolleys, camera paths and simulated walkers.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-43"
+   },
+   "automated": true,
+   "fix_hint": "Widen the doorway opening to at least the profile's geometry.doorMinClearWidthMetres.",
+   "examples": {
+    "good": "1.0 m wide opening",
+    "bad": "0.6 m wide opening"
+   },
+   "related": [],
+   "parameters": [
+    "geometry.doorMinClearWidthMetres"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-44",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model every window as an `IfcWindow` in an `IfcOpeningElement` linked with the voids and fills relations, so the wall is cut where the window is.",
+   "rationale": "Without an opening the wall stays solid behind the window.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-44"
+   },
+   "automated": true,
+   "fix_hint": "Add an IfcOpeningElement with the voids and fills relations for the window.",
+   "examples": {
+    "good": "",
+    "bad": "window drawn over an uncut wall"
+   },
+   "related": [
+    "B-41"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-45",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give glass a surface style with opacity below 1 (about 0.4 to 0.6), so that every consumer shows it as see-through.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give glass a surface style with opacity below 1 (about 0.4 to 0.6), so that every consumer shows it as see-through.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-46",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give walls their real thickness; zero-thickness walls and double walls confuse area, collision and rendering.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give walls their real thickness; zero-thickness walls and double walls confuse area, collision and rendering.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-47",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make every room reachable through a doorway, an open edge or a stair from a circulation room.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Make every room reachable through a doorway, an open edge or a stair from a circulation room.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-48",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Do not put a door in a floor or roof; floor apertures are slab openings (B-53).",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not put a door in a floor or roof; floor apertures are slab openings (B-53).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-50",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model every walkable floor, including walkable roofs, as an `IfcSlab` (`FLOOR` or `ROOF`) whose top face is the finished floor.",
+   "rationale": "Floor contact, area and standing points are computed from slab faces.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-50"
+   },
+   "automated": true,
+   "fix_hint": "Add an IfcSlab (FLOOR or ROOF) whose top face is the finished floor, unless the profile says the consumer supplies that floor (baseSurfaces).",
+   "examples": {
+    "good": "slab top at z = 0",
+    "bad": "room floating with no slab"
+   },
+   "related": [
+    "B-51"
+   ],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-51",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Do not duplicate a floor the consumer already provides (`baseSurfaces`); two coplanar surfaces flicker.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not duplicate a floor the consumer already provides (`baseSurfaces`); two coplanar surfaces flicker.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-51a",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Omit slabs that rest directly on a consumer-supplied floor, or make them very thin.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Omit slabs that rest directly on a consumer-supplied floor, or make them very thin.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-52",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give slabs a realistic thickness; very thin slabs are fine only for surface layers such as paving.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give slabs a realistic thickness; very thin slabs are fine only for surface layers such as paving.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-53",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Cut every hole in a slab (stair wells, shafts, service drops) as an `IfcOpeningElement` linked by `IfcRelVoidsElement`, not as separate floor pieces that merely leave a gap.",
+   "rationale": "A gap between floor pieces is not recognised as an opening.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Cut every hole in a slab (stair wells, shafts, service drops) as an `IfcOpeningElement` linked by `IfcRelVoidsElement`, not as separate floor pieces that merely leave a gap.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-54",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model ceilings or roofs.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Model ceilings or roofs.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-55",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep your own structure clear of openings in surfaces the consumer supplies (`baseSurfaces`), with the margin the profile states.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep your own structure clear of openings in surfaces the consumer supplies (`baseSurfaces`), with the margin the profile states.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-60",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model each stair flight as an `IfcStairFlight` (a parent `IfcStair` without geometry is fine).",
+   "rationale": "Consumers recognise stairs, and simulators build a walking surface, from the flight element.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Model each stair flight as an `IfcStairFlight` (a parent `IfcStair` without geometry is fine).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-61",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep risers at or below `geometry.stairRiserLimitMetres`, with a landing and head-room; avoid winding and spiral stairs unless you have checked the consumer reads them.",
+   "rationale": "The walking surface of a stair sits up to one riser from the visible tread.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-61"
+   },
+   "automated": true,
+   "fix_hint": "Reduce the riser height to the profile's geometry.stairRiserLimitMetres or less.",
+   "examples": {
+    "good": "riser 0.167 m",
+    "bad": "riser 0.22 m"
+   },
+   "related": [],
+   "parameters": [
+    "geometry.stairRiserLimitMetres"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-62",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every multi-level building at least one real stair.",
+   "rationale": "Lifts are static in the consumer; only stairs carry a walker between levels.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-62"
+   },
+   "automated": true,
+   "fix_hint": "Add an IfcStairFlight connecting the levels of every multi-level building.",
+   "examples": {
+    "good": "",
+    "bad": "two storeys and no stair"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-63",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Draw lifts as `IfcTransportElement` with `PredefinedType` `ELEVATOR`, with properties such as `Service`, `StopsMetres` and `ShaftWidthMetres`.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Draw lifts as `IfcTransportElement` with `PredefinedType` `ELEVATOR`, with properties such as `Service`, `StopsMetres` and `ShaftWidthMetres`.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-64",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep every walked slope at or below `geometry.rampMaxSlope` (rise over run) except stairs, and give ramps a clear width at least as wide as a doorway.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep every walked slope at or below `geometry.rampMaxSlope` (rise over run) except stairs, and give ramps a clear width at least as wide as a doorway.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "geometry.rampMaxSlope"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-65",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Do not leave low obstacles up to `extensions.walkability.stepHeightMetres` high (floor boxes, square-edged wedges) that a walker steps over unseen; ramp them or make them visible steps.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not leave low obstacles up to `extensions.walkability.stepHeightMetres` high (floor boxes, square-edged wedges) that a walker steps over unseen; ramp them or make them visible steps.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.stepHeightMetres"
+   ],
+   "extension": "walkability"
+  },
+  {
+   "id": "B-66",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model rails (`IfcRailing`) with cheap geometry: simple posts and one rail section.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Model rails (`IfcRailing`) with cheap geometry: simple posts and one rail section.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-67",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Know which classes the consumer treats as not solid (`extensions.walkability.nonSolidClasses`) and model walk-through areas with those classes or with reservation volumes (B-80); everything else may block movement.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Know which classes the consumer treats as not solid (`extensions.walkability.nonSolidClasses`) and model walk-through areas with those classes or with reservation volumes (B-80); everything else may block movement.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.nonSolidClasses"
+   ],
+   "extension": "walkability"
+  },
+  {
+   "id": "B-70",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every product a unique 22-character IFC `GlobalId` that does not change between exports.",
+   "rationale": "GlobalId is the key tools use to match an element across revisions and files; duplicates merge unrelated elements.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-70"
+   },
+   "automated": true,
+   "fix_hint": "Give every product a unique 22-character GlobalId and keep it unchanged between exports.",
+   "examples": {
+    "good": "",
+    "bad": "two walls sharing a GlobalId"
+   },
+   "related": [
+    "B-71"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-71",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Number your IFC entities from the start the profile assigns (`identifiers.entityNumberStart`, when set) so that files from several authors can be merged without clashes.",
+   "rationale": "Entity numbers from different deliveries must not clash in one model.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-71"
+   },
+   "automated": true,
+   "fix_hint": "Renumber the entities to start at the number the profile assigns (identifiers.entityNumberStart).",
+   "examples": {
+    "good": "#700001 and up",
+    "bad": "#1 and up when #700001 was assigned"
+   },
+   "related": [
+    "B-70"
+   ],
+   "parameters": [
+    "identifiers.entityNumberStart"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-72",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Write declaration properties as text, number or boolean values in `IfcPropertySingleValue` entries of an `IfcPropertySet` linked by `IfcRelDefinesByProperties` on the product itself.",
+   "rationale": "Many readers ignore quantity sets, enumerations, tables and properties on types.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-72"
+   },
+   "automated": true,
+   "fix_hint": "Store the declaration property as IfcPropertySingleValue inside an IfcPropertySet linked by IfcRelDefinesByProperties.",
+   "examples": {
+    "good": "IFCPROPERTYSINGLEVALUE('RoomId',...)",
+    "bad": "an enumerated RoomId or one inside a quantity set"
+   },
+   "related": [
+    "B-22"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-73",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use one descriptive property set per topic (`Pset_Declaration_Room`, ...) and put only declaration properties in it.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use one descriptive property set per topic (`Pset_Declaration_Room`, ...) and put only declaration properties in it.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-74",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "If your organisation uses a classification scheme, attach it with `IfcRelAssociatesClassification`.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: If your organisation uses a classification scheme, attach it with `IfcRelAssociatesClassification`.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-75",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep identifiers stable across revisions: an unchanged room, door or fixture keeps its `RoomId`, `GlobalId` and declaration ids.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep identifiers stable across revisions: an unchanged room, door or fixture keeps its `RoomId`, `GlobalId` and declaration ids.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-76",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give your own identifiers dotted prefixes (`arch.entrance`, `clinic.lobby`), at most 160 characters, no control characters.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give your own identifiers dotted prefixes (`arch.entrance`, `clinic.lobby`), at most 160 characters, no control characters.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-80",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Declare a volume that must stay empty or must not be solid (a sight line, a clearance, a service corridor) twice: as an `IfcSpatialZone`, and (so it can be seen) as an `IfcBuildingElementProxy` with `PredefinedType` `PROVISIONFORSPACE`.",
+   "rationale": "The standard provision type marks a volume that is not physical; other proxies are drawn as solids.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-80"
+   },
+   "automated": true,
+   "fix_hint": "Write the proxy on one line with PROVISIONFORSPACE as its last argument.",
+   "examples": {
+    "good": "",
+    "bad": "reservation drawn as an ordinary proxy"
+   },
+   "related": [
+    "B-81"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-81",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every zone a unique identifier (`ZoneId` or, if missing, its `Name`) and its own geometry; a zone without geometry cannot be shown or selected.",
+   "rationale": "Zone ids must be unique and a zone needs geometry to be kept.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-81"
+   },
+   "automated": true,
+   "fix_hint": "Give each IfcSpatialZone a unique ZoneId (or name) and a representation.",
+   "examples": {
+    "good": "",
+    "bad": "two zones named View"
+   },
+   "related": [
+    "B-80"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-81a",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Always supply `ZoneId`, plus `ZoneClass` (for example `observation-sightline`) and `Requirement` (a sentence saying what must stay clear).",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Always supply `ZoneId`, plus `ZoneClass` (for example `observation-sightline`) and `Requirement` (a sentence saying what must stay clear).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-82",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use zones to record viewing intent (a downward sight line from a mezzanine); ordinary glass cannot be one-way, and who may look is a consumer decision, not a file property.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use zones to record viewing intent (a downward sight line from a mezzanine); ordinary glass cannot be one-way, and who may look is a consumer decision, not a file property.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-90",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model each fixture as an `IfcElementAssembly` that aggregates two `IfcLightFixture` parts: a housing, and an emissive part whose `Name` ends in the profile's suffix (`extensions.luminaires.lensNameSuffix`).",
+   "rationale": "A fixture needs a part that can glow separately from its housing.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-90"
+   },
+   "automated": true,
+   "fix_hint": "Aggregate exactly two IfcLightFixture parts under the assembly: a housing and one whose name ends in the profile's extensions.luminaires.lensNameSuffix.",
+   "examples": {
+    "good": "Fixture 1 housing / Fixture 1 lens",
+    "bad": "single light fixture with no parts"
+   },
+   "related": [
+    "B-91"
+   ],
+   "parameters": [
+    "extensions.luminaires.lensNameSuffix"
+   ],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-91",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Put every property in `extensions.luminaires.requiredProperties` on the assembly, make `LuminaireId` unique, and use a `LightType` from `extensions.luminaires.lightTypes`.",
+   "rationale": "A fixture missing a property cannot be converted to a light by a consumer that needs it.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-91"
+   },
+   "automated": true,
+   "fix_hint": "Add every property in extensions.luminaires.requiredProperties to the assembly; make LuminaireId unique and LightType one of the profile's lightTypes.",
+   "examples": {
+    "good": "",
+    "bad": "assembly without LightRangeM"
+   },
+   "related": [
+    "B-92",
+    "B-93"
+   ],
+   "parameters": [
+    "extensions.luminaires.requiredProperties",
+    "extensions.luminaires.lightTypes",
+    "propertyNames"
+   ],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-92",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Write `LightPosition` in the consumer's global frame: the file-local point plus `frame.levelOffsetMetres` (same x and y, z plus the offset); the geometry stays file-local.",
+   "rationale": "Positions in two frames get applied twice or not at all; stating the frame and the offset once avoids both.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-92"
+   },
+   "automated": true,
+   "fix_hint": "Set LightPosition (and sign positions) to the file-local point plus frame.levelOffsetMetres; the emissive part's centre plus the offset must be within the profile's positionToleranceMetres.",
+   "examples": {
+    "good": "local z 2.89 + offset 12.0 = 14.89",
+    "bad": "LightPosition equal to the local point"
+   },
+   "related": [
+    "B-92a"
+   ],
+   "parameters": [
+    "frame.levelOffsetMetres",
+    "extensions.luminaires.positionToleranceMetres"
+   ],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-92a",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give the file-local position as well (`LightPositionLocal`) so a reviewer can check the offset was applied once.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give the file-local position as well (`LightPositionLocal`) so a reviewer can check the offset was applied once.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-93",
+   "level": "required",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make `LightAim` a unit vector (length 1 within 1e-6) in the consumer's frame.",
+   "rationale": "A consumer requires a unit aim vector.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-93"
+   },
+   "automated": true,
+   "fix_hint": "Normalise LightAim to length 1.",
+   "examples": {
+    "good": "0,0,-1",
+    "bad": "0,0,-2"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-94",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Give every enclosed room at least one fixture (set `LuminaireTarget`), between the floor and the ceiling, in warm colours, not pointed at glazing.",
+   "rationale": "Rooms with no authored fixture are dark in a delivery that disables automatic lamps.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-94"
+   },
+   "automated": true,
+   "fix_hint": "Add a luminaire whose LuminaireTarget is the room's RoomId.",
+   "examples": {
+    "good": "",
+    "bad": "room with no fixture"
+   },
+   "related": [
+    "B-95"
+   ],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-95",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Count the lights: every declared fixture may become a real light, and the consumer may cap them per room (`extensions.luminaires.maxPerRoom`).",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Count the lights: every declared fixture may become a real light, and the consumer may cap them per room (`extensions.luminaires.maxPerRoom`).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.luminaires.maxPerRoom"
+   ],
+   "extension": "luminaires"
+  },
+  {
+   "id": "B-100",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model a board as an `IfcElementAssembly` carrying every property in `extensions.signboards.requiredProperties`, with a `SignboardKind` from `extensions.signboards.kinds`.",
+   "rationale": "Boards are generated from their declaration properties.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-100"
+   },
+   "automated": true,
+   "fix_hint": "Add every required Signboard* property; kind must be building_board or tram_stop.",
+   "examples": {
+    "good": "",
+    "bad": "board without SignboardReadM"
+   },
+   "related": [
+    "B-101",
+    "B-102"
+   ],
+   "parameters": [
+    "extensions.signboards.requiredProperties",
+    "extensions.signboards.kinds"
+   ],
+   "extension": "signboards"
+  },
+  {
+   "id": "B-101",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make the main text fit the board: allow about 0.55 times the capital height of width per character plus a margin of 12 % of the board height on each side; text that cannot be fitted at a capital height of 0.05 m is an error.",
+   "rationale": "A consumer fails a sign whose text still overflows at 0.05 m capital height.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-101"
+   },
+   "automated": true,
+   "fix_hint": "Widen the board or shorten the text.",
+   "examples": {
+    "good": "3.6 m board for 'Main Clinic'",
+    "bad": "0.4 m board for a 40-character name"
+   },
+   "related": [
+    "B-102"
+   ],
+   "parameters": [],
+   "extension": "signboards"
+  },
+  {
+   "id": "B-102",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Declare a reading distance your letters support: capital height in metres must be at least `pixels * readM / extensions.signboards.displayPixelsPerRadian`, with pixels from `extensions.signboards.minCapitalPixels` (primary text), and the distance within `extensions.signboards.readingDistanceMetres`.",
+   "rationale": "A consumer clamps the stated reading distance to what the letters support.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-102"
+   },
+   "automated": true,
+   "fix_hint": "Lower SignboardReadM to the supported distance (capital height x displayPixelsPerRadian / minimum pixels), or enlarge the board.",
+   "examples": {
+    "good": "",
+    "bad": "18 m on a long name on a 0.6 m board"
+   },
+   "related": [
+    "B-101"
+   ],
+   "parameters": [
+    "extensions.signboards.displayPixelsPerRadian",
+    "extensions.signboards.minCapitalPixels",
+    "extensions.signboards.readingDistanceMetres"
+   ],
+   "extension": "signboards"
+  },
+  {
+   "id": "B-103",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Declare an entrance board on the wall's outer face, not the wall centre plane, and keep lamps and trees away from its face.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Declare an entrance board on the wall's outer face, not the wall centre plane, and keep lamps and trees away from its face.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "signboards"
+  },
+  {
+   "id": "B-110",
+   "level": "required",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Keep all geometry inside the profile's build volume (`buildVolume`) and outside its keep-out regions (`keepOut`), when it gives them; check every vertex, not only footprints.",
+   "rationale": "Geometry outside the allowed region collides with other content or is clipped.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-110"
+   },
+   "automated": true,
+   "fix_hint": "Move or trim the geometry so every vertex lies inside the profile's buildVolume and outside every keepOut.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "buildVolume",
+    "keepOut"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-111",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Make solids closed and consistently oriented: no missing faces, no inside-out solids, no zero-area or duplicate faces.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Make solids closed and consistently oriented: no missing faces, no inside-out solids, no zero-area or duplicate faces.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-112",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Avoid coplanar overlapping faces (two walls sharing a face, a covering lying exactly on a wall, a slab exactly on a floor).",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Avoid coplanar overlapping faces (two walls sharing a face, a covering lying exactly on a wall, a slab exactly on a floor).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-113",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Use mapped items (`IfcMappedItem` with `IfcRepresentationMap`) for repeated parts.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use mapped items (`IfcMappedItem` with `IfcRepresentationMap`) for repeated parts.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-114",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Do not model what cannot be seen or used: hidden interiors, bolts, hinge detail, text as geometry, curves with more than `geometry.maxCurveSegmentsPerCircle` segments per full circle.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not model what cannot be seen or used: hidden interiors, bolts, hinge detail, text as geometry, curves with more than `geometry.maxCurveSegmentsPerCircle` segments per full circle.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "geometry.maxCurveSegmentsPerCircle"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-115",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Do not model terrain, soil or relief in IFC unless the profile says how.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not model terrain, soil or relief in IFC unless the profile says how.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-116",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Do not model a thin layer at a height where the consumer adds its own surface layer (floor finishes laid on the room floor); two layers at one height flicker.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not model a thin layer at a height where the consumer adds its own surface layer (floor finishes laid on the room floor); two layers at one height flicker.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-120",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Stay under the profile's recommended triangle count, `budgets.recommendedTriangles`.",
+   "rationale": "Triangle count drives load time; frame rate is unmeasured.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-120"
+   },
+   "automated": true,
+   "fix_hint": "Simplify rails, curved parts and windows until the triangle count is under the profile's budgets.recommendedTriangles.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "B-05"
+   ],
+   "parameters": [
+    "budgets.recommendedTriangles"
+   ],
+   "extension": null
+  },
+  {
+   "id": "B-121",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Spend triangles where the viewer looks: entrances, interiors a person stands in, anything within arm's reach.",
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Spend triangles where the viewer looks: entrances, interiors a person stands in, anything within arm's reach.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-01",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Give each distinct finish its own colour within an element class.",
+   "rationale": "The finish schedule keys finishes by (class, colour, opacity); equal keys are one finish.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give each distinct finish its own colour within an element class.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-02",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Give the same finish the same colour and opacity on every element that uses it.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give the same finish the same colour and opacity on every element that uses it.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-03",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "When you deliver a finish schedule, include an entry for every (class, colour, opacity) combination that appears in your IFC files.",
+   "rationale": "A consumer that follows the schedule has no instruction for a key that is missing from it.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id D-03"
+   },
+   "automated": true,
+   "fix_hint": "Add a materials entry for every (class, colour, opacity) key listed in finishKeys of the check report.",
+   "examples": {
+    "good": "",
+    "bad": "colour #8c6f4e with no entry"
+   },
+   "related": [
+    "D-01"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-04",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Use opacity below 1 only for glass and other see-through things (about 0.4 to 0.6 for glazing).",
+   "rationale": "Opacity under 0.99 makes the consumer treat the surface as glass.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id D-04"
+   },
+   "automated": true,
+   "fix_hint": "Set opacity to 1.0 unless the surface really is glass.",
+   "examples": {
+    "good": "",
+    "bad": "opaque wall at opacity 0.5"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-05",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Keep the palette small: at most `budgets.maxDistinctColours` combinations (default 50).",
+   "rationale": "Every distinct colour per class adds a material and a draw group.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id D-05"
+   },
+   "automated": true,
+   "fix_hint": "Merge near-identical colours and reuse finishes the consumer already has.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "budgets.maxDistinctColours"
+   ],
+   "extension": null
+  },
+  {
+   "id": "D-06",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Treat the IFC colour as a design tint: the schedule says how strongly it is blended into the texture (0 means the texture alone, 1 the colour fully).",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Treat the IFC colour as a design tint: the schedule says how strongly it is blended into the texture (0 means the texture alone, 1 the colour fully).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-07",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Avoid pure black, pure white and very dark large surfaces: they clip or disappear under typical lighting.",
+   "rationale": "Very dark or very bright large surfaces read badly in the lit rooms.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-07"
+   },
+   "automated": true,
+   "fix_hint": "Adjust the albedo so its mean linear luminance is inside the stated band.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-08",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Choose neutral tints for fabrics; strongly coloured tints shift under lighting.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Choose neutral tints for fabrics; strongly coloured tints shift under lighting.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-10",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "When you deliver a finish schedule, give every room that has a floor a floor finish: list them in the `floors` section by `Occupant`, by `RoomId` list or by pattern, plus a default.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: When you deliver a finish schedule, give every room that has a floor a floor finish: list them in the `floors` section by `Occupant`, by `RoomId` list or by pattern, plus a default.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-11",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Also write a text property `Finish` on each room (for example `light warm-grey resilient floor; pale ivory walls`), so that the intent stays with the room.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Also write a text property `Finish` on each room (for example `light warm-grey resilient floor; pale ivory walls`), so that the intent stays with the room.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-12",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Change floor finishes at door lines, not mid-room, and keep a visible threshold between unlike finishes.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Change floor finishes at door lines, not mid-room, and keep a visible threshold between unlike finishes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-13",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Choose low-gloss, light floors for rooms people work in: dark glossy floors read as black under many lighting set-ups.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Choose low-gloss, light floors for rooms people work in: dark glossy floors read as black under many lighting set-ups.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-20",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Decide ceilings through the slab or roof above: the `bottom` face of the slab above is the ceiling of the room below.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Decide ceilings through the slab or roof above: the `bottom` face of the slab above is the ceiling of the room below.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-21",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Keep ceiling finishes matte and light; glossy ceilings amplify lamp hot spots.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep ceiling finishes matte and light; glossy ceilings amplify lamp hot spots.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-30",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Express a wall finish through the wall element's own colour (one colour per finish and per class).",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Express a wall finish through the wall element's own colour (one colour per finish and per class).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-31",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Use an `IfcCovering` (`PredefinedType` `CLADDING`, `FLOORING`, `CEILING` or `WRAPPING`) only when a finish covers part of a wall, or a surface that has no element of its own.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use an `IfcCovering` (`PredefinedType` `CLADDING`, `FLOORING`, `CEILING` or `WRAPPING`) only when a finish covers part of a wall, or a surface that has no element of its own.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-32",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Do not rely on a texture pattern starting at an edge: consumers project textures differently.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not rely on a texture pattern starting at an edge: consumers project textures differently.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-33",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Make skirtings, cornices, door frames, handrails and accent bands separate elements with their own colour, at least 1 cm thick.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Make skirtings, cornices, door frames, handrails and accent bands separate elements with their own colour, at least 1 cm thick.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-34",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Accent features (a feature wall, a coloured door, a timber panel) are a colour on the element in the same class as its neighbours, not an image inside the IFC.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Accent features (a feature wall, a coloured door, a timber panel) are a colour on the element in the same class as its neighbours, not an image inside the IFC.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-35",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Describe glass by colour, opacity and three optional settings: base opacity, edge reflection (`fresnelAlpha`) and smudge roughness (`smudgeRough`).",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Describe glass by colour, opacity and three optional settings: base opacity, edge reflection (`fresnelAlpha`) and smudge roughness (`smudgeRough`).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-40",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Deliver every texture set as a folder `<setName>/` containing the maps the profile lists (`textures.maps`, default `albedo.png`, `normal.png`, `orm.png`) and `set.json`.",
+   "rationale": "A consumer loads a fixed set of maps per texture set.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-40"
+   },
+   "automated": true,
+   "fix_hint": "Provide every map the profile lists (textures.maps) and set.json in the set folder.",
+   "examples": {
+    "good": "",
+    "bad": "orm map missing"
+   },
+   "related": [
+    "D-41"
+   ],
+   "parameters": [
+    "textures.maps"
+   ],
+   "extension": null
+  },
+  {
+   "id": "D-41",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Use these encodings, so that every consumer reads the maps the same way:",
+   "rationale": "Colour encoding is chosen by the reader's sampler settings; a wrong encoding is silently wrong.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-41"
+   },
+   "automated": true,
+   "fix_hint": "Save 8-bit RGB PNGs without alpha: albedo in sRGB; normal as tangent-basis data with the profile's green-channel convention; orm linear with R occlusion, G roughness, B metalness.",
+   "examples": {
+    "good": "",
+    "bad": "16-bit or RGBA PNG"
+   },
+   "related": [
+    "D-40"
+   ],
+   "parameters": [
+    "textures.normalConvention",
+    "textures.maps"
+   ],
+   "extension": null
+  },
+  {
+   "id": "D-42",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Make the texture tile seamlessly in both directions; consumers repeat it across large surfaces, and a seam repeats with it.",
+   "rationale": "A consumer repeats the tile across large surfaces; a visible seam repeats too.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-42"
+   },
+   "automated": true,
+   "fix_hint": "Make the tile wrap on both axes; check the three-by-three preview.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "D-50"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-43",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Declare the physical size of one tile in `set.json` as `tileMetres`, so that a consumer can scale it correctly.",
+   "rationale": "Texture scale in the model depends on the declared physical tile size.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-43"
+   },
+   "automated": true,
+   "fix_hint": "Add tileMetres (a number above 0) to set.json.",
+   "examples": {
+    "good": "\"tileMetres\": 2.0",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-44",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Use square, power-of-two images, all maps the same size, one of `textures.sizesPixels` (default 512, 1024, 2048).",
+   "rationale": "Square power-of-two maps of equal size are what the reference sets use.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-44"
+   },
+   "automated": true,
+   "fix_hint": "Resize all maps to the same square power-of-two size listed in textures.sizesPixels.",
+   "examples": {
+    "good": "1024 x 1024",
+    "bad": "1000 x 600"
+   },
+   "related": [],
+   "parameters": [
+    "textures.sizesPixels"
+   ],
+   "extension": null
+  },
+  {
+   "id": "D-45",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Choose the tile size so the texel density is inside `textures.densityPixelsPerMetre` (default 250 to 2500 pixels per metre): for 1024 pixels that is a tile of about 0.4 m to 4 m.",
+   "rationale": "Texel density outside 340 to 2050 pixels per metre wastes memory or looks blurry.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-45"
+   },
+   "automated": true,
+   "fix_hint": "Change tileMetres or the map size so size / tileMetres is inside textures.densityPixelsPerMetre.",
+   "examples": {
+    "good": "1024 px at 2 m = 512 px/m",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "textures.densityPixelsPerMetre"
+   ],
+   "extension": null
+  },
+  {
+   "id": "D-46",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Avoid fine, regular weaves and stripes with a tile under 0.5 m: they produce moire at grazing angles.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Avoid fine, regular weaves and stripes with a tile under 0.5 m: they produce moire at grazing angles.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-47",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Declare `tintMode` in `set.json` (one of `textures.tintModes`): `multiply` when the albedo is a near-neutral light map meant to be tinted by the IFC colour, or `authored` when the colour in the map is final.",
+   "rationale": "A consumer must know whether to tint the albedo.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-47"
+   },
+   "automated": true,
+   "fix_hint": "Set tintMode in set.json to one of textures.tintModes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "textures.tintModes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "D-48",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Keep the pattern free of one-off features (a single stain, one knot) that would repeat visibly, and do not bake low-frequency variation in; consumers can add it.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep the pattern free of one-off features (a single stain, one knot) that would repeat visibly, and do not bake low-frequency variation in; consumers can add it.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-49",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "If a pattern has a direction (planks, brushed metal, grain), say which image axis it follows in `set.json` (`direction`: `u`, `v` or `none`); consumers decide how directional patterns are oriented on floors and walls.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: If a pattern has a direction (planks, brushed metal, grain), say which image axis it follows in `set.json` (`direction`: `u`, `v` or `none`); consumers decide how directional patterns are oriented on floors and walls.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-50",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Check your tiles in a three-by-three arrangement and at a long viewing distance: fine relief that reads as speckle should be softened.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Check your tiles in a three-by-three arrangement and at a long viewing distance: fine relief that reads as speckle should be softened.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-60",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Deliver `finish-schedule.json` with these sections: `format` (`finish-schedule/1`), `delivery`, `version` (SemVer), `materials[]` (one entry per (class, colour, opacity) key: `key`, `role`, `usedBy`, `faces`), `floors[]` (ordered floor rules: `where` and `finish`), and `libraries[]` (the texture-set folders it names, with versions).",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Deliver `finish-schedule.json` with these sections: `format` (`finish-schedule/1`), `delivery`, `version` (SemVer), `materials[]` (one entry per (class, colour, opacity) key: `key`, `role`, `usedBy`, `faces`), `floors[]` (ordered floor rules: `where` and `finish`), and `libraries[]` (the texture-set folders it names, with versions).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-61",
+   "level": "required",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Name only texture sets that exist: each face entry names a set from your delivery or from a library the profile or consumer publishes.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Name only texture sets that exist: each face entry names a set from your delivery or from a library the profile or consumer publishes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-62",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Mark materials that must stay as they are (emissive strips, planning markers) with `\"keep\": true` and a reason instead of giving them a texture.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Mark materials that must stay as they are (emissive strips, planning markers) with `\"keep\": true` and a reason instead of giving them a texture.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-63",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Treat the schedule as a proposal: a consumer applies what it can.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Treat the schedule as a proposal: a consumer applies what it can.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-70",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Build the palette from a few families and give each organisation or zone a distinct tint rather than a distinct pattern.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Build the palette from a few families and give each organisation or zone a distinct tint rather than a distinct pattern.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-71",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Describe the intent in words as well as colours (\"light warm-grey resilient floor; pale ivory washable walls; low gloss\"), so that a consumer with its own material library can choose.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Describe the intent in words as well as colours (\"light warm-grey resilient floor; pale ivory washable walls; low gloss\"), so that a consumer with its own material library can choose.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-72",
+   "level": "recommended",
+   "applies_to": [
+    "material"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Do not use texture or colour to carry meaning that labels already carry (room names, identifiers, directions).",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not use texture or colour to carry meaning that labels already carry (room names, identifiers, directions).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-80",
+   "level": "required",
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Record the source and licence of every texture set and every image in it in a `SOURCES.csv` next to the library with the columns `asset,type,source,licence,notes`.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Record the source and licence of every texture set and every image in it in a `SOURCES.csv` next to the library with the columns `asset,type,source,licence,notes`.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-81",
+   "level": "required",
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Include the SHA-256 hash of every file in the manifest (guide 4).",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Include the SHA-256 hash of every file in the manifest (guide 4).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-82",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Prefer procedural sets with the generator and its seeds included; byte-identical output lets a consumer verify and regenerate the library and keeps the delivery small.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Prefer procedural sets with the generator and its seeds included; byte-identical output lets a consumer verify and regenerate the library and keeps the delivery small.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-83",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Name sets in lower case with underscores (`limewash_mottled`) and finishes with dotted names (`wall.limewash.warm`).",
+   "rationale": "Stable, plain names make sets reusable.",
+   "how_to_check": {
+    "tool": "tools/check_texture_set.py",
+    "command": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id D-83"
+   },
+   "automated": true,
+   "fix_hint": "Use a lower-case name with underscores and a SemVer version in set.json.",
+   "examples": {
+    "good": "plaster_fine / 1.0.0",
+    "bad": "Plaster Fine / v1"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-84",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Include a contact sheet (a PNG with each set's albedo, normal and roughness side by side, plus the tile size) so a reviewer sees the library at a glance.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Include a contact sheet (a PNG with each set's albedo, normal and roughness side by side, plus the tile size) so a reviewer sees the library at a glance.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "D-85",
+   "level": "recommended",
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "guide": "2 Interior Decorator's",
+   "statement": "Keep the library independent of any one building: no file name, label or set name should refer to a particular project.",
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep the library independent of any one building: no file name, label or set name should refer to a particular project.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-01",
+   "level": "required",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Use these classes for items, because consumers and tools are written for them, and make the description's class agree with the model.",
+   "rationale": "Tools and consumers are written for these classes; others get no special treatment.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-01"
+   },
+   "automated": true,
+   "fix_hint": "Use IfcFurnishingElement (or IfcBuildingElementProxy for fixed equipment) and make the description's class agree.",
+   "examples": {
+    "good": "",
+    "bad": "furniture modelled as IfcSanitaryTerminal"
+   },
+   "related": [
+    "F-40"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-02",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Set `ObjectType` to a category word from this list so that reports and schedules can group items: `table`, `desk`, `seat`, `bench`, `sofa`, `bed`, `shelf`, `cabinet`, `counter`, `partition`, `planter`, `equipment`, `appliance`, `lamp`, `sign`, `accent`, `other`.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Set `ObjectType` to a category word from this list so that reports and schedules can group items: `table`, `desk`, `seat`, `bench`, `sofa`, `bed`, `shelf`, `cabinet`, `counter`, `partition`, `planter`, `equipment`, `appliance`, `lamp`, `sign`, `accent`, `other`.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-03",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Add a property set `Pset_Declaration_Item` with text properties `ItemId` (the library id, section 3), `ItemVersion` (SemVer), `Role` (what the item is for, for example `work table`), and optionally `Occupant` and `PlanningStatus`.",
+   "rationale": "The item id on the model ties instances to the library.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-03"
+   },
+   "automated": true,
+   "fix_hint": "Add Pset_Declaration_Item with ItemId equal to the item id.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-10",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Make each item file IFC4 (guide 1, B-01 to B-06) containing exactly one furniture or equipment element, placed at the origin with no rotation, in metres, with a stable `GlobalId`.",
+   "rationale": "A library item is one element at the origin so that placing it needs one point and one turn.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-10"
+   },
+   "automated": true,
+   "fix_hint": "Keep exactly one furniture element in the item file, placed at the origin with no rotation.",
+   "examples": {
+    "good": "",
+    "bad": "two tables in one item file"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-11",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Give every item a library id of the form `category.name.size` in lower case (for example `seat.stool.450`), unique within the library and never reused for a different design.",
+   "rationale": "The folder name, files and description must agree.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-11"
+   },
+   "automated": true,
+   "fix_hint": "Make itemId in the description equal the folder name.",
+   "examples": {
+    "good": "table.work.1600",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-12",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Provide a description file `<ItemId>.item.json` for every item (section 3.1).",
+   "rationale": "The description carries the data the checker and reviewers use.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-12"
+   },
+   "automated": true,
+   "fix_hint": "Add <itemId>.item.json that matches schemas/item.schema.json.",
+   "examples": {
+    "good": "",
+    "bad": "no description file"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-20",
+   "level": "required",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Model in metres in the right-handed frame of guide 1 (B-02, B-10), with the item's own origin at its pivot (F-21).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Model in metres in the right-handed frame of guide 1 (B-02, B-10), with the item's own origin at its pivot (F-21).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-20a",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Do not scale an item with an `IfcCartesianTransformationOperator` or any non-unit transform.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not scale an item with an `IfcCartesianTransformationOperator` or any non-unit transform.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-21",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Put the pivot where the item meets the building, so placing it needs one point and one turn.",
+   "rationale": "A floor pivot lets one point and one turn place the item.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-21"
+   },
+   "automated": true,
+   "fix_hint": "Move the geometry so the footprint centre is at x = y = 0 and the lowest point at z = 0.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-22",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Declare the bounding dimensions in the description and keep them equal (within 1 cm) to the measured size of the geometry.",
+   "rationale": "Declared dimensions must match what is modelled.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-22"
+   },
+   "automated": true,
+   "fix_hint": "Correct dimensions in the description or the geometry (within 1 cm).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-23",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Use true-to-life sizes: a work table is about 1.6 by 0.8 by 0.74 m, a chair about 0.5 by 0.55 by 0.85 m.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use true-to-life sizes: a work table is about 1.6 by 0.8 by 0.74 m, a chair about 0.5 by 0.55 by 0.85 m.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-30",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Declare anchors in item coordinates (metres, relative to the pivot).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Declare anchors in item coordinates (metres, relative to the pivot).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-31",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Declare placement rules under `placement`: `mounting` (`floor`, `wall`, `ceiling`, `surface`), `againstWall`, `minWallDistance` (metres), `rotations` (allowed turns about the vertical axis, in degrees), `roomUses` (kinds of use it suits, free words matching the `Function` text of rooms), `avoid` (kinds of room it must not go in), and `mountHeight` for wall items.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Declare placement rules under `placement`: `mounting` (`floor`, `wall`, `ceiling`, `surface`), `againstWall`, `minWallDistance` (metres), `rotations` (allowed turns about the vertical axis, in degrees), `roomUses` (kinds of use it suits, free words matching the `Function` text of rooms), `avoid` (kinds of room it must not go in), and `mountHeight` for wall items.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-32",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Declare clearance minimums around the item: `front`, `back`, `left`, `right`, `top` (metres of free volume needed).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Declare clearance minimums around the item: `front`, `back`, `left`, `right`, `top` (metres of free volume needed).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.standingClearanceMetres"
+   ],
+   "extension": null
+  },
+  {
+   "id": "F-33",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Keep items off door openings and off the floor directly in front of a door; a table in the doorway fails the doorway check (guide 1, B-42).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Keep items off door openings and off the floor directly in front of a door; a table in the doorway fails the doorway check (guide 1, B-42).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-34",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Do not place items so that they cover a room's whole free floor (guide 1, B-33).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not place items so that they cover a room's whole free floor (guide 1, B-33).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-40",
+   "level": "required",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Assume the profile's collision mode (`extensions.furnitureCollision.mode`).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Assume the profile's collision mode (`extensions.furnitureCollision.mode`).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.furnitureCollision.mode"
+   ],
+   "extension": "furnitureCollision"
+  },
+  {
+   "id": "F-41",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Place furniture with rotations in multiples of 90 degrees where you can; a box around a 45-degree table is larger than the table.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Place furniture with rotations in multiples of 90 degrees where you can; a box around a 45-degree table is larger than the table.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "furnitureCollision"
+  },
+  {
+   "id": "F-42",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Declare the footprint polygon and the collision box in the description (section 3.1), so a checker and a human can see what a consumer will do.",
+   "rationale": "The description should show the collision the consumer will make.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-42"
+   },
+   "automated": true,
+   "fix_hint": "Set collision min and max to the geometry's bounding box.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-43",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Never make an item that must be walked under, through or between (an open pergola, a chair with gaps between its legs); in `box` mode it is a solid block.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Never make an item that must be walked under, through or between (an open pergola, a chair with gaps between its legs); in `box` mode it is a solid block.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "furnitureCollision"
+  },
+  {
+   "id": "F-44",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Avoid low obstacles up to `extensions.walkability.stepHeightMetres` that are not obviously steps (a floor box, a cable cover): a walker steps over them unnoticed.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Avoid low obstacles up to `extensions.walkability.stepHeightMetres` that are not obviously steps (a floor box, a cable cover): a walker steps over them unnoticed.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.stepHeightMetres"
+   ],
+   "extension": "walkability"
+  },
+  {
+   "id": "F-50",
+   "level": "required",
+   "applies_to": [
+    "furniture",
+    "package"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Stay within the profile's limits for a whole delivery: `limits.maxFileMegabytes`, `limits.maxVertices`, `limits.maxTriangles`.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Stay within the profile's limits for a whole delivery: `limits.maxFileMegabytes`, `limits.maxVertices`, `limits.maxTriangles`.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "limits.maxFileMegabytes",
+    "limits.maxVertices",
+    "limits.maxTriangles"
+   ],
+   "extension": null
+  },
+  {
+   "id": "F-51",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Keep each item small: at most `budgets.maxItemTriangles` triangles (default 2,000), far fewer for ordinary items.",
+   "rationale": "Item triangle counts add up in the consumer.",
+   "how_to_check": {
+    "tool": "tools/check_item.py",
+    "command": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id F-51"
+   },
+   "automated": true,
+   "fix_hint": "Reduce triangles to the profile's budgets.maxItemTriangles or fewer and keep the declared budget equal to the model.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "budgets.maxItemTriangles"
+   ],
+   "extension": null
+  },
+  {
+   "id": "F-52",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Do not deliver textures with an item.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Do not deliver textures with an item.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-53",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Use one or two surface colours on an ordinary item and up to four on a feature item; every distinct colour of every item adds a material.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use one or two surface colours on an ordinary item and up to four on a feature item; every distinct colour of every item adds a material.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-60",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Describe variants in the description file.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Describe variants in the description file.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-61",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Place repeated items as instances: each instance is an element of its own (own `GlobalId`, own `ObjectPlacement`), sharing geometry through `IfcMappedItem` and `IfcRepresentationMap`.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Place repeated items as instances: each instance is an element of its own (own `GlobalId`, own `ObjectPlacement`), sharing geometry through `IfcMappedItem` and `IfcRepresentationMap`.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-62",
+   "level": "required",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Give each instance its own unique `GlobalId` (guide 1, B-70) and a level to belong to (guide 1, B-13).",
+   "rationale": "Instances without their own GlobalId merge into one element.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Give each instance its own unique `GlobalId` (guide 1, B-70) and a level to belong to (guide 1, B-13).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-62a",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Place every instance inside the room it serves, and do not let it extend through a wall or a floor.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Place every instance inside the room it serves, and do not let it extend through a wall or a floor.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-63",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Record the item id and version on every instance (`ItemId`, `ItemVersion`, F-03) so that a revision of the library can be rolled out by replacing instances.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Record the item id and version on every instance (`ItemId`, `ItemVersion`, F-03) so that a revision of the library can be rolled out by replacing instances.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "F-70",
+   "level": "required",
+   "applies_to": [
+    "furniture",
+    "building"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Follow guide 1 exactly for light fixtures (section 11) and, when signboards are enabled, for signs (section 12).",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Follow guide 1 exactly for light fixtures (section 11) and, when signboards are enabled, for signs (section 12).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  {
+   "id": "F-71",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Make a fixture's housing and emissive part separate parts so that only the emissive part glows.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Make a fixture's housing and emissive part separate parts so that only the emissive part glows.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  {
+   "id": "F-72",
+   "level": "recommended",
+   "applies_to": [
+    "furniture"
+   ],
+   "guide": "3 Furniture and Fixtures",
+   "statement": "Other fixtures (hand rails, handles, hooks, bathroom fittings, planters) are small elements with their own colour, in the classes of section 2.",
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Other fixtures (hand rails, handles, hooks, bathroom fittings, planters) are small elements with their own colour, in the classes of section 2.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-01",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Use this layout.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use this layout.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-02",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Use lower-case ASCII file names without blanks, forward slashes in every path, and keep paths under 200 characters.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Use lower-case ASCII file names without blanks, forward slashes in every path, and keep paths under 200 characters.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-10",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Put a `manifest.json` at the top of the package that matches the schema.",
+   "rationale": "A machine-readable manifest lets a package be verified without reading it.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-10"
+   },
+   "automated": true,
+   "fix_hint": "Write manifest.json that matches schemas/manifest.schema.json (run build_package.py init).",
+   "examples": {
+    "good": "",
+    "bad": "no manifest"
+   },
+   "related": [
+    "X-11"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-11",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Record the SHA-256 hash (64 lower-case hexadecimal characters) and size in bytes of every file, and include a `SHA256SUMS.txt` in the plain two-column form (`hash`, two blanks, `path`).",
+   "rationale": "Hashes prove that what the receiving party holds is what was sent.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-11"
+   },
+   "automated": true,
+   "fix_hint": "Regenerate manifest.json and SHA256SUMS.txt after any change (build_package.py init).",
+   "examples": {
+    "good": "",
+    "bad": "a file edited after the manifest was made"
+   },
+   "related": [
+    "X-12"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-12",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "List every file in the package, and only those, in the manifest.",
+   "rationale": "Unlisted files cannot be trusted or reviewed.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-12"
+   },
+   "automated": true,
+   "fix_hint": "Delete the unlisted file or rebuild the manifest so it is listed.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "X-11"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-13",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "A building delivery has exactly one master IFC file (guide 1, B-03); other files are alternates.",
+   "rationale": "A consumer ingests exactly one master per placement area.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-13"
+   },
+   "automated": true,
+   "fix_hint": "Keep one file under ifc/ and move alternates to ifc/alternates/.",
+   "examples": {
+    "good": "",
+    "bad": "two masters"
+   },
+   "related": [
+    "B-03"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-14",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Keep the whole package within the profile's cap, `package.maxPackageMegabytes`, when it sets one.",
+   "rationale": "Upload systems and mail gateways refuse packages over their cap.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-14"
+   },
+   "automated": true,
+   "fix_hint": "Reduce the package (simplify geometry, smaller textures) until it is under the profile's package.maxPackageMegabytes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "package.maxPackageMegabytes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-20",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Give every IFC file, texture set and library item a `provenance` entry (what it is, where it came from: `original`, `procedural` with the script and seed, or a named source; who made it; the licence that applies) when the profile requires provenance (`package.requireProvenance`, default true).",
+   "rationale": "Every asset needs a known origin.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-20"
+   },
+   "automated": true,
+   "fix_hint": "Add a provenance entry (asset, type, source, author, licence) for each IFC file, texture set and item.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "X-21"
+   ],
+   "parameters": [
+    "package.requireProvenance"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-21",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "State a licence for every asset and a `licence.statement` for the package when the profile requires it (`package.requireLicence`, default true).",
+   "rationale": "The receiving party must be allowed to use, copy and adapt the work.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-21"
+   },
+   "automated": true,
+   "fix_hint": "State source and licence in every provenance entry and a licence.statement for the package.",
+   "examples": {
+    "good": "",
+    "bad": "empty licence"
+   },
+   "related": [
+    "X-20"
+   ],
+   "parameters": [
+    "package.requireLicence"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-22",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Deliver only content you are free to hand over.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Deliver only content you are free to hand over.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-30",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Version the delivery, each texture set and each item with SemVer (`MAJOR.MINOR.PATCH`), and give every version a creation time.",
+   "rationale": "Version numbers tell reviewers what kind of change to expect.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-30"
+   },
+   "automated": true,
+   "fix_hint": "Use SemVer in delivery.version and a UTC time like 2026-10-22T10:00:00Z in delivery.created.",
+   "examples": {
+    "good": "1.2.0",
+    "bad": "v1.2"
+   },
+   "related": [
+    "X-31"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-31",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Choose the next version number by what changed.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Choose the next version number by what changed.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-32",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Write `notes/changes.md`: for each version, the ids added, changed and removed, in plain sentences.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Write `notes/changes.md`: for each version, the ids added, changed and removed, in plain sentences.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-50",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Never change a delivered version in place.",
+   "rationale": "Two different files with one version number make revisions untraceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Never change a delivered version in place.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-40",
+   "level": "required",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Run `check_ifc.py` on the exact master file you are sending, with the profile, and include its JSON report in the package.",
+   "rationale": "A check report is only meaningful for the exact file it was run on.",
+   "how_to_check": {
+    "tool": "tools/build_package.py",
+    "command": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-40"
+   },
+   "automated": true,
+   "fix_hint": "Rerun check_ifc.py on the final master, write its report into reports/, and rebuild the manifest.",
+   "examples": {
+    "good": "",
+    "bad": "report for an earlier file"
+   },
+   "related": [
+    "X-11"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-41",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Deliver `tables/rooms.csv` with the columns `roomId`, `name`, `occupant`, `kind` (`room`, `circulation`, `observation`, `open`), `enclosed` (`yes` or `no`), `level`, `levelElevationMetres`, `floorAreaM2`, `clearHeightM`, `buildingId` and `layer`, and list every new `Occupant` string with the room-id prefix that goes with it and its kind, so a receiving party can add its rules before intake.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: Deliver `tables/rooms.csv` with the columns `roomId`, `name`, `occupant`, `kind` (`room`, `circulation`, `observation`, `open`), `enclosed` (`yes` or `no`), `level`, `levelElevationMetres`, `floorAreaM2`, `clearHeightM`, `buildingId` and `layer`, and list every new `Occupant` string with the room-id prefix that goes with it and its kind, so a receiving party can add its rules before intake.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-60",
+   "level": "recommended",
+   "applies_to": [
+    "package"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "When you send a revision, change only what the findings and your own notes name, bump the version (section 4), list what changed in `notes/changes.md`, and keep every unchanged identifier.",
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Change the work so that it meets the rule: When you send a revision, change only what the findings and your own notes name, bump the version (section 4), list what changed in `notes/changes.md`, and keep every unchanged identifier.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  }
+ ]
+}

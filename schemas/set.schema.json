@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Texture set description",
+  "description": "set.json inside every texture set folder (guide 2, section 4).",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "sizePixels",
+    "tileMetres",
+    "tintMode",
+    "maps"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+"
+    },
+    "sizePixels": {
+      "type": "integer",
+      "minimum": 64
+    },
+    "tileMetres": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "tintMode": {
+      "enum": [
+        "multiply",
+        "authored"
+      ]
+    },
+    "direction": {
+      "enum": [
+        "u",
+        "v",
+        "none"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "maps": {
+      "type": "object",
+      "required": [
+        "albedo",
+        "normal",
+        "orm"
+      ],
+      "properties": {
+        "albedo": {
+          "const": "albedo.png"
+        },
+        "normal": {
+          "const": "normal.png"
+        },
+        "orm": {
+          "const": "orm.png"
+        }
+      }
+    },
+    "generator": {
+      "type": "string"
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

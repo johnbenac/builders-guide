@@ -1,0 +1,203 @@
+{
+  "_license": "Apache-2.0",
+  "format": "profile/1",
+  "name": "example-strict",
+  "version": "1.0.0",
+  "description": "An example of a consumer profile for a constrained real-time viewer. It shows how a consumer tightens numeric limits, makes identifiers mandatory, renames the declaration properties with its own prefix, and switches on the optional extensions. Values are illustrative.",
+  "frame": {
+    "horizontalAxes": "+X forward, +Y left (right-handed with Z up)",
+    "levelOffsetMetres": 12.0,
+    "placement": "final"
+  },
+  "schema": {
+    "allowed": [
+      "IFC4"
+    ]
+  },
+  "limits": {
+    "maxFileMegabytes": 100,
+    "maxVertices": 5000000,
+    "maxTriangles": 3000000
+  },
+  "budgets": {
+    "recommendedFileMegabytes": 60,
+    "recommendedTriangles": 300000,
+    "maxDistinctColours": 30,
+    "maxItemTriangles": 500
+  },
+  "file": {
+    "singleLineEntities": true
+  },
+  "identifiers": {
+    "roomIdMaxLength": 7,
+    "roomIdPattern": "^[A-Za-z0-9-]+$",
+    "entityNumberStart": 700001,
+    "occupants": [
+      "Example Occupant",
+      "Agent Occupant",
+      "Shared circulation"
+    ],
+    "circulationPrefix": "Circulation"
+  },
+  "geometry": {
+    "doorMinClearHeightMetres": 1.9,
+    "doorMinClearWidthMetres": 0.9,
+    "doorwayProbeHeightsMetres": [
+      0.6,
+      1.1,
+      1.8
+    ],
+    "stairRiserLimitMetres": 0.18,
+    "rampMaxSlope": 0.05,
+    "maxCurveSegmentsPerCircle": 24
+  },
+  "baseSurfaces": [],
+  "buildVolume": {
+    "box": {
+      "min": [
+        -50.0,
+        -50.0,
+        0.0
+      ],
+      "max": [
+        50.0,
+        50.0,
+        40.0
+      ]
+    }
+  },
+  "keepOut": [
+    {
+      "id": "example-keep-out",
+      "min": [
+        30.0,
+        30.0,
+        0.0
+      ],
+      "max": [
+        40.0,
+        40.0,
+        40.0
+      ]
+    }
+  ],
+  "propertyNames": {
+    "RoomId": "Ex_RoomId",
+    "Occupant": "Ex_Occupant",
+    "Function": "Ex_Function",
+    "LuminaireId": "Ex_LuminaireId",
+    "LuminaireMount": "Ex_LuminaireMount",
+    "LuminaireTarget": "Ex_LuminaireTarget",
+    "LightType": "Ex_LightType",
+    "LightEnergy": "Ex_LightEnergy",
+    "LightRangeM": "Ex_LightRangeM",
+    "LightSpotDeg": "Ex_LightSpotDeg",
+    "LightColor": "Ex_LightColor",
+    "LightPosition": "Ex_LightPosition",
+    "LightAim": "Ex_LightAim",
+    "LightFadeBeginM": "Ex_LightFadeBeginM",
+    "LightFadeLengthM": "Ex_LightFadeLengthM"
+  },
+  "propertyValues": {},
+  "ruleLevels": {
+    "B-08": "required",
+    "B-24": "required",
+    "B-25": "required",
+    "B-26": "required",
+    "B-50": "required",
+    "B-62": "required",
+    "B-71": "required"
+  },
+  "extensions": {
+    "walkability": {
+      "enabled": true,
+      "standingClearanceMetres": 0.45,
+      "freeCircleMetres": 1.2,
+      "stepHeightMetres": 0.3,
+      "nonSolidClasses": [
+        "IfcDoor",
+        "IfcSpace",
+        "IfcSpatialZone",
+        "IfcLightFixture"
+      ]
+    },
+    "luminaires": {
+      "enabled": true,
+      "lensNameSuffix": " lens",
+      "requiredProperties": [
+        "LuminaireId",
+        "LuminaireMount",
+        "LightType",
+        "LightEnergy",
+        "LightRangeM",
+        "LightSpotDeg",
+        "LightColor",
+        "LightPosition",
+        "LightAim",
+        "LightFadeBeginM",
+        "LightFadeLengthM"
+      ],
+      "lightTypes": [
+        "omni",
+        "spot"
+      ],
+      "positionToleranceMetres": 0.06,
+      "maxPerRoom": 16
+    },
+    "signboards": {
+      "enabled": true,
+      "kinds": [
+        "entrance_board",
+        "stop_board"
+      ],
+      "requiredProperties": [
+        "SignboardId",
+        "SignboardKind",
+        "SignboardText",
+        "SignboardWidthM",
+        "SignboardHeightM",
+        "SignboardReadM",
+        "SignboardPosition",
+        "SignboardNormal"
+      ],
+      "displayPixelsPerRadian": 1090,
+      "minCapitalPixels": {
+        "primary": 16,
+        "secondary": 12,
+        "tertiary": 9
+      },
+      "readingDistanceMetres": [
+        5,
+        18
+      ]
+    },
+    "furnitureCollision": {
+      "enabled": true,
+      "mode": "box"
+    }
+  },
+  "textures": {
+    "sizesPixels": [
+      1024
+    ],
+    "densityPixelsPerMetre": [
+      340,
+      2050
+    ],
+    "maps": [
+      "albedo",
+      "normal",
+      "orm"
+    ],
+    "normalConvention": "+Y",
+    "tintModes": [
+      "multiply",
+      "authored"
+    ]
+  },
+  "package": {
+    "maxPackageMegabytes": 500,
+    "requireProvenance": true,
+    "requireLicence": true
+  }
+}

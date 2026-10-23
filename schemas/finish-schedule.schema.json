@@ -1,0 +1,214 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Finish schedule",
+  "description": "What each (class, colour, opacity) key and each room floor means (guide 2, section 5).",
+  "type": "object",
+  "required": [
+    "format",
+    "delivery",
+    "version",
+    "materials",
+    "floors"
+  ],
+  "properties": {
+    "format": {
+      "const": "finish-schedule/1"
+    },
+    "delivery": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+"
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "key",
+          "role"
+        ],
+        "properties": {
+          "key": {
+            "type": "object",
+            "required": [
+              "class",
+              "colour"
+            ],
+            "properties": {
+              "class": {
+                "type": "string",
+                "pattern": "^Ifc[A-Za-z]+$"
+              },
+              "colour": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "opacity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "role": {
+            "type": "string"
+          },
+          "usedBy": {
+            "type": "string"
+          },
+          "keep": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "faces": {
+            "type": "object",
+            "properties": {
+              "all": {
+                "$ref": "#/definitions/face"
+              },
+              "top": {
+                "$ref": "#/definitions/face"
+              },
+              "side": {
+                "$ref": "#/definitions/face"
+              },
+              "bottom": {
+                "$ref": "#/definitions/face"
+              }
+            },
+            "additionalProperties": false
+          },
+          "glass": {
+            "type": "object",
+            "properties": {
+              "baseAlpha": {
+                "type": "number"
+              },
+              "fresnelAlpha": {
+                "type": "number"
+              },
+              "smudgeRough": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "floors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "where",
+          "finish"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "where": {
+            "type": "object",
+            "properties": {
+              "occupant": {
+                "type": "string"
+              },
+              "roomIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "pattern": {
+                "type": "string"
+              }
+            }
+          },
+          "finish": {
+            "$ref": "#/definitions/face"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "libraries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "face": {
+      "type": "object",
+      "required": [
+        "set"
+      ],
+      "properties": {
+        "set": {
+          "type": "string"
+        },
+        "tint": {
+          "type": "string"
+        },
+        "tintStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "tileMetres": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "normalScale": {
+          "type": "number"
+        },
+        "roughMul": {
+          "type": "number"
+        },
+        "metalMul": {
+          "type": "number"
+        },
+        "macroStrength": {
+          "type": "number"
+        },
+        "macroScaleMetres": {
+          "type": "number"
+        },
+        "aoStrength": {
+          "type": "number"
+        },
+        "sheen": {
+          "type": "number"
+        },
+        "sheenTint": {
+          "type": "string"
+        },
+        "offsetMetres": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

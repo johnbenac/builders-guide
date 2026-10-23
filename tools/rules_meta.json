@@ -1,0 +1,3160 @@
+{
+ "format": "rules-meta/1",
+ "note": "Machine fields of the rules. The id, level and statement of each rule come from the guides; this file adds the rest. Edit this file, then run tools/build_rules.py.",
+ "rules": {
+  "B-01": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Readers support different schema editions; a file in an unlisted edition may not open or may lose data.",
+   "fix_hint": "Export the file in an IFC schema edition the profile accepts (schema.allowed).",
+   "examples": {
+    "good": "FILE_SCHEMA(('IFC4'));",
+    "bad": "FILE_SCHEMA(('IFC2X3'));"
+   },
+   "related": [],
+   "parameters": [
+    "schema.allowed"
+   ],
+   "extension": null
+  },
+  "B-02": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Without a declared unit a reader must guess; a wrong guess rescales the whole building.",
+   "fix_hint": "Declare an IfcSIUnit LENGTHUNIT METRE in the project's unit assignment and model in metres.",
+   "examples": {
+    "good": "IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.)",
+    "bad": "no length unit, or .MILLI. METRE with metre-sized numbers"
+   },
+   "related": [
+    "B-02a"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-02a": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Plain metres avoid conversion mistakes.",
+   "fix_hint": "Use an unprefixed METRE unit.",
+   "examples": {
+    "good": "IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.)",
+    "bad": "IFCSIUNIT(*,.LENGTHUNIT.,.MILLI.,.METRE.)"
+   },
+   "related": [
+    "B-02"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-03": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "A consumer ingests one source file per placement area; others are ignored.",
+   "fix_hint": "Merge everything into one master IFC file; keep per-building files only under ifc/alternates/.",
+   "examples": {
+    "good": "ifc/site-master.ifc",
+    "bad": "three building files all in ifc/"
+   },
+   "related": [
+    "X-13"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-04": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Raw non-ASCII bytes are decoded differently by different tools, so names and text change.",
+   "fix_hint": "Re-export with one entity per line and encode non-ASCII characters with the format escapes (for example \\X2\\00B7\\X0\\).",
+   "examples": {
+    "good": "#12=IFCPROPERTYSINGLEVALUE('RoomId',$,IFCTEXT('A-101'),$);",
+    "bad": "an entity broken over two lines, or a raw 0xB7 byte"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-05": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Every reader has memory and time limits; a file over them is refused or truncated.",
+   "fix_hint": "Reduce geometry (simpler rails, fewer segments, drop hidden detail) or split the work into several placement areas until the file is within the profile's limits.",
+   "examples": {
+    "good": "1.2 MB file, 20,000 triangles",
+    "bad": "130 MB file"
+   },
+   "related": [
+    "B-09",
+    "B-120"
+   ],
+   "parameters": [
+    "limits.maxFileMegabytes",
+    "limits.maxVertices",
+    "limits.maxTriangles"
+   ],
+   "extension": null
+  },
+  "B-06": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Many readers drop representations they cannot tessellate, silently, so the element vanishes.",
+   "fix_hint": "Rebuild the product from extruded profiles, faceted breps or mapped items; avoid swept disks and boolean-heavy breps.",
+   "examples": {
+    "good": "IfcExtrudedAreaSolid with a rectangle profile",
+    "bad": "IfcSweptDiskSolid railing"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-07": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Re-ingesting a revision must reproduce the same result or saved references break.",
+   "fix_hint": "Make the exporter deterministic: fixed header time, stable ordering, GlobalIds derived from stable keys.",
+   "examples": {
+    "good": "two exports are byte-identical",
+    "bad": "GlobalIds regenerated randomly each export"
+   },
+   "related": [
+    "B-70",
+    "X-50"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-08": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Line-oriented tools, diff tools and simple readers handle one-entity-per-line files; wrapped entities are valid but can be missed.",
+   "fix_hint": "Re-export with one entity per line, or reformat the file so each entity stays on a single line.",
+   "examples": {
+    "good": "#12=IFCWALL(...);",
+    "bad": "an entity continued on the next line"
+   },
+   "related": [],
+   "parameters": [
+    "file.singleLineEntities"
+   ],
+   "extension": null
+  },
+  "B-09": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Very large files load slowly and are hard to review.",
+   "fix_hint": "Reduce the file below the profile's budgets.recommendedFileMegabytes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "B-05"
+   ],
+   "parameters": [
+    "budgets.recommendedFileMegabytes"
+   ],
+   "extension": null
+  },
+  "B-10": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "A different up axis or handedness turns or mirrors the building.",
+   "fix_hint": "Re-export with Z up, +X forward, +Y left, in metres.",
+   "examples": {
+    "good": "",
+    "bad": "a model with Y up"
+   },
+   "related": [
+    "B-11"
+   ],
+   "parameters": [
+    "frame.horizontalAxes"
+   ],
+   "extension": null
+  },
+  "B-11": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "A consumer attaches the file with zero offset and rotation.",
+   "fix_hint": "Move the geometry into the final placement frame; do not rely on the consumer to shift or turn it.",
+   "examples": {
+    "good": "local z = 0 at the finished floor of the lowest level",
+    "bad": "geometry authored 12 m too low and expected to be lifted"
+   },
+   "related": [
+    "B-12"
+   ],
+   "parameters": [
+    "frame.placement"
+   ],
+   "extension": null
+  },
+  "B-12": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A written frame note lets a reviewer verify the frame.",
+   "fix_hint": "Add a property set on the IfcProject with FrameNote (text) and LevelOffsetMetres (number).",
+   "examples": {
+    "good": "FrameNote: metres; +X forward; +Y left; +Z up; local z = 0 at the finished floor",
+    "bad": ""
+   },
+   "related": [
+    "B-11"
+   ],
+   "parameters": [
+    "frame.levelOffsetMetres"
+   ],
+   "extension": null
+  },
+  "B-13": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Tools that work level by level drop elements that belong to no level.",
+   "fix_hint": "Create an IfcBuildingStorey per level with Name and Elevation and put every element in one (IfcRelContainedInSpatialStructure or IfcRelAggregates).",
+   "examples": {
+    "good": "every wall contained in its storey",
+    "bad": "loose walls with no storey"
+   },
+   "related": [
+    "B-14"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-14": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "The full hierarchy keeps levels grouped by building.",
+   "fix_hint": "Add IfcSite and IfcBuilding and aggregate them under the project.",
+   "examples": {
+    "good": "Project > Site > Building > Storey",
+    "bad": "storeys directly under the project"
+   },
+   "related": [
+    "B-13"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-15": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-20": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Tools derive a room's floor, area and position from its solid; without a flat floor they cannot.",
+   "fix_hint": "Model each room as an IfcSpace whose solid is an upward extrusion of the floor outline, floor flat at the lowest plane.",
+   "examples": {
+    "good": "IfcSpace extruded 3.0 m from the floor outline",
+    "bad": "IfcSpace with no representation"
+   },
+   "related": [
+    "B-21"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-21": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A room without geometry cannot be located, measured or shown.",
+   "fix_hint": "Give the IfcSpace a Body representation (an extruded solid).",
+   "examples": {
+    "good": "",
+    "bad": "IfcSpace with Representation $"
+   },
+   "related": [
+    "B-20"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-22": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Duplicate identifiers make every reference to a room ambiguous.",
+   "fix_hint": "Add RoomId (IfcPropertySingleValue in an IfcPropertySet linked by IfcRelDefinesByProperties) and make every value unique across the consumer model.",
+   "examples": {
+    "good": "RoomId A-101 on one room only",
+    "bad": "two rooms both A-101"
+   },
+   "related": [
+    "B-23",
+    "B-26"
+   ],
+   "parameters": [
+    "propertyNames"
+   ],
+   "extension": null
+  },
+  "B-23": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Identifiers are printed on labels and stored in fixed-width fields.",
+   "fix_hint": "Change the room identifier to meet the profile (identifiers.roomIdMaxLength and identifiers.roomIdPattern).",
+   "examples": {
+    "good": "A-101",
+    "bad": "ENTRANCE-HALL-1"
+   },
+   "related": [
+    "B-22"
+   ],
+   "parameters": [
+    "identifiers.roomIdMaxLength",
+    "identifiers.roomIdPattern"
+   ],
+   "extension": null
+  },
+  "B-24": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Occupant selects the organisation rules for finishes, lights and counts.",
+   "fix_hint": "Set Occupant to one string from the profile's identifiers.occupants, spelled exactly (or to a clear organisation or use when the profile lists none).",
+   "examples": {
+    "good": "Example Occupant",
+    "bad": "example occupant "
+   },
+   "related": [
+    "X-41"
+   ],
+   "parameters": [
+    "identifiers.occupants"
+   ],
+   "extension": null
+  },
+  "B-25": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A consumer's rules read the word Circulation at the start of Function.",
+   "fix_hint": "Add Function text; start circulation rooms with the profile's identifiers.circulationPrefix when it names one.",
+   "examples": {
+    "good": "Circulation: main corridor",
+    "bad": ""
+   },
+   "related": [
+    "B-24"
+   ],
+   "parameters": [
+    "identifiers.circulationPrefix"
+   ],
+   "extension": null
+  },
+  "B-26": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Tools that find no identifier invent one from the name, which changes when the name changes.",
+   "fix_hint": "Add a RoomId property to the named room.",
+   "examples": {
+    "good": "",
+    "bad": "room without RoomId"
+   },
+   "related": [
+    "B-22"
+   ],
+   "parameters": [
+    "propertyNames",
+    "ruleLevels"
+   ],
+   "extension": null
+  },
+  "B-27": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-28": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-29": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-30": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-31": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-32": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-33": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A simulator needs a free spot to place a person; furniture can leave none.",
+   "fix_hint": "Move or remove furniture so that part of the floor stays at least extensions.walkability.standingClearanceMetres clear of every item.",
+   "examples": {
+    "good": "a free 1.2 m circle in the room",
+    "bad": "table filling the whole floor"
+   },
+   "related": [
+    "B-34",
+    "F-34"
+   ],
+   "parameters": [
+    "extensions.walkability.standingClearanceMetres"
+   ],
+   "extension": "walkability"
+  },
+  "B-34": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.freeCircleMetres"
+   ],
+   "extension": "walkability"
+  },
+  "B-40": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-40a": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-41": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Tools find doorways from the opening that a door fills; without it the door is a picture on a solid wall.",
+   "fix_hint": "Add an IfcOpeningElement in the wall with IfcRelVoidsElement (wall to opening) and IfcRelFillsElement (opening to door).",
+   "examples": {
+    "good": "wall -> opening -> door chain",
+    "bad": "door placed in a wall with no opening"
+   },
+   "related": [
+    "B-42",
+    "B-44"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-42": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A doorway that is too low or blocked cannot be passed by a person, a camera path or a simulator.",
+   "fix_hint": "Make the doorway opening at least geometry.doorMinClearHeightMetres high and remove anything (sill, bar, furniture) that crosses the opening centre line at geometry.doorwayProbeHeightsMetres.",
+   "examples": {
+    "good": "2.3 m high opening, clear floor in front",
+    "bad": "table standing in the doorway"
+   },
+   "related": [
+    "B-43"
+   ],
+   "parameters": [
+    "geometry.doorMinClearHeightMetres",
+    "geometry.doorwayProbeHeightsMetres"
+   ],
+   "extension": null
+  },
+  "B-43": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Narrow doorways block wheelchairs, trolleys, camera paths and simulated walkers.",
+   "fix_hint": "Widen the doorway opening to at least the profile's geometry.doorMinClearWidthMetres.",
+   "examples": {
+    "good": "1.0 m wide opening",
+    "bad": "0.6 m wide opening"
+   },
+   "related": [],
+   "parameters": [
+    "geometry.doorMinClearWidthMetres"
+   ],
+   "extension": null
+  },
+  "B-44": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Without an opening the wall stays solid behind the window.",
+   "fix_hint": "Add an IfcOpeningElement with the voids and fills relations for the window.",
+   "examples": {
+    "good": "",
+    "bad": "window drawn over an uncut wall"
+   },
+   "related": [
+    "B-41"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-45": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-46": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-47": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-48": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-50": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Floor contact, area and standing points are computed from slab faces.",
+   "fix_hint": "Add an IfcSlab (FLOOR or ROOF) whose top face is the finished floor, unless the profile says the consumer supplies that floor (baseSurfaces).",
+   "examples": {
+    "good": "slab top at z = 0",
+    "bad": "room floating with no slab"
+   },
+   "related": [
+    "B-51"
+   ],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  "B-51": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  "B-51a": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  "B-52": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-53": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "A gap between floor pieces is not recognised as an opening.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-54": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-55": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "baseSurfaces"
+   ],
+   "extension": null
+  },
+  "B-60": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Consumers recognise stairs, and simulators build a walking surface, from the flight element.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-61": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "The walking surface of a stair sits up to one riser from the visible tread.",
+   "fix_hint": "Reduce the riser height to the profile's geometry.stairRiserLimitMetres or less.",
+   "examples": {
+    "good": "riser 0.167 m",
+    "bad": "riser 0.22 m"
+   },
+   "related": [],
+   "parameters": [
+    "geometry.stairRiserLimitMetres"
+   ],
+   "extension": null
+  },
+  "B-62": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Lifts are static in the consumer; only stairs carry a walker between levels.",
+   "fix_hint": "Add an IfcStairFlight connecting the levels of every multi-level building.",
+   "examples": {
+    "good": "",
+    "bad": "two storeys and no stair"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-63": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-64": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "geometry.rampMaxSlope"
+   ],
+   "extension": null
+  },
+  "B-65": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.stepHeightMetres"
+   ],
+   "extension": "walkability"
+  },
+  "B-66": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-67": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.nonSolidClasses"
+   ],
+   "extension": "walkability"
+  },
+  "B-70": {
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "GlobalId is the key tools use to match an element across revisions and files; duplicates merge unrelated elements.",
+   "fix_hint": "Give every product a unique 22-character GlobalId and keep it unchanged between exports.",
+   "examples": {
+    "good": "",
+    "bad": "two walls sharing a GlobalId"
+   },
+   "related": [
+    "B-71"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-71": {
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Entity numbers from different deliveries must not clash in one model.",
+   "fix_hint": "Renumber the entities to start at the number the profile assigns (identifiers.entityNumberStart).",
+   "examples": {
+    "good": "#700001 and up",
+    "bad": "#1 and up when #700001 was assigned"
+   },
+   "related": [
+    "B-70"
+   ],
+   "parameters": [
+    "identifiers.entityNumberStart"
+   ],
+   "extension": null
+  },
+  "B-72": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Many readers ignore quantity sets, enumerations, tables and properties on types.",
+   "fix_hint": "Store the declaration property as IfcPropertySingleValue inside an IfcPropertySet linked by IfcRelDefinesByProperties.",
+   "examples": {
+    "good": "IFCPROPERTYSINGLEVALUE('RoomId',...)",
+    "bad": "an enumerated RoomId or one inside a quantity set"
+   },
+   "related": [
+    "B-22"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-73": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-74": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-75": {
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-76": {
+   "applies_to": [
+    "building",
+    "furniture",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-80": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "The standard provision type marks a volume that is not physical; other proxies are drawn as solids.",
+   "fix_hint": "Write the proxy on one line with PROVISIONFORSPACE as its last argument.",
+   "examples": {
+    "good": "",
+    "bad": "reservation drawn as an ordinary proxy"
+   },
+   "related": [
+    "B-81"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-81": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Zone ids must be unique and a zone needs geometry to be kept.",
+   "fix_hint": "Give each IfcSpatialZone a unique ZoneId (or name) and a representation.",
+   "examples": {
+    "good": "",
+    "bad": "two zones named View"
+   },
+   "related": [
+    "B-80"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-81a": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-82": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-90": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A fixture needs a part that can glow separately from its housing.",
+   "fix_hint": "Aggregate exactly two IfcLightFixture parts under the assembly: a housing and one whose name ends in the profile's extensions.luminaires.lensNameSuffix.",
+   "examples": {
+    "good": "Fixture 1 housing / Fixture 1 lens",
+    "bad": "single light fixture with no parts"
+   },
+   "related": [
+    "B-91"
+   ],
+   "parameters": [
+    "extensions.luminaires.lensNameSuffix"
+   ],
+   "extension": "luminaires"
+  },
+  "B-91": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A fixture missing a property cannot be converted to a light by a consumer that needs it.",
+   "fix_hint": "Add every property in extensions.luminaires.requiredProperties to the assembly; make LuminaireId unique and LightType one of the profile's lightTypes.",
+   "examples": {
+    "good": "",
+    "bad": "assembly without LightRangeM"
+   },
+   "related": [
+    "B-92",
+    "B-93"
+   ],
+   "parameters": [
+    "extensions.luminaires.requiredProperties",
+    "extensions.luminaires.lightTypes",
+    "propertyNames"
+   ],
+   "extension": "luminaires"
+  },
+  "B-92": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Positions in two frames get applied twice or not at all; stating the frame and the offset once avoids both.",
+   "fix_hint": "Set LightPosition (and sign positions) to the file-local point plus frame.levelOffsetMetres; the emissive part's centre plus the offset must be within the profile's positionToleranceMetres.",
+   "examples": {
+    "good": "local z 2.89 + offset 12.0 = 14.89",
+    "bad": "LightPosition equal to the local point"
+   },
+   "related": [
+    "B-92a"
+   ],
+   "parameters": [
+    "frame.levelOffsetMetres",
+    "extensions.luminaires.positionToleranceMetres"
+   ],
+   "extension": "luminaires"
+  },
+  "B-92a": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  "B-93": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A consumer requires a unit aim vector.",
+   "fix_hint": "Normalise LightAim to length 1.",
+   "examples": {
+    "good": "0,0,-1",
+    "bad": "0,0,-2"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  "B-94": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Rooms with no authored fixture are dark in a delivery that disables automatic lamps.",
+   "fix_hint": "Add a luminaire whose LuminaireTarget is the room's RoomId.",
+   "examples": {
+    "good": "",
+    "bad": "room with no fixture"
+   },
+   "related": [
+    "B-95"
+   ],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  "B-95": {
+   "applies_to": [
+    "building",
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.luminaires.maxPerRoom"
+   ],
+   "extension": "luminaires"
+  },
+  "B-100": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Boards are generated from their declaration properties.",
+   "fix_hint": "Add every required Signboard* property; kind must be building_board or tram_stop.",
+   "examples": {
+    "good": "",
+    "bad": "board without SignboardReadM"
+   },
+   "related": [
+    "B-101",
+    "B-102"
+   ],
+   "parameters": [
+    "extensions.signboards.requiredProperties",
+    "extensions.signboards.kinds"
+   ],
+   "extension": "signboards"
+  },
+  "B-101": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A consumer fails a sign whose text still overflows at 0.05 m capital height.",
+   "fix_hint": "Widen the board or shorten the text.",
+   "examples": {
+    "good": "3.6 m board for 'Main Clinic'",
+    "bad": "0.4 m board for a 40-character name"
+   },
+   "related": [
+    "B-102"
+   ],
+   "parameters": [],
+   "extension": "signboards"
+  },
+  "B-102": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A consumer clamps the stated reading distance to what the letters support.",
+   "fix_hint": "Lower SignboardReadM to the supported distance (capital height x displayPixelsPerRadian / minimum pixels), or enlarge the board.",
+   "examples": {
+    "good": "",
+    "bad": "18 m on a long name on a 0.6 m board"
+   },
+   "related": [
+    "B-101"
+   ],
+   "parameters": [
+    "extensions.signboards.displayPixelsPerRadian",
+    "extensions.signboards.minCapitalPixels",
+    "extensions.signboards.readingDistanceMetres"
+   ],
+   "extension": "signboards"
+  },
+  "B-103": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "signboards"
+  },
+  "B-110": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Geometry outside the allowed region collides with other content or is clipped.",
+   "fix_hint": "Move or trim the geometry so every vertex lies inside the profile's buildVolume and outside every keepOut.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "buildVolume",
+    "keepOut"
+   ],
+   "extension": null
+  },
+  "B-111": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-112": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-113": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-114": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "geometry.maxCurveSegmentsPerCircle"
+   ],
+   "extension": null
+  },
+  "B-115": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-116": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "B-120": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Triangle count drives load time; frame rate is unmeasured.",
+   "fix_hint": "Simplify rails, curved parts and windows until the triangle count is under the profile's budgets.recommendedTriangles.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "B-05"
+   ],
+   "parameters": [
+    "budgets.recommendedTriangles"
+   ],
+   "extension": null
+  },
+  "B-121": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-01": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "The finish schedule keys finishes by (class, colour, opacity); equal keys are one finish.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-02": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-03": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "A consumer that follows the schedule has no instruction for a key that is missing from it.",
+   "fix_hint": "Add a materials entry for every (class, colour, opacity) key listed in finishKeys of the check report.",
+   "examples": {
+    "good": "",
+    "bad": "colour #8c6f4e with no entry"
+   },
+   "related": [
+    "D-01"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "D-04": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Opacity under 0.99 makes the consumer treat the surface as glass.",
+   "fix_hint": "Set opacity to 1.0 unless the surface really is glass.",
+   "examples": {
+    "good": "",
+    "bad": "opaque wall at opacity 0.5"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-05": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Every distinct colour per class adds a material and a draw group.",
+   "fix_hint": "Merge near-identical colours and reuse finishes the consumer already has.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "budgets.maxDistinctColours"
+   ],
+   "extension": null
+  },
+  "D-06": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-07": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "Very dark or very bright large surfaces read badly in the lit rooms.",
+   "fix_hint": "Adjust the albedo so its mean linear luminance is inside the stated band.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-08": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-10": {
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-11": {
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-12": {
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-13": {
+   "applies_to": [
+    "material",
+    "room"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-20": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-21": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-30": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-31": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-32": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-33": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-34": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-35": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-40": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "A consumer loads a fixed set of maps per texture set.",
+   "fix_hint": "Provide every map the profile lists (textures.maps) and set.json in the set folder.",
+   "examples": {
+    "good": "",
+    "bad": "orm map missing"
+   },
+   "related": [
+    "D-41"
+   ],
+   "parameters": [
+    "textures.maps"
+   ],
+   "extension": null
+  },
+  "D-41": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "Colour encoding is chosen by the reader's sampler settings; a wrong encoding is silently wrong.",
+   "fix_hint": "Save 8-bit RGB PNGs without alpha: albedo in sRGB; normal as tangent-basis data with the profile's green-channel convention; orm linear with R occlusion, G roughness, B metalness.",
+   "examples": {
+    "good": "",
+    "bad": "16-bit or RGBA PNG"
+   },
+   "related": [
+    "D-40"
+   ],
+   "parameters": [
+    "textures.normalConvention",
+    "textures.maps"
+   ],
+   "extension": null
+  },
+  "D-42": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "A consumer repeats the tile across large surfaces; a visible seam repeats too.",
+   "fix_hint": "Make the tile wrap on both axes; check the three-by-three preview.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "D-50"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "D-43": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "Texture scale in the model depends on the declared physical tile size.",
+   "fix_hint": "Add tileMetres (a number above 0) to set.json.",
+   "examples": {
+    "good": "\"tileMetres\": 2.0",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-44": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "Square power-of-two maps of equal size are what the reference sets use.",
+   "fix_hint": "Resize all maps to the same square power-of-two size listed in textures.sizesPixels.",
+   "examples": {
+    "good": "1024 x 1024",
+    "bad": "1000 x 600"
+   },
+   "related": [],
+   "parameters": [
+    "textures.sizesPixels"
+   ],
+   "extension": null
+  },
+  "D-45": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "Texel density outside 340 to 2050 pixels per metre wastes memory or looks blurry.",
+   "fix_hint": "Change tileMetres or the map size so size / tileMetres is inside textures.densityPixelsPerMetre.",
+   "examples": {
+    "good": "1024 px at 2 m = 512 px/m",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "textures.densityPixelsPerMetre"
+   ],
+   "extension": null
+  },
+  "D-46": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-47": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "A consumer must know whether to tint the albedo.",
+   "fix_hint": "Set tintMode in set.json to one of textures.tintModes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "textures.tintModes"
+   ],
+   "extension": null
+  },
+  "D-48": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-49": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-50": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-60": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-61": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-62": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-63": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-70": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-71": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-72": {
+   "applies_to": [
+    "material"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-80": {
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-81": {
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-82": {
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-83": {
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "automated": true,
+   "tool": "check_texture_set",
+   "rationale": "Stable, plain names make sets reusable.",
+   "fix_hint": "Use a lower-case name with underscores and a SemVer version in set.json.",
+   "examples": {
+    "good": "plaster_fine / 1.0.0",
+    "bad": "Plaster Fine / v1"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-84": {
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "D-85": {
+   "applies_to": [
+    "material",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps finishes portable between consumers with different material systems.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-01": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "Tools and consumers are written for these classes; others get no special treatment.",
+   "fix_hint": "Use IfcFurnishingElement (or IfcBuildingElementProxy for fixed equipment) and make the description's class agree.",
+   "examples": {
+    "good": "",
+    "bad": "furniture modelled as IfcSanitaryTerminal"
+   },
+   "related": [
+    "F-40"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "F-02": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-03": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "The item id on the model ties instances to the library.",
+   "fix_hint": "Add Pset_Declaration_Item with ItemId equal to the item id.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-10": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "A library item is one element at the origin so that placing it needs one point and one turn.",
+   "fix_hint": "Keep exactly one furniture element in the item file, placed at the origin with no rotation.",
+   "examples": {
+    "good": "",
+    "bad": "two tables in one item file"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-11": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "The folder name, files and description must agree.",
+   "fix_hint": "Make itemId in the description equal the folder name.",
+   "examples": {
+    "good": "table.work.1600",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-12": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "The description carries the data the checker and reviewers use.",
+   "fix_hint": "Add <itemId>.item.json that matches schemas/item.schema.json.",
+   "examples": {
+    "good": "",
+    "bad": "no description file"
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-20": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-20a": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-21": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "A floor pivot lets one point and one turn place the item.",
+   "fix_hint": "Move the geometry so the footprint centre is at x = y = 0 and the lowest point at z = 0.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-22": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "Declared dimensions must match what is modelled.",
+   "fix_hint": "Correct dimensions in the description or the geometry (within 1 cm).",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-23": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-30": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-31": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-32": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.standingClearanceMetres"
+   ],
+   "extension": null
+  },
+  "F-33": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-34": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-40": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.furnitureCollision.mode"
+   ],
+   "extension": "furnitureCollision"
+  },
+  "F-41": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "furnitureCollision"
+  },
+  "F-42": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "The description should show the collision the consumer will make.",
+   "fix_hint": "Set collision min and max to the geometry's bounding box.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-43": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "furnitureCollision"
+  },
+  "F-44": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "extensions.walkability.stepHeightMetres"
+   ],
+   "extension": "walkability"
+  },
+  "F-50": {
+   "applies_to": [
+    "furniture",
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "limits.maxFileMegabytes",
+    "limits.maxVertices",
+    "limits.maxTriangles"
+   ],
+   "extension": null
+  },
+  "F-51": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": true,
+   "tool": "check_item",
+   "rationale": "Item triangle counts add up in the consumer.",
+   "fix_hint": "Reduce triangles to the profile's budgets.maxItemTriangles or fewer and keep the declared budget equal to the model.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "budgets.maxItemTriangles"
+   ],
+   "extension": null
+  },
+  "F-52": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-53": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-60": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-61": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-62": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Instances without their own GlobalId merge into one element.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-62a": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-63": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "F-70": {
+   "applies_to": [
+    "furniture",
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  "F-71": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": "luminaires"
+  },
+  "F-72": {
+   "applies_to": [
+    "furniture"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps library items placeable and cheap in many different consumers.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-01": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-02": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-10": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "A machine-readable manifest lets a package be verified without reading it.",
+   "fix_hint": "Write manifest.json that matches schemas/manifest.schema.json (run build_package.py init).",
+   "examples": {
+    "good": "",
+    "bad": "no manifest"
+   },
+   "related": [
+    "X-11"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-11": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "Hashes prove that what the receiving party holds is what was sent.",
+   "fix_hint": "Regenerate manifest.json and SHA256SUMS.txt after any change (build_package.py init).",
+   "examples": {
+    "good": "",
+    "bad": "a file edited after the manifest was made"
+   },
+   "related": [
+    "X-12"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-12": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "Unlisted files cannot be trusted or reviewed.",
+   "fix_hint": "Delete the unlisted file or rebuild the manifest so it is listed.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "X-11"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-13": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "A consumer ingests exactly one master per placement area.",
+   "fix_hint": "Keep one file under ifc/ and move alternates to ifc/alternates/.",
+   "examples": {
+    "good": "",
+    "bad": "two masters"
+   },
+   "related": [
+    "B-03"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-14": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "Upload systems and mail gateways refuse packages over their cap.",
+   "fix_hint": "Reduce the package (simplify geometry, smaller textures) until it is under the profile's package.maxPackageMegabytes.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [
+    "package.maxPackageMegabytes"
+   ],
+   "extension": null
+  },
+  "X-20": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "Every asset needs a known origin.",
+   "fix_hint": "Add a provenance entry (asset, type, source, author, licence) for each IFC file, texture set and item.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [
+    "X-21"
+   ],
+   "parameters": [
+    "package.requireProvenance"
+   ],
+   "extension": null
+  },
+  "X-21": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "The receiving party must be allowed to use, copy and adapt the work.",
+   "fix_hint": "State source and licence in every provenance entry and a licence.statement for the package.",
+   "examples": {
+    "good": "",
+    "bad": "empty licence"
+   },
+   "related": [
+    "X-20"
+   ],
+   "parameters": [
+    "package.requireLicence"
+   ],
+   "extension": null
+  },
+  "X-22": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-30": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "Version numbers tell reviewers what kind of change to expect.",
+   "fix_hint": "Use SemVer in delivery.version and a UTC time like 2026-10-22T10:00:00Z in delivery.created.",
+   "examples": {
+    "good": "1.2.0",
+    "bad": "v1.2"
+   },
+   "related": [
+    "X-31"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-31": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-32": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-50": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Two different files with one version number make revisions untraceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-40": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": true,
+   "tool": "build_package",
+   "rationale": "A check report is only meaningful for the exact file it was run on.",
+   "fix_hint": "Rerun check_ifc.py on the final master, write its report into reports/, and rebuild the manifest.",
+   "examples": {
+    "good": "",
+    "bad": "report for an earlier file"
+   },
+   "related": [
+    "X-11"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "X-41": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  "X-60": {
+   "applies_to": [
+    "package"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Keeps deliveries verifiable, versioned and traceable.",
+   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "examples": {
+    "good": "",
+    "bad": ""
+   },
+   "related": [],
+   "parameters": [],
+   "extension": null
+  }
+ }
+}

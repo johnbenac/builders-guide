@@ -1,0 +1,304 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Item description",
+  "description": "Description file that sits next to one furniture or fixture item (guide 3, section 3.1).",
+  "type": "object",
+  "required": [
+    "format",
+    "itemId",
+    "version",
+    "name",
+    "category",
+    "class",
+    "pivot",
+    "dimensions"
+  ],
+  "properties": {
+    "format": {
+      "const": "item/1"
+    },
+    "itemId": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+"
+    },
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "table",
+        "desk",
+        "seat",
+        "bench",
+        "sofa",
+        "bed",
+        "shelf",
+        "cabinet",
+        "counter",
+        "partition",
+        "planter",
+        "equipment",
+        "appliance",
+        "lamp",
+        "sign",
+        "accent",
+        "other"
+      ]
+    },
+    "class": {
+      "enum": [
+        "IfcFurnishingElement",
+        "IfcBuildingElementProxy"
+      ]
+    },
+    "pivot": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "floor",
+            "wall",
+            "ceiling",
+            "surface"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "front": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "y": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "z": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "footprint": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "minItems": 3
+    },
+    "collision": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "box",
+            "mesh"
+          ]
+        },
+        "min": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "max": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    },
+    "clearance": {
+      "type": "object",
+      "properties": {
+        "front": {
+          "type": "number"
+        },
+        "back": {
+          "type": "number"
+        },
+        "left": {
+          "type": "number"
+        },
+        "right": {
+          "type": "number"
+        },
+        "top": {
+          "type": "number"
+        }
+      }
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "position"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "seat",
+              "surface",
+              "reach",
+              "storage",
+              "power",
+              "door-swing",
+              "mount"
+            ]
+          },
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "direction": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          }
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "properties": {
+        "mounting": {
+          "enum": [
+            "floor",
+            "wall",
+            "ceiling",
+            "surface"
+          ]
+        },
+        "againstWall": {
+          "type": "boolean"
+        },
+        "minWallDistance": {
+          "type": "number"
+        },
+        "mountHeight": {
+          "type": "number"
+        },
+        "rotations": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "roomUses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoid": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "colour": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "finish": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "triangles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "textures": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "author",
+        "licence",
+        "source"
+      ],
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "licence": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

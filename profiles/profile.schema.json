@@ -1,0 +1,399 @@
+{
+  "_license": "Apache-2.0",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Consumer profile",
+  "description": "The values a consumer (viewer, simulator, game runtime, BIM tool, archive) publishes so that authors and agents can build to it. Every parameter has a default in profiles/default.json; a profile may omit any of them. Rules in rules.json name the parameters they use.",
+  "type": "object",
+  "required": [
+    "format",
+    "name",
+    "version"
+  ],
+  "properties": {
+    "format": {
+      "const": "profile/1"
+    },
+    "name": {
+      "type": "string",
+      "description": "short name of the profile"
+    },
+    "version": {
+      "type": "string",
+      "description": "SemVer of the profile"
+    },
+    "description": {
+      "type": "string",
+      "description": "what the profile is for"
+    },
+    "frame": {
+      "type": "object",
+      "properties": {
+        "horizontalAxes": {
+          "type": "string",
+          "description": "which horizontal directions +X and +Y mean to this consumer (Z is up, right-handed)"
+        },
+        "levelOffsetMetres": {
+          "type": "number",
+          "description": "height, in the consumer's global frame, of the file's local z = 0; declared positions in the optional extensions add it"
+        },
+        "placement": {
+          "type": "string",
+          "description": "final: the consumer applies no offset or rotation to the file; the file is authored in its final placement frame",
+          "enum": [
+            "final",
+            "consumer-places"
+          ]
+        }
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "description": "IFC schema identifiers the consumer accepts",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "maxFileMegabytes": {
+          "type": "number",
+          "description": "hard size cap of one IFC file, in megabytes"
+        },
+        "maxVertices": {
+          "type": "number",
+          "description": "hard cap on mesh vertices in one file"
+        },
+        "maxTriangles": {
+          "type": "number",
+          "description": "hard cap on triangles in one file"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "properties": {
+        "recommendedFileMegabytes": {
+          "type": "number",
+          "description": "size above which a file is slow to load and review"
+        },
+        "recommendedTriangles": {
+          "type": "number",
+          "description": "triangle count above which load and display cost grows noticeably"
+        },
+        "maxDistinctColours": {
+          "type": "number",
+          "description": "number of distinct (class, colour, opacity) combinations above which the palette is too large to manage"
+        },
+        "maxItemTriangles": {
+          "type": "number",
+          "description": "triangles of one ordinary library item"
+        }
+      }
+    },
+    "file": {
+      "type": "object",
+      "properties": {
+        "singleLineEntities": {
+          "type": "boolean",
+          "description": "true when the consumer's reader needs every STEP entity on one line"
+        }
+      }
+    },
+    "identifiers": {
+      "type": "object",
+      "properties": {
+        "roomIdMaxLength": {
+          "type": "number",
+          "description": "longest allowed room identifier, in characters"
+        },
+        "roomIdPattern": {
+          "type": "string",
+          "description": "regular expression a room identifier must match"
+        },
+        "entityNumberStart": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "first entity number a delivery may use, so that files from several authors can be merged without clashes; null means no assigned range"
+        },
+        "occupants": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "allowed values of the room Occupant property; null means any value",
+          "items": {
+            "type": "string"
+          }
+        },
+        "circulationPrefix": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "text a Function value must start with for corridors and other circulation; null means no convention"
+        }
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "doorMinClearHeightMetres": {
+          "type": "number",
+          "description": "smallest clear height of a doorway"
+        },
+        "doorMinClearWidthMetres": {
+          "type": "number",
+          "description": "smallest clear width of a doorway"
+        },
+        "doorwayProbeHeightsMetres": {
+          "type": "array",
+          "description": "heights above the sill at which the doorway centre line must be free of solid geometry",
+          "items": {
+            "type": "number"
+          }
+        },
+        "stairRiserLimitMetres": {
+          "type": "number",
+          "description": "largest riser height of a stair"
+        },
+        "rampMaxSlope": {
+          "type": "number",
+          "description": "largest slope of a walked ramp, as rise over run (0.0833 is 1:12)"
+        },
+        "maxCurveSegmentsPerCircle": {
+          "type": "number",
+          "description": "segments per full circle above which tessellation is wasteful"
+        }
+      }
+    },
+    "baseSurfaces": {
+      "type": "array",
+      "description": "floors the consumer supplies itself: rooms standing on them need no slab of their own",
+      "items": {
+        "type": "object"
+      }
+    },
+    "buildVolume": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "region all geometry must stay inside: {box:{min,max}} or {ellipse:{a,b,zmin,zmax}}, in the consumer's global frame"
+    },
+    "keepOut": {
+      "type": "array",
+      "description": "regions geometry must stay out of: [{id,min,max}]",
+      "items": {
+        "type": "object"
+      }
+    },
+    "propertyNames": {
+      "type": "object",
+      "description": "canonical declaration property name -> the name this consumer reads; use it to rename or to point at standard property names"
+    },
+    "propertyValues": {
+      "type": "object",
+      "description": "canonical property -> {canonical value: consumer value}"
+    },
+    "ruleLevels": {
+      "type": "object",
+      "description": "rule id -> required, recommended or off; overrides the level the rule has in rules.json"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "optional rule groups; each applies only when enabled",
+      "properties": {
+        "walkability": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "consumer places people or agents in rooms and walks them"
+            },
+            "standingClearanceMetres": {
+              "type": "number",
+              "description": "free floor kept around furniture and fixed objects where a person can stand"
+            },
+            "freeCircleMetres": {
+              "type": "number",
+              "description": "diameter of a free floor circle in every enclosed room"
+            },
+            "stepHeightMetres": {
+              "type": "number",
+              "description": "height a walker steps over without noticing"
+            },
+            "nonSolidClasses": {
+              "type": "array",
+              "description": "IFC classes the consumer treats as not solid",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "luminaires": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "consumer turns declared fixtures into lights"
+            },
+            "lensNameSuffix": {
+              "type": "string",
+              "description": "ending of the name of the emissive part"
+            },
+            "requiredProperties": {
+              "type": "array",
+              "description": "properties every luminaire assembly must carry",
+              "items": {
+                "type": "string"
+              }
+            },
+            "lightTypes": {
+              "type": "array",
+              "description": "allowed values of LightType",
+              "items": {
+                "type": "string"
+              }
+            },
+            "positionToleranceMetres": {
+              "type": "number",
+              "description": "largest distance between the declared light position and the emissive part, level offset applied"
+            },
+            "maxPerRoom": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "description": "most fixtures per room, or null"
+            }
+          }
+        },
+        "signboards": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "consumer generates signs from declared boards"
+            },
+            "kinds": {
+              "type": "array",
+              "description": "allowed values of SignboardKind",
+              "items": {
+                "type": "string"
+              }
+            },
+            "requiredProperties": {
+              "type": "array",
+              "description": "properties every board must carry",
+              "items": {
+                "type": "string"
+              }
+            },
+            "displayPixelsPerRadian": {
+              "type": "number",
+              "description": "pixels per radian of the display, used for legibility"
+            },
+            "minCapitalPixels": {
+              "type": "object",
+              "description": "smallest capital height in pixels for primary, secondary and tertiary text"
+            },
+            "readingDistanceMetres": {
+              "type": "array",
+              "description": "smallest and largest accepted reading distance",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "furnitureCollision": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "consumer approximates furniture with a simple collider"
+            },
+            "mode": {
+              "type": "string",
+              "description": "box: one axis-aligned box per furniture element; mesh: exact triangles",
+              "enum": [
+                "box",
+                "mesh"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "textures": {
+      "type": "object",
+      "properties": {
+        "sizesPixels": {
+          "type": "array",
+          "description": "allowed texture map sizes in pixels (square)",
+          "items": {
+            "type": "number"
+          }
+        },
+        "densityPixelsPerMetre": {
+          "type": "array",
+          "description": "smallest and largest texel density",
+          "items": {
+            "type": "number"
+          }
+        },
+        "maps": {
+          "type": "array",
+          "description": "map file names a set must contain, without extension",
+          "items": {
+            "type": "string"
+          }
+        },
+        "normalConvention": {
+          "type": "string",
+          "description": "+Y: green channel points up (OpenGL style); -Y: green points down (DirectX style)",
+          "enum": [
+            "+Y",
+            "-Y"
+          ]
+        },
+        "tintModes": {
+          "type": "array",
+          "description": "allowed values of tintMode in set.json",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "package": {
+      "type": "object",
+      "properties": {
+        "maxPackageMegabytes": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "upload size cap of a whole package, or null"
+        },
+        "requireProvenance": {
+          "type": "boolean",
+          "description": "every asset needs a provenance entry"
+        },
+        "requireLicence": {
+          "type": "boolean",
+          "description": "every asset and the package need a licence"
+        }
+      }
+    }
+  }
+}

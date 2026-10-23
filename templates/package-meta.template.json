@@ -1,0 +1,56 @@
+{
+  "_license": "Apache-2.0",
+  "delivery": {
+    "id": "replace-with-delivery-id",
+    "title": "Replace with a short title",
+    "version": "1.0.0",
+    "created": "2026-01-01T00:00:00Z",
+    "supersedes": null,
+    "kind": [
+      "building"
+    ]
+  },
+  "author": {
+    "organisation": "Replace with your organisation",
+    "role": "Replace with the role that answers queries about this delivery",
+    "contact": "Replace with a role mailbox or handle"
+  },
+  "profile": {
+    "name": "default",
+    "version": "1.0.0"
+  },
+  "frame": {
+    "units": "metres",
+    "axes": "+X forward, +Y left, +Z up",
+    "levelOffsetMetres": 0.0,
+    "localZero": "finished floor of the lowest level"
+  },
+  "ifc": {
+    "schema": "IFC4",
+    "entityNumberStart": 1
+  },
+  "counts": {
+    "levels": 0,
+    "rooms": 0,
+    "triangles": 0
+  },
+  "provenance": [
+    {
+      "asset": "ifc/replace-master.ifc",
+      "type": "ifc-model",
+      "source": "original",
+      "author": "Replace with the author",
+      "licence": "Replace with the licence that applies",
+      "notes": ""
+    }
+  ],
+  "licence": {
+    "statement": "Replace with the licence statement for everything not listed above"
+  },
+  "checks": {
+    "tool": "check_ifc.py",
+    "toolVersion": "2.0.0",
+    "report": "reports/check_ifc.json",
+    "result": "pass"
+  }
+}

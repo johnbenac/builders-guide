@@ -1,0 +1,150 @@
+{
+  "_license": "Apache-2.0",
+  "format": "profile/1",
+  "name": "default",
+  "version": "1.0.0",
+  "description": "General-purpose values for exchanging IFC buildings, finishes and furniture. Publicly defensible defaults, not any one consumer's contract. A consumer publishes its own profile in the same shape.",
+  "frame": {
+    "horizontalAxes": "+X forward, +Y left (right-handed with Z up)",
+    "levelOffsetMetres": 0.0,
+    "placement": "final"
+  },
+  "schema": {
+    "allowed": [
+      "IFC4"
+    ]
+  },
+  "limits": {
+    "maxFileMegabytes": 250,
+    "maxVertices": 10000000,
+    "maxTriangles": 5000000
+  },
+  "budgets": {
+    "recommendedFileMegabytes": 100,
+    "recommendedTriangles": 1000000,
+    "maxDistinctColours": 50,
+    "maxItemTriangles": 2000
+  },
+  "file": {
+    "singleLineEntities": false
+  },
+  "identifiers": {
+    "roomIdMaxLength": 64,
+    "roomIdPattern": "^[A-Za-z0-9._-]+$",
+    "entityNumberStart": null,
+    "occupants": null,
+    "circulationPrefix": null
+  },
+  "geometry": {
+    "doorMinClearHeightMetres": 2.0,
+    "doorMinClearWidthMetres": 0.8,
+    "doorwayProbeHeightsMetres": [
+      0.5,
+      1.0,
+      1.8
+    ],
+    "stairRiserLimitMetres": 0.19,
+    "rampMaxSlope": 0.0833,
+    "maxCurveSegmentsPerCircle": 48
+  },
+  "baseSurfaces": [],
+  "buildVolume": null,
+  "keepOut": [],
+  "propertyNames": {},
+  "propertyValues": {},
+  "ruleLevels": {},
+  "extensions": {
+    "walkability": {
+      "enabled": false,
+      "standingClearanceMetres": 0.45,
+      "freeCircleMetres": 1.2,
+      "stepHeightMetres": 0.3,
+      "nonSolidClasses": [
+        "IfcDoor",
+        "IfcSpace",
+        "IfcSpatialZone",
+        "IfcLightFixture"
+      ]
+    },
+    "luminaires": {
+      "enabled": false,
+      "lensNameSuffix": " lens",
+      "requiredProperties": [
+        "LuminaireId",
+        "LuminaireMount",
+        "LightType",
+        "LightEnergy",
+        "LightRangeM",
+        "LightSpotDeg",
+        "LightColor",
+        "LightPosition",
+        "LightAim",
+        "LightFadeBeginM",
+        "LightFadeLengthM"
+      ],
+      "lightTypes": [
+        "omni",
+        "spot"
+      ],
+      "positionToleranceMetres": 0.06,
+      "maxPerRoom": null
+    },
+    "signboards": {
+      "enabled": false,
+      "kinds": [
+        "entrance_board",
+        "stop_board"
+      ],
+      "requiredProperties": [
+        "SignboardId",
+        "SignboardKind",
+        "SignboardText",
+        "SignboardWidthM",
+        "SignboardHeightM",
+        "SignboardReadM",
+        "SignboardPosition",
+        "SignboardNormal"
+      ],
+      "displayPixelsPerRadian": 1000,
+      "minCapitalPixels": {
+        "primary": 16,
+        "secondary": 12,
+        "tertiary": 9
+      },
+      "readingDistanceMetres": [
+        5,
+        18
+      ]
+    },
+    "furnitureCollision": {
+      "enabled": false,
+      "mode": "box"
+    }
+  },
+  "textures": {
+    "sizesPixels": [
+      512,
+      1024,
+      2048
+    ],
+    "densityPixelsPerMetre": [
+      250,
+      2500
+    ],
+    "maps": [
+      "albedo",
+      "normal",
+      "orm"
+    ],
+    "normalConvention": "+Y",
+    "tintModes": [
+      "multiply",
+      "authored"
+    ]
+  },
+  "package": {
+    "maxPackageMegabytes": null,
+    "requireProvenance": true,
+    "requireLicence": true
+  }
+}

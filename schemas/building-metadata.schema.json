@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Building metadata",
+  "description": "tables/building.json: a machine-readable summary of the master IFC file, so a reader need not open the model to know what is in it (guide 4, section 3).",
+  "type": "object",
+  "required": [
+    "format",
+    "building",
+    "frame",
+    "ifc",
+    "levels",
+    "occupants"
+  ],
+  "properties": {
+    "format": {
+      "const": "building-metadata/1"
+    },
+    "building": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "layer": {
+          "enum": [
+            "permanent",
+            "interim"
+          ]
+        }
+      }
+    },
+    "frame": {
+      "type": "object",
+      "required": [
+        "units",
+        "axes",
+        "levelOffsetMetres"
+      ],
+      "properties": {
+        "units": {
+          "const": "metres"
+        },
+        "axes": {
+          "type": "string"
+        },
+        "levelOffsetMetres": {
+          "type": "number"
+        }
+      }
+    },
+    "ifc": {
+      "type": "object",
+      "required": [
+        "path",
+        "schema"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "schema": {
+          "const": "IFC4"
+        },
+        "entityNumberStart": {
+          "type": "integer"
+        }
+      }
+    },
+    "levels": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "elevationMetres"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "elevationMetres": {
+            "type": "number"
+          },
+          "rooms": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "occupants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "roomIdPrefix": {
+      "type": "string"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

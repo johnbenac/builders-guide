@@ -1,0 +1,54 @@
+{
+  "_license": "Apache-2.0",
+  "format": "finish-schedule/1",
+  "delivery": "replace-with-delivery-id",
+  "version": "1.0.0",
+  "materials": [
+    {
+      "key": {
+        "class": "IfcWall",
+        "colour": "#d9d2c3",
+        "opacity": 1.0
+      },
+      "role": "room walls",
+      "usedBy": "all rooms",
+      "faces": {
+        "all": {
+          "set": "plaster_example",
+          "tint": "ifc",
+          "tintStrength": 0.55,
+          "normalScale": 0.6
+        }
+      }
+    },
+    {
+      "key": {
+        "class": "IfcLightFixture",
+        "colour": "#fff0cf",
+        "opacity": 1.0
+      },
+      "role": "luminaire lens",
+      "usedBy": "all fixtures",
+      "keep": true,
+      "reason": "emissive lens: the consumer supplies the glow"
+    }
+  ],
+  "floors": [
+    {
+      "id": "floor-default",
+      "where": {
+        "occupant": "*"
+      },
+      "finish": {
+        "set": "plaster_example"
+      },
+      "note": "replace with a real floor finish"
+    }
+  ],
+  "libraries": [
+    {
+      "name": "plaster_example",
+      "version": "1.0.0"
+    }
+  ]
+}

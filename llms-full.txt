@@ -1,0 +1,1751 @@
+# Authoring guide set: full content
+
+> Every guide section in one file, in order. Each chunk starts with a comment line `<!-- chunk: id | source | title | rules -->`. Prefer the single chunk files (chunks/index.json) when you only need one topic.
+
+<!-- chunk: readme--introduction | source: README.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Authoring Guide Set for IFC Buildings, Materials and Furniture
+
+Version 2.0.0 (2026-10-22). Application-neutral guides, rules, checkers and examples for people and software agents who create
+digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
+different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
+
+In these guides **the consumer** is whatever program or person receives your delivery (a viewer, a simulator, a game runtime, a BIM
+tool, an archive). **A profile** is the small JSON file a consumer publishes with its numbers and conventions; if you have none, use
+`profiles/default.json`. Everything else is in these guides.
+
+---
+
+<!-- chunk: readme--core-and-profile | source: README.md | title: Core and profile | rules: - -->
+## Core and profile
+
+* **Core rules** say what is good practice for any consumer and what goes wrong for any consumer if you ignore it.
+* **Profile parameters** hold everything numeric or consumer-specific: size and triangle limits, identifier lengths, clearances,
+  property names, whether room identifiers are mandatory, and which optional extensions apply. See
+  [07-profile-parameters.md](07-profile-parameters.md).
+* **Extensions** (`walkability`, `luminaires`, `signboards`, `furnitureCollision`) are optional rule groups a profile switches on.
+
+Check anything against a profile: `python3 tools/check_all.py PATH --profile consumer.json --json`. Reports name the profile used.
+
+---
+
+<!-- chunk: readme--for-agents | source: README.md | title: For agents | rules: - -->
+## For agents
+
+The set is also written to be read and run by software agents of any kind. Static files only; no service is needed.
+
+| File | Use |
+|---|---|
+| [AGENTS.md](AGENTS.md) | short entry point: what the set is, commands, working rules |
+| `llms.txt`, `llms-full.txt` | index of the set, and all content in marked chunks |
+| `skills/` | five skills (orient, author-building, decorate-interior, author-furniture-library, accept-and-package-delivery), each with a short `SKILL.md` and on-demand `references/` |
+| `rules.json` | all rules with level, applies_to, parameters, extension, how to check, fix hint, examples |
+| [REPAIR-LOOP.md](REPAIR-LOOP.md) | run, read findings, fix, rerun until no REQUIRED finding remains |
+| `profiles/` | the profile schema, the default profile, and an example of a strict consumer profile |
+| `chunks/`, `MANIFEST.json` | the guides in pieces of about 1,500 tokens or less; every file with purpose and tags |
+| `schemas/` | JSON Schemas: profile, rules, checker report, delivery manifest, material library, furniture item, building summary, finish schedule |
+
+---
+
+<!-- chunk: readme--the-five-guides | source: README.md | title: The five guides | rules: - -->
+## The five guides
+
+| # | File | Who it is for | What it settles |
+|---|---|---|---|
+| 1 | [01-builders-and-architects-guide.md](01-builders-and-architects-guide.md) | architects, builders, modellers | file and schema, units, axes, levels, rooms, walls, floors, stairs, doors, openings, identifiers, property sets, geometry hygiene, optional lighting and signs |
+| 2 | [02-interior-decorators-guide.md](02-interior-decorators-guide.md) | decorators, material and texture authors | finishes, coverings, floors and ceilings, colour keys, finish schedule, texture sets, material libraries |
+| 3 | [03-furniture-and-fixtures-guide.md](03-furniture-and-fixtures-guide.md) | furniture and fixture designers | item library format, pivots, dimensions, anchors, clearances, collision, variants, instancing |
+| 4 | [04-delivery-and-acceptance-guide.md](04-delivery-and-acceptance-guide.md) | everyone who sends or receives | package layout, manifest with hashes, versions, provenance and licences, checklist, acceptance checks, outcomes |
+| 5 | [05-worked-example.md](05-worked-example.md) | everyone | one room with a door, a window, a table, a wall covering and a light, with a generator script and checker |
+
+Also: [06-rules-index.md](06-rules-index.md) (every rule in one table, with counts), [07-profile-parameters.md](07-profile-parameters.md),
+[templates/](templates/) (starting files), [tools/](tools/) (scripts), [CHANGELOG.md](CHANGELOG.md), [VERSIONING.md](VERSIONING.md),
+[CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md).
+
+---
+
+<!-- chunk: readme--how-rules-are-written | source: README.md | title: How rules are written | rules: B-12,B-90 -->
+## How rules are written
+
+> **B-12 · REQUIRED** - The statement.
+>
+> **B-90 · REQUIRED · luminaires** - A statement that applies only in the named extension.
+
+* **REQUIRED** means that without it a consumer is likely to refuse the file, lose the element, or read it wrongly, or (guide 4) that
+  the delivery process requires it. A delivery that breaks a REQUIRED rule is sent back.
+* **RECOMMENDED** means good practice that prevents a defect often seen or keeps work portable. A delivery that ignores it is accepted if
+  everything REQUIRED passes, but the reviewer may ask for revision.
+* The level shown is the **default**. A profile can raise, lower or switch off any rule (`ruleLevels`); `rules.json` and the checkers use
+  the profile's level.
+* Numbers are never in a rule's text as a requirement: they are profile parameters, written in `backticks` (`limits.maxTriangles`).
+
+Identifier letters: **B** builders and architects, **D** decorators, **F** furniture and fixtures, **X** delivery and acceptance.
+Numbers are never reused; a retired rule keeps its number.
+
+---
+
+<!-- chunk: readme--reading-order | source: README.md | title: Reading order | rules: - -->
+## Reading order
+
+1. [ABOUT.md](ABOUT.md), then the vocabulary and profile sections of guide 1 (sections 1 and 2).
+2. The guide for your role (1, 2 or 3).
+3. Guide 4 before you package anything.
+4. Guide 5 once, even if you only make furniture.
+
+---
+
+<!-- chunk: readme--words-used-in-a-fixed-sense | source: README.md | title: Words used in a fixed sense | rules: - -->
+## Words used in a fixed sense
+
+| Word | Meaning here |
+|---|---|
+| consumer | the program or person that receives and uses your delivery |
+| profile | a consumer's published parameters (`profiles/profile.schema.json`) |
+| delivery | everything you submit for one assignment (files, manifest, notes) |
+| level | one horizontal floor of a building (an `IfcBuildingStorey`) |
+| room | a named area with a floor, modelled as an `IfcSpace` (the IFC entity name; it always means "room or zone") |
+| zone | a named volume that is data only (`IfcSpatialZone`) |
+| volume | any three-dimensional extent |
+| finish | the look of a surface (colour, texture, gloss) |
+| item | one piece of furniture, fixture or accent |
+| declaration property | a named property this set asks you to write; a profile can rename it |
+| extension | an optional group of rules a profile switches on |
+
+---
+
+<!-- chunk: readme--hand-over-files | source: README.md | title: Hand-over files | rules: - -->
+## Hand-over files
+
+[dist/](dist/) holds the single-file versions:
+
+| File | Content |
+|---|---|
+| `builders-guide-2.0.0.pdf` | all guides, the worked example, the parameters and the rules index in one document |
+| `builders-guide-2.0.0.html` | the same, as one web page |
+| `builders-guide-2.0.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.0.0.zip.sha256` | SHA-256 of the three files above |
+
+`MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
+with purpose and tags. `tools/build_dist.py` rebuilds all of this.
+
+---
+
+<!-- chunk: readme--what-this-set-does-not-cover | source: README.md | title: What this set does not cover | rules: - -->
+## What this set does not cover
+
+* Structural, mechanical or electrical design content, and any simulation of how things move or work.
+* Terrain. Ground relief is not carried in IFC here; a profile may say how it is supplied.
+* Commercial terms between sender and receiver.
+
+---
+
+<!-- chunk: about--introduction | source: ABOUT.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# About this set
+
+---
+
+<!-- chunk: about--what-it-is | source: ABOUT.md | title: What it is | rules: - -->
+## What it is
+
+A set of plain-language guides, rules, checkers and examples for making **IFC** files (the building-data format published by
+buildingSMART International) that work in many different programs: viewers, simulators, game runtimes, BIM tools and archives. It
+covers buildings, finishes (materials and wall coverings), furniture libraries, and the packaging and acceptance of deliveries.
+
+It is **independent**. It is not endorsed by, affiliated with or certified by buildingSMART International or any standards body, and it
+claims no conformance to any standard. The IFC specification itself is published by buildingSMART International
+(https://www.buildingsmart.org/standards/bsi-standards/industry-foundation-classes/); this set is practical advice on top of it.
+
+---
+
+<!-- chunk: about--who-it-is-for | source: ABOUT.md | title: Who it is for | rules: - -->
+## Who it is for
+
+* **Authors**: architects, modellers, interior decorators, furniture designers, and the software agents that do their work, who want
+  their files to survive contact with other people's tools.
+* **Consumers**: anyone who receives IFC deliveries and wants authors to build to their needs without a meeting.
+* **Reviewers and archivists**: people who check, accept or return deliveries and want findings that point at exact elements.
+
+---
+
+<!-- chunk: about--how-it-is-organised | source: ABOUT.md | title: How it is organised | rules: - -->
+## How it is organised
+
+The set separates **core practice** from **consumer parameters**.
+
+* **Core** is what is good practice for any consumer: a declared unit, a stated frame, levels, rooms with real floors, doors that
+  fill openings, unique identifiers, honest materials, a manifest with hashes and licences. Core rules say *what goes wrong for any
+  consumer* if you ignore them.
+* **Parameters** are everything numeric or consumer-specific: size and triangle limits, identifier lengths, clearance values, whether
+  room identifiers are mandatory, which optional extensions apply. They live in a **profile**, a small JSON file
+  (`profiles/profile.schema.json`). `profiles/default.json` has publicly defensible defaults; `profiles/example-strict.json` shows a
+  constrained consumer. Rules in `rules.json` name the parameters they use.
+* A **consumer profile** is simply a profile a consumer publishes. Authors and agents build to it and check against it:
+  `python3 tools/check_all.py PATH --profile consumer.json --json`. Reports state which profile they used.
+
+---
+
+<!-- chunk: about--how-a-consumer-adopts-it | source: ABOUT.md | title: How a consumer adopts it | rules: - -->
+## How a consumer adopts it
+
+1. Copy `profiles/default.json` to `my-consumer.json`; set `name` and `version`.
+2. Change the numbers that differ for you: `limits`, `budgets`, `identifiers`, `geometry`, `frame`, `buildVolume`, `keepOut`.
+3. If your reader looks for particular property names or values, list them in `propertyNames` and `propertyValues`. Authors keep the
+   neutral names; `python3 tools/map_properties.py in.ifc out.ifc --mapping my-consumer.json` renames them for you.
+4. Make rules stricter (or switch them off) in `ruleLevels`; for example make `B-26` (room identifiers) `required`.
+5. Switch on the extensions you implement: `walkability`, `luminaires`, `signboards`, `furnitureCollision`.
+6. Validate the file against `profiles/profile.schema.json` and publish it at a stable address. Tell authors its name and version.
+7. When you receive a delivery, run `check_all.py` with your profile; send findings back as they are (rule, element, fix hint).
+
+---
+
+<!-- chunk: about--what-it-does-not-do | source: ABOUT.md | title: What it does not do | rules: - -->
+## What it does not do
+
+It does not define a new standard, certify anything, simulate physical behaviour, or replace the IFC documentation. Static files
+only: nothing here needs a network or a service.
+
+See [README.md](README.md) for the index, [VERSIONING.md](VERSIONING.md) for how the set changes, and
+[CONTRIBUTING.md](CONTRIBUTING.md) to propose changes.
+
+---
+
+<!-- chunk: g1--introduction | source: 01-builders-and-architects-guide.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Guide 1: Builder's and Architect's Guide
+
+For architects, builders and modellers who deliver buildings, public areas and their fittings as IFC files that many
+different consumers (viewers, simulators, game runtimes, BIM tools, archives) can open and use.
+
+Rule levels and the profile mechanism are explained in the [README](README.md). Every number that depends on a consumer is
+a **profile parameter**, written in `backticks` like `limits.maxTriangles`; its default is in `profiles/default.json` and the
+full list is in [07-profile-parameters.md](07-profile-parameters.md).
+
+---
+
+<!-- chunk: g1--1-vocabulary | source: 01-builders-and-architects-guide.md | title: 1. Vocabulary | rules: - -->
+## 1. Vocabulary
+
+| Term | Meaning |
+|---|---|
+| consumer | any program or person that receives your delivery and uses it: a viewer, a simulator, a game runtime, a BIM tool, an archive |
+| profile | the JSON file a consumer publishes with its parameters (limits, identifier rules, optional extensions); the default profile is `profiles/default.json` |
+| master file | the single coordinated IFC file for one placement area |
+| level | one floor of a building: an `IfcBuildingStorey` |
+| room | a named area with a floor, modelled as an `IfcSpace` (the IFC entity name; here it always means "room or zone") |
+| zone | a named volume that is data only: an `IfcSpatialZone` |
+| declaration property | a named property this set asks you to write because consumers read it (for example `RoomId`); a profile can rename them |
+| extension | an optional group of rules a profile switches on when its consumer needs it: walkability, luminaires, signboards, furniture collision |
+
+---
+
+<!-- chunk: g1--2-what-the-profile-gives-you | source: 01-builders-and-architects-guide.md | title: 2. What the profile gives you | rules: - -->
+## 2. What the profile gives you
+
+Before you start, get the profile of the consumer you build for. If you have none, use `profiles/default.json` and say so in
+your delivery notes. If a number your work depends on is missing, ask the consumer; do not guess.
+
+| Profile item | What it tells you | Parameters |
+|---|---|---|
+| frame | which way +X and +Y point, the height of your local z = 0 in the consumer's frame, whether the file is placed as authored | `frame.horizontalAxes`, `frame.levelOffsetMetres`, `frame.placement` |
+| limits and budgets | hard caps and recommended sizes | `limits.*`, `budgets.*` |
+| identifiers | room identifier length and pattern, assigned entity-number range, allowed occupants | `identifiers.*`, `propertyNames` |
+| geometry | doorway, stair and ramp values | `geometry.*` |
+| volumes | the region to stay inside, regions to keep out, floors the consumer supplies | `buildVolume`, `keepOut`, `baseSurfaces` |
+| extensions | whether it walks people through rooms, turns fixtures into lights, generates signs, simplifies furniture | `extensions.*` |
+| rule levels | rules it makes stricter or switches off | `ruleLevels` |
+
+---
+
+<!-- chunk: g1--3-file-and-schema | source: 01-builders-and-architects-guide.md | title: 3. File and schema | rules: B-01,B-02,B-02a,B-03,B-04,B-05,B-06,B-07,B-08,B-09 -->
+## 3. File and schema
+
+**B-01 · REQUIRED** - Deliver an IFC schema edition the profile accepts (`schema.allowed`, default IFC4). Other editions may open in some tools, but files in an unlisted edition are not portable to that consumer.
+
+**B-02 · REQUIRED** - Declare the length unit as metres (an `IfcSIUnit` `LENGTHUNIT` `METRE`, or a prefixed or conversion-based unit that resolves to metres) and model in it. A missing or misread unit rescales the whole building.
+
+**B-02a · RECOMMENDED** - Prefer plain metres (a `METRE` unit with no prefix) over a prefixed or conversion-based unit, which some tools mishandle.
+
+**B-03 · RECOMMENDED** - Deliver one coordinated master file per placement area, and send per-building files only as alternates. Several overlapping files for one area leave the consumer guessing which one is authoritative.
+
+**B-04 · REQUIRED** - Keep the file plain ASCII: write every non-ASCII character with the format's escape (`\X2\00B7\X0\` for a middle dot, `\X2\2014\X0\` for a long dash). Raw bytes above 127 are read differently by different tools.
+
+**B-05 · REQUIRED** - Stay within the profile's hard limits: `limits.maxFileMegabytes`, `limits.maxVertices` and `limits.maxTriangles`. A file over a consumer's cap is refused or truncated.
+
+**B-06 · REQUIRED** - Use geometry that every common reader can display: swept solids (`IfcExtrudedAreaSolid` with rectangle, circle, arbitrary closed or arbitrary-with-voids profiles), faceted breps or polygonal face sets, and mapped items. Boolean-heavy breps, swept disks and unusual profiles are dropped by many readers without a message; `check_ifc.py` reports products that have a representation but yield no triangles.
+
+**B-07 · RECOMMENDED** - Make the export deterministic: the same inputs give a byte-identical file (fixed timestamps, stable ordering, `GlobalId` values derived from stable keys). Consumers and reviewers compare revisions.
+
+**B-08 · RECOMMENDED** - Write each STEP entity on a single line when the profile asks (`file.singleLineEntities`). Line-oriented tools, diff tools and simple readers handle such files; wrapped entities are valid but can be missed. A consumer that depends on it raises this rule to required.
+
+**B-09 · RECOMMENDED** - Keep the file below the profile's recommended size, `budgets.recommendedFileMegabytes`. Large files load slowly and are hard to review.
+
+---
+
+<!-- chunk: g1--4-units-axes-origin-and-levels | source: 01-builders-and-architects-guide.md | title: 4. Units, axes, origin and levels | rules: B-10,B-11,B-12,B-13,B-14,B-15 -->
+## 4. Units, axes, origin and levels
+
+**B-10 · REQUIRED** - Use a right-handed frame with Z up and the horizontal axes the profile states (`frame.horizontalAxes`), in metres. Models authored with another up axis come in turned over.
+
+**B-11 · RECOMMENDED** - Author in the placement the profile expects (`frame.placement`): with `final`, local z = 0 is the finished floor of the lowest level and the consumer applies no offset or rotation, so author in the final placement frame. If you cannot, state the offset in the frame note (B-12).
+
+**B-12 · RECOMMENDED** - State your frame in the file: a property set on the `IfcProject` with a text property `FrameNote` ("metres; +X forward; +Y left; +Z up; local z = 0 at the finished floor of the lowest level") and a number `LevelOffsetMetres`. A written note lets a reviewer or another tool verify the frame.
+
+**B-13 · REQUIRED** - Create one `IfcBuildingStorey` for every level of every building, with a `Name` and a numeric `Elevation` equal to the level's finished-floor height in your file's frame, and make every element belong to one: contained (`IfcRelContainedInSpatialStructure`), aggregated (`IfcRelAggregates`) or, for zones, referenced (`IfcRelReferencedInSpatialStructure`). Elements without a level are dropped whenever a tool works level by level.
+
+**B-14 · RECOMMENDED** - Use the full hierarchy `IfcProject` > `IfcSite` > `IfcBuilding` > `IfcBuildingStorey`, one `IfcBuilding` per building, and level names that start with the building name (`Clinic - ground / +0 m`).
+
+**B-15 · RECOMMENDED** - Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.
+
+---
+
+<!-- chunk: g1--5-rooms-and-zones | source: 01-builders-and-architects-guide.md | title: 5. Rooms and zones | rules: B-20,B-21,B-22,B-23,B-24,B-25,B-26,B-27,B-28,B-29,B-30,B-31,B-32,B-33,B-34 -->
+## 5. Rooms and zones
+
+A room is the unit a consumer identifies, lists, lights, signs, and places people in.
+
+**B-20 · REQUIRED** - Model every room as an `IfcSpace` (internal, `ELEMENT`) whose geometry is an upward extrusion of the room's floor outline: the lowest plane of the solid is the floor and the top is the underside of the ceiling or slab above. Tools derive the floor and area from that lowest plane, so the floor must be one flat horizontal plane.
+
+**B-21 · REQUIRED** - Give every `IfcSpace` geometry. A room without geometry cannot be located, measured or shown.
+
+**B-22 · REQUIRED** - Give every room that has a `RoomId` a value that is unique, and write it as an `IfcPropertySingleValue` inside an `IfcPropertySet` linked by `IfcRelDefinesByProperties`. Duplicate identifiers make every reference to a room ambiguous.
+
+**B-23 · REQUIRED** - Make room identifiers meet the profile: at most `identifiers.roomIdMaxLength` characters and matching `identifiers.roomIdPattern`. Consumers print identifiers on labels and store them in fixed-width fields.
+
+**B-24 · RECOMMENDED** - Give every room an `Occupant` (text): the organisation or use it belongs to. When the profile lists allowed values (`identifiers.occupants`) use one of them exactly; consumers classify rooms by this text.
+
+**B-25 · RECOMMENDED** - Give every room a `Function` (text) describing its use. When the profile names a convention for circulation (`identifiers.circulationPrefix`), start corridors, lobbies, stair halls and streets with it.
+
+**B-26 · RECOMMENDED** - Give every room a `RoomId`. Tools that find no identifier invent one from the room's name, and that changes when the name changes, which breaks every saved reference. A consumer that needs stable references raises this rule to required (`ruleLevels`).
+
+**B-27 · RECOMMENDED** - Also supply, when known: `NetAreaSquareMetres` (number), `BaseLevelMetres` (number), `ClearHeightMetres` (number) and `Notes` (text). IFC's standard property set for rooms has related properties (for example `Reference` and `NetPlannedArea`); a profile may map the declaration names to those (`propertyNames`).
+
+**B-28 · RECOMMENDED** - Give each room a complete, human-readable `Name`; names appear in lists and on labels.
+
+**B-29 · RECOMMENDED** - Declare streets, paths, plazas and park areas as rooms too, with an identifier and a `Function`, so that they can be referred to, lit and signed. Open floor that belongs to no room has no identity.
+
+**B-30 · RECOMMENDED** - Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make "which room is this point in" ambiguous.
+
+**B-31 · RECOMMENDED** - Draw the room outline at the inside wall faces so the floor area is the usable area.
+
+**B-32 · RECOMMENDED** - Group rooms into buildings with a `BuildingId` property, and mark long-lived content separately from replaceable content with a `Layer` property (`permanent` or `interim`), so that a building can be swapped without touching its surroundings.
+
+### What a consumer typically builds from a room
+
+| Place field | Comes from |
+|---|---|
+| identifier | `RoomId` (or one invented from the name when missing) |
+| name, function, occupant, notes | `Name`, `Function`, `Occupant`, `Notes` |
+| kind and organisation | rules on `Function`, `Occupant`, `RoomId` and `Name` |
+| level | the level that holds the room |
+| floor and ceiling height | lowest and highest point of the room solid |
+| area | floor triangles; `NetAreaSquareMetres` when given |
+| centre, bounds, floor outline | the room solid and its floor |
+| doors and neighbours | the openings filled by doors (B-41) |
+
+### Walkability extension: standing points
+
+These two rules apply when the profile enables `extensions.walkability` (a consumer that places people or agents in rooms).
+
+**B-33 · REQUIRED · walkability** - Leave every enclosed room a floor area where a person can stand: at least `extensions.walkability.standingClearanceMetres` clear of furniture, equipment, rails and transport elements. A room whose whole floor is within that distance of fixed objects has no usable start point.
+
+**B-34 · RECOMMENDED · walkability** - Keep a free floor circle of `extensions.walkability.freeCircleMetres` in every room, and leave clear aisles from seating to doors.
+
+---
+
+<!-- chunk: g1--6-walls-doors-windows-and-openings | source: 01-builders-and-architects-guide.md | title: 6. Walls, doors, windows and openings | rules: B-40,B-40a,B-41,B-42,B-43,B-44,B-45,B-46,B-47,B-48 -->
+## 6. Walls, doors, windows and openings
+
+**B-40 · REQUIRED** - Model walls as `IfcWall` (`IfcWallStandardCase` is also read), not as generic proxies; consumers select, colour and count by class.
+
+**B-40a · RECOMMENDED** - Use one element per maximal straight run rather than one per room edge.
+
+**B-41 · REQUIRED** - Model every door as an `IfcDoor` that fills an `IfcOpeningElement` in the wall, linked with `IfcRelVoidsElement` (wall to opening) and `IfcRelFillsElement` (opening to door). Tools find doorways, count them and work out which rooms they connect from the opening; a door with no opening is a picture on a solid wall.
+
+**B-42 · REQUIRED** - Keep every doorway passable: its clear height is at least `geometry.doorMinClearHeightMetres`, and nothing solid (a sill, a bar, a glazed panel, furniture) crosses the opening centre line at the heights in `geometry.doorwayProbeHeightsMetres`. A door leaf may stand open or closed in the model, but do not rely on it to block movement.
+
+**B-43 · RECOMMENDED** - Make doorways at least `geometry.doorMinClearWidthMetres` wide.
+
+**B-44 · REQUIRED** - Model every window as an `IfcWindow` in an `IfcOpeningElement` linked with the voids and fills relations, so the wall is cut where the window is.
+
+**B-45 · RECOMMENDED** - Give glass a surface style with opacity below 1 (about 0.4 to 0.6), so that every consumer shows it as see-through.
+
+**B-46 · RECOMMENDED** - Give walls their real thickness; zero-thickness walls and double walls confuse area, collision and rendering.
+
+**B-47 · RECOMMENDED** - Make every room reachable through a doorway, an open edge or a stair from a circulation room.
+
+**B-48 · RECOMMENDED** - Do not put a door in a floor or roof; floor apertures are slab openings (B-53).
+
+---
+
+<!-- chunk: g1--7-floors-roofs-ceilings-and-slab-openings | source: 01-builders-and-architects-guide.md | title: 7. Floors, roofs, ceilings and slab openings | rules: B-50,B-51,B-51a,B-52,B-53,B-54,B-55 -->
+## 7. Floors, roofs, ceilings and slab openings
+
+**B-50 · RECOMMENDED** - Model every walkable floor, including walkable roofs, as an `IfcSlab` (`FLOOR` or `ROOF`) whose top face is the finished floor. Rooms standing on a floor the consumer supplies (`baseSurfaces`) need no slab of their own. Glass floors are slabs with a glass-like colour and opacity. A consumer that checks standing points or floor contact raises this to required.
+
+**B-51 · RECOMMENDED** - Do not duplicate a floor the consumer already provides (`baseSurfaces`); two coplanar surfaces flicker.
+
+**B-51a · RECOMMENDED** - Omit slabs that rest directly on a consumer-supplied floor, or make them very thin.
+
+**B-52 · RECOMMENDED** - Give slabs a realistic thickness; very thin slabs are fine only for surface layers such as paving.
+
+**B-53 · REQUIRED** - Cut every hole in a slab (stair wells, shafts, service drops) as an `IfcOpeningElement` linked by `IfcRelVoidsElement`, not as separate floor pieces that merely leave a gap.
+
+**B-54 · RECOMMENDED** - Model ceilings or roofs. Many consumers draw no ceiling unless there is geometry; a room with nothing above it reads as open-topped. A ceiling is the underside of a slab or an `IfcCovering`.
+
+**B-55 · RECOMMENDED** - Keep your own structure clear of openings in surfaces the consumer supplies (`baseSurfaces`), with the margin the profile states.
+
+---
+
+<!-- chunk: g1--8-circulation-stairs-ramps-lifts-rails | source: 01-builders-and-architects-guide.md | title: 8. Circulation, stairs, ramps, lifts, rails | rules: B-60,B-61,B-62,B-63,B-64,B-65,B-66,B-67 -->
+## 8. Circulation, stairs, ramps, lifts, rails
+
+**B-60 · REQUIRED** - Model each stair flight as an `IfcStairFlight` (a parent `IfcStair` without geometry is fine). Consumers recognise stairs, and simulators build their walking surface, from the flight.
+
+**B-61 · RECOMMENDED** - Keep risers at or below `geometry.stairRiserLimitMetres`, with a landing and head-room; avoid winding and spiral stairs unless you have checked the consumer reads them.
+
+**B-62 · RECOMMENDED** - Give every multi-level building at least one real stair. Lifts drawn in IFC are often static solids; a stair is the one way between levels that every consumer understands.
+
+**B-63 · RECOMMENDED** - Draw lifts as `IfcTransportElement` with `PredefinedType` `ELEVATOR`, with properties such as `Service`, `StopsMetres` and `ShaftWidthMetres`.
+
+**B-64 · RECOMMENDED** - Keep every walked slope at or below `geometry.rampMaxSlope` (rise over run) except stairs, and give ramps a clear width at least as wide as a doorway. Model ramps as `IfcRamp` with `IfcRampFlight`, or as a sloped `IfcSlab`.
+
+**B-65 · RECOMMENDED · walkability** - Do not leave low obstacles up to `extensions.walkability.stepHeightMetres` high (floor boxes, square-edged wedges) that a walker steps over unseen; ramp them or make them visible steps.
+
+**B-66 · RECOMMENDED** - Model rails (`IfcRailing`) with cheap geometry: simple posts and one rail section. Rails with dense tessellation are a common cause of heavy files.
+
+**B-67 · RECOMMENDED · walkability** - Know which classes the consumer treats as not solid (`extensions.walkability.nonSolidClasses`) and model walk-through areas with those classes or with reservation volumes (B-80); everything else may block movement.
+
+### Clearance and size summary
+
+| Item | Value | Where it comes from |
+|---|---|---|
+| doorway clear height | at least `geometry.doorMinClearHeightMetres` | B-42 |
+| doorway probe heights | `geometry.doorwayProbeHeightsMetres` | B-42 |
+| doorway clear width | at least `geometry.doorMinClearWidthMetres` | B-43 |
+| stair riser | at most `geometry.stairRiserLimitMetres` | B-61 |
+| walked ramp slope | at most `geometry.rampMaxSlope` | B-64 |
+| free floor around fixed objects | `extensions.walkability.standingClearanceMetres` | B-33 |
+| free floor circle in a room | `extensions.walkability.freeCircleMetres` | B-34 |
+
+---
+
+<!-- chunk: g1--9-names-identifiers-property-sets-and-classifica | source: 01-builders-and-architects-guide.md | title: 9. Names, identifiers, property sets and classification | rules: B-70,B-71,B-72,B-73,B-74,B-75,B-76 -->
+## 9. Names, identifiers, property sets and classification
+
+**B-70 · REQUIRED** - Give every product a unique 22-character IFC `GlobalId` that does not change between exports. `GlobalId` is the key tools use to match an element across revisions and across files.
+
+**B-71 · RECOMMENDED** - Number your IFC entities from the start the profile assigns (`identifiers.entityNumberStart`, when set) so that files from several authors can be merged without clashes.
+
+**B-72 · RECOMMENDED** - Write declaration properties as text, number or boolean values in `IfcPropertySingleValue` entries of an `IfcPropertySet` linked by `IfcRelDefinesByProperties` on the product itself. Many readers ignore quantity sets, enumerations, tables and properties on types.
+
+**B-73 · RECOMMENDED** - Use one descriptive property set per topic (`Pset_Declaration_Room`, ...) and put only declaration properties in it.
+
+**B-74 · RECOMMENDED** - If your organisation uses a classification scheme, attach it with `IfcRelAssociatesClassification`. Many consumers ignore it, so never make it the only place a meaning is written.
+
+**B-75 · RECOMMENDED** - Keep identifiers stable across revisions: an unchanged room, door or fixture keeps its `RoomId`, `GlobalId` and declaration ids. Replace an element by giving the new one a new id and retiring the old.
+
+**B-76 · RECOMMENDED** - Give your own identifiers dotted prefixes (`arch.entrance`, `clinic.lobby`), at most 160 characters, no control characters.
+
+---
+
+<!-- chunk: g1--10-zones-and-reserved-volumes | source: 01-builders-and-architects-guide.md | title: 10. Zones and reserved volumes | rules: B-80,B-81,B-81a,B-82 -->
+## 10. Zones and reserved volumes
+
+**B-80 · RECOMMENDED** - Declare a volume that must stay empty or must not be solid (a sight line, a clearance, a service corridor) twice: as an `IfcSpatialZone`, and (so it can be seen) as an `IfcBuildingElementProxy` with `PredefinedType` `PROVISIONFORSPACE`. That is the standard IFC way to mark a reserved provision: consumers that understand it leave the proxy out of physical models; any other proxy is a solid thing.
+
+**B-81 · RECOMMENDED** - Give every zone a unique identifier (`ZoneId` or, if missing, its `Name`) and its own geometry; a zone without geometry cannot be shown or selected.
+
+**B-81a · RECOMMENDED** - Always supply `ZoneId`, plus `ZoneClass` (for example `observation-sightline`) and `Requirement` (a sentence saying what must stay clear).
+
+**B-82 · RECOMMENDED** - Use zones to record viewing intent (a downward sight line from a mezzanine); ordinary glass cannot be one-way, and who may look is a consumer decision, not a file property.
+
+---
+
+<!-- chunk: g1--11-optional-extension-lighting-fixtures | source: 01-builders-and-architects-guide.md | title: 11. Optional extension: lighting fixtures | rules: B-90,B-91,B-92,B-92a,B-93,B-94,B-95 -->
+## 11. Optional extension: lighting fixtures
+
+These rules apply when the profile enables `extensions.luminaires` (a consumer that turns declared fixtures into lights). Property names are those of the profile (`propertyNames`).
+
+**B-90 · REQUIRED · luminaires** - Model each fixture as an `IfcElementAssembly` that aggregates two `IfcLightFixture` parts: a housing, and an emissive part whose `Name` ends in the profile's suffix (`extensions.luminaires.lensNameSuffix`). The emissive part is the one that glows.
+
+**B-91 · REQUIRED · luminaires** - Put every property in `extensions.luminaires.requiredProperties` on the assembly, make `LuminaireId` unique, and use a `LightType` from `extensions.luminaires.lightTypes`. A fixture missing a property cannot be turned into a light.
+
+| Property | Type | Meaning |
+|---|---|---|
+| `LuminaireId` | text | unique identifier |
+| `LuminaireMount` | text | `pendant`, `ceiling`, `post`, `wall`, free text |
+| `LightType` | text | one of the profile's light types |
+| `LightEnergy` | number | strength in the consumer's units |
+| `LightRangeM` | number | reach in metres |
+| `LightSpotDeg` | number | cone angle in degrees |
+| `LightColor` | text `"r,g,b"` | each 0 to 1 |
+| `LightPosition` | text `"x,y,z"` | where the light sits, in the consumer's global frame (B-92) |
+| `LightAim` | text `"x,y,z"` | unit vector the light points along |
+| `LightFadeBeginM`, `LightFadeLengthM` | number | where the light starts to fade, and how long the fade is |
+| `LuminaireTarget` | text, optional | the `RoomId` the fixture serves |
+
+**B-92 · REQUIRED · luminaires** - Write `LightPosition` in the consumer's global frame: the file-local point plus `frame.levelOffsetMetres` (same x and y, z plus the offset); the geometry stays file-local. The emissive part's centre plus the offset must be within `extensions.luminaires.positionToleranceMetres` of the declared point.
+
+**B-92a · RECOMMENDED · luminaires** - Give the file-local position as well (`LightPositionLocal`) so a reviewer can check the offset was applied once.
+
+**B-93 · REQUIRED · luminaires** - Make `LightAim` a unit vector (length 1 within 1e-6) in the consumer's frame.
+
+**B-94 · RECOMMENDED · luminaires** - Give every enclosed room at least one fixture (set `LuminaireTarget`), between the floor and the ceiling, in warm colours, not pointed at glazing.
+
+**B-95 · RECOMMENDED · luminaires** - Count the lights: every declared fixture may become a real light, and the consumer may cap them per room (`extensions.luminaires.maxPerRoom`).
+
+---
+
+<!-- chunk: g1--12-optional-extension-signboards | source: 01-builders-and-architects-guide.md | title: 12. Optional extension: signboards | rules: B-100,B-101,B-102,B-103 -->
+## 12. Optional extension: signboards
+
+These rules apply when the profile enables `extensions.signboards` (a consumer that generates signs from declared boards).
+
+**B-100 · REQUIRED · signboards** - Model a board as an `IfcElementAssembly` carrying every property in `extensions.signboards.requiredProperties`, with a `SignboardKind` from `extensions.signboards.kinds`.
+
+| Property | Type | Meaning |
+|---|---|---|
+| `SignboardId` | text | unique identifier |
+| `SignboardKind` | text | one of the profile's kinds (default `entrance_board`, `stop_board`) |
+| `SignboardText`, `SignboardSub` | text | main text, optional second line |
+| `SignboardWidthM`, `SignboardHeightM` | number | board size in metres |
+| `SignboardReadM` | number | distance in metres from which it must be readable |
+| `SignboardPosition` | text `"x,y,z"` | centre, in the consumer's global frame (B-92) |
+| `SignboardNormal` | text `"x,y,z"` | unit vector pointing away from the board's face |
+
+**B-101 · REQUIRED · signboards** - Make the main text fit the board: allow about 0.55 times the capital height of width per character plus a margin of 12 % of the board height on each side; text that cannot be fitted at a capital height of 0.05 m is an error.
+
+**B-102 · RECOMMENDED · signboards** - Declare a reading distance your letters support: capital height in metres must be at least `pixels * readM / extensions.signboards.displayPixelsPerRadian`, with pixels from `extensions.signboards.minCapitalPixels` (primary text), and the distance within `extensions.signboards.readingDistanceMetres`.
+
+**B-103 · RECOMMENDED · signboards** - Declare an entrance board on the wall's outer face, not the wall centre plane, and keep lamps and trees away from its face.
+
+---
+
+<!-- chunk: g1--13-geometry-hygiene | source: 01-builders-and-architects-guide.md | title: 13. Geometry hygiene | rules: B-110,B-111,B-112,B-113,B-114,B-115,B-116 -->
+## 13. Geometry hygiene
+
+**B-110 · REQUIRED** - Keep all geometry inside the profile's build volume (`buildVolume`) and outside its keep-out regions (`keepOut`), when it gives them; check every vertex, not only footprints.
+
+**B-111 · RECOMMENDED** - Make solids closed and consistently oriented: no missing faces, no inside-out solids, no zero-area or duplicate faces.
+
+**B-112 · RECOMMENDED** - Avoid coplanar overlapping faces (two walls sharing a face, a covering lying exactly on a wall, a slab exactly on a floor). Offset thin layers or merge them.
+
+**B-113 · RECOMMENDED** - Use mapped items (`IfcMappedItem` with `IfcRepresentationMap`) for repeated parts. They keep files small; most consumers expand them to ordinary triangles, so they save file size, not drawing cost.
+
+**B-114 · RECOMMENDED** - Do not model what cannot be seen or used: hidden interiors, bolts, hinge detail, text as geometry, curves with more than `geometry.maxCurveSegmentsPerCircle` segments per full circle.
+
+**B-115 · RECOMMENDED** - Do not model terrain, soil or relief in IFC unless the profile says how. Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid.
+
+**B-116 · RECOMMENDED** - Do not model a thin layer at a height where the consumer adds its own surface layer (floor finishes laid on the room floor); two layers at one height flicker.
+
+---
+
+<!-- chunk: g1--14-level-of-detail-and-budgets | source: 01-builders-and-architects-guide.md | title: 14. Level of detail and budgets | rules: B-120,B-121 -->
+## 14. Level of detail and budgets
+
+Triangle count drives load time; the number of distinct materials and objects drives drawing cost. Hard caps are `limits.*` (B-05); recommended sizes are `budgets.*`.
+
+| Quantity | Profile parameter | Default |
+|---|---|---|
+| file size, hard | `limits.maxFileMegabytes` | 250 MB |
+| vertices, hard | `limits.maxVertices` | 10,000,000 |
+| triangles, hard | `limits.maxTriangles` | 5,000,000 |
+| file size, recommended | `budgets.recommendedFileMegabytes` | 100 MB |
+| triangles, recommended | `budgets.recommendedTriangles` | 1,000,000 |
+| distinct (class, colour, opacity) combinations | `budgets.maxDistinctColours` | 50 |
+
+**B-120 · RECOMMENDED** - Stay under the profile's recommended triangle count, `budgets.recommendedTriangles`. A constrained consumer publishes a much lower figure; build to the profile you were given.
+
+**B-121 · RECOMMENDED** - Spend triangles where the viewer looks: entrances, interiors a person stands in, anything within arm's reach. Distant detail is wasted.
+
+---
+
+<!-- chunk: g1--15-what-to-avoid | source: 01-builders-and-architects-guide.md | title: 15. What to avoid | rules: - -->
+## 15. What to avoid
+
+* A floor that duplicates one the consumer supplies (B-51).
+* Doors without openings, or openings without doors (B-41).
+* Anything across a doorway (B-42).
+* Rooms without identifiers or with duplicates (B-22, B-26).
+* Heavily tessellated rails and balusters (B-66).
+* Low steps and ledges nobody can see (B-65, with the walkability extension).
+* A proxy used for something that must be walk-through; use a reservation volume (B-80).
+* Missing ceilings (B-54).
+* Elements outside any level (B-13).
+* Geometry readers drop silently (B-06).
+* One-way glass promises: ordinary glass is two-way.
+* Changing identifiers between revisions (B-75).
+
+---
+
+<!-- chunk: g2--introduction | source: 02-interior-decorators-guide.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Guide 2: Interior Decorator's Guide
+
+For interior decorators, material authors and texture artists who define finishes, wall coverings, floor and ceiling
+treatments, accents and trims, and who deliver a reusable material library.
+
+Rule levels and the profile mechanism are explained in the [README](README.md); profile parameters appear in `backticks`
+(full list: [07-profile-parameters.md](07-profile-parameters.md)). Read sections 1 to 4 of guide 1 first: finishes attach to
+the rooms and element classes defined there.
+
+---
+
+<!-- chunk: g2--1-how-consumers-decide-what-a-surface-looks-like | source: 02-interior-decorators-guide.md | title: 1. How consumers decide what a surface looks like | rules: - -->
+## 1. How consumers decide what a surface looks like
+
+Consumers differ here, which is why this guide is built around a portable method.
+
+1. **IFC carries a colour and an opacity per surface style.** `IfcSurfaceStyle` with a rendering colour and a transparency is
+   read by every common reader. Texture images, texture coordinates and physically based settings are read by some and ignored by
+   many, so a file that relies on them looks different (or flat) in other tools.
+2. **A finish schedule says what each style means.** You deliver a small JSON file that maps every (element class, colour,
+   opacity) key used in the IFC to a finish: which texture set, how large one tile is, how strongly to tint it. A consumer that
+   has its own materials can follow the schedule; one that does not still shows your colours.
+3. **Texture sets are delivered separately,** as folders of images with a description file, so that any consumer can load them
+   with its own mapping (projection, UVs, atlases).
+4. **Floors, ceilings and walls use faces.** A finish can describe up to three face slots: `top` (faces pointing up, the walking
+   surface), `side` (edges) and `bottom` (faces pointing down, which is the ceiling of the room below); most classes use `all`.
+5. **Only emissive parts glow.** In consumers that turn fixtures into lights, the glow comes from the fixture part the profile
+   names (guide 1, section 11), not from a colour.
+
+What you control is: the class of each element, the colour and opacity you give it, the finish schedule, and the texture sets.
+
+---
+
+<!-- chunk: g2--2-colour-rules | source: 02-interior-decorators-guide.md | title: 2. Colour rules | rules: D-01,D-02,D-03,D-04,D-05,D-06,D-07,D-08 -->
+## 2. Colour rules
+
+**D-01 · REQUIRED** - Give each distinct finish its own colour within an element class. The schedule keys finishes by (class, colour, opacity); two finishes with the same key are one finish. Colours that differ by less than 1/255 in every channel are the same colour.
+
+**D-02 · REQUIRED** - Give the same finish the same colour and opacity on every element that uses it. A small drift (from re-rounding in another tool) creates a new key that has no schedule entry.
+
+**D-03 · REQUIRED** - When you deliver a finish schedule, include an entry for every (class, colour, opacity) combination that appears in your IFC files. The checker lists them (`finishKeys`).
+
+**D-04 · RECOMMENDED** - Use opacity below 1 only for glass and other see-through things (about 0.4 to 0.6 for glazing). Consumers treat anything with an opacity below 1 as see-through. A walkable glass floor is a slab with a glass colour and opacity.
+
+**D-05 · RECOMMENDED** - Keep the palette small: at most `budgets.maxDistinctColours` combinations (default 50). Every combination is one more material to map, load and draw.
+
+**D-06 · RECOMMENDED** - Treat the IFC colour as a design tint: the schedule says how strongly it is blended into the texture (0 means the texture alone, 1 the colour fully). Pick a colour near the intended look, not a code colour such as pure red.
+
+**D-07 · RECOMMENDED** - Avoid pure black, pure white and very dark large surfaces: they clip or disappear under typical lighting. Keep large floors and walls between about 0.25 and 0.85 in mean linear luminance unless a dark look is the point.
+
+**D-08 · RECOMMENDED** - Choose neutral tints for fabrics; strongly coloured tints shift under lighting.
+
+---
+
+<!-- chunk: g2--3-floors-ceilings-wall-coverings-accents-and-tri | source: 02-interior-decorators-guide.md | title: 3. Floors, ceilings, wall coverings, accents and trims | rules: D-10,D-11,D-12,D-13,D-20,D-21,D-30,D-31,D-32,D-33,D-34,D-35 -->
+## 3. Floors, ceilings, wall coverings, accents and trims
+
+### Floors
+
+**D-10 · RECOMMENDED** - When you deliver a finish schedule, give every room that has a floor a floor finish: list them in the `floors` section by `Occupant`, by `RoomId` list or by pattern, plus a default. A room without a rule gets whatever the consumer defaults to.
+
+**D-11 · RECOMMENDED** - Also write a text property `Finish` on each room (for example `light warm-grey resilient floor; pale ivory walls`), so that the intent stays with the room.
+
+**D-12 · RECOMMENDED** - Change floor finishes at door lines, not mid-room, and keep a visible threshold between unlike finishes.
+
+**D-13 · RECOMMENDED** - Choose low-gloss, light floors for rooms people work in: dark glossy floors read as black under many lighting set-ups.
+
+### Ceilings
+
+**D-20 · RECOMMENDED** - Decide ceilings through the slab or roof above: the `bottom` face of the slab above is the ceiling of the room below. To get a different ceiling finish give that slab a different colour, and describe its `bottom` slot in the schedule. A ceiling can also be an `IfcCovering` (D-31).
+
+**D-21 · RECOMMENDED** - Keep ceiling finishes matte and light; glossy ceilings amplify lamp hot spots.
+
+### Wall coverings
+
+**D-30 · RECOMMENDED** - Express a wall finish through the wall element's own colour (one colour per finish and per class). It works in every consumer.
+
+**D-31 · RECOMMENDED** - Use an `IfcCovering` (`PredefinedType` `CLADDING`, `FLOORING`, `CEILING` or `WRAPPING`) only when a finish covers part of a wall, or a surface that has no element of its own. Model it as a shell at least 10 mm thick whose back face sits exactly on the surface (touching, not overlapping), so no two faces share a plane and face the same way. Support for `IfcCovering` varies between consumers, so confirm it with the consumer first.
+
+**D-32 · RECOMMENDED** - Do not rely on a texture pattern starting at an edge: consumers project textures differently. Design coverings that tolerate any start position, or model panels as geometry when joints must line up.
+
+### Accents and trims
+
+**D-33 · RECOMMENDED** - Make skirtings, cornices, door frames, handrails and accent bands separate elements with their own colour, at least 1 cm thick. Elements thinner than about 5 mm flicker against what they sit on.
+
+**D-34 · RECOMMENDED** - Accent features (a feature wall, a coloured door, a timber panel) are a colour on the element in the same class as its neighbours, not an image inside the IFC.
+
+### Glass
+
+**D-35 · RECOMMENDED** - Describe glass by colour, opacity and three optional settings: base opacity, edge reflection (`fresnelAlpha`) and smudge roughness (`smudgeRough`). Keep glass light and clear: dark or green glass reads as black or milky in many viewers.
+
+---
+
+<!-- chunk: g2--4-texture-sets | source: 02-interior-decorators-guide.md | title: 4. Texture sets | rules: D-40,D-41,D-42,D-43,D-44,D-45,D-46,D-47,D-48,D-49,D-50 -->
+## 4. Texture sets
+
+A texture set is a folder of images plus a description; it is the unit of a material library.
+
+**D-40 · REQUIRED** - Deliver every texture set as a folder `<setName>/` containing the maps the profile lists (`textures.maps`, default `albedo.png`, `normal.png`, `orm.png`) and `set.json`.
+
+**D-41 · REQUIRED** - Use these encodings, so that every consumer reads the maps the same way:
+
+| Map | Content | Encoding |
+|---|---|---|
+| `albedo.png` | base colour | 8-bit RGB PNG, **sRGB** encoded, no alpha, no baked lighting or shadows |
+| `normal.png` | surface relief | 8-bit RGB PNG, **linear** data, tangent basis, flat surface = (128, 128, 255); green channel direction as the profile states (`textures.normalConvention`: `+Y` up, or `-Y`) |
+| `orm.png` | packed material data | 8-bit RGB PNG, **linear** data. **R** = ambient occlusion (255 = unoccluded), **G** = roughness (0 = mirror, 255 = fully rough), **B** = metalness |
+
+**D-42 · RECOMMENDED** - Make the texture tile seamlessly in both directions; consumers repeat it across large surfaces, and a seam repeats with it. Check the three-by-three preview.
+
+**D-43 · REQUIRED** - Declare the physical size of one tile in `set.json` as `tileMetres`, so that a consumer can scale it correctly.
+
+**D-44 · RECOMMENDED** - Use square, power-of-two images, all maps the same size, one of `textures.sizesPixels` (default 512, 1024, 2048). Larger maps cost memory in every view.
+
+**D-45 · RECOMMENDED** - Choose the tile size so the texel density is inside `textures.densityPixelsPerMetre` (default 250 to 2500 pixels per metre): for 1024 pixels that is a tile of about 0.4 m to 4 m.
+
+**D-46 · RECOMMENDED** - Avoid fine, regular weaves and stripes with a tile under 0.5 m: they produce moire at grazing angles.
+
+**D-47 · RECOMMENDED** - Declare `tintMode` in `set.json` (one of `textures.tintModes`): `multiply` when the albedo is a near-neutral light map meant to be tinted by the IFC colour, or `authored` when the colour in the map is final.
+
+**D-48 · RECOMMENDED** - Keep the pattern free of one-off features (a single stain, one knot) that would repeat visibly, and do not bake low-frequency variation in; consumers can add it.
+
+**D-49 · RECOMMENDED** - If a pattern has a direction (planks, brushed metal, grain), say which image axis it follows in `set.json` (`direction`: `u`, `v` or `none`); consumers decide how directional patterns are oriented on floors and walls.
+
+**D-50 · RECOMMENDED** - Check your tiles in a three-by-three arrangement and at a long viewing distance: fine relief that reads as speckle should be softened.
+
+### set.json
+
+```json
+{
+  "name": "plaster_fine",
+  "version": "1.0.0",
+  "sizePixels": 1024,
+  "tileMetres": 2.0,
+  "tintMode": "multiply",
+  "direction": "none",
+  "normalConvention": "+Y",
+  "description": "fine trowelled plaster, low sheen",
+  "maps": { "albedo": "albedo.png", "normal": "normal.png", "orm": "orm.png" },
+  "generator": "optional: script and seed that reproduce the set"
+}
+```
+
+---
+
+<!-- chunk: g2--5-the-finish-schedule | source: 02-interior-decorators-guide.md | title: 5. The finish schedule | rules: D-60,D-61,D-62,D-63 -->
+## 5. The finish schedule
+
+The finish schedule tells a consumer what each colour and each room floor means. The machine-readable shape is
+`schemas/finish-schedule.schema.json`; a starting file is `templates/finish-schedule.template.json`.
+
+**D-60 · REQUIRED** - Deliver `finish-schedule.json` with these sections: `format` (`finish-schedule/1`), `delivery`, `version` (SemVer), `materials[]` (one entry per (class, colour, opacity) key: `key`, `role`, `usedBy`, `faces`), `floors[]` (ordered floor rules: `where` and `finish`), and `libraries[]` (the texture-set folders it names, with versions).
+
+**D-61 · REQUIRED** - Name only texture sets that exist: each face entry names a set from your delivery or from a library the profile or consumer publishes. Settings are optional:
+
+| Setting | Meaning |
+|---|---|
+| `set` | texture-set name |
+| `tint` | `"ifc"` (the element's colour), a colour such as `"#5a5654"`, or `"none"` |
+| `tintStrength` | 0 to 1: how far the tint replaces the texture's own colour |
+| `tileMetres` | override the set's tile size |
+| `normalScale` | strength of relief (typically 0.4 to 1.3) |
+| `roughMul`, `metalMul` | multipliers on roughness and metalness |
+| `macroStrength`, `macroScaleMetres` | optional low-frequency variation to hide repetition |
+| `aoStrength` | strength of baked occlusion |
+| `sheen`, `sheenTint` | fabric edge response |
+| `offsetMetres` | shift the pattern so neighbouring materials do not repeat in step |
+
+**D-62 · RECOMMENDED** - Mark materials that must stay as they are (emissive strips, planning markers) with `"keep": true` and a reason instead of giving them a texture.
+
+**D-63 · RECOMMENDED** - Treat the schedule as a proposal: a consumer applies what it can. Do not depend on any single setting being honoured exactly.
+
+### A short example
+
+```json
+{
+  "format": "finish-schedule/1",
+  "delivery": "example-room-1.0.0",
+  "version": "1.0.0",
+  "materials": [
+    { "key": { "class": "IfcWall", "colour": "#d9d2c3", "opacity": 1.0 },
+      "role": "room walls", "usedBy": "all rooms",
+      "faces": { "all": { "set": "plaster_fine", "tint": "ifc", "tintStrength": 0.55, "normalScale": 0.6 } } },
+    { "key": { "class": "IfcSlab", "colour": "#c9c4b8", "opacity": 1.0 },
+      "role": "floor slab", "usedBy": "all levels",
+      "faces": { "top": { "set": "concrete_polished", "tint": "ifc", "tintStrength": 0.25 },
+                 "side": { "set": "board_concrete" },
+                 "bottom": { "set": "ceiling_gypsum" } } }
+  ],
+  "floors": [
+    { "id": "floor-default", "where": { "occupant": "*" }, "finish": { "set": "oak_plank_wide" } }
+  ],
+  "libraries": [ { "name": "plaster_fine", "version": "1.0.0" } ]
+}
+```
+
+---
+
+<!-- chunk: g2--6-palettes | source: 02-interior-decorators-guide.md | title: 6. Palettes | rules: D-70,D-71,D-72 -->
+## 6. Palettes
+
+**D-70 · RECOMMENDED** - Build the palette from a few families and give each organisation or zone a distinct tint rather than a distinct pattern.
+
+**D-71 · RECOMMENDED** - Describe the intent in words as well as colours ("light warm-grey resilient floor; pale ivory washable walls; low gloss"), so that a consumer with its own material library can choose.
+
+**D-72 · RECOMMENDED** - Do not use texture or colour to carry meaning that labels already carry (room names, identifiers, directions). Use finish to make places feel different, not to label them.
+
+---
+
+<!-- chunk: g2--7-delivering-a-reusable-material-library | source: 02-interior-decorators-guide.md | title: 7. Delivering a reusable material library | rules: D-80,D-81,D-82,D-83,D-84,D-85 -->
+## 7. Delivering a reusable material library
+
+A library is a set of texture sets plus a finish schedule, with a manifest (guide 4). It is reusable when a different building can name your sets in its own schedule. `finishes/library.json` (`schemas/material-library.schema.json`) lists the sets and the schedule.
+
+**D-80 · REQUIRED** - Record the source and licence of every texture set and every image in it in a `SOURCES.csv` next to the library with the columns `asset,type,source,licence,notes`. State whether the set is procedural (and which script and seed make it) or derived from photographs (and whose). Include no image whose licence you cannot state.
+
+**D-81 · REQUIRED** - Include the SHA-256 hash of every file in the manifest (guide 4).
+
+**D-82 · RECOMMENDED** - Prefer procedural sets with the generator and its seeds included; byte-identical output lets a consumer verify and regenerate the library and keeps the delivery small.
+
+**D-83 · RECOMMENDED** - Name sets in lower case with underscores (`limewash_mottled`) and finishes with dotted names (`wall.limewash.warm`). Give each set its own SemVer; a changed look is a new version, never an overwrite.
+
+**D-84 · RECOMMENDED** - Include a contact sheet (a PNG with each set's albedo, normal and roughness side by side, plus the tile size) so a reviewer sees the library at a glance.
+
+**D-85 · RECOMMENDED** - Keep the library independent of any one building: no file name, label or set name should refer to a particular project.
+
+---
+
+<!-- chunk: g2--8-defects-commonly-seen | source: 02-interior-decorators-guide.md | title: 8. Defects commonly seen | rules: - -->
+## 8. Defects commonly seen
+
+| Defect | Cause | What to do |
+|---|---|---|
+| fabrics read pale or tinted | strongly coloured tint | neutral tint, lower sheen (D-08) |
+| stone chips too bold | high chip contrast | soften relief and chip mask |
+| woven wall cloth shows moire | small tile, strong relief | larger tile, lower relief (D-46) |
+| carpets and floors read near black | very low albedo | lighter albedo (D-07) |
+| parquet reads as staggered strips | pattern repeat scale | check the three-by-three view (D-50) |
+| concrete pores read as spots | relief too sharp | soften relief (D-50) |
+| glazing milky or black | dark or green glass colour | light clear glass (D-35) |
+| blotchy walls | uneven lighting plus strong variation | moderate variation (D-48) |
+
+---
+
+<!-- chunk: g3--introduction | source: 03-furniture-and-fixtures-guide.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Guide 3: Furniture and Fixtures Guide
+
+For designers who deliver furniture, equipment, fixtures and accents as reusable items that can be placed in any compatible
+consumer.
+
+Rule levels and the profile mechanism are explained in the [README](README.md); profile parameters appear in `backticks`
+(full list: [07-profile-parameters.md](07-profile-parameters.md)). Read sections 1 to 4 and 14 of guide 1 first, and section 1
+of guide 2.
+
+---
+
+<!-- chunk: g3--1-what-consumers-do-with-an-item | source: 03-furniture-and-fixtures-guide.md | title: 1. What consumers do with an item | rules: - -->
+## 1. What consumers do with an item
+
+An item reaches a consumer as an element inside a building's master IFC file. What happens next differs, but these things are common:
+
+| Stage | What typically happens | Consequence for you |
+|---|---|---|
+| Reading | the class of the element and its geometry are read; declaration properties are read by name | use the right class (section 2) |
+| Material | class, colour and opacity select a finish (guide 2) | distinct finish, distinct colour |
+| Collision | furniture is approximated by a simple shape, often **one axis-aligned box** around the element, while fixed equipment may collide as exact triangles | a chair can be a solid block; do not rely on walking under a table. The profile states the mode (`extensions.furnitureCollision`) |
+| Standing points | simulators keep a start point clear of furniture by a margin | leave free floor (guide 1, B-33, with the walkability extension) |
+| Interaction | most consumers have no sit points, drawers or moving parts for IFC items | item data beyond the model is for placement tools |
+
+An **item library** is a folder of single-item IFC files plus a description file per item. A building author places items into
+the master file as instances (section 8).
+
+---
+
+<!-- chunk: g3--2-classes-and-categories | source: 03-furniture-and-fixtures-guide.md | title: 2. Classes and categories | rules: F-01,F-02,F-03 -->
+## 2. Classes and categories
+
+**F-01 · REQUIRED** - Use these classes for items, because consumers and tools are written for them, and make the description's class agree with the model.
+
+| Item kind | IFC class | Typical consumer treatment |
+|---|---|---|
+| movable furniture (tables, chairs, benches, beds, shelves, sofas) | `IfcFurnishingElement` | simple shape or box; the default choice |
+| fixed equipment, built-in units, counters, anything where the exact solid shape matters | `IfcBuildingElementProxy` (`PredefinedType` `USERDEFINED`, `ObjectType` set) | exact triangle mesh |
+| light fixtures | `IfcElementAssembly` of two `IfcLightFixture` parts | see guide 1, section 11 |
+| signs and boards | `IfcElementAssembly` | see guide 1, section 12 |
+| rails and guards | `IfcRailing` | cheap geometry (guide 1, B-66) |
+| lifts | `IfcTransportElement` (`ELEVATOR`) | usually static (guide 1, B-63) |
+
+Other classes are drawn but get no special treatment; ask before using them for items.
+
+**F-02 · RECOMMENDED** - Set `ObjectType` to a category word from this list so that reports and schedules can group items: `table`, `desk`, `seat`, `bench`, `sofa`, `bed`, `shelf`, `cabinet`, `counter`, `partition`, `planter`, `equipment`, `appliance`, `lamp`, `sign`, `accent`, `other`.
+
+**F-03 · RECOMMENDED** - Add a property set `Pset_Declaration_Item` with text properties `ItemId` (the library id, section 3), `ItemVersion` (SemVer), `Role` (what the item is for, for example `work table`), and optionally `Occupant` and `PlanningStatus`.
+
+---
+
+<!-- chunk: g3--3-item-library-format | source: 03-furniture-and-fixtures-guide.md | title: 3. Item library format | rules: F-10,F-11,F-12 -->
+## 3. Item library format
+
+One item is one folder.
+
+```
+library/
+  library.manifest.json          the package manifest (guide 4)
+  items/
+    table.work.1600/
+      table.work.1600.ifc        one IfcFurnishingElement at the origin
+      table.work.1600.item.json  the description (section 3.1)
+      preview.png                optional, 512 by 512
+  finishes/                      optional: finish schedule and texture sets (guide 2)
+```
+
+**F-10 · RECOMMENDED** - Make each item file IFC4 (guide 1, B-01 to B-06) containing exactly one furniture or equipment element, placed at the origin with no rotation, in metres, with a stable `GlobalId`. The item file needs a project, the length unit and a geometric context, but no building, levels or rooms.
+
+**F-11 · RECOMMENDED** - Give every item a library id of the form `category.name.size` in lower case (for example `seat.stool.450`), unique within the library and never reused for a different design. The folder, the files, `ItemId` and the description all use the same id.
+
+**F-12 · RECOMMENDED** - Provide a description file `<ItemId>.item.json` for every item (section 3.1). The checker and reviewers use it; schema: `schemas/item.schema.json`.
+
+### 3.1 The description file
+
+```json
+{
+  "format": "item/1",
+  "itemId": "table.work.1600",
+  "version": "1.0.0",
+  "name": "Work table, 1.6 m",
+  "category": "table",
+  "class": "IfcFurnishingElement",
+  "pivot": { "kind": "floor", "description": "centre of the footprint, on the floor" },
+  "front": [1, 0, 0],
+  "dimensions": { "x": 1.6, "y": 0.8, "z": 0.74 },
+  "footprint": [[-0.8, -0.4], [0.8, -0.4], [0.8, 0.4], [-0.8, 0.4]],
+  "collision": { "kind": "box", "min": [-0.8, -0.4, 0.0], "max": [0.8, 0.4, 0.74] },
+  "clearance": { "front": 0.9, "back": 0.0, "left": 0.45, "right": 0.45, "top": 0.0 },
+  "anchors": [
+    { "id": "seat-1", "kind": "seat", "position": [0.0, -0.7, 0.45], "direction": [0, 1, 0] },
+    { "id": "work-surface", "kind": "surface", "position": [0.0, 0.0, 0.74], "direction": [0, 0, 1] }
+  ],
+  "placement": {
+    "mounting": "floor",
+    "againstWall": false,
+    "rotations": [0, 90, 180, 270],
+    "roomUses": ["work", "meeting", "study"],
+    "avoid": ["circulation"],
+    "minWallDistance": 0.0
+  },
+  "variants": [
+    { "id": "oak", "colour": "#ccbba0", "finish": "furniture.oak.veneer" }
+  ],
+  "budget": { "triangles": 12, "textures": 0 },
+  "provenance": { "author": "organisation name", "licence": "stated licence", "source": "original" }
+}
+```
+
+---
+
+<!-- chunk: g3--4-dimensions-origin-and-pivot | source: 03-furniture-and-fixtures-guide.md | title: 4. Dimensions, origin and pivot | rules: F-20,F-20a,F-21,F-22,F-23 -->
+## 4. Dimensions, origin and pivot
+
+**F-20 · REQUIRED** - Model in metres in the right-handed frame of guide 1 (B-02, B-10), with the item's own origin at its pivot (F-21).
+
+**F-20a · RECOMMENDED** - Do not scale an item with an `IfcCartesianTransformationOperator` or any non-unit transform. Model it at its real size so that what you measure is what is drawn.
+
+**F-21 · RECOMMENDED** - Put the pivot where the item meets the building, so placing it needs one point and one turn.
+
+| Mounting | Pivot (origin) | Local axes |
+|---|---|---|
+| `floor` | centre of the footprint, on the floor (lowest point at z = 0) | +X is the front (the side a user faces and the side that needs clear floor), +Z up |
+| `wall` | centre of the back face, at the mounting height in `placement.mountHeight` | +X is the front, pointing away from the wall |
+| `ceiling` | centre of the fixing plane (the top of the item) | +Z stays up; the item hangs below the origin, so its dimensions run to negative z |
+| `surface` | centre of the contact area on the thing it stands on | +X is the front |
+
+**F-22 · RECOMMENDED** - Declare the bounding dimensions in the description and keep them equal (within 1 cm) to the measured size of the geometry.
+
+**F-23 · RECOMMENDED** - Use true-to-life sizes: a work table is about 1.6 by 0.8 by 0.74 m, a chair about 0.5 by 0.55 by 0.85 m. Consumers do not scale items.
+
+---
+
+<!-- chunk: g3--5-placement-points-anchors-and-where-an-item-may | source: 03-furniture-and-fixtures-guide.md | title: 5. Placement points, anchors and where an item may be placed | rules: F-30,F-31,F-32,F-33,F-34 -->
+## 5. Placement points, anchors and where an item may be placed
+
+Most consumers ignore this data; it lets a placement tool, or a different consumer, place items without a person.
+
+**F-30 · RECOMMENDED** - Declare anchors in item coordinates (metres, relative to the pivot). Anchor `kind` values: `seat` (where a person sits; direction = the way they face), `surface` (a usable top), `reach` (where a person stands to use it), `storage`, `power`, `door-swing` (a volume to keep clear), `mount` (where it attaches). Give each anchor an `id` unique within the item.
+
+**F-31 · RECOMMENDED** - Declare placement rules under `placement`: `mounting` (`floor`, `wall`, `ceiling`, `surface`), `againstWall`, `minWallDistance` (metres), `rotations` (allowed turns about the vertical axis, in degrees), `roomUses` (kinds of use it suits, free words matching the `Function` text of rooms), `avoid` (kinds of room it must not go in), and `mountHeight` for wall items.
+
+**F-32 · RECOMMENDED** - Declare clearance minimums around the item: `front`, `back`, `left`, `right`, `top` (metres of free volume needed). As a guide: the profile's standing clearance on each side (`extensions.walkability.standingClearanceMetres`) and enough free floor in front of anything a person uses to reach it and pass. Keep aisles from seating to doors free.
+
+**F-33 · RECOMMENDED** - Keep items off door openings and off the floor directly in front of a door; a table in the doorway fails the doorway check (guide 1, B-42).
+
+**F-34 · RECOMMENDED** - Do not place items so that they cover a room's whole free floor (guide 1, B-33).
+
+---
+
+<!-- chunk: g3--6-collision-and-footprint | source: 03-furniture-and-fixtures-guide.md | title: 6. Collision and footprint | rules: F-40,F-41,F-42,F-43,F-44 -->
+## 6. Collision and footprint
+
+**F-40 · REQUIRED · furnitureCollision** - Assume the profile's collision mode (`extensions.furnitureCollision.mode`). With `box`, the consumer builds a single axis-aligned box around the whole element after placement: if that box fits badly (an L-shaped sofa, a corner desk) deliver several box-like elements instead of one. If exact shape matters (a sloped ramp, a stepped plinth) use an `IfcBuildingElementProxy`.
+
+**F-41 · RECOMMENDED · furnitureCollision** - Place furniture with rotations in multiples of 90 degrees where you can; a box around a 45-degree table is larger than the table.
+
+**F-42 · RECOMMENDED** - Declare the footprint polygon and the collision box in the description (section 3.1), so a checker and a human can see what a consumer will do.
+
+**F-43 · RECOMMENDED · furnitureCollision** - Never make an item that must be walked under, through or between (an open pergola, a chair with gaps between its legs); in `box` mode it is a solid block.
+
+**F-44 · RECOMMENDED · walkability** - Avoid low obstacles up to `extensions.walkability.stepHeightMetres` that are not obviously steps (a floor box, a cable cover): a walker steps over them unnoticed.
+
+---
+
+<!-- chunk: g3--7-polygon-and-texture-budgets | source: 03-furniture-and-fixtures-guide.md | title: 7. Polygon and texture budgets | rules: F-50,F-51,F-52,F-53 -->
+## 7. Polygon and texture budgets
+
+**F-50 · REQUIRED** - Stay within the profile's limits for a whole delivery: `limits.maxFileMegabytes`, `limits.maxVertices`, `limits.maxTriangles`.
+
+**F-51 · RECOMMENDED** - Keep each item small: at most `budgets.maxItemTriangles` triangles (default 2,000), far fewer for ordinary items. Do not model hidden undersides, fasteners or text.
+
+**F-52 · RECOMMENDED** - Do not deliver textures with an item. Items take their look from the building's finish schedule (guide 2), keyed by class and colour. If a bespoke texture set is unavoidable, deliver it as a normal texture set (guide 2, section 4) and list it in the item description.
+
+**F-53 · RECOMMENDED** - Use one or two surface colours on an ordinary item and up to four on a feature item; every distinct colour of every item adds a material.
+
+---
+
+<!-- chunk: g3--8-variants-and-instancing | source: 03-furniture-and-fixtures-guide.md | title: 8. Variants and instancing | rules: F-60,F-61,F-62,F-62a,F-63 -->
+## 8. Variants and instancing
+
+**F-60 · RECOMMENDED** - Describe variants in the description file. A variant is a finish variant (a different colour; same item id, same geometry), a size variant (a different item id) or an option (different geometry, also a different id).
+
+**F-61 · RECOMMENDED** - Place repeated items as instances: each instance is an element of its own (own `GlobalId`, own `ObjectPlacement`), sharing geometry through `IfcMappedItem` and `IfcRepresentationMap`. Rotate instances about the vertical axis only.
+
+**F-62 · REQUIRED** - Give each instance its own unique `GlobalId` (guide 1, B-70) and a level to belong to (guide 1, B-13).
+
+**F-62a · RECOMMENDED** - Place every instance inside the room it serves, and do not let it extend through a wall or a floor.
+
+**F-63 · RECOMMENDED** - Record the item id and version on every instance (`ItemId`, `ItemVersion`, F-03) so that a revision of the library can be rolled out by replacing instances.
+
+---
+
+<!-- chunk: g3--9-fixtures | source: 03-furniture-and-fixtures-guide.md | title: 9. Fixtures | rules: F-70,F-71,F-72 -->
+## 9. Fixtures
+
+**F-70 · REQUIRED · luminaires** - Follow guide 1 exactly for light fixtures (section 11) and, when signboards are enabled, for signs (section 12). The declaration properties are read by name, and a missing required one makes the fixture unusable.
+
+**F-71 · RECOMMENDED · luminaires** - Make a fixture's housing and emissive part separate parts so that only the emissive part glows. Keep it a simple disc or box, give the housing a dark neutral colour and the emissive part a warm off-white.
+
+**F-72 · RECOMMENDED** - Other fixtures (hand rails, handles, hooks, bathroom fittings, planters) are small elements with their own colour, in the classes of section 2. Do not model plumbing or wiring.
+
+---
+
+<!-- chunk: g3--10-what-to-avoid | source: 03-furniture-and-fixtures-guide.md | title: 10. What to avoid | rules: - -->
+## 10. What to avoid
+
+* Rotated or L-shaped single elements that make a wasteful box (F-40, F-41).
+* Items you can walk under, through or between (F-43).
+* Low ledges and floor boxes that a walker steps over unseen (F-44).
+* A table or shelf in front of a door or in an aisle (F-32, F-33).
+* Per-item textures (F-52).
+* Many near-identical colours across items (guide 2, D-01, D-05).
+* Scaled instances (F-20a).
+* Items that rely on moving parts, opening doors or drawers, or on sit points the consumer does not have.
+* Hidden or tiny detail that costs triangles (F-51).
+
+---
+
+<!-- chunk: g4--introduction | source: 04-delivery-and-acceptance-guide.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Guide 4: Delivery and Acceptance Guide
+
+For everyone who sends or receives work: how to package it, what the manifest says, how versions and licences are recorded,
+how to check your own work before sending it, and how a receiving party accepts, returns or refuses it.
+
+Rule levels and the profile mechanism are explained in the [README](README.md). The scripts named here are in
+[tools/](tools/); each prints what it checked and exits with status 1 when a REQUIRED rule fails. "The receiving party" is
+whoever takes the delivery: a consumer's operator, a client, an archive.
+
+---
+
+<!-- chunk: g4--1-what-you-send | source: 04-delivery-and-acceptance-guide.md | title: 1. What you send | rules: X-01,X-02 -->
+## 1. What you send
+
+A delivery is one folder (and a zip of it) with these parts. Send only the parts your assignment needs.
+
+```
+example-room-1.0.0/
+  manifest.json               what is in the package, with hashes (section 3)
+  SHA256SUMS.txt              the same hashes in the plain checksum-file form
+  ifc/
+    example-room-master.ifc   the one coordinated master IFC file (buildings)
+    alternates/               optional per-building files (not the master)
+  tables/
+    rooms.csv                 room table: ids, names, occupants, kinds (section 6)
+    building.json             optional machine-readable building summary
+  finishes/
+    finish-schedule.json      what each colour and each floor means (guide 2)
+    library.json              optional list of texture sets and the schedule
+    SOURCES.csv               source and licence of every texture set
+    textures/<set>/           albedo.png, normal.png, orm.png, set.json
+  items/<itemId>/             <itemId>.ifc, <itemId>.item.json, optional preview.png (guide 3)
+  reports/                    the checker reports (section 5)
+  notes/
+    changes.md                what changed since the previous version
+    open-points.md            anything you could not settle
+```
+
+**X-01 · REQUIRED** - Use this layout. Tools and reviewers find things by these folder names and roles. A building delivery has exactly one file under `ifc/` (not in `alternates/`).
+
+**X-02 · RECOMMENDED** - Use lower-case ASCII file names without blanks, forward slashes in every path, and keep paths under 200 characters. Put nothing in the package that is not listed in the manifest.
+
+---
+
+<!-- chunk: g4--2-packaging-the-work | source: 04-delivery-and-acceptance-guide.md | title: 2. Packaging the work | rules: - -->
+## 2. Packaging the work
+
+Build the package folder, write a short `package-meta.json` (start from `templates/package-meta.template.json`), and let the tool add the file list, hashes and sizes:
+
+```
+python3 tools/build_package.py init   example-room-1.0.0 package-meta.json
+python3 tools/build_package.py verify example-room-1.0.0
+```
+
+`verify` is what a receiving party runs first, so run it yourself before sending.
+
+---
+
+<!-- chunk: g4--3-the-manifest | source: 04-delivery-and-acceptance-guide.md | title: 3. The manifest | rules: X-10,X-11,X-12,X-13,X-14,X-20,X-21,X-22 -->
+## 3. The manifest
+
+`manifest.json` has one entry for each of the following. Schema: `schemas/manifest.schema.json`.
+
+| Field | Content |
+|---|---|
+| `format` | always `delivery-manifest/1` |
+| `delivery` | `id` (lower case, dots and hyphens), `title`, `version` (SemVer), `created` (UTC date and time in the form `2026-10-22T10:00:00Z`), `supersedes` (the version it replaces, or null), `kind` (a list of `building`, `materials`, `furniture`, `mixed`) |
+| `author` | `organisation`, `role` (who answers queries), `contact` (a role mailbox or handle; personal data is not needed) |
+| `profile` | `name`, `version` (and optionally `sha256`) of the consumer profile you built and checked against |
+| `frame` | `units` (`metres`), `axes`, `levelOffsetMetres`, `localZero` |
+| `ifc` | `schema`, `entityNumberStart` |
+| `files[]` | for each file: `path`, `role`, `sha256`, `bytes`, optional `version` |
+| `counts` | numbers the checker found (levels, rooms, triangles ...) |
+| `provenance[]` | for each asset group: `asset`, `type`, `source`, `author`, `licence`, `notes` |
+| `licence` | `statement` that covers everything not listed in `provenance` |
+| `checks` | `tool`, `toolVersion`, `report` (path in the package), `result` |
+
+**X-10 · REQUIRED** - Put a `manifest.json` at the top of the package that matches the schema.
+
+**X-11 · REQUIRED** - Record the SHA-256 hash (64 lower-case hexadecimal characters) and size in bytes of every file, and include a `SHA256SUMS.txt` in the plain two-column form (`hash`, two blanks, `path`). Hashes prove that what the receiving party holds is what you sent.
+
+**X-12 · REQUIRED** - List every file in the package, and only those, in the manifest. (The manifest and the checksum file themselves are the exceptions.)
+
+**X-13 · RECOMMENDED** - A building delivery has exactly one master IFC file (guide 1, B-03); other files are alternates.
+
+**X-14 · REQUIRED** - Keep the whole package within the profile's cap, `package.maxPackageMegabytes`, when it sets one. Upload systems and mail gateways refuse larger packages.
+
+**X-20 · REQUIRED** - Give every IFC file, texture set and library item a `provenance` entry (what it is, where it came from: `original`, `procedural` with the script and seed, or a named source; who made it; the licence that applies) when the profile requires provenance (`package.requireProvenance`, default true).
+
+**X-21 · REQUIRED** - State a licence for every asset and a `licence.statement` for the package when the profile requires it (`package.requireLicence`, default true). A package whose licence terms are missing, or do not allow the receiving party to use, copy and adapt the work for the purpose of the assignment, cannot be accepted.
+
+**X-22 · RECOMMENDED** - Deliver only content you are free to hand over. Do not include material that is restricted, reproduced from another party's work without permission, or that carries identifying marks of a third party. If part of your work is restricted, say so in `notes/open-points.md` and leave it out.
+
+### Machine-readable summaries
+
+Two optional files make a delivery readable without opening the model or the schedule. Both have JSON Schemas, and `check_all.py` validates them when present (a problem is a RECOMMENDED finding, rule X-41).
+
+| File | Schema | Content |
+|---|---|---|
+| `tables/building.json` | `schemas/building-metadata.schema.json` | building id and name, frame, the master file, levels with elevations and room counts, occupants, room-id prefix |
+| `finishes/library.json` | `schemas/material-library.schema.json` | the texture sets (name, version, path) and the finish schedule of a material delivery |
+
+---
+
+<!-- chunk: g4--4-versions | source: 04-delivery-and-acceptance-guide.md | title: 4. Versions | rules: X-30,X-31,X-32,X-50 -->
+## 4. Versions
+
+**X-30 · RECOMMENDED** - Version the delivery, each texture set and each item with SemVer (`MAJOR.MINOR.PATCH`), and give every version a creation time. A version is the exact set of bytes in its manifest.
+
+**X-31 · RECOMMENDED** - Choose the next version number by what changed.
+
+| Change | Example | Next version |
+|---|---|---|
+| corrections that change no identifier and no meaning | a wrong door height fixed, a colour nudged | PATCH (1.0.0 to 1.0.1) |
+| added content with every existing identifier unchanged | a new room, a new item, a new finish | MINOR (1.0.1 to 1.1.0) |
+| anything that renames, removes or re-means an identifier, or changes the frame | a room id changed, a level moved | MAJOR (1.1.0 to 2.0.0) |
+
+**X-32 · RECOMMENDED** - Write `notes/changes.md`: for each version, the ids added, changed and removed, in plain sentences.
+
+**X-50 · REQUIRED** - Never change a delivered version in place. A correction is a new version with a new manifest and new hashes; two different files must never carry the same version number.
+
+---
+
+<!-- chunk: g4--5-acceptance-checks | source: 04-delivery-and-acceptance-guide.md | title: 5. Acceptance checks | rules: X-40 -->
+## 5. Acceptance checks
+
+Acceptance is a list of checks. The first group is what you run yourself with the scripts; the second is what a receiving party typically checks, so you know what will be looked at.
+
+### 5.1 Checks you run before sending
+
+One command runs everything that applies to a deliverable and prints one JSON report (`schemas/check-report.schema.json`):
+`python3 tools/check_all.py PATH --json --profile PROFILE.json`, where PATH is a master file, a `finishes/` folder, an `items/` folder or a package folder. Without `--profile` the default profile is used, and the report says which profile it checked against. Every tool below also takes `--json` and `--profile`. Exit codes: 0 no REQUIRED failure, 1 at least one, 2 wrong command line, 3 unreadable input. The loop for fixing findings is in `REPAIR-LOOP.md`.
+
+```
+python3 tools/check_all.py ifc/MASTER.ifc --profile PROFILE.json --json --out reports/check_all.json
+python3 tools/check_ifc.py ifc/MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --report reports/check_ifc.json
+python3 tools/check_texture_set.py finishes/textures/SETNAME --preview wrap.png --report reports/check_texture_set.json
+python3 tools/check_item.py items/ITEMID --report reports/check_item-ITEMID.json
+python3 tools/build_package.py verify PACKAGE_FOLDER
+```
+
+| Script | What it checks | Rules |
+|---|---|---|
+| `check_all.py` | runs everything below that applies to the path | all |
+| `check_ifc.py` | schema, units, text form, size and triangle limits, levels and containment, rooms (floor, identifiers, occupants, function), doorways, windows, floor slabs, stairs and risers, reservation volumes, zones, optional luminaire and signboard declarations, build volume, finish colours, identifiers | B-01 to B-120, D-03 to D-05 |
+| `check_texture_set.py` | maps present, 8-bit RGB PNG, same square size, tangent-basis normal, packed occlusion-roughness-metalness, tile size, texel density, luminance, wrap seam, `set.json` fields | D-40 to D-49 |
+| `check_item.py` | one item at the origin, class, declared dimensions against geometry, pivot, collision box, triangle budget, item id | F-01 to F-51 |
+| `build_package.py verify` | manifest against the schema, every hash and size, no unlisted files, one master, package size, provenance and licence, the check report belongs to the master and passed | X-10 to X-40 |
+
+**X-40 · REQUIRED** - Run `check_ifc.py` on the exact master file you are sending, with the profile, and include its JSON report in the package. The report records the SHA-256 of the master file it checked and the profile it used; a report for a different file is not accepted. A delivery with any REQUIRED failure in the report is not sent.
+
+Findings have a fixed shape, which a receiving party also uses when it sends work back (section 7):
+
+```json
+{ "id": "B-41@1a2b3c4d", "rule": "B-41", "level": "REQUIRED", "status": "fail", "severity": "error",
+  "location": { "file": "master.ifc", "element": "3Z2k6lcTnJFPCzw1CFlWEi" },
+  "message": "IfcDoor Entrance door is not linked to an opening in a wall",
+  "fix_hint": "Add an IfcOpeningElement in the wall with IfcRelVoidsElement ... and IfcRelFillsElement ..." }
+```
+
+`status` is `pass`, `info`, `warn` (a RECOMMENDED rule not met) or `fail` (a REQUIRED rule not met). `element` is the `GlobalId` of the product concerned.
+
+Rules the script can only estimate say "estimate" in their message: the standing-point check (B-33), the sign text fit and legibility (B-101, B-102) and the riser check (B-61). A person confirms those.
+
+### 5.2 Checks a receiving party typically makes
+
+| # | Check | What it looks at | Rule |
+|---|---|---|---|
+| 1 | package intake | every hash and size, the layout, the manifest | X-10 to X-14 |
+| 2 | reading | the master opens in an accepted schema edition with a metre length unit and within the limits | B-01, B-02, B-05 |
+| 3 | identity | `GlobalId` values and entity numbers are unique across everything held; room and zone identifiers are unique | B-22, B-70, B-71, B-81 |
+| 4 | rooms | each room has geometry and a floor; rooms can be classified | B-20 to B-26 |
+| 5 | doorways | each door's opening is found, the rooms either side are listed, the opening is clear | B-41, B-42 |
+| 6 | windows | window openings cut their walls | B-44 |
+| 7 | standing points | (walkability extension) every room has a free standing point | B-33, B-50 |
+| 8 | stairs and ramps | stairs connect levels; risers and slopes within the profile | B-60 to B-65 |
+| 9 | reservation volumes | provisions are marked, not solid | B-80 |
+| 10 | light fixtures | (luminaires extension) required properties, positions match | B-90 to B-93 |
+| 11 | signs | (signboards extension) boards fit their text and are legible | B-100 to B-102 |
+| 12 | materials | every colour has a finish; every named texture set exists with matching hashes | D-03, D-40 |
+| 13 | build volume | no vertex outside the volume or inside a keep-out | B-110 |
+| 14 | repeatability | the same input gives the same result; unchanged identifiers stay | B-07, B-75 |
+
+---
+
+<!-- chunk: g4--6-pre-submission-checklist | source: 04-delivery-and-acceptance-guide.md | title: 6. Pre-submission checklist | rules: X-41 -->
+## 6. Pre-submission checklist
+
+Tick every line before sending. Lines marked R are REQUIRED rules; the others are RECOMMENDED.
+
+**Profile and frame**
+- [ ] R I know which profile I build for (or I used the default and said so) and the report names it.
+- [ ] R The file is in an accepted schema edition, in metres, in the profile's frame (B-01, B-02, B-10).
+- [ ] The file is in the placement the profile expects, and a `FrameNote` property says so (B-11, B-12).
+
+**Structure**
+- [ ] R Every level has a name and an elevation, and every element belongs to a level (B-13).
+- [ ] R The file is ASCII only (B-04), within the limits (B-05), and every product yields triangles (B-06).
+- [ ] R Every `GlobalId` is unique and stable (B-70). Entity numbers follow the profile's range when it assigns one (B-71).
+
+**Rooms**
+- [ ] R Every room is an `IfcSpace` with geometry and a flat floor (B-20, B-21).
+- [ ] R `RoomId` values are unique and meet the profile (B-22, B-23); every room has one (B-26, required in profiles that say so).
+- [ ] Every room has `Occupant` and `Function`, a full name, and areas and levels where known (B-24, B-25, B-27, B-28).
+- [ ] Streets, paths and park areas are rooms too (B-29).
+- [ ] The room table is complete (X-41).
+
+**Fabric**
+- [ ] R Doors and windows fill openings that void walls (B-41, B-44); doorways are clear (B-42).
+- [ ] R Slab holes are openings (B-53); floors are slabs or sit on a floor the consumer supplies (B-50, B-51).
+- [ ] R Every stair flight is an `IfcStairFlight` (B-60); every multi-level building has a stair (B-62).
+- [ ] Risers and slopes are within the profile (B-61, B-64).
+- [ ] Reservation volumes are marked (B-80, B-81).
+
+**Optional extensions (only when the profile enables them)**
+- [ ] R Luminaires: assemblies with housing and emissive part and all properties, in the consumer's global frame (B-90 to B-93).
+- [ ] R Signboards: all properties, fitting text, honest reading distance (B-100 to B-102).
+- [ ] R Walkability: free standing point in every room (B-33).
+
+**Finishes and items**
+- [ ] R Every (class, colour, opacity) combination is in the finish schedule (D-03).
+- [ ] R Every texture set has its maps and `set.json` with `tileMetres` (D-40, D-41, D-43).
+- [ ] I looked at the three-by-three wrap preview of every texture (D-42, D-50).
+- [ ] Items are modelled to the guide: class, pivot, collision (F-01, F-21, F-40).
+
+**Package**
+- [ ] R The manifest, hashes, provenance and licences are complete; `build_package.py verify` passes (X-10 to X-21).
+- [ ] R The check report is for the exact master file and the profile used, and shows no REQUIRED failure (X-40).
+- [ ] The version number follows the table in section 4, and `notes/changes.md` is written (X-30 to X-32).
+- [ ] `notes/open-points.md` lists anything I could not settle.
+
+**X-41 · RECOMMENDED** - Deliver `tables/rooms.csv` with the columns `roomId`, `name`, `occupant`, `kind` (`room`, `circulation`, `observation`, `open`), `enclosed` (`yes` or `no`), `level`, `levelElevationMetres`, `floorAreaM2`, `clearHeightM`, `buildingId` and `layer`, and list every new `Occupant` string with the room-id prefix that goes with it and its kind, so a receiving party can add its rules before intake. Open areas are listed as rooms too. A starting file is in `templates/rooms.template.csv`.
+
+---
+
+<!-- chunk: g4--7-how-a-receiving-party-accepts-returns-or-refus | source: 04-delivery-and-acceptance-guide.md | title: 7. How a receiving party accepts, returns or refuses | rules: X-60 -->
+## 7. How a receiving party accepts, returns or refuses
+
+### 7.1 Outcomes
+
+| Outcome | When | What the sender receives |
+|---|---|---|
+| **Accepted** | every check in section 5 passes and review finds nothing to change | a confirmation naming the delivery id, version and the master file's hash |
+| **Accepted with notes** | every REQUIRED rule passes, and the reviewer lists RECOMMENDED rules or defects worth fixing later | the same confirmation plus a findings list |
+| **Revision needed** | one or more REQUIRED rules fail, or a defect makes the work unusable, but the delivery is otherwise sound | a findings list (section 7.3); the sender sends a new version |
+| **Rejected** | the package cannot be used as it stands: a hash does not match, the file cannot be read, the schema or units are wrong, a hard limit is exceeded, the licence is missing or does not allow use, or the work was built to the wrong profile | the reason, and what to do before sending anything again |
+
+### 7.2 Steps
+
+1. **Intake.** Package checks (hashes, layout, manifest, provenance, licence). A failure here is a rejection or an immediate return, because nothing else can be trusted.
+2. **Reading and identity.** The master file is read; units, limits, identifiers.
+3. **Rule data.** For any new `Occupant` string or room-id prefix in the room table, the receiving party adds its classification rules, and renames declaration properties to its own names with `tools/map_properties.py` and a mapping file it keeps itself (a profile's `propertyNames` and `propertyValues` are exactly that mapping). The sender's file stays neutral.
+4. **Build and check.** The receiving party builds from the files and runs the checks of section 5.2.
+5. **Review.** A person looks at finishes and wrap, signs, lighting, furniture clearances, and anything the scripts only estimate.
+6. **Outcome.** One of the four outcomes above.
+
+### 7.3 Findings and revision
+
+The receiving party sends findings in the shape of section 5.1: the rule, its level, the product's `GlobalId`, and what was measured against what was expected. The sender answers each REQUIRED finding with a fix or a reason.
+
+**X-60 · RECOMMENDED** - When you send a revision, change only what the findings and your own notes name, bump the version (section 4), list what changed in `notes/changes.md`, and keep every unchanged identifier. A revision that renames identifiers without being asked is a MAJOR change and is reviewed again from the start.
+
+### 7.4 After acceptance
+
+An accepted version is held by its hashes. If you later replace a building, deliver a new version of the master file that keeps the identifiers of everything that stays; references the receiving party holds (which room is a start room, which sign belongs to which building) then keep working. Nothing in an accepted version is edited by the receiving party: if it needs a change, it asks for a new version.
+
+---
+
+<!-- chunk: g5--introduction | source: 05-worked-example.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Guide 5: Worked example
+
+A complete, minimal delivery: one room with one door, one window, one table, one wall covering and one ceiling light, on one
+level, with a finish schedule, a texture set, a library item and a package. It is small enough to read in full, and it passes
+every check in guide 4 under both profiles that come with the set: `profiles/default.json` and `profiles/example-strict.json`.
+
+The IFC file is produced by a script, not stored in this set, so that it always matches the script and the version of the IFC
+library you have installed, and so that every number below can be reproduced. To build and check everything in one go:
+
+```
+pip install -r tools/requirements.txt
+python3 tools/run_example.py example-out
+```
+
+This writes `example-out/example-room-1.0.0/` (the package), runs every checker on it with the default profile, builds the
+manifest and ends with `build_package.py verify`. Run `python3 tools/selftest.py` to see the checker catch deliberate faults in
+the same file, and `python3 tools/agent_harness.py` to see a fresh agent build and pass a delivery from the set alone.
+
+---
+
+<!-- chunk: g5--1-the-profiles | source: 05-worked-example.md | title: 1. The profiles | rules: - -->
+## 1. The profiles
+
+| Item | `default.json` | `example-strict.json` |
+|---|---|---|
+| frame offset | 0 | 12.0 m (declared positions add it) |
+| room identifier | up to 64 characters | at most 7 characters, required |
+| entity numbers | any | from `#700001` |
+| declaration property names | as in the guides | prefixed `Ex_` (the file is renamed by `tools/map_properties.py`) |
+| extensions | all off | walkability, luminaires, signboards, furniture collision on |
+| limits | 250 MB, 5,000,000 triangles | 100 MB, 3,000,000 triangles |
+
+To check the example against the strict profile, rename the properties and check with it:
+
+```
+python3 tools/map_properties.py master.ifc master-strict.ifc --mapping profiles/example-strict.json
+python3 tools/check_ifc.py master-strict.ifc --profile profiles/example-strict.json
+```
+
+---
+
+<!-- chunk: g5--2-what-is-modelled | source: 05-worked-example.md | title: 2. What is modelled | rules: - -->
+## 2. What is modelled
+
+```
+  y
+  4.2 +--------------[ window 1.5 x 1.2, sill 0.9 ]----------+
+      |                                                       |
+      |  covering          (table 1.6 x 0.8,                  |
+      |  3.0 x 2.4          light above it)                   |
+      |                                                       |
+  0.0 +---[ door 1.2 x 2.3 ]----------------------------------+
+      0.0                                                    5.2  x
+```
+
+| Element | Class | Size and position (file-local metres) |
+|---|---|---|
+| floor slab | `IfcSlab` `FLOOR` | 5.2 by 4.2 by 0.3, top face at z = 0 |
+| roof slab | `IfcSlab` `ROOF` | 5.2 by 4.2 by 0.3, underside at z = 3.0 (the ceiling) |
+| south, north, west, east walls | `IfcWall` | 0.2 thick, 3.0 high |
+| door opening and door | `IfcOpeningElement`, `IfcDoor` | south wall, x from 0.8 to 2.0, 2.3 high |
+| window opening and window | `IfcOpeningElement`, `IfcWindow` | north wall, x from 2.0 to 3.5, from 0.9 to 2.1 high, opacity 0.45 |
+| room | `IfcSpace` | inside faces: 4.8 by 3.8 by 3.0, floor at z = 0 |
+| table | `IfcFurnishingElement`, mapped item | 1.6 by 0.8 by 0.74, pivot at the footprint centre, placed at (2.6, 2.1, 0) |
+| wall covering | `IfcCovering` `CLADDING` | on the west wall's inside face: 10 mm thick, 3.0 m wide, from 0.1 to 2.5 high |
+| luminaire | `IfcElementAssembly` with two `IfcLightFixture` parts | centred over the table, emissive part centre at (2.6, 2.1, 2.89) |
+
+---
+
+<!-- chunk: g5--3-step-by-step | source: 05-worked-example.md | title: 3. Step by step | rules: - -->
+## 3. Step by step
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-1-frame-level-and-identity-b-10 | source: 05-worked-example.md | title: 3. Step by step: 3.1 Frame, level and identity (B-10 to B-14, B-70, B-71) | rules: - -->
+### 3.1 Frame, level and identity (B-10 to B-14, B-70, B-71)
+
+The file is IFC4 in metres. The project carries a property set with `FrameNote` and `LevelOffsetMetres = 12.0`. One building and
+one level named `Example building - ground / +0 m` with elevation 0. Entity numbers start at `#700001` (the strict profile's range);
+every `GlobalId` is derived from a stable key, so the file is identical on every run.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-2-walls-openings-door-and-windo | source: 05-worked-example.md | title: 3. Step by step: 3.2 Walls, openings, door and window (B-40 to B-44) | rules: - -->
+### 3.2 Walls, openings, door and window (B-40 to B-44)
+
+Each wall is an extruded rectangle. The door and the window each have an `IfcOpeningElement` that voids a wall
+(`IfcRelVoidsElement`) and is filled by the door or window (`IfcRelFillsElement`). The doorway is 2.3 m high and nothing crosses it.
+In the file:
+
+```
+#700198=IFCRELVOIDSELEMENT('1C_9SKyzTHcQf6qIs0XZ4T',$,$,$,#700125,#700197);
+#700216=IFCDOOR('3Z2k6lcTnJFPCzw1CFlWEi',$,'Entrance door',$,$,#700213,#700215,$,2.3,1.2,.DOOR.,.SINGLE_SWING_LEFT.,$);
+#700217=IFCRELFILLSELEMENT('29lMJRl7DVmRJwjxlT70xI',$,$,$,#700197,#700216);
+```
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b | source: 05-worked-example.md | title: 3. Step by step: 3.3 Floor, roof and ceiling (B-50, B-53, B-54) | rules: - -->
+### 3.3 Floor, roof and ceiling (B-50, B-53, B-54)
+
+The floor is a slab whose top is the finished floor at z = 0, and the roof slab's underside is the ceiling. Many consumers draw no
+ceiling mesh, so that underside is what a person looks up at; guide 2 says how to give it a finish through the slab's `bottom` slot.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-4-the-room-b-20-to-b-27 | source: 05-worked-example.md | title: 3. Step by step: 3.4 The room (B-20 to B-27) | rules: - -->
+### 3.4 The room (B-20 to B-27)
+
+```
+#700273=IFCSPACE('1C1BaaS91KOgLuDEt1VXqX',$,'Example work room',$,$,#700270,#700272,'Example work room',.ELEMENT.,.INTERNAL.,0.);
+#700274=IFCRELAGGREGATES('3jyuNv4XzQSRLalH7sDq_3',$,$,$,#700034,(#700273));
+#700275=IFCPROPERTYSINGLEVALUE('RoomId',$,IFCTEXT('EX-001'),$);
+#700276=IFCPROPERTYSINGLEVALUE('Occupant',$,IFCTEXT('Example Occupant'),$);
+#700277=IFCPROPERTYSINGLEVALUE('Function',$,IFCTEXT('Work room'),$);
+```
+
+The room is an `IfcSpace` (the IFC name for a room or zone) aggregated under the level. Its geometry is an extrusion of the 4.8 by
+3.8 floor outline up to 3.0 m. The properties are single values in a property set linked by `IfcRelDefinesByProperties`. `RoomId` is
+`EX-001`, six characters. The room table row repeats them, and the net area 18.24 m2 equals 4.8 times 3.8.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-5-the-table-guide-3 | source: 05-worked-example.md | title: 3. Step by step: 3.5 The table (guide 3) | rules: - -->
+### 3.5 The table (guide 3)
+
+The table's geometry is defined once, as a representation map with its origin at the footprint centre and its lowest point at
+z = 0, and the element is an instance of it (`IfcMappedItem`), placed at (2.6, 2.1, 0). In the item library the same table is a
+separate file, `items/table.work.1600/table.work.1600.ifc`, with a description file declaring its pivot, dimensions, collision box,
+side clearances, a seat anchor and placement rules.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3 | source: 05-worked-example.md | title: 3. Step by step: 3.6 The wall covering (D-30 to D-32) | rules: - -->
+### 3.6 The wall covering (D-30 to D-32)
+
+The covering is a thin `IfcCovering` shell, 10 mm thick, whose back face sits exactly on the west wall's inside face (x = 0.2, the
+shell runs from x = 0.2 to 0.21). It has its own colour, `#8c6f4e`, so it becomes its own entry in the finish schedule. The simpler
+alternative for a whole wall is to give the wall element itself the finish colour. Support for `IfcCovering` varies, so confirm it
+with the consumer before relying on it.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-7-the-luminaire-optional-extens | source: 05-worked-example.md | title: 3. Step by step: 3.7 The luminaire (optional extension; B-90 to B-93) | rules: - -->
+### 3.7 The luminaire (optional extension; B-90 to B-93)
+
+One assembly with a housing part and an emissive part whose name ends in ` lens`. The assembly carries the declaration properties.
+The emissive part's centre is at local (2.6, 2.1, 2.89). Under a profile with a frame offset, the declared position is in the
+consumer's global frame, so the height gets the offset added once:
+
+| Property | Value |
+|---|---|
+| `LightPositionLocal` | `2.6,2.1,2.89` (optional, for checking) |
+| `LightPosition` | `2.6,2.1,14.89` (2.89 + 12.0) |
+| `LightAim` | `0,0,-1` (unit length) |
+| `LightType`, `LightEnergy`, `LightRangeM`, `LightSpotDeg` | `spot`, 6, 8, 78 |
+| `LightColor` | `1,0.87,0.7` (warm) |
+| `LightFadeBeginM`, `LightFadeLengthM` | 40, 20 |
+| `LuminaireTarget` | `EX-001` |
+
+With the luminaires extension enabled, the checker confirms that the emissive part's centre plus the offset is within the profile's
+tolerance of `LightPosition`. Under the default profile (extension off) the fixture is simply a light fixture.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-8-colours-and-the-finish-schedu | source: 05-worked-example.md | title: 3. Step by step: 3.8 Colours and the finish schedule (guide 2) | rules: - -->
+### 3.8 Colours and the finish schedule (guide 2)
+
+Each (class, colour, opacity) combination needs a finish. The checker finds nine:
+
+| Class | Colour | Opacity | Used for |
+|---|---|---|---|
+| `IfcWall` | `#d9d2c3` | 1.0 | all four walls (one finish) |
+| `IfcSlab` | `#c9c4b8` | 1.0 | floor slab |
+| `IfcSlab` | `#e8e4da` | 1.0 | roof slab, whose underside is the ceiling |
+| `IfcDoor` | `#977353` | 1.0 | door leaf |
+| `IfcWindow` | `#91c8d0` | 0.45 | glass |
+| `IfcFurnishingElement` | `#ccbba0` | 1.0 | the table |
+| `IfcCovering` | `#8c6f4e` | 1.0 | the wall covering |
+| `IfcLightFixture` | `#3d4348` | 1.0 | luminaire housing |
+| `IfcLightFixture` | `#fff0cf` | 1.0 | luminaire emissive part |
+
+`finishes/finish-schedule.json` has one entry for each, and a floor rule for `Example Occupant`. The slab entries use all three face
+slots: `top` for the floor, `bottom` for the ceiling, `side` for the edge.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50 | source: 05-worked-example.md | title: 3. Step by step: 3.9 The texture set (D-40 to D-50) | rules: - -->
+### 3.9 The texture set (D-40 to D-50)
+
+`finishes/textures/plaster_example/` has `albedo.png`, `normal.png`, `orm.png` and `set.json` (1024 by 1024 pixels, 2 m per tile, so
+512 pixels per metre; `tintMode` `multiply`). It is made by `tools/make_sample_texture_set.py` from seamless noise with a fixed seed.
+`check_texture_set.py --preview wrap.png` writes the three-by-three arrangement so you can see that the edges do not show.
+
+---
+
+<!-- chunk: g5--3-step-by-step-3-10-package-manifest-and-checks | source: 05-worked-example.md | title: 3. Step by step: 3.10 Package, manifest and checks (guide 4) | rules: - -->
+### 3.10 Package, manifest and checks (guide 4)
+
+`run_example.py` writes the check reports into `reports/`, writes `package-meta.json`, and runs `build_package.py init` then
+`verify`. The final package listing:
+
+```
+example-room-1.0.0/
+  manifest.json   SHA256SUMS.txt
+  ifc/example-room-master.ifc
+  tables/{rooms.csv,building.json}
+  finishes/{finish-schedule.json,library.json,SOURCES.csv}
+  finishes/textures/plaster_example/{albedo.png,normal.png,orm.png,set.json}
+  items/table.work.1600/{table.work.1600.ifc,table.work.1600.item.json}
+  reports/{check_ifc.json,check_texture_set.json,check_item-table.work.1600.json}
+  notes/changes.md
+```
+
+Expected output of the IFC check:
+
+```
+result: PASS (0 REQUIRED failure(s), 0 RECOMMENDED warning(s)); 1 levels, 1 rooms, 1 doors,
+1 windows, 1 luminaires, 216 triangles, 136 vertices, 1 furniture, 9 finishKeys
+```
+
+---
+
+<!-- chunk: g5--4-things-to-try | source: 05-worked-example.md | title: 4. Things to try | rules: - -->
+## 4. Things to try
+
+* Open `example-room-master.ifc` in any IFC viewer; it is also plain text.
+* Edit `tools/make_sample.py`: rename `RoomId` to `EX-0001` and check with the strict profile (too long for 7 characters, B-23).
+* Move the table to (1.4, 0.3) so that it stands in the doorway (B-42). The same fault is a case in `tools/selftest.py`.
+* Remove the `IfcRelFillsElement` of the door (B-41), or change the emissive part's name to end in `glow` (B-90, strict profile).
+* Change `LightPosition` height to 20 and see the mismatch (B-92, strict profile).
+
+---
+
+<!-- chunk: g5--5-what-the-example-leaves-out | source: 05-worked-example.md | title: 5. What the example leaves out | rules: - -->
+## 5. What the example leaves out
+
+Stairs and a second level (B-60 to B-62), a free-standing sign (B-100), reservation volumes (B-80), several rooms with a room table
+of more than one row, and a library with several items. Each is a small extension of what is here; the rule text in guides 1 to 3 says how.
+
+---
+
+<!-- chunk: params--introduction-part-1-of-3 | source: 07-profile-parameters.md | title: Introduction (part 1 of 3) | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Profile parameters
+
+Every value that depends on a consumer is a parameter of a profile (`profiles/profile.schema.json`). This table is generated from the schema and the two profiles that come with the set. `default` is `profiles/default.json`; `strict` is the illustrative consumer profile `profiles/example-strict.json`. A consumer publishes its own profile in the same shape; a parameter it omits takes the default.
+
+---
+
+<!-- chunk: params--introduction-part-2-of-3 | source: 07-profile-parameters.md | title: Introduction (part 2 of 3) | rules: - -->
+| Parameter | Meaning | default | strict | Rules |
+|---|---|---|---|---|
+| `frame.horizontalAxes` | which horizontal directions +X and +Y mean to this consumer (Z is up, right-handed) | `"+X forward, +Y left (right-handed with Z up)"` | `"+X forward, +Y left (right-handed with Z up)"` | B-10 |
+| `frame.levelOffsetMetres` | height, in the consumer's global frame, of the file's local z = 0; declared positions in the optional extensions add it | `0.0` | `12.0` | B-12, B-92 |
+| `frame.placement` | final: the consumer applies no offset or rotation to the file; the file is authored in its final placement frame | `"final"` | `"final"` | B-11 |
+| `schema.allowed` | IFC schema identifiers the consumer accepts | `["IFC4"]` | `["IFC4"]` | B-01 |
+| `limits.maxFileMegabytes` | hard size cap of one IFC file, in megabytes | `250` | `100` | B-05, F-50 |
+| `limits.maxVertices` | hard cap on mesh vertices in one file | `10000000` | `5000000` | B-05, F-50 |
+| `limits.maxTriangles` | hard cap on triangles in one file | `5000000` | `3000000` | B-05, F-50 |
+| `budgets.recommendedFileMegabytes` | size above which a file is slow to load and review | `100` | `60` | B-09 |
+| `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120 |
+| `budgets.maxDistinctColours` | number of distinct (class, colour, opacity) combinations above which the palette is too large to manage | `50` | `30` | D-05 |
+| `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51 |
+| `file.singleLineEntities` | true when the consumer's reader needs every STEP entity on one line | `false` | `true` | B-08 |
+| `identifiers.roomIdMaxLength` | longest allowed room identifier, in characters | `64` | `7` | B-23 |
+| `identifiers.roomIdPattern` | regular expression a room identifier must match | `"^[A-Za-z0-9._-]+$"` | `"^[A-Za-z0-9-]+$"` | B-23 |
+| `identifiers.entityNumberStart` | first entity number a delivery may use, so that files from several authors can be merged without clashes; null means no assigned range | `null` | `700001` | B-71 |
+| `identifiers.occupants` | allowed values of the room Occupant property; null means any value | `null` | `["Example Occupant", "Agent Occupant", "Shared circulation"]` | B-24 |
+| `identifiers.circulationPrefix` | text a Function value must start with for corridors and other circulation; null means no convention | `null` | `"Circulation"` | B-25 |
+| `geometry.doorMinClearHeightMetres` | smallest clear height of a doorway | `2.0` | `1.9` | B-42 |
+| `geometry.doorMinClearWidthMetres` | smallest clear width of a doorway | `0.8` | `0.9` | B-43 |
+| `geometry.doorwayProbeHeightsMetres` | heights above the sill at which the doorway centre line must be free of solid geometry | `[0.5, 1.0, 1.8]` | `[0.6, 1.1, 1.8]` | B-42 |
+| `geometry.stairRiserLimitMetres` | largest riser height of a stair | `0.19` | `0.18` | B-61 |
+| `geometry.rampMaxSlope` | largest slope of a walked ramp, as rise over run (0.0833 is 1:12) | `0.0833` | `0.05` | B-64 |
+| `geometry.maxCurveSegmentsPerCircle` | segments per full circle above which tessellation is wasteful | `48` | `24` | B-114 |
+| `baseSurfaces` | floors the consumer supplies itself: rooms standing on them need no slab of their own | `[]` | `[]` | B-50, B-51, B-51a, B-55 |
+| `buildVolume` | region all geometry must stay inside: {box:{min,max}} or {ellipse:{a,b,zmin,zmax}}, in the consumer's global frame | `null` | `{"box": {"min": [-50.0, -50.0, 0.0], "max": [50.0, 50.0, ...` | B-110 |
+| `keepOut` | regions geometry must stay out of: [{id,min,max}] | `[]` | `[{"id": "example-keep-out", "min": [30.0, 30.0, 0.0], "ma...` | B-110 |
+| `propertyNames` | canonical declaration property name -> the name this consumer reads; use it to rename or to point at standard property names | `{}` | `{"RoomId": "Ex_RoomId", "Occupant": "Ex_Occupant", "Funct...` | B-22, B-26, B-91 |
+| `propertyValues` | canonical property -> {canonical value: consumer value} | `{}` | `{}` | - |
+| `ruleLevels` | rule id -> required, recommended or off; overrides the level the rule has in rules.json | `{}` | `{"B-08": "required", "B-24": "required", "B-25": "require...` | B-26 |
+| `extensions.walkability.enabled` | consumer places people or agents in rooms and walks them | `false` | `true` | - |
+| `extensions.walkability.standingClearanceMetres` | free floor kept around furniture and fixed objects where a person can stand | `0.45` | `0.45` | B-33, F-32 |
+| `extensions.walkability.freeCircleMetres` | diameter of a free floor circle in every enclosed room | `1.2` | `1.2` | B-34 |
+| `extensions.walkability.stepHeightMetres` | height a walker steps over without noticing | `0.3` | `0.3` | B-65, F-44 |
+| `extensions.walkability.nonSolidClasses` | IFC classes the consumer treats as not solid | `["IfcDoor", "IfcSpace", "IfcSpatialZone", "IfcLightFixture"]` | `["IfcDoor", "IfcSpace", "IfcSpatialZone", "IfcLightFixture"]` | B-67 |
+| `extensions.luminaires.enabled` | consumer turns declared fixtures into lights | `false` | `true` | - |
+| `extensions.luminaires.lensNameSuffix` | ending of the name of the emissive part | `" lens"` | `" lens"` | B-90 |
+| `extensions.luminaires.requiredProperties` | properties every luminaire assembly must carry | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | B-91 |
+| `extensions.luminaires.lightTypes` | allowed values of LightType | `["omni", "spot"]` | `["omni", "spot"]` | B-91 |
+| `extensions.luminaires.positionToleranceMetres` | largest distance between the declared light position and the emissive part, level offset applied | `0.06` | `0.06` | B-92 |
+| `extensions.luminaires.maxPerRoom` | most fixtures per room, or null | `null` | `16` | B-95 |
+| `extensions.signboards.enabled` | consumer generates signs from declared boards | `false` | `true` | - |
+
+---
+
+<!-- chunk: params--introduction-part-3-of-3 | source: 07-profile-parameters.md | title: Introduction (part 3 of 3) | rules: - -->
+| Parameter | Meaning | default | strict | Rules |
+|---|---|---|---|---|
+| `extensions.signboards.kinds` | allowed values of SignboardKind | `["entrance_board", "stop_board"]` | `["entrance_board", "stop_board"]` | B-100 |
+| `extensions.signboards.requiredProperties` | properties every board must carry | `["SignboardId", "SignboardKind", "SignboardText", "Signbo...` | `["SignboardId", "SignboardKind", "SignboardText", "Signbo...` | B-100 |
+| `extensions.signboards.displayPixelsPerRadian` | pixels per radian of the display, used for legibility | `1000` | `1090` | B-102 |
+| `extensions.signboards.minCapitalPixels` | smallest capital height in pixels for primary, secondary and tertiary text | `{"primary": 16, "secondary": 12, "tertiary": 9}` | `{"primary": 16, "secondary": 12, "tertiary": 9}` | B-102 |
+| `extensions.signboards.readingDistanceMetres` | smallest and largest accepted reading distance | `[5, 18]` | `[5, 18]` | B-102 |
+| `extensions.furnitureCollision.enabled` | consumer approximates furniture with a simple collider | `false` | `true` | - |
+| `extensions.furnitureCollision.mode` | box: one axis-aligned box per furniture element; mesh: exact triangles | `"box"` | `"box"` | F-40 |
+| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
+| `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
+| `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |
+| `textures.normalConvention` | +Y: green channel points up (OpenGL style); -Y: green points down (DirectX style) | `"+Y"` | `"+Y"` | D-41 |
+| `textures.tintModes` | allowed values of tintMode in set.json | `["multiply", "authored"]` | `["multiply", "authored"]` | D-47 |
+| `package.maxPackageMegabytes` | upload size cap of a whole package, or null | `null` | `500` | X-14 |
+| `package.requireProvenance` | every asset needs a provenance entry | `true` | `true` | X-20 |
+| `package.requireLicence` | every asset and the package need a licence | `true` | `true` | X-21 |
+
+---
+
+<!-- chunk: params--rule-levels-in-a-profile | source: 07-profile-parameters.md | title: Rule levels in a profile | rules: - -->
+## Rule levels in a profile
+
+`ruleLevels` maps a rule id to `required`, `recommended` or `off`. The strict example makes these rules required: B-08, B-24, B-25, B-26, B-50, B-62, B-71.
+
+---
+
+<!-- chunk: params--extensions | source: 07-profile-parameters.md | title: Extensions | rules: - -->
+## Extensions
+
+An extension is an optional group of rules. It applies only when `extensions.<name>.enabled` is true: `walkability` (for consumers that place people or agents in rooms), `luminaires` (fixtures become lights), `signboards` (signs are generated from declared boards), `furnitureCollision` (furniture is approximated by a simple collider). Rules that belong to an extension carry its name after the level, for example `B-90 REQUIRED luminaires`, and `rules.json` lists it in `extension`.
+
+---
+
+<!-- chunk: repair--introduction | source: REPAIR-LOOP.md | title: Introduction | rules: - -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+# Repair loop
+
+How to get a deliverable to zero REQUIRED findings. The same loop works for a building, a material library, a
+furniture library and a package. It needs only the tools in `tools/`; no network and no service.
+
+---
+
+<!-- chunk: repair--the-loop | source: REPAIR-LOOP.md | title: The loop | rules: - -->
+## The loop
+
+1. **Run** one command for the deliverable, printing JSON:
+
+   ```
+   python3 tools/check_all.py PATH --json --out report.json
+   ```
+
+   (`PATH` is a master `.ifc` file, a folder with `finishes/`, a folder with `items/`, or a package folder with
+   `manifest.json`. Add `--profile PROFILE.json` for a building so the frame, identifiers and volumes are checked.)
+2. **Read** the report. Look at `result`, `exitCode` and `summary.requiredFailures` first. Then list the findings
+   whose `status` is `fail`: each has `rule`, `message`, `location.element` (a `GlobalId`, when one product is
+   concerned), `location.file` and `fix_hint`. For more on a rule, open its entry in `rules.json` (`statement`,
+   `rationale`, `examples`, `related`).
+3. **Fix** the source of the deliverable (the model, the schedule, the item, the package inputs), not the report.
+   Fix the lowest-numbered structural findings first (`B-01` to `B-06`, `B-13`, `B-20` to `B-26`): later findings often
+   disappear with them. Make one kind of change at a time.
+4. **Rebuild** whatever the fix touched (re-export the IFC, rebuild the manifest with `build_package.py init`).
+5. **Rerun** step 1 and compare. Repeat until `summary.requiredFailures` is 0 and the exit code is 0.
+
+Then look at `warn` findings (RECOMMENDED rules). Fix the ones whose `fix_hint` is cheap; list the rest in
+`notes/open-points.md`.
+
+---
+
+<!-- chunk: repair--report-fields | source: REPAIR-LOOP.md | title: Report fields | rules: - -->
+## Report fields
+
+| Field | Meaning |
+|---|---|
+| `result` | `pass`, `fail` or `error` |
+| `exitCode` | `0` no REQUIRED rule failed; `1` at least one did; `2` wrong command line; `3` an input could not be read |
+| `summary` | counts: `requiredFailures`, `recommendedWarnings`, `passes`, `info` |
+| `findings[].id` | stable: the rule id, then a short hash of rule, file, element and message; the same problem keeps the same id between runs |
+| `findings[].status` | `pass`, `info`, `warn` (RECOMMENDED not met) or `fail` (REQUIRED not met) |
+| `findings[].fix_hint` | what to change, present on `warn` and `fail` |
+| `reports[]` | the full report of each tool that `check_all.py` ran |
+
+To list only what must be fixed, read the file with any JSON tool, for example:
+
+```
+python3 -c "import json;r=json.load(open('report.json'));[print(f['rule'],f['location'],f['message'],'->',f['fix_hint']) for f in r['findings'] if f['status']=='fail']"
+```
+
+---
+
+<!-- chunk: repair--stop-conditions | source: REPAIR-LOOP.md | title: Stop conditions | rules: - -->
+## Stop conditions
+
+Stop and report instead of looping when any of these holds:
+
+* The same finding `id` is still present after three runs in a row. Report the finding, what you changed, and why you
+  think it did not help.
+* The exit code is `3`, or `result` is `error`. Fix the path or the missing input; this is not a rule failure.
+* A fix needs information that is not in the profile or the files (an `Occupant` string, a level offset, a licence
+  statement, the assigned entity-number start). Ask the person who gave you the profile; do not invent it.
+* More than ten runs without the number of REQUIRED failures going down.
+* A finding seems wrong. Say which rule and element, and what you measured. Do not work around it.
+
+---
+
+<!-- chunk: repair--never-do-these-to-get-a-pass | source: REPAIR-LOOP.md | title: Never do these to get a pass | rules: - -->
+## Never do these to get a pass
+
+* Edit a report, change a rule level, delete a check, or edit a tool to hide a finding.
+* Change a value only to satisfy the checker when it makes the model less true (for example, widening a door in
+  the file while the drawing says otherwise).
+* Delete the element that is flagged without saying so in `notes/changes.md`.
+* Run the checker on a different file than the one you deliver (rule `X-40` ties the report to the file by hash).
+
+---
+
+<!-- chunk: repair--worked-mini-loop | source: REPAIR-LOOP.md | title: Worked mini-loop | rules: - -->
+## Worked mini-loop
+
+Run 1 prints a failure:
+
+```
+{ "rule": "B-42", "status": "fail", "location": {"element": "3Z2k6lcTnJFPCzw1CFlWEi"},
+  "message": "doorway Entrance door is blocked at 0.6 m by Work table, 1.6 m",
+  "fix_hint": "Make the opening at least 1.9 m high and remove anything (sill, bar, furniture) that crosses the doorway centre line." }
+```
+
+Fix: move the table out of the doorway and re-export. Run 2 shows `summary.requiredFailures` 0 and exit code 0. Then
+rebuild the manifest (`python3 tools/build_package.py init PACKAGE_DIR package-meta.json`), run
+`python3 tools/check_all.py PACKAGE_DIR --json`, and deliver.
+
+---
+

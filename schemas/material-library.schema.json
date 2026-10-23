@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Material library",
+  "description": "finishes/library.json: the texture sets and finish schedule of a material delivery (guide 2, section 7).",
+  "type": "object",
+  "required": [
+    "format",
+    "name",
+    "version",
+    "sets",
+    "schedule"
+  ],
+  "properties": {
+    "format": {
+      "const": "material-library/1"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+"
+    },
+    "description": {
+      "type": "string"
+    },
+    "sets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "version",
+          "path"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "schedule": {
+      "type": "string",
+      "description": "relative path of finish-schedule.json"
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

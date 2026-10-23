@@ -1,0 +1,910 @@
+{
+ "format": "chunk-index/1",
+ "maxChunkChars": 6000,
+ "chunks": [
+  {
+   "id": "readme--introduction",
+   "file": "chunks/readme--introduction.md",
+   "source": "README.md",
+   "title": "Introduction",
+   "approx_tokens": 224,
+   "rules": []
+  },
+  {
+   "id": "readme--core-and-profile",
+   "file": "chunks/readme--core-and-profile.md",
+   "source": "README.md",
+   "title": "Core and profile",
+   "approx_tokens": 196,
+   "rules": []
+  },
+  {
+   "id": "readme--for-agents",
+   "file": "chunks/readme--for-agents.md",
+   "source": "README.md",
+   "title": "For agents",
+   "approx_tokens": 297,
+   "rules": []
+  },
+  {
+   "id": "readme--the-five-guides",
+   "file": "chunks/readme--the-five-guides.md",
+   "source": "README.md",
+   "title": "The five guides",
+   "approx_tokens": 408,
+   "rules": []
+  },
+  {
+   "id": "readme--how-rules-are-written",
+   "file": "chunks/readme--how-rules-are-written.md",
+   "source": "README.md",
+   "title": "How rules are written",
+   "approx_tokens": 297,
+   "rules": [
+    "B-12",
+    "B-90"
+   ]
+  },
+  {
+   "id": "readme--reading-order",
+   "file": "chunks/readme--reading-order.md",
+   "source": "README.md",
+   "title": "Reading order",
+   "approx_tokens": 85,
+   "rules": []
+  },
+  {
+   "id": "readme--words-used-in-a-fixed-sense",
+   "file": "chunks/readme--words-used-in-a-fixed-sense.md",
+   "source": "README.md",
+   "title": "Words used in a fixed sense",
+   "approx_tokens": 248,
+   "rules": []
+  },
+  {
+   "id": "readme--hand-over-files",
+   "file": "chunks/readme--hand-over-files.md",
+   "source": "README.md",
+   "title": "Hand-over files",
+   "approx_tokens": 186,
+   "rules": []
+  },
+  {
+   "id": "readme--what-this-set-does-not-cover",
+   "file": "chunks/readme--what-this-set-does-not-cover.md",
+   "source": "README.md",
+   "title": "What this set does not cover",
+   "approx_tokens": 99,
+   "rules": []
+  },
+  {
+   "id": "about--introduction",
+   "file": "chunks/about--introduction.md",
+   "source": "ABOUT.md",
+   "title": "Introduction",
+   "approx_tokens": 38,
+   "rules": []
+  },
+  {
+   "id": "about--what-it-is",
+   "file": "chunks/about--what-it-is.md",
+   "source": "ABOUT.md",
+   "title": "What it is",
+   "approx_tokens": 215,
+   "rules": []
+  },
+  {
+   "id": "about--who-it-is-for",
+   "file": "chunks/about--who-it-is-for.md",
+   "source": "ABOUT.md",
+   "title": "Who it is for",
+   "approx_tokens": 135,
+   "rules": []
+  },
+  {
+   "id": "about--how-it-is-organised",
+   "file": "chunks/about--how-it-is-organised.md",
+   "source": "ABOUT.md",
+   "title": "How it is organised",
+   "approx_tokens": 293,
+   "rules": []
+  },
+  {
+   "id": "about--how-a-consumer-adopts-it",
+   "file": "chunks/about--how-a-consumer-adopts-it.md",
+   "source": "ABOUT.md",
+   "title": "How a consumer adopts it",
+   "approx_tokens": 270,
+   "rules": []
+  },
+  {
+   "id": "about--what-it-does-not-do",
+   "file": "chunks/about--what-it-does-not-do.md",
+   "source": "ABOUT.md",
+   "title": "What it does not do",
+   "approx_tokens": 116,
+   "rules": []
+  },
+  {
+   "id": "g1--introduction",
+   "file": "chunks/g1--introduction.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "Introduction",
+   "approx_tokens": 184,
+   "rules": []
+  },
+  {
+   "id": "g1--1-vocabulary",
+   "file": "chunks/g1--1-vocabulary.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "1. Vocabulary",
+   "approx_tokens": 271,
+   "rules": []
+  },
+  {
+   "id": "g1--2-what-the-profile-gives-you",
+   "file": "chunks/g1--2-what-the-profile-gives-you.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "2. What the profile gives you",
+   "approx_tokens": 325,
+   "rules": []
+  },
+  {
+   "id": "g1--3-file-and-schema",
+   "file": "chunks/g1--3-file-and-schema.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "3. File and schema",
+   "approx_tokens": 637,
+   "rules": [
+    "B-01",
+    "B-02",
+    "B-02a",
+    "B-03",
+    "B-04",
+    "B-05",
+    "B-06",
+    "B-07",
+    "B-08",
+    "B-09"
+   ]
+  },
+  {
+   "id": "g1--4-units-axes-origin-and-levels",
+   "file": "chunks/g1--4-units-axes-origin-and-levels.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "4. Units, axes, origin and levels",
+   "approx_tokens": 469,
+   "rules": [
+    "B-10",
+    "B-11",
+    "B-12",
+    "B-13",
+    "B-14",
+    "B-15"
+   ]
+  },
+  {
+   "id": "g1--5-rooms-and-zones",
+   "file": "chunks/g1--5-rooms-and-zones.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "5. Rooms and zones",
+   "approx_tokens": 1131,
+   "rules": [
+    "B-20",
+    "B-21",
+    "B-22",
+    "B-23",
+    "B-24",
+    "B-25",
+    "B-26",
+    "B-27",
+    "B-28",
+    "B-29",
+    "B-30",
+    "B-31",
+    "B-32",
+    "B-33",
+    "B-34"
+   ]
+  },
+  {
+   "id": "g1--6-walls-doors-windows-and-openings",
+   "file": "chunks/g1--6-walls-doors-windows-and-openings.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "6. Walls, doors, windows and openings",
+   "approx_tokens": 491,
+   "rules": [
+    "B-40",
+    "B-40a",
+    "B-41",
+    "B-42",
+    "B-43",
+    "B-44",
+    "B-45",
+    "B-46",
+    "B-47",
+    "B-48"
+   ]
+  },
+  {
+   "id": "g1--7-floors-roofs-ceilings-and-slab-openings",
+   "file": "chunks/g1--7-floors-roofs-ceilings-and-slab-openings.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "7. Floors, roofs, ceilings and slab openings",
+   "approx_tokens": 395,
+   "rules": [
+    "B-50",
+    "B-51",
+    "B-51a",
+    "B-52",
+    "B-53",
+    "B-54",
+    "B-55"
+   ]
+  },
+  {
+   "id": "g1--8-circulation-stairs-ramps-lifts-rails",
+   "file": "chunks/g1--8-circulation-stairs-ramps-lifts-rails.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "8. Circulation, stairs, ramps, lifts, rails",
+   "approx_tokens": 637,
+   "rules": [
+    "B-60",
+    "B-61",
+    "B-62",
+    "B-63",
+    "B-64",
+    "B-65",
+    "B-66",
+    "B-67"
+   ]
+  },
+  {
+   "id": "g1--9-names-identifiers-property-sets-and-classifica",
+   "file": "chunks/g1--9-names-identifiers-property-sets-and-classifica.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "9. Names, identifiers, property sets and classification",
+   "approx_tokens": 425,
+   "rules": [
+    "B-70",
+    "B-71",
+    "B-72",
+    "B-73",
+    "B-74",
+    "B-75",
+    "B-76"
+   ]
+  },
+  {
+   "id": "g1--10-zones-and-reserved-volumes",
+   "file": "chunks/g1--10-zones-and-reserved-volumes.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "10. Zones and reserved volumes",
+   "approx_tokens": 292,
+   "rules": [
+    "B-80",
+    "B-81",
+    "B-81a",
+    "B-82"
+   ]
+  },
+  {
+   "id": "g1--11-optional-extension-lighting-fixtures",
+   "file": "chunks/g1--11-optional-extension-lighting-fixtures.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "11. Optional extension: lighting fixtures",
+   "approx_tokens": 685,
+   "rules": [
+    "B-90",
+    "B-91",
+    "B-92",
+    "B-92a",
+    "B-93",
+    "B-94",
+    "B-95"
+   ]
+  },
+  {
+   "id": "g1--12-optional-extension-signboards",
+   "file": "chunks/g1--12-optional-extension-signboards.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "12. Optional extension: signboards",
+   "approx_tokens": 478,
+   "rules": [
+    "B-100",
+    "B-101",
+    "B-102",
+    "B-103"
+   ]
+  },
+  {
+   "id": "g1--13-geometry-hygiene",
+   "file": "chunks/g1--13-geometry-hygiene.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "13. Geometry hygiene",
+   "approx_tokens": 387,
+   "rules": [
+    "B-110",
+    "B-111",
+    "B-112",
+    "B-113",
+    "B-114",
+    "B-115",
+    "B-116"
+   ]
+  },
+  {
+   "id": "g1--14-level-of-detail-and-budgets",
+   "file": "chunks/g1--14-level-of-detail-and-budgets.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "14. Level of detail and budgets",
+   "approx_tokens": 297,
+   "rules": [
+    "B-120",
+    "B-121"
+   ]
+  },
+  {
+   "id": "g1--15-what-to-avoid",
+   "file": "chunks/g1--15-what-to-avoid.md",
+   "source": "01-builders-and-architects-guide.md",
+   "title": "15. What to avoid",
+   "approx_tokens": 196,
+   "rules": []
+  },
+  {
+   "id": "g2--introduction",
+   "file": "chunks/g2--introduction.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "Introduction",
+   "approx_tokens": 169,
+   "rules": []
+  },
+  {
+   "id": "g2--1-how-consumers-decide-what-a-surface-looks-like",
+   "file": "chunks/g2--1-how-consumers-decide-what-a-surface-looks-like.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "1. How consumers decide what a surface looks like",
+   "approx_tokens": 436,
+   "rules": []
+  },
+  {
+   "id": "g2--2-colour-rules",
+   "file": "chunks/g2--2-colour-rules.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "2. Colour rules",
+   "approx_tokens": 466,
+   "rules": [
+    "D-01",
+    "D-02",
+    "D-03",
+    "D-04",
+    "D-05",
+    "D-06",
+    "D-07",
+    "D-08"
+   ]
+  },
+  {
+   "id": "g2--3-floors-ceilings-wall-coverings-accents-and-tri",
+   "file": "chunks/g2--3-floors-ceilings-wall-coverings-accents-and-tri.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "3. Floors, ceilings, wall coverings, accents and trims",
+   "approx_tokens": 758,
+   "rules": [
+    "D-10",
+    "D-11",
+    "D-12",
+    "D-13",
+    "D-20",
+    "D-21",
+    "D-30",
+    "D-31",
+    "D-32",
+    "D-33",
+    "D-34",
+    "D-35"
+   ]
+  },
+  {
+   "id": "g2--4-texture-sets",
+   "file": "chunks/g2--4-texture-sets.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "4. Texture sets",
+   "approx_tokens": 793,
+   "rules": [
+    "D-40",
+    "D-41",
+    "D-42",
+    "D-43",
+    "D-44",
+    "D-45",
+    "D-46",
+    "D-47",
+    "D-48",
+    "D-49",
+    "D-50"
+   ]
+  },
+  {
+   "id": "g2--5-the-finish-schedule",
+   "file": "chunks/g2--5-the-finish-schedule.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "5. The finish schedule",
+   "approx_tokens": 709,
+   "rules": [
+    "D-60",
+    "D-61",
+    "D-62",
+    "D-63"
+   ]
+  },
+  {
+   "id": "g2--6-palettes",
+   "file": "chunks/g2--6-palettes.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "6. Palettes",
+   "approx_tokens": 172,
+   "rules": [
+    "D-70",
+    "D-71",
+    "D-72"
+   ]
+  },
+  {
+   "id": "g2--7-delivering-a-reusable-material-library",
+   "file": "chunks/g2--7-delivering-a-reusable-material-library.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "7. Delivering a reusable material library",
+   "approx_tokens": 422,
+   "rules": [
+    "D-80",
+    "D-81",
+    "D-82",
+    "D-83",
+    "D-84",
+    "D-85"
+   ]
+  },
+  {
+   "id": "g2--8-defects-commonly-seen",
+   "file": "chunks/g2--8-defects-commonly-seen.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "8. Defects commonly seen",
+   "approx_tokens": 224,
+   "rules": []
+  },
+  {
+   "id": "g3--introduction",
+   "file": "chunks/g3--introduction.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "Introduction",
+   "approx_tokens": 148,
+   "rules": []
+  },
+  {
+   "id": "g3--1-what-consumers-do-with-an-item",
+   "file": "chunks/g3--1-what-consumers-do-with-an-item.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "1. What consumers do with an item",
+   "approx_tokens": 350,
+   "rules": []
+  },
+  {
+   "id": "g3--2-classes-and-categories",
+   "file": "chunks/g3--2-classes-and-categories.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "2. Classes and categories",
+   "approx_tokens": 422,
+   "rules": [
+    "F-01",
+    "F-02",
+    "F-03"
+   ]
+  },
+  {
+   "id": "g3--3-item-library-format",
+   "file": "chunks/g3--3-item-library-format.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "3. Item library format",
+   "approx_tokens": 657,
+   "rules": [
+    "F-10",
+    "F-11",
+    "F-12"
+   ]
+  },
+  {
+   "id": "g3--4-dimensions-origin-and-pivot",
+   "file": "chunks/g3--4-dimensions-origin-and-pivot.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "4. Dimensions, origin and pivot",
+   "approx_tokens": 388,
+   "rules": [
+    "F-20",
+    "F-20a",
+    "F-21",
+    "F-22",
+    "F-23"
+   ]
+  },
+  {
+   "id": "g3--5-placement-points-anchors-and-where-an-item-may",
+   "file": "chunks/g3--5-placement-points-anchors-and-where-an-item-may.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "5. Placement points, anchors and where an item may be placed",
+   "approx_tokens": 454,
+   "rules": [
+    "F-30",
+    "F-31",
+    "F-32",
+    "F-33",
+    "F-34"
+   ]
+  },
+  {
+   "id": "g3--6-collision-and-footprint",
+   "file": "chunks/g3--6-collision-and-footprint.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "6. Collision and footprint",
+   "approx_tokens": 341,
+   "rules": [
+    "F-40",
+    "F-41",
+    "F-42",
+    "F-43",
+    "F-44"
+   ]
+  },
+  {
+   "id": "g3--7-polygon-and-texture-budgets",
+   "file": "chunks/g3--7-polygon-and-texture-budgets.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "7. Polygon and texture budgets",
+   "approx_tokens": 250,
+   "rules": [
+    "F-50",
+    "F-51",
+    "F-52",
+    "F-53"
+   ]
+  },
+  {
+   "id": "g3--8-variants-and-instancing",
+   "file": "chunks/g3--8-variants-and-instancing.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "8. Variants and instancing",
+   "approx_tokens": 282,
+   "rules": [
+    "F-60",
+    "F-61",
+    "F-62",
+    "F-62a",
+    "F-63"
+   ]
+  },
+  {
+   "id": "g3--9-fixtures",
+   "file": "chunks/g3--9-fixtures.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "9. Fixtures",
+   "approx_tokens": 208,
+   "rules": [
+    "F-70",
+    "F-71",
+    "F-72"
+   ]
+  },
+  {
+   "id": "g3--10-what-to-avoid",
+   "file": "chunks/g3--10-what-to-avoid.md",
+   "source": "03-furniture-and-fixtures-guide.md",
+   "title": "10. What to avoid",
+   "approx_tokens": 173,
+   "rules": []
+  },
+  {
+   "id": "g4--introduction",
+   "file": "chunks/g4--introduction.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "Introduction",
+   "approx_tokens": 184,
+   "rules": []
+  },
+  {
+   "id": "g4--1-what-you-send",
+   "file": "chunks/g4--1-what-you-send.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "1. What you send",
+   "approx_tokens": 439,
+   "rules": [
+    "X-01",
+    "X-02"
+   ]
+  },
+  {
+   "id": "g4--2-packaging-the-work",
+   "file": "chunks/g4--2-packaging-the-work.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "2. Packaging the work",
+   "approx_tokens": 137,
+   "rules": []
+  },
+  {
+   "id": "g4--3-the-manifest",
+   "file": "chunks/g4--3-the-manifest.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "3. The manifest",
+   "approx_tokens": 950,
+   "rules": [
+    "X-10",
+    "X-11",
+    "X-12",
+    "X-13",
+    "X-14",
+    "X-20",
+    "X-21",
+    "X-22"
+   ]
+  },
+  {
+   "id": "g4--4-versions",
+   "file": "chunks/g4--4-versions.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "4. Versions",
+   "approx_tokens": 297,
+   "rules": [
+    "X-30",
+    "X-31",
+    "X-32",
+    "X-50"
+   ]
+  },
+  {
+   "id": "g4--5-acceptance-checks",
+   "file": "chunks/g4--5-acceptance-checks.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "5. Acceptance checks",
+   "approx_tokens": 1304,
+   "rules": [
+    "X-40"
+   ]
+  },
+  {
+   "id": "g4--6-pre-submission-checklist",
+   "file": "chunks/g4--6-pre-submission-checklist.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "6. Pre-submission checklist",
+   "approx_tokens": 866,
+   "rules": [
+    "X-41"
+   ]
+  },
+  {
+   "id": "g4--7-how-a-receiving-party-accepts-returns-or-refus",
+   "file": "chunks/g4--7-how-a-receiving-party-accepts-returns-or-refus.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "7. How a receiving party accepts, returns or refuses",
+   "approx_tokens": 776,
+   "rules": [
+    "X-60"
+   ]
+  },
+  {
+   "id": "g5--introduction",
+   "file": "chunks/g5--introduction.md",
+   "source": "05-worked-example.md",
+   "title": "Introduction",
+   "approx_tokens": 313,
+   "rules": []
+  },
+  {
+   "id": "g5--1-the-profiles",
+   "file": "chunks/g5--1-the-profiles.md",
+   "source": "05-worked-example.md",
+   "title": "1. The profiles",
+   "approx_tokens": 231,
+   "rules": []
+  },
+  {
+   "id": "g5--2-what-is-modelled",
+   "file": "chunks/g5--2-what-is-modelled.md",
+   "source": "05-worked-example.md",
+   "title": "2. What is modelled",
+   "approx_tokens": 400,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step",
+   "file": "chunks/g5--3-step-by-step.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step",
+   "approx_tokens": 31,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-1-frame-level-and-identity-b-10",
+   "file": "chunks/g5--3-step-by-step-3-1-frame-level-and-identity-b-10.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.1 Frame, level and identity (B-10 to B-14, B-70, B-71)",
+   "approx_tokens": 151,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-2-walls-openings-door-and-windo",
+   "file": "chunks/g5--3-step-by-step-3-2-walls-openings-door-and-windo.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.2 Walls, openings, door and window (B-40 to B-44)",
+   "approx_tokens": 196,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b",
+   "file": "chunks/g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.3 Floor, roof and ceiling (B-50, B-53, B-54)",
+   "approx_tokens": 125,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-4-the-room-b-20-to-b-27",
+   "file": "chunks/g5--3-step-by-step-3-4-the-room-b-20-to-b-27.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.4 The room (B-20 to B-27)",
+   "approx_tokens": 247,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-5-the-table-guide-3",
+   "file": "chunks/g5--3-step-by-step-3-5-the-table-guide-3.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.5 The table (guide 3)",
+   "approx_tokens": 154,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3",
+   "file": "chunks/g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.6 The wall covering (D-30 to D-32)",
+   "approx_tokens": 163,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-7-the-luminaire-optional-extens",
+   "file": "chunks/g5--3-step-by-step-3-7-the-luminaire-optional-extens.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.7 The luminaire (optional extension; B-90 to B-93)",
+   "approx_tokens": 303,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-8-colours-and-the-finish-schedu",
+   "file": "chunks/g5--3-step-by-step-3-8-colours-and-the-finish-schedu.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.8 Colours and the finish schedule (guide 2)",
+   "approx_tokens": 274,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50",
+   "file": "chunks/g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.9 The texture set (D-40 to D-50)",
+   "approx_tokens": 151,
+   "rules": []
+  },
+  {
+   "id": "g5--3-step-by-step-3-10-package-manifest-and-checks",
+   "file": "chunks/g5--3-step-by-step-3-10-package-manifest-and-checks.md",
+   "source": "05-worked-example.md",
+   "title": "3. Step by step: 3.10 Package, manifest and checks (guide 4)",
+   "approx_tokens": 261,
+   "rules": []
+  },
+  {
+   "id": "g5--4-things-to-try",
+   "file": "chunks/g5--4-things-to-try.md",
+   "source": "05-worked-example.md",
+   "title": "4. Things to try",
+   "approx_tokens": 166,
+   "rules": []
+  },
+  {
+   "id": "g5--5-what-the-example-leaves-out",
+   "file": "chunks/g5--5-what-the-example-leaves-out.md",
+   "source": "05-worked-example.md",
+   "title": "5. What the example leaves out",
+   "approx_tokens": 110,
+   "rules": []
+  },
+  {
+   "id": "params--introduction-part-1-of-3",
+   "file": "chunks/params--introduction-part-1-of-3.md",
+   "source": "07-profile-parameters.md",
+   "title": "Introduction (part 1 of 3)",
+   "approx_tokens": 149,
+   "rules": []
+  },
+  {
+   "id": "params--introduction-part-2-of-3",
+   "file": "chunks/params--introduction-part-2-of-3.md",
+   "source": "07-profile-parameters.md",
+   "title": "Introduction (part 2 of 3)",
+   "approx_tokens": 1516,
+   "rules": []
+  },
+  {
+   "id": "params--introduction-part-3-of-3",
+   "file": "chunks/params--introduction-part-3-of-3.md",
+   "source": "07-profile-parameters.md",
+   "title": "Introduction (part 3 of 3)",
+   "approx_tokens": 572,
+   "rules": []
+  },
+  {
+   "id": "params--rule-levels-in-a-profile",
+   "file": "chunks/params--rule-levels-in-a-profile.md",
+   "source": "07-profile-parameters.md",
+   "title": "Rule levels in a profile",
+   "approx_tokens": 79,
+   "rules": []
+  },
+  {
+   "id": "params--extensions",
+   "file": "chunks/params--extensions.md",
+   "source": "07-profile-parameters.md",
+   "title": "Extensions",
+   "approx_tokens": 151,
+   "rules": []
+  },
+  {
+   "id": "repair--introduction",
+   "file": "chunks/repair--introduction.md",
+   "source": "REPAIR-LOOP.md",
+   "title": "Introduction",
+   "approx_tokens": 91,
+   "rules": []
+  },
+  {
+   "id": "repair--the-loop",
+   "file": "chunks/repair--the-loop.md",
+   "source": "REPAIR-LOOP.md",
+   "title": "The loop",
+   "approx_tokens": 370,
+   "rules": []
+  },
+  {
+   "id": "repair--report-fields",
+   "file": "chunks/repair--report-fields.md",
+   "source": "REPAIR-LOOP.md",
+   "title": "Report fields",
+   "approx_tokens": 261,
+   "rules": []
+  },
+  {
+   "id": "repair--stop-conditions",
+   "file": "chunks/repair--stop-conditions.md",
+   "source": "REPAIR-LOOP.md",
+   "title": "Stop conditions",
+   "approx_tokens": 208,
+   "rules": []
+  },
+  {
+   "id": "repair--never-do-these-to-get-a-pass",
+   "file": "chunks/repair--never-do-these-to-get-a-pass.md",
+   "source": "REPAIR-LOOP.md",
+   "title": "Never do these to get a pass",
+   "approx_tokens": 150,
+   "rules": []
+  },
+  {
+   "id": "repair--worked-mini-loop",
+   "file": "chunks/repair--worked-mini-loop.md",
+   "source": "REPAIR-LOOP.md",
+   "title": "Worked mini-loop",
+   "approx_tokens": 184,
+   "rules": []
+  }
+ ]
+}

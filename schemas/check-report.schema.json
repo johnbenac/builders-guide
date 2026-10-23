@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Checker report",
+  "description": "What every checker prints with --json (check-report/1). Exit codes: 0 no REQUIRED rule failed; 1 at least one REQUIRED rule failed; 2 wrong command line; 3 an input could not be read.",
+  "type": "object",
+  "required": [
+    "schema",
+    "tool",
+    "toolVersion",
+    "target",
+    "result",
+    "exitCode",
+    "summary",
+    "findings",
+    "profile"
+  ],
+  "properties": {
+    "schema": {
+      "const": "check-report/1"
+    },
+    "tool": {
+      "type": "string"
+    },
+    "toolVersion": {
+      "type": "string"
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      }
+    },
+    "result": {
+      "enum": [
+        "pass",
+        "fail",
+        "error"
+      ]
+    },
+    "exitCode": {
+      "enum": [
+        0,
+        1,
+        3
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "requiredFailures",
+        "recommendedWarnings",
+        "passes",
+        "info"
+      ],
+      "properties": {
+        "requiredFailures": {
+          "type": "integer"
+        },
+        "recommendedWarnings": {
+          "type": "integer"
+        },
+        "passes": {
+          "type": "integer"
+        },
+        "info": {
+          "type": "integer"
+        }
+      }
+    },
+    "counts": {
+      "type": "object"
+    },
+    "error": {
+      "type": "string"
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "rule",
+          "level",
+          "status",
+          "severity",
+          "location",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "stable: rule id, then a short hash of rule, file, element and message"
+          },
+          "rule": {
+            "type": "string",
+            "pattern": "^[BDFX]-\\d+[a-z]?$"
+          },
+          "level": {
+            "enum": [
+              "REQUIRED",
+              "RECOMMENDED"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "info",
+              "warn",
+              "fail"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "pass",
+              "info",
+              "warning",
+              "error"
+            ]
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "element": {
+                "type": "string"
+              }
+            }
+          },
+          "message": {
+            "type": "string"
+          },
+          "fix_hint": {
+            "type": "string",
+            "description": "present when status is warn or fail"
+          }
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "description": "the profile the checks used"
+    }
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

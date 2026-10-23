@@ -1,0 +1,126 @@
+# Authoring guide set: IFC buildings, materials and furniture
+
+> Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.
+
+Version 2.0.0. 179 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
+
+## Start here
+
+- [AGENTS.md](AGENTS.md): what this set is, commands, working rules
+- [skills/orient/SKILL.md](skills/orient/SKILL.md): pick the right skill for the task
+- [REPAIR-LOOP.md](REPAIR-LOOP.md): run, read findings, fix, rerun; stop conditions
+
+## Skills
+
+- [skills/orient/SKILL.md](skills/orient/SKILL.md)
+- [skills/author-building/SKILL.md](skills/author-building/SKILL.md)
+- [skills/decorate-interior/SKILL.md](skills/decorate-interior/SKILL.md)
+- [skills/author-furniture-library/SKILL.md](skills/author-furniture-library/SKILL.md)
+- [skills/accept-and-package-delivery/SKILL.md](skills/accept-and-package-delivery/SKILL.md)
+
+## Rules and schemas
+
+- [rules.json](rules.json): all rules with level, applies_to, how_to_check, fix_hint, examples
+- [schemas/rules.schema.json](schemas/rules.schema.json): shape of rules.json
+- [schemas/check-report.schema.json](schemas/check-report.schema.json): shape of every checker's --json output
+- [schemas/manifest.schema.json](schemas/manifest.schema.json): delivery manifest
+- [schemas/material-library.schema.json](schemas/material-library.schema.json): material library
+- [schemas/item.schema.json](schemas/item.schema.json): furniture item description
+- [schemas/building-metadata.schema.json](schemas/building-metadata.schema.json): building summary
+- [schemas/finish-schedule.schema.json](schemas/finish-schedule.schema.json): finish schedule
+- [schemas/set.schema.json](schemas/set.schema.json): texture set description
+
+## Tools
+
+- [tools/check_all.py](tools/check_all.py): one command, one JSON report, per deliverable type
+- [tools/README.md](tools/README.md): every tool
+
+## Guide sections (each file is about 1,500 tokens or less)
+
+- [readme--introduction](chunks/readme--introduction.md): Introduction
+- [readme--core-and-profile](chunks/readme--core-and-profile.md): Core and profile
+- [readme--for-agents](chunks/readme--for-agents.md): For agents
+- [readme--the-five-guides](chunks/readme--the-five-guides.md): The five guides
+- [readme--how-rules-are-written](chunks/readme--how-rules-are-written.md): How rules are written; rules B-12, B-90
+- [readme--reading-order](chunks/readme--reading-order.md): Reading order
+- [readme--words-used-in-a-fixed-sense](chunks/readme--words-used-in-a-fixed-sense.md): Words used in a fixed sense
+- [readme--hand-over-files](chunks/readme--hand-over-files.md): Hand-over files
+- [readme--what-this-set-does-not-cover](chunks/readme--what-this-set-does-not-cover.md): What this set does not cover
+- [g1--introduction](chunks/g1--introduction.md): Introduction
+- [g1--1-vocabulary](chunks/g1--1-vocabulary.md): 1. Vocabulary
+- [g1--2-what-the-profile-gives-you](chunks/g1--2-what-the-profile-gives-you.md): 2. What the profile gives you
+- [g1--3-file-and-schema](chunks/g1--3-file-and-schema.md): 3. File and schema; rules B-01, B-02, B-02a, B-03, B-04, B-05 ...
+- [g1--4-units-axes-origin-and-levels](chunks/g1--4-units-axes-origin-and-levels.md): 4. Units, axes, origin and levels; rules B-10, B-11, B-12, B-13, B-14, B-15
+- [g1--5-rooms-and-zones](chunks/g1--5-rooms-and-zones.md): 5. Rooms and zones; rules B-20, B-21, B-22, B-23, B-24, B-25 ...
+- [g1--6-walls-doors-windows-and-openings](chunks/g1--6-walls-doors-windows-and-openings.md): 6. Walls, doors, windows and openings; rules B-40, B-40a, B-41, B-42, B-43, B-44 ...
+- [g1--7-floors-roofs-ceilings-and-slab-openings](chunks/g1--7-floors-roofs-ceilings-and-slab-openings.md): 7. Floors, roofs, ceilings and slab openings; rules B-50, B-51, B-51a, B-52, B-53, B-54 ...
+- [g1--8-circulation-stairs-ramps-lifts-rails](chunks/g1--8-circulation-stairs-ramps-lifts-rails.md): 8. Circulation, stairs, ramps, lifts, rails; rules B-60, B-61, B-62, B-63, B-64, B-65 ...
+- [g1--9-names-identifiers-property-sets-and-classifica](chunks/g1--9-names-identifiers-property-sets-and-classifica.md): 9. Names, identifiers, property sets and classification; rules B-70, B-71, B-72, B-73, B-74, B-75 ...
+- [g1--10-zones-and-reserved-volumes](chunks/g1--10-zones-and-reserved-volumes.md): 10. Zones and reserved volumes; rules B-80, B-81, B-81a, B-82
+- [g1--11-optional-extension-lighting-fixtures](chunks/g1--11-optional-extension-lighting-fixtures.md): 11. Optional extension: lighting fixtures; rules B-90, B-91, B-92, B-92a, B-93, B-94 ...
+- [g1--12-optional-extension-signboards](chunks/g1--12-optional-extension-signboards.md): 12. Optional extension: signboards; rules B-100, B-101, B-102, B-103
+- [g1--13-geometry-hygiene](chunks/g1--13-geometry-hygiene.md): 13. Geometry hygiene; rules B-110, B-111, B-112, B-113, B-114, B-115 ...
+- [g1--14-level-of-detail-and-budgets](chunks/g1--14-level-of-detail-and-budgets.md): 14. Level of detail and budgets; rules B-120, B-121
+- [g1--15-what-to-avoid](chunks/g1--15-what-to-avoid.md): 15. What to avoid
+- [g2--introduction](chunks/g2--introduction.md): Introduction
+- [g2--1-how-consumers-decide-what-a-surface-looks-like](chunks/g2--1-how-consumers-decide-what-a-surface-looks-like.md): 1. How consumers decide what a surface looks like
+- [g2--2-colour-rules](chunks/g2--2-colour-rules.md): 2. Colour rules; rules D-01, D-02, D-03, D-04, D-05, D-06 ...
+- [g2--3-floors-ceilings-wall-coverings-accents-and-tri](chunks/g2--3-floors-ceilings-wall-coverings-accents-and-tri.md): 3. Floors, ceilings, wall coverings, accents and trims; rules D-10, D-11, D-12, D-13, D-20, D-21 ...
+- [g2--4-texture-sets](chunks/g2--4-texture-sets.md): 4. Texture sets; rules D-40, D-41, D-42, D-43, D-44, D-45 ...
+- [g2--5-the-finish-schedule](chunks/g2--5-the-finish-schedule.md): 5. The finish schedule; rules D-60, D-61, D-62, D-63
+- [g2--6-palettes](chunks/g2--6-palettes.md): 6. Palettes; rules D-70, D-71, D-72
+- [g2--7-delivering-a-reusable-material-library](chunks/g2--7-delivering-a-reusable-material-library.md): 7. Delivering a reusable material library; rules D-80, D-81, D-82, D-83, D-84, D-85
+- [g2--8-defects-commonly-seen](chunks/g2--8-defects-commonly-seen.md): 8. Defects commonly seen
+- [g3--introduction](chunks/g3--introduction.md): Introduction
+- [g3--1-what-consumers-do-with-an-item](chunks/g3--1-what-consumers-do-with-an-item.md): 1. What consumers do with an item
+- [g3--2-classes-and-categories](chunks/g3--2-classes-and-categories.md): 2. Classes and categories; rules F-01, F-02, F-03
+- [g3--3-item-library-format](chunks/g3--3-item-library-format.md): 3. Item library format; rules F-10, F-11, F-12
+- [g3--4-dimensions-origin-and-pivot](chunks/g3--4-dimensions-origin-and-pivot.md): 4. Dimensions, origin and pivot; rules F-20, F-20a, F-21, F-22, F-23
+- [g3--5-placement-points-anchors-and-where-an-item-may](chunks/g3--5-placement-points-anchors-and-where-an-item-may.md): 5. Placement points, anchors and where an item may be placed; rules F-30, F-31, F-32, F-33, F-34
+- [g3--6-collision-and-footprint](chunks/g3--6-collision-and-footprint.md): 6. Collision and footprint; rules F-40, F-41, F-42, F-43, F-44
+- [g3--7-polygon-and-texture-budgets](chunks/g3--7-polygon-and-texture-budgets.md): 7. Polygon and texture budgets; rules F-50, F-51, F-52, F-53
+- [g3--8-variants-and-instancing](chunks/g3--8-variants-and-instancing.md): 8. Variants and instancing; rules F-60, F-61, F-62, F-62a, F-63
+- [g3--9-fixtures](chunks/g3--9-fixtures.md): 9. Fixtures; rules F-70, F-71, F-72
+- [g3--10-what-to-avoid](chunks/g3--10-what-to-avoid.md): 10. What to avoid
+- [g4--introduction](chunks/g4--introduction.md): Introduction
+- [g4--1-what-you-send](chunks/g4--1-what-you-send.md): 1. What you send; rules X-01, X-02
+- [g4--2-packaging-the-work](chunks/g4--2-packaging-the-work.md): 2. Packaging the work
+- [g4--3-the-manifest](chunks/g4--3-the-manifest.md): 3. The manifest; rules X-10, X-11, X-12, X-13, X-14, X-20 ...
+- [g4--4-versions](chunks/g4--4-versions.md): 4. Versions; rules X-30, X-31, X-32, X-50
+- [g4--5-acceptance-checks](chunks/g4--5-acceptance-checks.md): 5. Acceptance checks; rules X-40
+- [g4--6-pre-submission-checklist](chunks/g4--6-pre-submission-checklist.md): 6. Pre-submission checklist; rules X-41
+- [g4--7-how-a-receiving-party-accepts-returns-or-refus](chunks/g4--7-how-a-receiving-party-accepts-returns-or-refus.md): 7. How a receiving party accepts, returns or refuses; rules X-60
+- [g5--introduction](chunks/g5--introduction.md): Introduction
+- [g5--1-the-profiles](chunks/g5--1-the-profiles.md): 1. The profiles
+- [g5--2-what-is-modelled](chunks/g5--2-what-is-modelled.md): 2. What is modelled
+- [g5--3-step-by-step](chunks/g5--3-step-by-step.md): 3. Step by step
+- [g5--3-step-by-step-3-1-frame-level-and-identity-b-10](chunks/g5--3-step-by-step-3-1-frame-level-and-identity-b-10.md): 3. Step by step: 3.1 Frame, level and identity (B-10 to B-14, B-70, B-71)
+- [g5--3-step-by-step-3-2-walls-openings-door-and-windo](chunks/g5--3-step-by-step-3-2-walls-openings-door-and-windo.md): 3. Step by step: 3.2 Walls, openings, door and window (B-40 to B-44)
+- [g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b](chunks/g5--3-step-by-step-3-3-floor-roof-and-ceiling-b-50-b.md): 3. Step by step: 3.3 Floor, roof and ceiling (B-50, B-53, B-54)
+- [g5--3-step-by-step-3-4-the-room-b-20-to-b-27](chunks/g5--3-step-by-step-3-4-the-room-b-20-to-b-27.md): 3. Step by step: 3.4 The room (B-20 to B-27)
+- [g5--3-step-by-step-3-5-the-table-guide-3](chunks/g5--3-step-by-step-3-5-the-table-guide-3.md): 3. Step by step: 3.5 The table (guide 3)
+- [g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3](chunks/g5--3-step-by-step-3-6-the-wall-covering-d-30-to-d-3.md): 3. Step by step: 3.6 The wall covering (D-30 to D-32)
+- [g5--3-step-by-step-3-7-the-luminaire-optional-extens](chunks/g5--3-step-by-step-3-7-the-luminaire-optional-extens.md): 3. Step by step: 3.7 The luminaire (optional extension; B-90 to B-93)
+- [g5--3-step-by-step-3-8-colours-and-the-finish-schedu](chunks/g5--3-step-by-step-3-8-colours-and-the-finish-schedu.md): 3. Step by step: 3.8 Colours and the finish schedule (guide 2)
+- [g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50](chunks/g5--3-step-by-step-3-9-the-texture-set-d-40-to-d-50.md): 3. Step by step: 3.9 The texture set (D-40 to D-50)
+- [g5--3-step-by-step-3-10-package-manifest-and-checks](chunks/g5--3-step-by-step-3-10-package-manifest-and-checks.md): 3. Step by step: 3.10 Package, manifest and checks (guide 4)
+- [g5--4-things-to-try](chunks/g5--4-things-to-try.md): 4. Things to try
+- [g5--5-what-the-example-leaves-out](chunks/g5--5-what-the-example-leaves-out.md): 5. What the example leaves out
+- [params--introduction-part-1-of-3](chunks/params--introduction-part-1-of-3.md): Introduction (part 1 of 3)
+- [params--introduction-part-2-of-3](chunks/params--introduction-part-2-of-3.md): Introduction (part 2 of 3)
+- [params--introduction-part-3-of-3](chunks/params--introduction-part-3-of-3.md): Introduction (part 3 of 3)
+- [params--rule-levels-in-a-profile](chunks/params--rule-levels-in-a-profile.md): Rule levels in a profile
+- [params--extensions](chunks/params--extensions.md): Extensions
+- [repair--introduction](chunks/repair--introduction.md): Introduction
+- [repair--the-loop](chunks/repair--the-loop.md): The loop
+- [repair--report-fields](chunks/repair--report-fields.md): Report fields
+- [repair--stop-conditions](chunks/repair--stop-conditions.md): Stop conditions
+- [repair--never-do-these-to-get-a-pass](chunks/repair--never-do-these-to-get-a-pass.md): Never do these to get a pass
+- [repair--worked-mini-loop](chunks/repair--worked-mini-loop.md): Worked mini-loop
+
+## Optional
+
+- [llms-full.txt](llms-full.txt): every section above in one file, in marked chunks
+- [README.md](README.md): index for people
+- [06-rules-index.md](06-rules-index.md): the rules as one table
+- [MANIFEST.json](MANIFEST.json): every file with purpose, tags and hash
