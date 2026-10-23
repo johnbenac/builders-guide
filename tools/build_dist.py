@@ -17,8 +17,11 @@ import sys
 import textwrap
 import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fileset  # noqa: E402
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 NAME = "builders-guide-" + VERSION
 DIST = os.path.join(ROOT, "dist")
 ORDER = ["README.md", "AGENTS.md", "01-builders-and-architects-guide.md", "02-interior-decorators-guide.md",
@@ -77,7 +80,7 @@ def main():
     html = os.path.join(DIST, NAME + ".html")
     subprocess.run(["pandoc", "-f", "gfm", "-t", "html5", "--template", os.path.join(ROOT, "tools", "template.html"), "--toc",
                     "--toc-depth=2", "-M", "title=Authoring Guide Set for Digital Buildings, Materials and Furniture (IFC)",
-                    "-M", "subtitle=Version %s, 2026-10-22. Application-neutral guides and tools for outside organisations and their agents." % VERSION,
+                    "-M", "subtitle=Version %s, 2026-10-23. Application-neutral guides and tools for outside organisations and their agents." % VERSION,
                     "-M", "toc=true", md, "-o", html], check=True)
     os.remove(md)
     pdf = os.path.join(DIST, NAME + ".pdf")
@@ -87,22 +90,13 @@ def main():
     subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer", "--print-to-pdf=" + pdf,
                     "file://" + html], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     # the file list of the set
-    skip_dirs = {".git", "__pycache__"}
-    members = []
-    for base, dirs, names in os.walk(ROOT):
-        dirs[:] = sorted(d for d in dirs if d not in skip_dirs)
-        for n in sorted(names):
-            rel = os.path.relpath(os.path.join(base, n), ROOT).replace(os.sep, "/")
-            if rel == "MANIFEST.sha256" or rel.startswith("dist/") and not rel.endswith((".html", ".pdf")):
-                continue
-            members.append(rel)
-    with open(os.path.join(ROOT, "MANIFEST.sha256"), "w", newline="\n") as fh:
-        for rel in members:
-            fh.write("%s  %s\n" % (sha(os.path.join(ROOT, rel)), rel))
+    members = fileset.set_files(ROOT) + fileset.dist_files(ROOT)      # the same list as MANIFEST.json and MANIFEST.sha256
+    with open(os.path.join(ROOT, fileset.CHECKSUM_FILE), "w", newline="\n") as fh:
+        fh.write(fileset.checksum_text(ROOT))
     zpath = os.path.join(DIST, NAME + ".zip")
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
         for rel in sorted(members + ["MANIFEST.sha256"]):
-            zi = zipfile.ZipInfo(NAME + "/" + rel, date_time=(2026, 10, 22, 0, 0, 0))
+            zi = zipfile.ZipInfo(NAME + "/" + rel, date_time=(2026, 10, 23, 0, 0, 0))
             zi.compress_type = zipfile.ZIP_DEFLATED
             zi.external_attr = (0o755 if rel.startswith("tools/") and rel.endswith(".py") else 0o644) << 16
             with open(os.path.join(ROOT, rel), "rb") as fh:

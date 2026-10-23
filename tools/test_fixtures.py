@@ -5,7 +5,7 @@ levels), the preview, and every rule that the fixtures were added to exercise, e
 
     python3 test_fixtures.py [WORK_DIR]
 
-Requires: pip install ifcopenshell numpy pillow scipy shapely (matplotlib for the preview check)
+Requires: pip install -r tools/requirements-terrain.txt (and requirements-preview.txt for the preview check)
 """
 import json
 import math
@@ -23,7 +23,8 @@ sys.path.insert(0, HERE)
 import make_fixtures  # noqa: E402
 import terrain_lib as tl  # noqa: E402
 
-work = sys.argv[1] if len(sys.argv) > 1 else tempfile.mkdtemp(prefix="fixtures-test-")
+_tmp = None if len(sys.argv) > 1 else tempfile.TemporaryDirectory(prefix="fixtures-test-")      # removed when the test ends
+work = sys.argv[1] if len(sys.argv) > 1 else _tmp.name
 os.makedirs(work, exist_ok=True)
 PROFILE = os.path.join(work, "terrain-profile.json")
 with open(PROFILE, "w") as fh:
@@ -51,9 +52,14 @@ def open_findings(rep):
     return [f for f in rep["findings"] if f["status"] in ("fail", "warn")]
 
 
-def expect(name, rule, path, profile=None):
+def expect(name, rule, path, profile=None, element=None):
+    """The finding must be for `rule` and, when `element` = (class, name prefix) is given, be about that element."""
     rc, rep = check(path, profile)
     hit = [f for f in rep["findings"] if f["rule"] == rule and f["status"] in ("fail", "warn")]
+    if element and hit:
+        m = ifcopenshell.open(path)
+        want_id = [e for e in m.by_type(element[0]) if (e.Name or "").startswith(element[1])][0].GlobalId
+        hit = [f for f in hit if f["location"].get("element") == want_id]
     ok = bool(hit) and (rc == 1 or hit[0]["level"] == "RECOMMENDED")
     print("%-26s expects %-5s -> %s" % (name, rule, "caught" if ok else "NOT CAUGHT"))
     if not ok:
@@ -61,12 +67,12 @@ def expect(name, rule, path, profile=None):
         sys.exit(1)
 
 
-def mutate(src, name, rule, fn, profile=None):
+def mutate(src, name, rule, fn, profile=None, element=None):
     m = ifcopenshell.open(src)
     fn(m)
     out = os.path.join(work, "broken-%s.ifc" % name)
     m.write(out)
-    expect(name, rule, out, profile)
+    expect(name, rule, out, profile, element)
 
 
 def named(m, cls, name):
@@ -184,12 +190,12 @@ def enclosed_terrace(m):
     prop(m, "Enclosed", False).NominalValue = m.create_entity("IfcBoolean", wrappedValue=True)
 
 
-mutate(tray, "no-roof", "B-54", no_roof)
-mutate(tray, "rooms-overlap", "B-30", overlap)
-mutate(court, "door-lost", "B-47", lose_door)
-mutate(tray, "no-stair-well", "B-61", no_well)
-mutate(hill, "window-below-floor", "B-142", window_below)
-mutate(tray, "terrace-enclosed", "B-143", enclosed_terrace)
+mutate(tray, "no-roof", "B-54", no_roof, element=("IfcSpace", "Bedroom"))
+mutate(tray, "rooms-overlap", "B-30", overlap, element=("IfcSpace", "Living room"))
+mutate(court, "door-lost", "B-47", lose_door, element=("IfcSpace", "West wing"))
+mutate(tray, "no-stair-well", "B-61", no_well, element=("IfcStairFlight", "Stair up"))
+mutate(hill, "window-below-floor", "B-142", window_below, element=("IfcWindow", "Window W0"))
+mutate(tray, "terrace-enclosed", "B-143", enclosed_terrace, element=("IfcSpace", "Living terrace"))
 
 
 def bad_axis(m):

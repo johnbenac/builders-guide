@@ -512,7 +512,8 @@
    "parameters": [
     "geometry.roomOverlapToleranceMetres"
    ],
-   "extension": null
+   "extension": null,
+   "estimate": "overlap thicker than a wall, from the room floor outlines"
   },
   "B-31": {
    "applies_to": [
@@ -745,7 +746,8 @@
    "parameters": [
     "identifiers.circulationPrefix"
    ],
-   "extension": null
+   "extension": null,
+   "estimate": "follows doors, stairs and open edges between rooms; rooms joined in other ways are reported"
   },
   "B-48": {
    "applies_to": [
@@ -865,7 +867,8 @@
    },
    "related": [],
    "parameters": [],
-   "extension": null
+   "extension": null,
+   "estimate": "vertical rays at a grid of points in each room"
   },
   "B-55": {
    "applies_to": [
@@ -918,7 +921,8 @@
     "geometry.stairRiserLimitMetres",
     "geometry.stairHeadroomMetres"
    ],
-   "extension": null
+   "extension": null,
+   "estimate": "vertical rays above every tread, against slabs, roofs, coverings, beams, walls and other flights"
   },
   "B-62": {
    "applies_to": [
@@ -1526,8 +1530,8 @@
    ],
    "automated": true,
    "tool": "check_ifc",
-   "rationale": "Terrain, water and pads belong to the consumer's terrain source; a second copy in the file disagrees with the world.",
-   "fix_hint": "Remove terrain, water, pads, cuts and fills from the file; with the terrain extension use only the imported terrain patch (tools/terrain_import.py).",
+   "rationale": "Terrain, soil and relief belong to the consumer's own source; a second copy in the file disagrees with the world.",
+   "fix_hint": "Remove terrain, soil and relief from the file unless the profile enables the terrain extension; then use only the imported terrain patch (tools/terrain_import.py).",
    "examples": {
     "good": "",
     "bad": ""
@@ -3303,7 +3307,8 @@
     "extensions.terrain.floatToleranceMetres",
     "extensions.terrain.buryToleranceMetres"
    ],
-   "extension": "terrain"
+   "extension": "terrain",
+   "estimate": "terrain heights at sampled points of the footprint"
   },
   "B-137": {
    "applies_to": [
@@ -3426,7 +3431,7 @@
    "automated": true,
    "tool": "check_ifc",
    "rationale": "Content below the lowest floor means the origin sits at the wrong height or something is buried by mistake.",
-   "fix_hint": "Move the origin to the lowest finished floor, or make the element a slab, footing, pile, wall, stair or ramp.",
+   "fix_hint": "Move the origin to the lowest finished floor, or make the element a slab, footing, pile, wall, stair or ramp (openings, terrain and reservation volumes are exempt).",
    "examples": {
     "good": "footings and a buried stair below z 0",
     "bad": "a door below the lowest floor"

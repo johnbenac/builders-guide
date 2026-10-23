@@ -2,7 +2,7 @@
 
 > Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.
 
-Version 2.0.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
+Version 2.1.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
 
 ## Start here
 

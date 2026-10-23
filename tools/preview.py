@@ -3,14 +3,16 @@
 """Draw what is in a master IFC file, so that an author (or an agent) can see its own work: one plan per level and one
 isometric view.
 
-    python3 preview.py MASTER.ifc OUT_DIR [--no-iso]
+    python3 preview.py MASTER.ifc OUT_DIR [--no-iso] [--strict]
 
 Plans cut at 1.2 m above each level's floor: walls and columns that span that height are dark, slabs light, doors and windows
 coloured, stairs hatched, rooms outlined and labelled with their RoomId (open-air rooms dashed). The isometric view draws every
-solid and, when the file has one, the terrain as a faint surface. Writes OUT_DIR/plan-<n>-<level>.png and OUT_DIR/iso.png.
-Exit codes: 0 written, 3 the file cannot be read or matplotlib is missing.
+solid and, when the file has one, the terrain as a faint surface (an even share of its triangles when there are more than 20,000;
+the message says so). Elements whose geometry cannot be built are left out of the pictures and listed; with --strict that is an
+error. Writes OUT_DIR/plan-<n>-<level>.png and OUT_DIR/iso.png.
+Exit codes: 0 written, 3 the file cannot be read, matplotlib is missing, or --strict and something was left out.
 
-Requires: pip install ifcopenshell numpy matplotlib shapely
+Requires: pip install -r tools/requirements-preview.txt
 """
 import argparse
 import os
@@ -36,7 +38,7 @@ ISO_COLOURS = {"IfcSlab": "#d9cdb0", "IfcWall": "#a98d63", "IfcStairFlight": "#6
                "IfcWindow": "#4aa3c8", "IfcDoor": "#2a7f7f", "IfcFooting": "#888888", "IfcCovering": "#c9b79a", "IfcRoof": "#b07a5a"}
 
 
-def meshes(model):
+def meshes(model, skipped):
     settings = ifcopenshell.geom.settings()
     settings.set("use-world-coords", True)
     out = {}
@@ -45,7 +47,8 @@ def meshes(model):
             continue
         try:
             sh = ifcopenshell.geom.create_shape(settings, e)
-        except Exception:
+        except Exception as exc:
+            skipped.append("%s %s (%s)" % (e.is_a(), e.GlobalId, str(exc).splitlines()[0][:80] if str(exc) else "no geometry"))
             continue
         v = np.array(sh.geometry.verts).reshape(-1, 3)
         f = np.array(sh.geometry.faces).reshape(-1, 3)
@@ -102,7 +105,9 @@ def plan(model, geo, storey, path, cut=1.2):
         elif cls in ("IfcWall", "IfcColumn") and zmin <= el + cut <= zmax:
             colour, alpha, z = "#3a3a3a", 1.0, 3
         elif cls == "IfcStairFlight":
-            colour, alpha, z = "#6b8e9b", 0.7, 2
+            ax.add_collection(PolyCollection(tris, facecolors="#c5d6dc", edgecolors="#4d6f7c", hatch="////", linewidths=0.3, zorder=2))
+            shown += 1
+            continue
         elif cls in ("IfcWindow", "IfcDoor"):
             colour, alpha, z = ("#4aa3c8" if cls == "IfcWindow" else "#c0622d"), 1.0, 4
         elif cls in ("IfcFooting", "IfcBuildingElementProxy", "IfcFurnishingElement") and zmin <= el + cut:
@@ -136,7 +141,7 @@ def plan(model, geo, storey, path, cut=1.2):
     return shown
 
 
-def iso(model, geo, path):
+def iso(model, geo, path, notes):
     fig = plt.figure(figsize=(12, 6))
     lo = np.full(3, np.inf)
     hi = np.full(3, -np.inf)
@@ -148,17 +153,19 @@ def iso(model, geo, path):
             v, f = geo[e.id()]
             terrain = e.is_a("IfcGeographicElement")
             if terrain and len(f) > 20000:
-                continue
+                notes.append("terrain: %d triangles, drawing every %dth" % (len(f), -(-len(f) // 20000)))
+                f = f[::-(-len(f) // 20000)]
             col = "#9bb37a" if terrain else ISO_COLOURS.get(e.is_a(), "#bbbbbb")
             ax.add_collection3d(Poly3DCollection(v[f], facecolor=col, edgecolor="none" if terrain else "#00000022", linewidths=0.2,
                                                  alpha=0.25 if terrain else (0.55 if e.is_a() in ("IfcWindow", "IfcDoor") else 0.95)))
             if not terrain:
                 lo, hi = np.minimum(lo, v.min(0)), np.maximum(hi, v.max(0))
-        pad = 0.15 * (hi - lo)
-        ax.set_xlim(lo[0] - pad[0], hi[0] + pad[0])
-        ax.set_ylim(lo[1] - pad[1], hi[1] + pad[1])
-        ax.set_zlim(lo[2] - pad[2], hi[2] + pad[2])
-        ax.set_box_aspect(tuple(np.maximum(hi - lo + 2 * pad, 1e-3)))
+        if np.isfinite(lo).all():
+            pad = 0.15 * (hi - lo)
+            ax.set_xlim(lo[0] - pad[0], hi[0] + pad[0])
+            ax.set_ylim(lo[1] - pad[1], hi[1] + pad[1])
+            ax.set_zlim(lo[2] - pad[2], hi[2] + pad[2])
+            ax.set_box_aspect(tuple(np.maximum(hi - lo + 2 * pad, 1e-3)))
         ax.view_init(el, az)
         ax.set_axis_off()
     fig.tight_layout()
@@ -171,6 +178,7 @@ def main():
     ap.add_argument("ifc")
     ap.add_argument("out_dir")
     ap.add_argument("--no-iso", action="store_true")
+    ap.add_argument("--strict", action="store_true", help="exit 3 when an element had to be left out of the pictures")
     a = ap.parse_args()
     if plt is None:
         print("matplotlib is not installed: pip install matplotlib", file=sys.stderr)
@@ -181,7 +189,8 @@ def main():
         print("cannot read %s: %s" % (a.ifc, exc), file=sys.stderr)
         sys.exit(3)
     os.makedirs(a.out_dir, exist_ok=True)
-    geo = meshes(model)
+    skipped, notes = [], []
+    geo = meshes(model, skipped)
     for i, st in enumerate(sorted(model.by_type("IfcBuildingStorey"), key=lambda s: s.Elevation or 0.0)):
         slug = re.sub(r"[^a-z0-9]+", "-", (st.Name or "level").lower()).strip("-")[:40]
         p = os.path.join(a.out_dir, "plan-%d-%s.png" % (i, slug))
@@ -189,8 +198,14 @@ def main():
         print("wrote %s (%d elements)" % (p, n))
     if not a.no_iso:
         p = os.path.join(a.out_dir, "iso.png")
-        iso(model, geo, p)
+        iso(model, geo, p, notes)
         print("wrote " + p)
+    for n in sorted(set(notes)):
+        print("note: " + n)
+    if skipped:
+        print("left out of the pictures: %d element(s) whose geometry could not be built, first %s" % (len(skipped), "; ".join(skipped[:3])), file=sys.stderr)
+        if a.strict:
+            sys.exit(3)
 
 
 if __name__ == "__main__":

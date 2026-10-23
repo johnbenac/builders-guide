@@ -1,6 +1,6 @@
 {
  "format": "rules/1",
- "version": "2.0.0",
+ "version": "2.1.0",
  "count": 197,
  "rules": [
   {
@@ -434,7 +434,7 @@
     "building"
    ],
    "guide": "1 Builder's and Architect's",
-   "statement": "Put nothing below the lowest finished floor (local z = 0) except slabs, footings, piles, walls, stairs and ramps.",
+   "statement": "Put nothing below the lowest finished floor except slabs, footings, piles, walls, stairs, ramps, openings, the terrain element and reservation volumes.",
    "rationale": "Content below the lowest floor means the origin sits at the wrong height or something is buried by mistake.",
    "how_to_check": {
     "tool": "tools/check_ifc.py",
@@ -442,7 +442,7 @@
     "method": "automated: the finding carries rule id B-142"
    },
    "automated": true,
-   "fix_hint": "Move the origin to the lowest finished floor, or make the element a slab, footing, pile, wall, stair or ramp.",
+   "fix_hint": "Move the origin to the lowest finished floor, or make the element a slab, footing, pile, wall, stair or ramp (openings, terrain and reservation volumes are exempt).",
    "examples": {
     "good": "footings and a buried stair below z 0",
     "bad": "a door below the lowest floor"
@@ -772,7 +772,7 @@
    "how_to_check": {
     "tool": "tools/check_ifc.py",
     "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
-    "method": "automated: the finding carries rule id B-30"
+    "method": "automated estimate: the finding carries rule id B-30; the script approximates the rule (overlap thicker than a wall, from the room floor outlines), so a person confirms it and a consumer should not raise it to required lightly"
    },
    "automated": true,
    "fix_hint": "Trim the room outlines so that they overlap by no more than a wall thickness.",
@@ -1109,7 +1109,7 @@
    "how_to_check": {
     "tool": "tools/check_ifc.py",
     "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
-    "method": "automated: the finding carries rule id B-47"
+    "method": "automated estimate: the finding carries rule id B-47; the script approximates the rule (follows doors, stairs and open edges between rooms; rooms joined in other ways are reported), so a person confirms it and a consumer should not raise it to required lightly"
    },
    "automated": true,
    "fix_hint": "Add a doorway or stair that links the room to a circulation room, or declare the circulation room's Function.",
@@ -1287,7 +1287,7 @@
    "how_to_check": {
     "tool": "tools/check_ifc.py",
     "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
-    "method": "automated: the finding carries rule id B-54"
+    "method": "automated estimate: the finding carries rule id B-54; the script approximates the rule (vertical rays at a grid of points in each room), so a person confirms it and a consumer should not raise it to required lightly"
    },
    "automated": true,
    "fix_hint": "Add a slab, roof or covering above the room.",
@@ -1388,7 +1388,7 @@
    "how_to_check": {
     "tool": "tools/check_ifc.py",
     "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
-    "method": "automated: the finding carries rule id B-61"
+    "method": "automated estimate: the finding carries rule id B-61; the script approximates the rule (vertical rays above every tread, against slabs, roofs, coverings, beams, walls and other flights), so a person confirms it and a consumer should not raise it to required lightly"
    },
    "automated": true,
    "fix_hint": "Lower the riser to the profile's limit and cut the slab above the flight (an IfcOpeningElement) so that every tread has the profile's head-room.",
@@ -2274,15 +2274,15 @@
     "building"
    ],
    "guide": "1 Builder's and Architect's",
-   "statement": "Do not model terrain, soil, relief, water, pads, cuts or fills in IFC, except the derived, read-only terrain patch of the terrain extension (section 16).",
-   "rationale": "Terrain, water and pads belong to the consumer's terrain source; a second copy in the file disagrees with the world.",
+   "statement": "Do not model terrain, soil or relief in IFC unless the profile says how.",
+   "rationale": "Terrain, soil and relief belong to the consumer's own source; a second copy in the file disagrees with the world.",
    "how_to_check": {
     "tool": "tools/check_ifc.py",
     "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
     "method": "automated: the finding carries rule id B-115"
    },
    "automated": true,
-   "fix_hint": "Remove terrain, water, pads, cuts and fills from the file; with the terrain extension use only the imported terrain patch (tools/terrain_import.py).",
+   "fix_hint": "Remove terrain, soil and relief from the file unless the profile enables the terrain extension; then use only the imported terrain patch (tools/terrain_import.py).",
    "examples": {
     "good": "",
     "bad": ""
@@ -2539,7 +2539,7 @@
   },
   {
    "id": "B-136",
-   "level": "required",
+   "level": "recommended",
    "applies_to": [
     "building"
    ],
@@ -2549,7 +2549,7 @@
    "how_to_check": {
     "tool": "tools/check_ifc.py",
     "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
-    "method": "automated: the finding carries rule id B-136"
+    "method": "automated estimate: the finding carries rule id B-136; the script approximates the rule (terrain heights at sampled points of the footprint), so a person confirms it and a consumer should not raise it to required lightly"
    },
    "automated": true,
    "fix_hint": "Send the source the correct finished floor elevation so that it grades the pad to it, then import the new patch.",
@@ -4839,7 +4839,7 @@
     "package"
    ],
    "guide": "4 Delivery and Acceptance",
-   "statement": "When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states.",
+   "statement": "When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states and to what the check report of the master file found in it, and keep the site request (its building origin, azimuth and floor height must be the file's).",
    "rationale": "The terrain source can change between versions; the receiving party must be able to tell exactly which version the heights came from.",
    "how_to_check": {
     "tool": "tools/build_package.py",

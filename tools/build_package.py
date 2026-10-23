@@ -207,12 +207,24 @@ def verify(root):
     lic = man.get("licence", {})
     R.add("X-21", "REQUIRED", bool(str(lic.get("statement", "")).strip()) or not need_lic, "a licence statement is present" if lic.get("statement") else "no licence statement")
 
-    # terrain: the source version is pinned (X-23)
+    # terrain: the source version is pinned and agrees with the sidecar, the site request and the check report of the master (X-23)
     terrain_files = [p for p, f in listed.items() if f["role"] in ("terrain-patch", "terrain-sidecar", "site-request")]
     mt = man.get("terrain")
     if rpt.extension_enabled("terrain") or mt or terrain_files:
         probs = []
-        if not mt:
+
+        def read_json(rel):
+            try:
+                with open(os.path.join(root, rel), encoding="utf-8") as fh:
+                    doc = json.load(fh)
+            except (OSError, ValueError):
+                probs.append("%s cannot be read as JSON" % rel)
+                return None
+            if not isinstance(doc, dict):
+                probs.append("%s is not a JSON object" % rel)
+                return None
+            return doc
+        if not isinstance(mt, dict):
             probs.append("the manifest has no terrain section")
         else:
             side = None
@@ -225,12 +237,16 @@ def verify(root):
             if sp not in listed or listed[sp]["role"] != "terrain-sidecar":
                 probs.append("terrain.sidecar.path %r is not a listed sidecar" % sp)
             else:
-                try:
-                    with open(os.path.join(root, sp), encoding="utf-8") as fh:
-                        side = json.load(fh)
-                except (OSError, ValueError):
-                    probs.append("the sidecar cannot be read as JSON")
+                side = read_json(sp)
             if side is not None:
+                try:
+                    import jsonschema
+                    with open(os.path.join(here, "..", "schemas", "terrain-patch.schema.json"), encoding="utf-8") as fh:
+                        errs = list(jsonschema.Draft7Validator(json.load(fh)).iter_errors(side))
+                    if errs:
+                        probs.append("the sidecar does not match its schema: %s" % errs[0].message[:120])
+                except ImportError:
+                    pass
                 if side.get("package") != mt.get("package"):
                     probs.append("terrain.package differs from the sidecar's package (name, version, hash)")
                 if side.get("patch", {}).get("sha256") != mt.get("patch", {}).get("sha256"):
@@ -238,7 +254,32 @@ def verify(root):
             for q in (pp, sp):
                 if q in listed and q not in prov:
                     probs.append("no provenance entry for %s" % q)
-        R.add("X-23", "REQUIRED", not probs, "terrain source pinned in the manifest and equal to the sidecar" if not probs else probs[0])
+            rep_rel = man.get("checks", {}).get("report")
+            rep_doc = read_json(rep_rel) if rep_rel in listed else None
+            if rep_doc is not None:
+                pins = rep_doc.get("terrain")
+                if not isinstance(pins, dict):
+                    probs.append("the check report of the master records no terrain source (was the terrain extension on?)")
+                else:
+                    for rq in (p for p, f in listed.items() if f["role"] == "site-request"):      # the request's placement is the file's
+                        doc = read_json(rq)
+                        if doc is None:
+                            continue
+                        want = {"FloorHeightAboveSeaMetres": doc.get("finishedFloorElevationMetres"), "AzimuthDegrees": doc.get("buildingAzimuthDegrees"),
+                                "EastingMetres": doc.get("buildingOrigin", {}).get("x"), "NorthingMetres": doc.get("buildingOrigin", {}).get("y")}
+                        for key, val in want.items():
+                            if not isinstance(pins.get(key), (int, float)) or not isinstance(val, (int, float)) or abs(pins[key] - val) > 1e-6:
+                                probs.append("%s places the building differently from the master file (%s: %r in the file, %r in the request)" % (
+                                    rq, key, pins.get(key), val))
+                                break
+                    pkg, pat = mt.get("package", {}), mt.get("patch", {})
+                    for key, want in (("PackageName", pkg.get("name")), ("PackageVersion", pkg.get("version")), ("PackageSha256", pkg.get("sha256")),
+                                      ("PatchSha256", pat.get("sha256"))):
+                        if pins.get(key) != want:
+                            probs.append("the master file was built on another terrain source: %s is %r in the file and %r in the manifest" % (
+                                key, pins.get(key), want))
+                            break
+        R.add("X-23", "REQUIRED", not probs, "terrain source pinned in the manifest and equal to the sidecar, the request and the master" if not probs else probs[0])
 
     # the check report belongs to the master file (X-40)
     chk = man.get("checks", {})
@@ -266,7 +307,7 @@ def report(R):
         if lvl == "OFF":
             continue
         fs.append(rpt.finding(rule, "pass" if ok else ("fail" if lvl == "REQUIRED" else "warn"), msg, file="manifest.json", level=lvl))
-    rep = rpt.make_report("build_package.py", "2.0.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
+    rep = rpt.make_report("build_package.py", "2.1.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
     if OPTS["report"]:
         rpt.write(rep, OPTS["report"])
     if OPTS["json"]:
@@ -294,7 +335,7 @@ if __name__ == "__main__":
     elif len(argv) == 2 and argv[0] == "verify":
         OPTS["root"] = argv[1]
         if not os.path.isdir(argv[1]):
-            rep = rpt.make_report("build_package.py", "2.0.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
+            rep = rpt.make_report("build_package.py", "2.1.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
             print(json.dumps(rep, indent=1) if OPTS["json"] else "ERROR input not found: " + argv[1])
             sys.exit(rep["exitCode"])
         verify(argv[1])

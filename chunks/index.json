@@ -173,7 +173,7 @@
    "file": "chunks/g1--4-units-axes-origin-and-levels.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "4. Units, axes, origin and levels",
-   "approx_tokens": 558,
+   "approx_tokens": 568,
    "rules": [
     "B-10",
     "B-11",
@@ -325,7 +325,7 @@
    "file": "chunks/g1--13-geometry-hygiene.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "13. Geometry hygiene",
-   "approx_tokens": 446,
+   "approx_tokens": 459,
    "rules": [
     "B-110",
     "B-111",
@@ -368,7 +368,7 @@
    "file": "chunks/g1--17-terrain-context-the-rules.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "17. Terrain context: the rules",
-   "approx_tokens": 1196,
+   "approx_tokens": 1231,
    "rules": [
     "B-130",
     "B-131",
@@ -667,7 +667,7 @@
    "file": "chunks/g4--3-the-manifest.md",
    "source": "04-delivery-and-acceptance-guide.md",
    "title": "3. The manifest",
-   "approx_tokens": 1106,
+   "approx_tokens": 1144,
    "rules": [
     "X-10",
     "X-11",
@@ -880,7 +880,7 @@
    "file": "chunks/params--introduction-part-3-of-3.md",
    "source": "07-profile-parameters.md",
    "title": "Introduction (part 3 of 3)",
-   "approx_tokens": 1140,
+   "approx_tokens": 1180,
    "rules": []
   },
   {

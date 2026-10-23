@@ -67,6 +67,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.terrain.buryToleranceMetres` | how far the lowest finished floor may stand below the terrain at every footprint point before the building counts as buried | `0.5` | `0.5` | B-136 |
 | `extensions.terrain.siteElevationToleranceMetres` | largest difference between IfcSite.RefElevation and the terrain height at the building origin | `0.1` | `0.1` | B-134 |
 | `extensions.terrain.maxTriangles` | most triangles in the terrain element | `200000` | `200000` | B-138 |
+| `extensions.terrain.maxPatchSamples` | most samples read from one height patch; a larger patch is refused before it is loaded | `25000000` | `25000000` | - |
 | `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
 | `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
 | `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |

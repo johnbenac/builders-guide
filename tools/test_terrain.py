@@ -5,7 +5,7 @@
 
     python3 test_terrain.py [WORK_DIR]
 
-Requires: pip install ifcopenshell numpy pillow scipy
+Requires: pip install -r tools/requirements-terrain.txt
 """
 import json
 import os
@@ -21,7 +21,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import terrain_lib as tl  # noqa: E402
 
-work = sys.argv[1] if len(sys.argv) > 1 else tempfile.mkdtemp(prefix="terrain-test-")
+_tmp = None if len(sys.argv) > 1 else tempfile.TemporaryDirectory(prefix="terrain-test-")      # removed when the test ends
+work = sys.argv[1] if len(sys.argv) > 1 else _tmp.name
 os.makedirs(work, exist_ok=True)
 
 

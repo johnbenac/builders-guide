@@ -26,54 +26,18 @@ import ifcopenshell
 import ifcopenshell.geom
 
 import report as rpt
-from terrain_lib import sha256_file
+from terrain_lib import footprint_polygon, ground_levels, sha256_file
 
 SITE_FRAME = "site: x east, y north, z up, metres; heights above mean sea level"
 
 
-def ground_levels(model):
-    """The levels that touch the ground: those declared with GroundContact true (B-141), else the lowest level."""
-    storeys = model.by_type("IfcBuildingStorey")
-    if not storeys:
-        return []
-    flagged = []
-    for st in storeys:
-        for rel in st.IsDefinedBy or []:
-            ps = getattr(rel, "RelatingPropertyDefinition", None)
-            if ps is not None and ps.is_a("IfcPropertySet") and ps.Name == "Pset_Declaration_Level":
-                for p in ps.HasProperties or []:
-                    if p.Name == "GroundContact" and p.NominalValue is not None and p.NominalValue.wrappedValue is True:
-                        flagged.append(st)
-    return sorted(flagged or [min(storeys, key=lambda x: x.Elevation if x.Elevation is not None else 0.0)],
-                  key=lambda x: x.Elevation or 0.0)
-
-
-def level_elements(model, storey):
-    out = []
-    for rel in model.by_type("IfcRelContainedInSpatialStructure"):
-        if rel.RelatingStructure == storey:
-            out += [e for e in rel.RelatedElements if e.is_a("IfcSlab") or e.is_a("IfcWall")]
-    return out
-
-
-def footprint(model, storey):
-    """Plan footprint (shapely geometry, file frame) of the slabs and walls of one level; None when it has none."""
-    from shapely.geometry import Polygon
-    from shapely.ops import unary_union
-    settings = ifcopenshell.geom.settings()
-    settings.set("use-world-coords", True)
-    parts = []
-    for e in level_elements(model, storey):
+def world_mesh(settings):
+    def mesh_of(e):
         if not getattr(e, "Representation", None):
-            continue
+            return None
         sh = ifcopenshell.geom.create_shape(settings, e)
-        v = np.array(sh.geometry.verts).reshape(-1, 3)
-        f = np.array(sh.geometry.faces).reshape(-1, 3)
-        for tri in v[f][:, :, :2]:
-            p = Polygon(tri)
-            if p.area > 1e-9:
-                parts.append(p)
-    return unary_union(parts).buffer(0) if parts else None
+        return np.array(sh.geometry.verts).reshape(-1, 3), np.array(sh.geometry.faces).reshape(-1, 3)
+    return mesh_of
 
 
 def polygons_of(geom, method):
@@ -112,11 +76,19 @@ def main():
         print("cannot read %s: %s" % (a.ifc, exc), file=sys.stderr)
         sys.exit(3)
     from shapely.ops import unary_union
+    storeys = model.by_type("IfcBuildingStorey")
+    if storeys and abs(min(float(st.Elevation or 0.0) for st in storeys)) > 1e-6:
+        print("the lowest level of %s is at %g m; with the terrain extension the lowest level's finished floor must be local z = 0 (B-133)" % (
+            a.ifc, min(float(st.Elevation or 0.0) for st in storeys)), file=sys.stderr)
+        sys.exit(3)
+    settings = ifcopenshell.geom.settings()
+    settings.set("use-world-coords", True)
+    mesh_of = world_mesh(settings)
     method = "hull" if a.hull else "union"
     e0, n0 = a.origin
     levels, geoms = [], []
     for st in ground_levels(model):
-        g = footprint(model, st)
+        g = footprint_polygon(model, st, mesh_of)
         if g is None or g.is_empty:
             continue
         geoms.append(g)

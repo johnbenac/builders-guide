@@ -393,6 +393,10 @@
             "maxTriangles": {
               "type": "number",
               "description": "most triangles in the terrain element"
+            },
+            "maxPatchSamples": {
+              "type": "number",
+              "description": "most samples read from one height patch; a larger patch is refused before it is loaded"
             }
           }
         }

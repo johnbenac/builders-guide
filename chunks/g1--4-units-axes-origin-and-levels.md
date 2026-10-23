@@ -13,4 +13,4 @@
 
 **B-15 · RECOMMENDED** - Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.
 
-**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor (local z = 0) except slabs, footings, piles, walls, stairs and ramps. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.
+**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor except slabs, footings, piles, walls, stairs, ramps, openings, the terrain element and reservation volumes. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.

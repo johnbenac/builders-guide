@@ -6,7 +6,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.0.0 (2026-10-22). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.1.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -120,10 +120,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.0.0.pdf` | all guides, the worked example, the parameters and the rules index in one document |
-| `builders-guide-2.0.0.html` | the same, as one web page |
-| `builders-guide-2.0.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.0.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.1.0.pdf` | all guides, the worked example, the parameters and the rules index in one document |
+| `builders-guide-2.1.0.html` | the same, as one web page |
+| `builders-guide-2.1.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.1.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.
@@ -297,7 +297,7 @@ your delivery notes. If a number your work depends on is missing, ask the consum
 
 **B-15 · RECOMMENDED** - Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.
 
-**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor (local z = 0) except slabs, footings, piles, walls, stairs and ramps. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.
+**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor except slabs, footings, piles, walls, stairs, ramps, openings, the terrain element and reservation volumes. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.
 
 ---
 
@@ -541,7 +541,7 @@ These rules apply when the profile enables `extensions.signboards` (a consumer t
 
 **B-114 · RECOMMENDED** - Do not model what cannot be seen or used: hidden interiors, bolts, hinge detail, text as geometry, curves with more than `geometry.maxCurveSegmentsPerCircle` segments per full circle.
 
-**B-115 · RECOMMENDED** - Do not model terrain, soil, relief, water, pads, cuts or fills in IFC, except the derived, read-only terrain patch of the terrain extension (section 16). Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid.
+**B-115 · RECOMMENDED** - Do not model terrain, soil or relief in IFC unless the profile says how. Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid. The terrain extension (section 16) is how a profile says how: with it, the only terrain in the file is the derived patch it describes.
 
 **B-116 · RECOMMENDED** - Do not model a thin layer at a height where the consumer adds its own surface layer (floor finishes laid on the room floor); two layers at one height flicker.
 
@@ -637,7 +637,7 @@ These rules apply when `extensions.terrain.enabled` is true (section 16 explains
 
 **B-135 · REQUIRED · terrain** - Do not put a building in water: the terrain at every footprint point of every ground-contact level is at or above `extensions.terrain.seaLevelMetres`, and `FootprintInWater` is not true. Terrain below sea level is seabed.
 
-**B-136 · REQUIRED · terrain** - Do not let the building float or sink: no ground-contact level's floor is above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point of that level, or below it by more than `extensions.terrain.buryToleranceMetres` at every one. A house on a slope may stand above the ground at one edge and below it at another; that is allowed. A building above or below the ground everywhere was placed at the wrong height.
+**B-136 · RECOMMENDED · terrain** - Do not let the building float or sink: no ground-contact level's floor is above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point of that level, or below it by more than `extensions.terrain.buryToleranceMetres` at every one. A house on a slope may stand above the ground at one edge and below it at another; that is allowed. A building above or below the ground everywhere was placed at the wrong height. The check is an estimate from the footprint points, so it starts as a warning; a consumer that relies on it raises it in `ruleLevels`.
 
 **B-137 · REQUIRED · terrain** - Pin the terrain source in a property set `Pset_Declaration_Terrain` on the terrain element: `Role` (`derived-context`), `PackageName`, `PackageVersion`, `PackageSha256`, `PatchSha256`, `PatchLevel`, `PixelSizeMetres`, `ErrorBoundMetres` (at most `extensions.terrain.maxErrorBoundMetres`), `Frame` and `VerticalDatum`. Heights near water can change between source versions, so a delivery says exactly which version it was built on and never carries numbers from an earlier one.
 
@@ -1214,7 +1214,7 @@ python3 tools/build_package.py verify example-room-1.0.0
 
 **X-21 · REQUIRED** - State a licence for every asset and a `licence.statement` for the package when the profile requires it (`package.requireLicence`, default true). A package whose licence terms are missing, or do not allow the receiving party to use, copy and adapt the work for the purpose of the assignment, cannot be accepted.
 
-**X-23 · REQUIRED · terrain** - When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states. The terrain source can change between versions (shorelines in particular), so the delivery must say exactly which version its heights came from.
+**X-23 · REQUIRED · terrain** - When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states and to what the check report of the master file found in it, and keep the site request (its building origin, azimuth and floor height must be the file's). The terrain source can change between versions (shorelines in particular), so the delivery must say exactly which version its heights came from.
 
 **X-22 · RECOMMENDED** - Deliver only content you are free to hand over. Do not include material that is restricted, reproduced from another party's work without permission, or that carries identifying marks of a third party. If part of your work is restricted, say so in `notes/open-points.md` and leave it out.
 
@@ -1731,6 +1731,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.terrain.buryToleranceMetres` | how far the lowest finished floor may stand below the terrain at every footprint point before the building counts as buried | `0.5` | `0.5` | B-136 |
 | `extensions.terrain.siteElevationToleranceMetres` | largest difference between IfcSite.RefElevation and the terrain height at the building origin | `0.1` | `0.1` | B-134 |
 | `extensions.terrain.maxTriangles` | most triangles in the terrain element | `200000` | `200000` | B-138 |
+| `extensions.terrain.maxPatchSamples` | most samples read from one height patch; a larger patch is refused before it is loaded | `25000000` | `25000000` | - |
 | `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
 | `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
 | `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |

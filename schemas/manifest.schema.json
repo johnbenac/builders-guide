@@ -279,7 +279,7 @@
     },
     "terrain": {
       "type": "object",
-      "description": "present with the terrain extension: the terrain source version the patch was cut from (guide 4, X-23)",
+      "description": "present with the terrain extension: the terrain source version the patch was cut from, equal to the sidecar and to what the check report found in the master file (guide 4, X-23)",
       "required": [
         "package",
         "patch",

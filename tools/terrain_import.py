@@ -19,7 +19,7 @@ master file:
 It never edits the heights and never cuts a pad. Exit codes: 0 written, 2 wrong command line, 3 an input is unusable (the message
 says which, for example a hash that does not match the sidecar).
 
-Requires: pip install ifcopenshell numpy pillow scipy
+Requires: pip install ifcopenshell numpy pillow scipy shapely jsonschema
 """
 import argparse
 import json
@@ -48,14 +48,14 @@ def fail(msg):
 
 def load_json(path, schema_rel):
     try:
+        import jsonschema
+    except ImportError:
+        fail("the Python package jsonschema is needed to validate %s: pip install -r tools/requirements.txt" % path)
+    try:
         with open(path, encoding="utf-8") as fh:
             doc = json.load(fh)
     except (OSError, ValueError) as exc:
         fail("cannot read %s: %s" % (path, exc))
-    try:
-        import jsonschema
-    except ImportError:
-        return doc
     with open(os.path.join(rpt.ROOT, schema_rel), encoding="utf-8") as fh:
         schema = json.load(fh)
     errs = sorted(jsonschema.Draft7Validator(schema).iter_errors(doc), key=lambda e: list(e.path))
@@ -86,38 +86,56 @@ def main():
     for p in (a.patch, a.master):
         if not os.path.isfile(p):
             fail("no such file: " + p)
+    if os.path.abspath(a.out) == os.path.abspath(a.master) or (os.path.exists(a.out) and os.path.samefile(a.out, a.master)):
+        fail("--out must not be the master file; write a new file")
 
     # pins: the patch is the one the sidecar describes, and the request was made for this master
     if tl.sha256_file(a.patch) != side["patch"]["sha256"]:
         fail("the patch hash differs from the sidecar's (%s); the sidecar describes another file" % side["patch"]["sha256"][:12])
+    if side["patch"]["file"] != os.path.basename(a.patch):
+        fail("the sidecar describes the file %r, not %r" % (side["patch"]["file"], os.path.basename(a.patch)))
     if tl.sha256_file(a.master) != req["master"]["sha256"]:
         fail("the site request was made for another version of the master file; run site_request.py again")
+    if side["frame"] != req["frame"]:
+        fail("the sidecar's frame (%r) is not the request's (%r)" % (side["frame"], req["frame"]))
     if abs(side["verticalDatum"]["seaLevelMetres"] - cfg["seaLevelMetres"]) > 1e-9:
         fail("the sidecar puts sea level at %g m, the profile at %g m" % (side["verticalDatum"]["seaLevelMetres"], cfg["seaLevelMetres"]))
     if cfg["crsName"] and side["crs"]["name"] != cfg["crsName"]:
         fail("the sidecar's CRS is named %r, the profile expects %r" % (side["crs"]["name"], cfg["crsName"]))
     bound = cfg["maxErrorBoundMetres"] if a.error_bound is None else a.error_bound
+    if not bound > 0:
+        fail("the error bound must be greater than 0 (got %g)" % bound)
     if bound > cfg["maxErrorBoundMetres"] + 1e-12:
         fail("error bound %g m is above the profile's %g m" % (bound, cfg["maxErrorBoundMetres"]))
     if abs(prof["frame"].get("levelOffsetMetres", 0.0)) > 1e-12:
         fail("the profile's frame.levelOffsetMetres must be 0 with the terrain extension; the floor height is carried by the georeference")
+    pm = side["patch"]
+    if pm["width"] * pm["height"] > cfg["maxPatchSamples"]:
+        fail("the patch has %d x %d samples, more than the profile's limit of %d; cut a smaller patch or use a coarser level" % (
+            pm["width"], pm["height"], cfg["maxPatchSamples"]))
 
     try:
-        z, info = tl.read_patch(a.patch)
+        z, info = tl.read_patch(a.patch, cfg["maxPatchSamples"])
     except tl.PatchError as exc:
         fail(str(exc))
-    pm = side["patch"]
     ps, origin = pm["pixelSizeMetres"], (pm["origin"]["x"], pm["origin"]["y"])
     if z.shape != (pm["height"], pm["width"]):
         fail("the patch is %d x %d samples, the sidecar says %d x %d" % (z.shape[1], z.shape[0], pm["width"], pm["height"]))
-    if info["pixelSize"] is not None and (abs(info["pixelSize"][0] - ps) > 1e-9 * max(1.0, ps) or abs(info["origin"][0] - origin[0]) > 1e-6
-                                          or abs(info["origin"][1] - origin[1]) > 1e-6):
-        fail("the georeferencing tags of the GeoTIFF disagree with the sidecar (pixel size, origin)")
-
+    if abs(info["pixelSize"] - ps) > 1e-9 * max(1.0, ps) or abs(info["origin"][0] - origin[0]) > 1e-6 or abs(info["origin"][1] - origin[1]) > 1e-6:
+        fail("the georeferencing tags of the GeoTIFF disagree with the sidecar (pixel size %g vs %g, origin %s vs %s)" % (
+            info["pixelSize"], ps, info["origin"], origin))
     e0, n0, floor = req["buildingOrigin"]["x"], req["buildingOrigin"]["y"], req["finishedFloorElevationMetres"]
+    (bx0, by0), (bx1, by1) = req["patch"]["bounds"]["min"], req["patch"]["bounds"]["max"]
+    xmin, ymin, xmax, ymax = tl.patch_extent(z.shape, origin, ps)
+    if bx0 < xmin - 1e-6 or by0 < ymin - 1e-6 or bx1 > xmax + 1e-6 or by1 > ymax + 1e-6:
+        fail("the patch (sample centres %.3f, %.3f to %.3f, %.3f) does not cover the area the request asked for (%.3f, %.3f to %.3f, %.3f)" % (
+            xmin, ymin, xmax, ymax, bx0, by0, bx1, by1))
     azimuth = float(req["buildingAzimuthDegrees"])
     ca, sa = math.cos(math.radians(azimuth)), math.sin(math.radians(azimuth))
-    verts_idx, tris, worst = tl.decimate(z, bound)
+    try:
+        verts_idx, tris, worst = tl.decimate(z, bound, max_triangles=cfg["maxTriangles"])
+    except (tl.PatchError, ValueError) as exc:
+        fail(str(exc))
     sx = origin[0] + (verts_idx[:, 0] + 0.5) * ps
     sy = origin[1] - (verts_idx[:, 1] + 0.5) * ps
     sz = z[verts_idx[:, 1], verts_idx[:, 0]]
@@ -125,10 +143,26 @@ def main():
     fx, fy, fz = ca * dx + sa * dy, -sa * dx + ca * dy, sz - floor
     tris = tl.faces_up(np.column_stack([fx, fy]), tris)
 
-    ground_origin = tl.bilinear(z, origin, ps, e0, n0)
+    # the site elevation is the height of the network that is written (what the checker reads), not of the raster
+    ground_tin = tl.heights_at(np.column_stack([fx, fy, fz]), tris, np.array([[0.0, 0.0]]))[0]
+    if np.isnan(ground_tin):
+        fail("the patch does not cover the building origin")
+    ground_origin = float(ground_tin) + floor
+    try:
+        ground_raster = tl.bilinear(z, origin, ps, e0, n0)
+    except ValueError:
+        fail("the patch does not cover the building origin")
+    if abs(ground_origin - ground_raster) > cfg["siteElevationToleranceMetres"]:
+        print("terrain_import: warning: the network is %.3f m from the raster at the building origin (the error bound holds at sample "
+              "positions only); the site elevation follows the network" % abs(ground_origin - ground_raster), file=sys.stderr)
     sea = cfg["seaLevelMetres"]
-    corners = [pt for ring in req["footprint"]["polygons"] for pt in ring]
-    in_water = any(tl.bilinear(z, origin, ps, x, y) < sea for x, y in corners)
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+    foot = unary_union([Polygon(r) for r in req["footprint"]["polygons"]]).buffer(0)
+    try:
+        in_water = any(tl.bilinear(z, origin, ps, x, y) < sea for x, y in tl.sample_polygon(foot, spacing=1.0))
+    except ValueError:
+        fail("the patch does not cover the whole footprint")
 
     # ------------------------------------------------------------------ write
     with open(a.master, "rb") as fh:
@@ -142,7 +176,12 @@ def main():
     if not (sites and ctxs and bodies):
         fail("the master file needs an IfcSite and a model context with a Body sub-context")
     site, ctx, body = sites[0], ctxs[0], bodies[0]
-    metre = [u for ua in model.by_type("IfcUnitAssignment") for u in ua.Units if u.is_a("IfcSIUnit") and u.UnitType == "LENGTHUNIT"][0]
+    if any(getattr(r.RelatingPropertyDefinition, "Name", None) == "Pset_Declaration_Site" for r in site.IsDefinedBy or []):
+        fail("the site already has a Pset_Declaration_Site; remove it or write the terrain by hand")
+    metres = [u for ua in model.by_type("IfcUnitAssignment") for u in ua.Units if u.is_a("IfcSIUnit") and u.UnitType == "LENGTHUNIT"]
+    if not metres:
+        fail("the master file declares no SI length unit (B-02)")
+    metre = metres[0]
 
     def prop(name, value):
         if isinstance(value, bool):
@@ -191,13 +230,13 @@ def main():
     pset(site, "Pset_Declaration_Site", site_props)
 
     text = model.to_string()
-    old_name = re.search(r"FILE_NAME\(.*\);", raw)
+    old_name = re.search(r"FILE_NAME\(.*?\);", raw, re.S)
     if old_name:
-        text = re.sub(r"FILE_NAME\(.*\);", lambda _m: old_name.group(0), text, count=1)
+        text = re.sub(r"FILE_NAME\(.*?\);", lambda _m: old_name.group(0), text, count=1, flags=re.S)
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, "w", newline="\n") as fh:
         fh.write(text)
-    print("wrote %s: %d samples reduced to %d vertices and %d triangles (max error %.4f m, bound %g m); site elevation %.3f m; "
+    print("wrote %s: %d samples reduced to %d vertices and %d triangles (max error %.4f m at the samples, bound %g m); site elevation %.3f m; "
           "floor %.3f m above sea level; footprint in water: %s" % (a.out, z.size, len(fx), len(tris), worst, bound, ground_origin, floor,
                                                                      "yes" if in_water else "no"))
 

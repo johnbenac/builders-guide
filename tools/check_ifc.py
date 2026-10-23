@@ -11,7 +11,7 @@ Every finding carries a rule id from the guides and its level (REQUIRED or RECOM
 any REQUIRED rule fails, 0 otherwise. Rules that a script can only approximate are marked "estimate" in the
 message; a person confirms them.
 
-Requires: pip install ifcopenshell numpy
+Requires: pip install ifcopenshell numpy shapely (scipy and pillow only for the terrain tools)
 """
 import argparse
 import collections
@@ -28,10 +28,15 @@ import ifcopenshell.geom
 import ifcopenshell.util.placement
 import ifcopenshell.util.unit
 
+try:
+    import shapely  # noqa: F401
+except ImportError:
+    shapely = None
+
 import report as rpt
 import terrain_lib
 
-TOOL_VERSION = "2.0.0"
+TOOL_VERSION = "2.1.0"
 
 DECLARED_BASE = {"RoomId", "Occupant", "Function", "ZoneId", "ZoneClass", "Requirement", "NetAreaSquareMetres", "BaseLevelMetres", "Enclosed",
                  "GroundContact"}
@@ -46,6 +51,7 @@ class Report:
     def __init__(self):
         self.findings = []
         self.file = None
+        self.terrain = None             # the terrain source pins found in the file, for the report (X-23)
 
     def add(self, rule, status, message, element=None, **extra):
         f = rpt.finding(rule, status, message, element=element, file=self.file, **extra)
@@ -152,28 +158,18 @@ def segment_hits(tris, p0, p1):
     return bool(hit.any())
 
 
-def ground_levels(storeys, P):
-    """The levels that touch the ground: those declared GroundContact true in Pset_Declaration_Level (B-141), else the lowest level."""
-    flagged = [st for st in storeys if P.get(st.id(), {}).get("GroundContact") is True]
-    return sorted(flagged or [min(storeys, key=lambda s: s.Elevation if s.Elevation is not None else 0.0)], key=lambda s: s.Elevation or 0.0)
-
-
-def level_points(model, geo, storey, cap=500):
-    """Plan points (file frame) of the slabs and walls of one level: where the building meets the ground there."""
-    pts = [geo[e.id()]["v"][:, :2] for e in list(model.by_type("IfcSlab")) + list(model.by_type("IfcWall"))
-           if e.id() in geo and container_of(e) == storey]
-    if not pts:
-        return np.zeros((0, 2))
-    u = np.unique(np.round(np.vstack(pts), 3), axis=0)
-    if len(u) > cap:
-        u = u[np.linspace(0, len(u) - 1, cap).astype(int)]
-    return u
-
-
 def turn(xy, theta):
     """Rotate plan points counter-clockwise by theta (file frame to the site's axis directions)."""
     c, s = math.cos(theta), math.sin(theta)
     return np.column_stack([c * xy[:, 0] - s * xy[:, 1], s * xy[:, 0] + c * xy[:, 1]])
+
+
+def file_mesh(geo):
+    """mesh_of for terrain_lib.footprint_polygon: the meshes the checker already built, in the file frame."""
+    def mesh_of(e):
+        g = geo.get(e.id())
+        return None if g is None else (g["v"], g["f"])
+    return mesh_of
 
 
 def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
@@ -202,32 +198,48 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
     theta = 0.0
     if len(convs) == 1:
         theta = math.atan2(convs[0].XAxisOrdinate or 0.0, convs[0].XAxisAbscissa if convs[0].XAxisAbscissa is not None else 1.0)
-    Vs = turn(V[:, :2], theta)                                   # the patch is a rectangle in the site's axis directions
+
+    # B-131: the triangles are a consistently oriented, upward-facing disc whose outline is the patch rectangle and whose plan area is
+    # that rectangle's. Overlaps and holes cannot cancel: a directed edge used twice means two triangles lie over each other.
+    uniq, inv = np.unique(np.round(V, 6), axis=0, return_inverse=True)
+    fk = inv.reshape(-1)[F]
+    directed = np.concatenate([fk[:, [0, 1]], fk[:, [1, 2]], fk[:, [2, 0]]])
+    _, dcount = np.unique(directed, axis=0, return_counts=True)
+    uedges, ucount = np.unique(np.sort(directed, axis=1), axis=0, return_counts=True)
+    us = turn(uniq[:, :2], theta)                                # the patch is a rectangle in the site's axis directions
+    lo, hi = us.min(0), us.max(0)
+    tol = 1e-6 * max(1.0, float(np.abs(us).max()))
+
+    def on_side(p, q):
+        return any(abs(p[k] - e) < tol and abs(q[k] - e) < tol for k in (0, 1) for e in (lo[k], hi[k]))
+    ragged = sum(1 for e in uedges[ucount == 1] if not on_side(us[e[0]], us[e[1]]))
     tri = V[F]
-    n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
-    plan_area = n[:, 2] / 2.0
-    bad_tri = int(np.sum(plan_area <= 1e-9))
-    key = np.unique(np.round(V, 6), axis=0, return_inverse=True)[1].reshape(-1)
-    fk = key[F]
-    edges = np.sort(np.concatenate([fk[:, [0, 1]], fk[:, [1, 2]], fk[:, [2, 0]]]), axis=1)
-    _, ecount = np.unique(edges, axis=0, return_counts=True)
-    lo, hi = Vs.min(0), Vs.max(0)
+    plan_area = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])[:, 2] / 2.0
     rect = float((hi[0] - lo[0]) * (hi[1] - lo[1]))
     covered = float(plan_area[plan_area > 0].sum())
     msgs = []
-    if bad_tri:
-        msgs.append("%d triangle(s) do not face up or have no area" % bad_tri)
-    if (ecount > 2).any():
-        msgs.append("%d edge(s) belong to more than two triangles" % int((ecount > 2).sum()))
+    if int(np.sum(plan_area <= 1e-9)):
+        msgs.append("%d triangle(s) do not face up or have no area" % int(np.sum(plan_area <= 1e-9)))
+    if (dcount > 1).any():
+        msgs.append("%d edge(s) are used twice in the same direction (triangles lie over each other, or one is flipped)" % int((dcount > 1).sum()))
+    if (ucount > 2).any():
+        msgs.append("%d edge(s) belong to more than two triangles" % int((ucount > 2).sum()))
+    if ragged:
+        msgs.append("%d outline edge(s) are not on the patch rectangle (a hole or a ragged edge)" % ragged)
     if abs(covered - rect) > 1e-6 * max(rect, 1.0):
-        msgs.append("the triangles cover %.3f m2 of a %.3f m2 patch rectangle (overlap or hole)" % (covered, rect))
+        msgs.append("the triangles cover %.3f m2 of a %.3f m2 patch rectangle" % (covered, rect))
     if msgs:
         R.fail("B-131", "terrain is not a valid heightfield: " + "; ".join(msgs), t.GlobalId)
     else:
         R.ok("B-131", "terrain is a heightfield of %d triangles covering %.1f m2 once" % (len(F), rect))
 
-    grounds = ground_levels(storeys, P)
-    level_pts = [(st, level_points(model, geo, st)) for st in grounds]
+    grounds = terrain_lib.ground_levels(model)
+    mesh_of = file_mesh(geo)
+
+    def level_points(st):
+        poly = terrain_lib.footprint_polygon(model, st, mesh_of)
+        return terrain_lib.sample_polygon(poly) if poly is not None else np.zeros((0, 2))
+    level_pts = [(st, level_points(st)) for st in grounds]
     fp = np.vstack([p for _, p in level_pts]) if any(len(p) for _, p in level_pts) else np.zeros((0, 2))
     margin = float(tcfg["footprintMarginMetres"])
     if len(fp):
@@ -236,9 +248,8 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         if short:
             R.fail("B-132", "%d footprint point(s) of the ground-contact level(s) are less than %g m from the edge of the terrain patch" % (short, margin), t.GlobalId)
         else:
-            R.ok("B-132", "the patch extends at least %g m beyond the footprint" % margin)
+            R.ok("B-132", "the patch extends at least %g m beyond the footprint (%d points)" % (margin, len(fp)))
 
-    prof = rpt.profile()
     ortho = None
     if len(convs) != 1:
         R.fail("B-133", "the file has %d IfcMapConversion; exactly one is required" % len(convs))
@@ -262,6 +273,9 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
             probs.append("OrthogonalHeight (floor height above sea level) is missing")
         else:
             ortho = float(c.OrthogonalHeight)
+        if storeys and abs(min(float(st.Elevation or 0.0) for st in storeys)) > 1e-6:
+            probs.append("the lowest level is at %g m; its finished floor must be local z = 0 so that OrthogonalHeight is its height above sea level" % min(
+                float(st.Elevation or 0.0) for st in storeys))
         if abs(args.level_offset) > 1e-12:
             probs.append("frame.levelOffsetMetres is %g; it must be 0 because the floor height is carried by OrthogonalHeight" % args.level_offset)
         if probs:
@@ -297,16 +311,16 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
             if have.any():
                 gap = float(st.Elevation or 0.0) - zt[have]
                 if gap.min() > ft:
-                    verdicts.append(("floats", "the building floats: level %s is %.2f to %.2f m above the terrain at every footprint point" % (st.Name, gap.min(), gap.max())))
+                    verdicts.append("the building floats: level %s is %.2f to %.2f m above the terrain at every footprint point" % (st.Name, gap.min(), gap.max()))
                 elif gap.max() < -bt:
-                    verdicts.append(("buried", "the building is buried: level %s is %.2f to %.2f m below the terrain at every footprint point" % (st.Name, -gap.max(), -gap.min())))
+                    verdicts.append("the building is buried: level %s is %.2f to %.2f m below the terrain at every footprint point" % (st.Name, -gap.max(), -gap.min()))
         if wet or flag:
             R.fail("B-135", "the building stands in water: %d footprint point(s) are on terrain below sea level (%g m)%s" % (
                 wet, sea, "; FootprintInWater is true" if flag else ""), site.GlobalId if site is not None else None)
         else:
-            R.ok("B-135", "every footprint point is at or above sea level")
+            R.ok("B-135", "every sampled footprint point is at or above sea level")
         if verdicts:
-            R.fail("B-136", verdicts[0][1] + ("" if len(verdicts) == 1 else " (and %d more level(s))" % (len(verdicts) - 1)))
+            R.fail("B-136", verdicts[0] + ("" if len(verdicts) == 1 else " (and %d more level(s))" % (len(verdicts) - 1)))
         else:
             R.ok("B-136", "no ground-contact level floats or is buried (estimate, %d level(s))" % len(level_pts))
         # B-141: a level that is not declared but sits on the ground everywhere
@@ -314,7 +328,7 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         for st in storeys:
             if st in grounds:
                 continue
-            pts = level_points(model, geo, st)
+            pts = level_points(st)
             if not len(pts):
                 continue
             zt = terrain_lib.heights_at(V, F, pts)
@@ -332,6 +346,10 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
     if miss:
         probs.append("lacks " + ", ".join(miss))
     else:
+        R.terrain = {k: tp[k] for k in ("PackageName", "PackageVersion", "PackageSha256", "PatchSha256")}
+        if len(convs) == 1 and ortho is not None:               # where the file puts the building, for the package to compare with the request
+            R.terrain.update({"FloorHeightAboveSeaMetres": ortho, "AzimuthDegrees": round(math.degrees(theta), 9),
+                              "EastingMetres": float(convs[0].Eastings or 0.0), "NorthingMetres": float(convs[0].Northings or 0.0)})
         if tp["Role"] != "derived-context":
             probs.append("Role is %r, not 'derived-context'" % tp["Role"])
         try:
@@ -379,28 +397,57 @@ def room_polygons(model, geo, room_floor):
     return out
 
 
+NOT_A_CEILING = {"FLOORING", "CLADDING", "WRAPPING", "MOLDING", "SKIRTINGBOARD", "INSULATION", "MEMBRANE"}
+
+
+def thin_axis(v):
+    """Unit plan direction in which a mesh is thinnest, and its extent along it (a door leaf's normal and its thickness)."""
+    xy = v[:, :2] - v[:, :2].mean(0)
+    if len(xy) < 3:
+        return np.array([1.0, 0.0]), 0.0
+    vals, vecs = np.linalg.eigh(np.cov(xy.T))
+    n = vecs[:, 0]
+    proj = xy @ n
+    return n, float(proj.max() - proj.min())
+
+
 def check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris_of):
-    """Estimates that need the whole model: rooms overlapping (B-30), every enclosed room having something above it (B-54), every room
-    reachable from a circulation room (B-47) and stair headroom (B-61)."""
+    """Estimates that need the whole model: rooms overlapping (B-30), something over every enclosed room (B-54), every room reachable
+    from a circulation room (B-47) and stair head-room (B-61)."""
     from shapely.geometry import Point
+    from shapely.ops import unary_union
+    from shapely.prepared import prep
+    from shapely.strtree import STRtree
     polys = room_polygons(model, geo, room_floor)
     rooms = {sp.id(): sp for sp in model.by_type("IfcSpace")}
+    ids = sorted(polys)
+    level_key = {}
+    for i in ids:
+        lv = container_of(rooms[i])
+        level_key[i] = lv.id() if lv is not None else None
+    buf = {i: polys[i][0].buffer(1e-6) for i in ids}
+    prepared = {i: prep(buf[i]) for i in ids}
+    tree = STRtree([buf[i] for i in ids]) if ids else None
 
     def label(i):
         return P[i].get("RoomId") or rooms[i].Name
 
-    def level_key(i):
-        e = container_of(rooms[i])
-        return e.id() if e is not None else None
+    def rooms_at(x, y, level=None, z=None, tol_z=0.5):
+        pt = Point(x, y)
+        out = []
+        for k in (tree.query(pt, predicate="intersects") if tree is not None else []):
+            i = ids[k]
+            if (level is None or level_key[i] == level) and (z is None or abs(polys[i][1] - z) <= tol_z) and prepared[i].intersects(pt):
+                out.append(i)
+        return out
 
     # B-30: rooms on one level overlap by no more than the tolerance (a wall thickness)
     tol = float(prof["geometry"]["roomOverlapToleranceMetres"])
-    ids = sorted(polys)
     bad = []
-    for a in range(len(ids)):
-        for c in range(a + 1, len(ids)):
-            i, j = ids[a], ids[c]
-            if level_key(i) != level_key(j) or abs(polys[i][1] - polys[j][1]) > 0.05:
+    for i in ids:
+        for k in (tree.query(polys[i][0], predicate="intersects") if tree is not None else []):
+            j = ids[k]
+            if j <= i or level_key[i] != level_key[j] or abs(polys[i][1] - polys[j][1]) > 0.05:
                 continue
             inter = polys[i][0].intersection(polys[j][0])
             if inter.area > 1e-6 and not inter.buffer(-tol / 2.0).is_empty:
@@ -412,48 +459,66 @@ def check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris
     elif len(ids) > 1:
         R.ok("B-30", "no rooms overlap by more than %g m" % tol)
 
-    # B-54: something (a slab, roof or covering) over every enclosed room, estimate by vertical rays at a few points
-    cover = [e for e in model.by_type("IfcProduct") if e.is_a() in ("IfcSlab", "IfcRoof", "IfcCovering") and e.id() in geo]
-    cover_tris = np.vstack([tris_of(e) for e in cover]) if cover else np.zeros((0, 3, 3))
+    # B-54: something over every enclosed room. Vertical rays at a 3 by 3 grid of points (and two more) in the room; a slab or ceiling
+    # must lie within the room's height plus half a metre, a roof slab within a roof's rise; a floor finish does not count.
+    def tris_of_class(pred):
+        arr = [tris_of(e) for e in model.by_type("IfcProduct") if e.id() in geo and pred(e)]
+        return np.vstack(arr) if arr else np.zeros((0, 3, 3))
+    near_cover = tris_of_class(lambda e: (e.is_a("IfcSlab") and e.PredefinedType != "ROOF") or
+                               (e.is_a("IfcCovering") and getattr(e, "PredefinedType", None) not in NOT_A_CEILING))
+    roof_cover = tris_of_class(lambda e: (e.is_a("IfcSlab") and e.PredefinedType == "ROOF") or e.is_a("IfcRoof"))
     open_rooms = []
     for i in ids:
         if is_external(rooms[i], P[i]):
             continue
         poly, z = polys[i]
-        height = float(max(geo[i]["v"][:, 2]) - z)
-        pts = [poly.representative_point(), poly.centroid]
-        pts = [p for p in pts if poly.buffer(1e-6).contains(p)]
-        if not len(cover_tris) or not any(segment_hits(cover_tris, np.array([p.x, p.y, z + 0.05]), np.array([p.x, p.y, z + height + 6.0])) for p in pts):
-            open_rooms.append(i)
+        height = float(geo[i]["v"][:, 2].max() - z)
+        x0, y0, x1, y1 = poly.bounds
+        pts = [(x0 + (a + 0.5) / 3.0 * (x1 - x0), y0 + (b + 0.5) / 3.0 * (y1 - y0)) for a in range(3) for b in range(3)]
+        pts += [(p.x, p.y) for p in (poly.representative_point(), poly.centroid)]
+        pts = [q for q in pts if prepared[i].contains(Point(q))] or [(poly.representative_point().x, poly.representative_point().y)]
+        hit = 0
+        for q in pts:
+            p0 = np.array([q[0], q[1], z + 0.05])
+            if (len(near_cover) and segment_hits(near_cover, p0, p0 + np.array([0, 0, height + 0.45]))) or \
+                    (len(roof_cover) and segment_hits(roof_cover, p0, p0 + np.array([0, 0, height + 12.0]))):
+                hit += 1
+        if hit / float(len(pts)) < 0.5:
+            open_rooms.append((i, hit, len(pts)))
     if open_rooms:
-        R.fail("B-54", "%d enclosed room(s) have no slab, roof or covering above them (estimate), first %s" % (len(open_rooms), label(open_rooms[0])),
-               rooms[open_rooms[0]].GlobalId)
+        i, hit, n = open_rooms[0]
+        R.fail("B-54", "%d enclosed room(s) lack a slab, roof or ceiling over most of their floor (estimate), first %s: %d of %d sample points covered" % (
+            len(open_rooms), label(i), hit, n), rooms[i].GlobalId)
     elif ids:
-        R.ok("B-54", "every enclosed room has a slab, roof or covering above it (estimate)")
+        R.ok("B-54", "every enclosed room has a slab, roof or ceiling over most of its floor (estimate)")
 
-    # B-47: rooms reachable from a circulation room through doors and stairs (estimate)
+    # B-47: rooms reachable from a circulation room through doors, stairs and open edges (estimate)
     prefix = (prof["identifiers"].get("circulationPrefix") or "Circulation").lower()
     circ = {i for i in ids if str(P[i].get("Function", "")).lower().startswith(prefix)}
-    edges = collections.defaultdict(set)
+    edges = {i: set() for i in ids}
 
-    def rooms_at(x, y, z, tol_z=0.5):
-        pt = Point(x, y)
-        return [i for i in ids if abs(polys[i][1] - z) <= tol_z and polys[i][0].buffer(1e-6).contains(pt)]
-
+    def join(a_list, b_list):
+        for i in a_list:
+            for j in b_list:
+                if i != j:
+                    edges[i].add(j)
+                    edges[j].add(i)
     for d in doors:
         g = geo.get(d.id())
         if g is None:
             continue
+        n, thick = thin_axis(g["v"])                          # the leaf is thin: its normal is the wall's; the opening is as thick as the wall
+        for rel in getattr(d, "FillsVoids", None) or []:
+            og = geo.get(rel.RelatingOpeningElement.id())
+            if og is not None and len(og["v"]):
+                proj = og["v"][:, :2] @ n
+                thick = float(proj.max() - proj.min())
         lo, hi = g["v"].min(0), g["v"].max(0)
-        c = (lo + hi) / 2.0
-        n = np.array([1.0, 0.0]) if (hi[0] - lo[0]) < (hi[1] - lo[1]) else np.array([0.0, 1.0])
-        a = rooms_at(c[0] + 0.5 * n[0], c[1] + 0.5 * n[1], lo[2])
-        b = rooms_at(c[0] - 0.5 * n[0], c[1] - 0.5 * n[1], lo[2])
-        for i in a:
-            for j in b:
-                if i != j:
-                    edges[i].add(j)
-                    edges[j].add(i)
+        c = (lo[:2] + hi[:2]) / 2.0
+        dist = thick / 2.0 + 0.3
+        lv = container_of(d)
+        lv = lv.id() if lv is not None else None
+        join(rooms_at(c[0] + n[0] * dist, c[1] + n[1] * dist, level=lv), rooms_at(c[0] - n[0] * dist, c[1] - n[1] * dist, level=lv))
     for f in flights:
         g = geo.get(f.id())
         if g is None:
@@ -462,22 +527,40 @@ def check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris
         lo, hi = v.min(0), v.max(0)
         ax = 0 if (hi[0] - lo[0]) >= (hi[1] - lo[1]) else 1
         end_lo, end_hi = lo[ax], hi[ax]
-        near_lo = v[v[:, ax] <= end_lo + 0.3]
-        near_hi = v[v[:, ax] >= end_hi - 0.3]
-        up_hi = near_hi[:, 2].mean() >= near_lo[:, 2].mean()
+        up_hi = v[v[:, ax] >= end_hi - 0.3][:, 2].mean() >= v[v[:, ax] <= end_lo + 0.3][:, 2].mean()
         foot_end, head_end = (end_lo, end_hi) if up_hi else (end_hi, end_lo)
         sign = 1.0 if foot_end < head_end else -1.0
         mid = (lo + hi) / 2.0
         p_foot, p_head = mid.copy(), mid.copy()
         p_foot[ax] = foot_end + sign * 0.15
         p_head[ax] = head_end + sign * 0.3
-        a = rooms_at(p_foot[0], p_foot[1], lo[2])
-        b = rooms_at(p_head[0], p_head[1], hi[2])
-        for i in a:
-            for j in b:
-                if i != j:
-                    edges[i].add(j)
-                    edges[j].add(i)
+        join(rooms_at(p_foot[0], p_foot[1], z=lo[2]), rooms_at(p_head[0], p_head[1], z=hi[2]))
+    walls_fp = {}
+
+    def wall_footprint(level):
+        if level not in walls_fp:
+            from shapely.geometry import Polygon
+            parts = []
+            for w in model.by_type("IfcWall"):
+                lw = container_of(w)
+                if w.id() in geo and lw is not None and lw.id() == level:
+                    t = tris_of(w)
+                    up = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])[:, 2] > 1e-9
+                    parts += [Polygon(x[:, :2]) for x in t[up] if Polygon(x[:, :2]).area > 1e-9]
+            walls_fp[level] = unary_union(parts).buffer(0.02) if parts else None
+        return walls_fp[level]
+    for i in ids:                                                 # rooms that touch with no wall between them are joined by an open edge
+        for k in (tree.query(polys[i][0].buffer(0.02), predicate="intersects") if tree is not None else []):
+            j = ids[k]
+            if j <= i or level_key[i] != level_key[j] or abs(polys[i][1] - polys[j][1]) > 0.05 or polys[i][0].distance(polys[j][0]) > 0.02:
+                continue
+            shared = polys[i][0].boundary.intersection(polys[j][0].buffer(0.03))
+            line = max(shared.geoms, key=lambda s: s.length) if hasattr(shared, "geoms") and len(shared.geoms) else shared
+            if line.is_empty or line.length < 0.9 or line.geom_type != "LineString":
+                continue
+            wf = wall_footprint(level_key[i])
+            if any(wf is None or not wf.contains(line.interpolate(f, normalized=True)) for f in (0.1, 0.3, 0.5, 0.7, 0.9)):
+                join([i], [j])
     if not circ:
         R.info("B-47", "no room declares a Function starting %r; reachability was not checked" % prefix)
     elif ids:
@@ -489,27 +572,51 @@ def check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris
                     todo.append(j)
         lost = [i for i in ids if i not in seen]
         if lost:
-            R.fail("B-47", "%d room(s) cannot be reached from a circulation room through a doorway or stair (estimate), first %s" % (
+            R.fail("B-47", "%d room(s) cannot be reached from a circulation room through a doorway, stair or open edge (estimate), first %s" % (
                 len(lost), label(lost[0])), rooms[lost[0]].GlobalId)
         else:
             R.ok("B-47", "every room is reachable from a circulation room (estimate)")
+        groups, left = 0, set(circ)
+        while left:
+            groups += 1
+            todo = [left.pop()]
+            while todo:
+                for j in edges[todo.pop()]:
+                    if j in left:
+                        left.discard(j)
+                        todo.append(j)
+        if groups > 1:
+            R.info("B-47", "the %d circulation rooms form %d separate groups; each room is reachable from its own group only" % (len(circ), groups))
 
-    # B-61: head-room above every tread
+    # B-61: head-room above every tread, against slabs, roofs, ceilings, beams, walls and the other flights and ramps
     head = float(prof["geometry"]["stairHeadroomMetres"])
-    blockers = [e for e in model.by_type("IfcProduct") if e.id() in geo and e.is_a() in ("IfcSlab", "IfcRoof", "IfcCovering", "IfcBeam", "IfcWall")]
-    blk = np.vstack([tris_of(e) for e in blockers]) if blockers else np.zeros((0, 3, 3))
+    owners, arrs = [], []
+    for e in model.by_type("IfcProduct"):
+        if e.id() in geo and (e.is_a("IfcSlab") or e.is_a("IfcRoof") or e.is_a("IfcBeam") or e.is_a("IfcWall") or e.is_a("IfcStairFlight")
+                              or e.is_a("IfcRampFlight") or (e.is_a("IfcCovering") and getattr(e, "PredefinedType", None) not in NOT_A_CEILING)):
+            t = tris_of(e)
+            arrs.append(t)
+            owners.append(np.full(len(t), e.id()))
+    blk_all = np.vstack(arrs) if arrs else np.zeros((0, 3, 3))
+    owner = np.concatenate(owners) if owners else np.zeros(0, int)
+    treads, failed = 0, False
     for f in flights:
         t = tris_of(f)
-        if t is None or not len(blk):
+        if t is None or not len(blk_all):
             continue
+        blk = blk_all[owner != f.id()]
         n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
         n = n / (np.linalg.norm(n, axis=1, keepdims=True) + 1e-12)
-        cent = t[n[:, 2] > 0.99].mean(1)
-        cent = np.unique(np.round(cent, 3), axis=0)
+        cent = np.unique(np.round(t[n[:, 2] > 0.99].mean(1), 3), axis=0)
         for c in cent:
+            treads += 1
             if segment_hits(blk, c + np.array([0, 0, 0.03]), c + np.array([0, 0, head - 0.03])):
                 R.fail("B-61", "stair flight %s has less than %g m of head-room above the tread at %.2f, %.2f, %.2f" % (f.Name, head, *c), f.GlobalId)
+                failed = True
                 break
+    if flights and not failed:
+        R.ok("B-61", "%g m of head-room above %d tread surfaces of %d flight(s) (estimate)" % (head, treads, len(flights)))
+
 
 
 def main():
@@ -523,6 +630,9 @@ def main():
     ap.add_argument("--report", default=None, help="also write the JSON report to this file")
     ap.add_argument("--json", action="store_true", help="print the JSON report (schema check-report/1) instead of text")
     args = ap.parse_args()
+    if shapely is None:
+        print("check_ifc.py needs the Python package shapely: pip install -r tools/requirements.txt", file=sys.stderr)
+        sys.exit(3)
     prof = rpt.load_profile(args.profile)
     if args.level_offset is None:
         args.level_offset = float(prof["frame"].get("levelOffsetMetres", 0.0))
@@ -936,13 +1046,15 @@ def main():
     if storeys:
         floor0 = min(float(st.Elevation or 0.0) for st in storeys)
         allowed_below = ("IfcSlab", "IfcFooting", "IfcPile", "IfcWall", "IfcStairFlight", "IfcStair", "IfcRamp", "IfcRampFlight",
-                         "IfcOpeningElement", "IfcGeographicElement", "IfcBuildingElementProxy", "IfcSite", "IfcBuilding", "IfcBuildingStorey")
-        low = [e for e in products if e.id() in geo and not any(e.is_a(c) for c in allowed_below) and geo[e.id()]["v"][:, 2].min() < floor0 - 0.05]
+                         "IfcOpeningElement", "IfcGeographicElement", "IfcSite", "IfcBuilding", "IfcBuildingStorey")
+        low = [e for e in products if e.id() in geo and not any(e.is_a(c) for c in allowed_below)
+               and not (e.is_a("IfcBuildingElementProxy") and getattr(e, "PredefinedType", None) == "PROVISIONFORSPACE")
+               and geo[e.id()]["v"][:, 2].min() < floor0 - 0.05]
         if low:
-            R.fail("B-142", "%d element(s) reach below the lowest finished floor (z %.2f), first %s (%s); only slabs, footings, piles, walls, stairs and ramps may" % (
+            R.fail("B-142", "%d element(s) reach below the lowest finished floor (z %.2f), first %s (%s); only slabs, footings, piles, walls, stairs, ramps, openings, terrain and reservation volumes may" % (
                 len(low), floor0, low[0].GlobalId, low[0].is_a()), low[0].GlobalId)
         else:
-            R.ok("B-142", "nothing but slabs, footings, piles, walls, stairs and ramps reaches below the lowest floor")
+            R.ok("B-142", "nothing but foundations, walls, stairs, ramps, openings, terrain and reservation volumes reaches below the lowest floor")
 
     # ---------------------------------------------------------------- open-air rooms (B-143)
     odd = [sp for sp in rooms_all if ((getattr(sp, "PredefinedType", None) == "EXTERNAL") != (P[sp.id()].get("Enclosed") is False))
@@ -1122,7 +1234,8 @@ def main():
 
 def finish(R, path, sha, counts, finish_keys, args, error=None):
     rep = rpt.make_report("check_ifc.py", TOOL_VERSION, {"path": os.path.basename(path), "sha256": sha}, R.findings, counts,
-                          extra={"finishKeys": finish_keys, "file": os.path.basename(path), "sha256": sha}, error=error)
+                          extra=dict({"finishKeys": finish_keys, "file": os.path.basename(path), "sha256": sha},
+                                     **({"terrain": R.terrain} if R.terrain else {})), error=error)
     if args.report:
         rpt.write(rep, args.report)
     if args.json:

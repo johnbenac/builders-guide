@@ -72,7 +72,7 @@ your delivery notes. If a number your work depends on is missing, ask the consum
 
 **B-15 · RECOMMENDED** - Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.
 
-**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor (local z = 0) except slabs, footings, piles, walls, stairs and ramps. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.
+**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor except slabs, footings, piles, walls, stairs, ramps, openings, the terrain element and reservation volumes. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.
 
 ## 5. Rooms and zones
 
@@ -289,7 +289,7 @@ These rules apply when the profile enables `extensions.signboards` (a consumer t
 
 **B-114 · RECOMMENDED** - Do not model what cannot be seen or used: hidden interiors, bolts, hinge detail, text as geometry, curves with more than `geometry.maxCurveSegmentsPerCircle` segments per full circle.
 
-**B-115 · RECOMMENDED** - Do not model terrain, soil, relief, water, pads, cuts or fills in IFC, except the derived, read-only terrain patch of the terrain extension (section 16). Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid.
+**B-115 · RECOMMENDED** - Do not model terrain, soil or relief in IFC unless the profile says how. Trees and planting may be `IfcGeographicElement` markers; consumers differ on whether they are solid. The terrain extension (section 16) is how a profile says how: with it, the only terrain in the file is the derived patch it describes.
 
 **B-116 · RECOMMENDED** - Do not model a thin layer at a height where the consumer adds its own surface layer (floor finishes laid on the room floor); two layers at one height flicker.
 
@@ -373,7 +373,7 @@ These rules apply when `extensions.terrain.enabled` is true (section 16 explains
 
 **B-135 · REQUIRED · terrain** - Do not put a building in water: the terrain at every footprint point of every ground-contact level is at or above `extensions.terrain.seaLevelMetres`, and `FootprintInWater` is not true. Terrain below sea level is seabed.
 
-**B-136 · REQUIRED · terrain** - Do not let the building float or sink: no ground-contact level's floor is above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point of that level, or below it by more than `extensions.terrain.buryToleranceMetres` at every one. A house on a slope may stand above the ground at one edge and below it at another; that is allowed. A building above or below the ground everywhere was placed at the wrong height.
+**B-136 · RECOMMENDED · terrain** - Do not let the building float or sink: no ground-contact level's floor is above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point of that level, or below it by more than `extensions.terrain.buryToleranceMetres` at every one. A house on a slope may stand above the ground at one edge and below it at another; that is allowed. A building above or below the ground everywhere was placed at the wrong height. The check is an estimate from the footprint points, so it starts as a warning; a consumer that relies on it raises it in `ruleLevels`.
 
 **B-137 · REQUIRED · terrain** - Pin the terrain source in a property set `Pset_Declaration_Terrain` on the terrain element: `Role` (`derived-context`), `PackageName`, `PackageVersion`, `PackageSha256`, `PatchSha256`, `PatchLevel`, `PixelSizeMetres`, `ErrorBoundMetres` (at most `extensions.terrain.maxErrorBoundMetres`), `Frame` and `VerticalDatum`. Heights near water can change between source versions, so a delivery says exactly which version it was built on and never carries numbers from an earlier one.
 

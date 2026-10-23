@@ -4,7 +4,10 @@
 Scripts that let you check your own work the way the receiving party will. All are plain Python 3, print what they
 checked, and exit with status 1 when a REQUIRED rule fails.
 
-Install once: `pip install -r tools/requirements.txt` (IFC reading, arrays, images, JSON schema checks).
+Install once: `pip install -r tools/requirements.txt` (IFC reading, arrays, images, JSON schema checks, footprint geometry). The terrain
+tools also need `requirements-terrain.txt` (scipy) and `preview.py` needs `requirements-preview.txt` (matplotlib); each file includes the core
+list. The set is tested with ifcopenshell 0.9.0.post1, numpy 2.5.3, pillow 12.3.0, jsonschema 4.26.0, shapely 2.2.0, scipy 1.18.1 and
+matplotlib 3.11.2; the file lists give the lowest versions the code is written for.
 
 | Script | Use |
 |---|---|

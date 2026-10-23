@@ -3,8 +3,8 @@ name: author-building
 description: Author an IFC4 building (levels, rooms, walls, doors, windows, floors, roofs, stairs, and optionally lights and signs) that many different consumers can open, identify rooms in and use. Use when creating or fixing a building model, writing room ids and occupants, placing doors and openings, declaring luminaires or signboards for a consumer that supports them, or when a check reports a B-rule finding.
 license: CC-BY-4.0
 metadata:
-  version: "2.0.0"
-  rules: "B-01 to B-140"
+  version: "2.1.0"
+  rules: "B-01 to B-144"
 ---
 
 # Author a building

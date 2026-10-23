@@ -32,7 +32,7 @@
 
 **X-21 · REQUIRED** - State a licence for every asset and a `licence.statement` for the package when the profile requires it (`package.requireLicence`, default true). A package whose licence terms are missing, or do not allow the receiving party to use, copy and adapt the work for the purpose of the assignment, cannot be accepted.
 
-**X-23 · REQUIRED · terrain** - When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states. The terrain source can change between versions (shorelines in particular), so the delivery must say exactly which version its heights came from.
+**X-23 · REQUIRED · terrain** - When the delivery has terrain, list the patch and its sidecar under `terrain/` with their roles, give each a provenance entry, and record the source package name, version and hash and the patch hash in the manifest `terrain` section, equal to what the sidecar states and to what the check report of the master file found in it, and keep the site request (its building origin, azimuth and floor height must be the file's). The terrain source can change between versions (shorelines in particular), so the delivery must say exactly which version its heights came from.
 
 **X-22 · RECOMMENDED** - Deliver only content you are free to hand over. Do not include material that is restricted, reproduced from another party's work without permission, or that carries identifying marks of a third party. If part of your work is restricted, say so in `notes/open-points.md` and leave it out.
 

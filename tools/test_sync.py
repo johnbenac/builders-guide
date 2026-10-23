@@ -137,6 +137,29 @@ for row in mf["files"]:
     with open(p, "rb") as fh:
         check(hashlib.sha256(fh.read()).hexdigest() == row["sha256"], "MANIFEST.json hash differs: %s" % row["path"])
 
+# 6 the checksum list and the hand-over zip agree with the file list, and hand-written counts and rule ranges are current
+import fileset  # noqa: E402
+check(load("MANIFEST.sha256") == fileset.checksum_text(ROOT), "MANIFEST.sha256 is out of date (run tools/gen_all.py --write)")
+check({r["path"] for r in mf["files"]} == (set(fileset.set_files(ROOT)) | set(out)) - {"MANIFEST.json"}, "MANIFEST.json lists different files from tools/fileset.py")
+zip_path = os.path.join(ROOT, "dist", "builders-guide-%s.zip" % gen_all.VERSION)
+if os.path.exists(zip_path):
+    import zipfile
+    with zipfile.ZipFile(zip_path) as z:
+        names = {n.split("/", 1)[1] for n in z.namelist()}
+    check(names == set(fileset.set_files(ROOT) + fileset.dist_files(ROOT) + [fileset.CHECKSUM_FILE]), "the zip in dist/ holds different files from the manifest")
+n_rules = len(rj["rules"])
+m1 = re.search(r"rules\.json` \((\d+), stable ids", load("AGENTS.md"))
+check(m1 is not None and int(m1.group(1)) == n_rules, "AGENTS.md states a rule count that is not %d" % n_rules)
+m2 = re.search(r"(\d+) rules in `rules\.json`", load("skills/orient/SKILL.md"))
+check(m2 is not None and int(m2.group(1)) == n_rules, "skills/orient/SKILL.md states a rule count that is not %d" % n_rules)
+for name in gen_all.SKILLS:
+    fm = re.search(r'rules:\s*"([A-Z])-(\d+) to ([A-Z])-(\d+)"', load("skills/%s/SKILL.md" % name))
+    if fm:
+        top = max(int(re.match(r"[A-Z]-(\d+)", r["id"]).group(1)) for r in rj["rules"] if r["id"].startswith(fm.group(3) + "-"))
+        check(int(fm.group(4)) == top, "skills/%s/SKILL.md says rules up to %s-%s but the last rule is %s-%02d" % (name, fm.group(3), fm.group(4), fm.group(3), top))
+check(f'version: "{gen_all.VERSION}"' in load("skills/orient/SKILL.md"), "skills/orient/SKILL.md does not carry version %s" % gen_all.VERSION)
+check(rj["version"] == gen_all.VERSION, "rules.json version is not %s" % gen_all.VERSION)
+
 if bad:
     print("\n".join(bad[:40]))
     print("test_sync: FAIL (%d problem(s))" % len(bad))
