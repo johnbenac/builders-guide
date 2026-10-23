@@ -335,7 +335,7 @@ def manifest(overlay):
     rows = []
     paths = set(overlay)
     for base, dirs, names in os.walk(ROOT):
-        dirs[:] = sorted(d for d in dirs if d not in (".git", "__pycache__", "dist"))
+        dirs[:] = sorted(d for d in dirs if d not in (".git", "__pycache__", "dist", "work"))
         for n in names:
             rel = os.path.relpath(os.path.join(base, n), ROOT).replace(os.sep, "/")
             if rel not in ("MANIFEST.json", "MANIFEST.sha256") and not rel.endswith(".pyc"):

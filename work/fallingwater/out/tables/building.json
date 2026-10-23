@@ -1,0 +1,45 @@
+{
+  "format": "building-metadata/1",
+  "building": {
+    "id": "B-FALLINGWATER",
+    "name": "Cantilevered house",
+    "layer": "permanent"
+  },
+  "frame": {
+    "units": "metres",
+    "axes": "+X forward, +Y left, +Z up",
+    "levelOffsetMetres": 0.0
+  },
+  "ifc": {
+    "path": "ifc/fallingwater-master.ifc",
+    "schema": "IFC4"
+  },
+  "levels": [
+    {
+      "name": "Cantilevered house - living / +0 m",
+      "elevationMetres": 0.0,
+      "rooms": 3
+    },
+    {
+      "name": "Cantilevered house - bedrooms / +3 m",
+      "elevationMetres": 3.0,
+      "rooms": 5
+    },
+    {
+      "name": "Cantilevered house - upper / +6 m",
+      "elevationMetres": 6.0,
+      "rooms": 2
+    }
+  ],
+  "occupants": [
+    "Residence"
+  ],
+  "roomIdPrefix": "FW-",
+  "counts": {
+    "rooms": 10,
+    "walls": 29,
+    "doors": 12,
+    "windows": 19,
+    "stairFlights": 3
+  }
+}
