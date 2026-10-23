@@ -4,3 +4,4 @@ pillow
 jsonschema
 scipy
 shapely
+matplotlib

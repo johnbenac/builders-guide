@@ -33,7 +33,8 @@ import terrain_lib
 
 TOOL_VERSION = "2.0.0"
 
-DECLARED_BASE = {"RoomId", "Occupant", "Function", "ZoneId", "ZoneClass", "Requirement", "NetAreaSquareMetres", "BaseLevelMetres"}
+DECLARED_BASE = {"RoomId", "Occupant", "Function", "ZoneId", "ZoneClass", "Requirement", "NetAreaSquareMetres", "BaseLevelMetres", "Enclosed",
+                 "GroundContact"}
 TERRAIN_PROPS = ["Role", "PackageName", "PackageVersion", "PackageSha256", "PatchSha256", "PatchLevel", "PixelSizeMetres",
                  "ErrorBoundMetres", "Frame", "VerticalDatum"]
 SITE_PROPS = ["SeaLevelMetres", "FootprintInWater", "DistanceToShoreMetres", "FloorHeightAboveSeaMetres"]
@@ -151,21 +152,32 @@ def segment_hits(tris, p0, p1):
     return bool(hit.any())
 
 
-def footprint_points(model, geo, storeys, cap=500):
-    """Plan points (file frame) of the slabs and walls of the lowest level: where the building touches the ground."""
-    low = min(storeys, key=lambda s: s.Elevation if s.Elevation is not None else 0.0)
+def ground_levels(storeys, P):
+    """The levels that touch the ground: those declared GroundContact true in Pset_Declaration_Level (B-141), else the lowest level."""
+    flagged = [st for st in storeys if P.get(st.id(), {}).get("GroundContact") is True]
+    return sorted(flagged or [min(storeys, key=lambda s: s.Elevation if s.Elevation is not None else 0.0)], key=lambda s: s.Elevation or 0.0)
+
+
+def level_points(model, geo, storey, cap=500):
+    """Plan points (file frame) of the slabs and walls of one level: where the building meets the ground there."""
     pts = [geo[e.id()]["v"][:, :2] for e in list(model.by_type("IfcSlab")) + list(model.by_type("IfcWall"))
-           if e.id() in geo and container_of(e) == low]
+           if e.id() in geo and container_of(e) == storey]
     if not pts:
-        return low, np.zeros((0, 2))
+        return np.zeros((0, 2))
     u = np.unique(np.round(np.vstack(pts), 3), axis=0)
     if len(u) > cap:
         u = u[np.linspace(0, len(u) - 1, cap).astype(int)]
-    return low, u
+    return u
+
+
+def turn(xy, theta):
+    """Rotate plan points counter-clockwise by theta (file frame to the site's axis directions)."""
+    c, s = math.cos(theta), math.sin(theta)
+    return np.column_stack([c * xy[:, 0] - s * xy[:, 1], s * xy[:, 0] + c * xy[:, 1]])
 
 
 def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
-    """Terrain context (B-130 to B-140): one derived, read-only terrain element, its georeference and its relation to the building."""
+    """Terrain context (B-130 to B-141): one derived, read-only terrain element, its georeference and its relation to the building."""
     if len(terrains) != 1:
         R.fail("B-130", "the file has %d terrain elements; exactly one IfcGeographicElement TERRAIN is required" % len(terrains))
         return
@@ -186,6 +198,11 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         R.fail("B-131", "the terrain yields no triangles", t.GlobalId)
         return
     V, F = g["v"], g["f"]
+    convs = model.by_type("IfcMapConversion")
+    theta = 0.0
+    if len(convs) == 1:
+        theta = math.atan2(convs[0].XAxisOrdinate or 0.0, convs[0].XAxisAbscissa if convs[0].XAxisAbscissa is not None else 1.0)
+    Vs = turn(V[:, :2], theta)                                   # the patch is a rectangle in the site's axis directions
     tri = V[F]
     n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
     plan_area = n[:, 2] / 2.0
@@ -194,7 +211,7 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
     fk = key[F]
     edges = np.sort(np.concatenate([fk[:, [0, 1]], fk[:, [1, 2]], fk[:, [2, 0]]]), axis=1)
     _, ecount = np.unique(edges, axis=0, return_counts=True)
-    lo, hi = V[:, :2].min(0), V[:, :2].max(0)
+    lo, hi = Vs.min(0), Vs.max(0)
     rect = float((hi[0] - lo[0]) * (hi[1] - lo[1]))
     covered = float(plan_area[plan_area > 0].sum())
     msgs = []
@@ -209,16 +226,18 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
     else:
         R.ok("B-131", "terrain is a heightfield of %d triangles covering %.1f m2 once" % (len(F), rect))
 
-    low, fp = footprint_points(model, geo, storeys)
+    grounds = ground_levels(storeys, P)
+    level_pts = [(st, level_points(model, geo, st)) for st in grounds]
+    fp = np.vstack([p for _, p in level_pts]) if any(len(p) for _, p in level_pts) else np.zeros((0, 2))
     margin = float(tcfg["footprintMarginMetres"])
     if len(fp):
-        short = int(np.sum(np.any(fp - margin < lo - 1e-9, axis=1) | np.any(fp + margin > hi + 1e-9, axis=1)))
+        fs = turn(fp, theta)
+        short = int(np.sum(np.any(fs - margin < lo - 1e-9, axis=1) | np.any(fs + margin > hi + 1e-9, axis=1)))
         if short:
-            R.fail("B-132", "%d footprint point(s) of the lowest level are less than %g m from the edge of the terrain patch" % (short, margin), t.GlobalId)
+            R.fail("B-132", "%d footprint point(s) of the ground-contact level(s) are less than %g m from the edge of the terrain patch" % (short, margin), t.GlobalId)
         else:
             R.ok("B-132", "the patch extends at least %g m beyond the footprint" % margin)
 
-    convs = model.by_type("IfcMapConversion")
     prof = rpt.profile()
     ortho = None
     if len(convs) != 1:
@@ -234,8 +253,9 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         if crs.is_a("IfcProjectedCRS") and not (crs.MapUnit is not None and crs.MapUnit.is_a("IfcSIUnit") and crs.MapUnit.Name == "METRE"
                                                 and crs.MapUnit.Prefix is None):
             probs.append("the map unit is not plain metres")
-        if abs((c.XAxisAbscissa if c.XAxisAbscissa is not None else 1.0) - 1.0) > 1e-9 or abs(c.XAxisOrdinate or 0.0) > 1e-9:
-            probs.append("the local X axis does not point east")
+        ax, ay = (c.XAxisAbscissa if c.XAxisAbscissa is not None else 1.0), (c.XAxisOrdinate or 0.0)
+        if abs(math.hypot(ax, ay) - 1.0) > 1e-6:
+            probs.append("the X axis (%g, %g) is not a unit vector" % (ax, ay))
         if abs((c.Scale if c.Scale is not None else 1.0) - 1.0) > 1e-9:
             probs.append("the scale is not 1")
         if c.OrthogonalHeight is None:
@@ -247,7 +267,7 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         if probs:
             R.fail("B-133", "georeference: " + "; ".join(probs), c.GlobalId if hasattr(c, "GlobalId") else None)
         else:
-            R.ok("B-133", "georeference to %s, floor %.3f m above sea level" % (crs.Name, ortho))
+            R.ok("B-133", "georeference to %s, floor %.3f m above sea level, azimuth %.1f degrees" % (crs.Name, ortho, math.degrees(theta)))
 
     site = (model.by_type("IfcSite") or [None])[0]
     zt0 = terrain_lib.heights_at(V, F, np.array([[0.0, 0.0]]))[0]
@@ -263,25 +283,48 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
             R.ok("B-134", "site elevation %.3f m matches the terrain at the origin" % site.RefElevation)
 
     if len(fp) and ortho is not None:
-        zt = terrain_lib.heights_at(V, F, fp)
-        have = ~np.isnan(zt)
         sea = float(tcfg["seaLevelMetres"])
         flag = bool(P[site.id()].get("FootprintInWater")) if site is not None else False
-        wet = int(np.sum(zt[have] + ortho < sea - 1e-9))
+        ft, bt = float(tcfg["floatToleranceMetres"]), float(tcfg["buryToleranceMetres"])
+        wet = 0
+        verdicts = []
+        for st, pts in level_pts:
+            if not len(pts):
+                continue
+            zt = terrain_lib.heights_at(V, F, pts)
+            have = ~np.isnan(zt)
+            wet += int(np.sum(zt[have] + ortho < sea - 1e-9))
+            if have.any():
+                gap = float(st.Elevation or 0.0) - zt[have]
+                if gap.min() > ft:
+                    verdicts.append(("floats", "the building floats: level %s is %.2f to %.2f m above the terrain at every footprint point" % (st.Name, gap.min(), gap.max())))
+                elif gap.max() < -bt:
+                    verdicts.append(("buried", "the building is buried: level %s is %.2f to %.2f m below the terrain at every footprint point" % (st.Name, -gap.max(), -gap.min())))
         if wet or flag:
             R.fail("B-135", "the building stands in water: %d footprint point(s) are on terrain below sea level (%g m)%s" % (
                 wet, sea, "; FootprintInWater is true" if flag else ""), site.GlobalId if site is not None else None)
         else:
             R.ok("B-135", "every footprint point is at or above sea level")
-        if have.any():
-            gap = float(low.Elevation or 0.0) - zt[have]
-            ft, bt = float(tcfg["floatToleranceMetres"]), float(tcfg["buryToleranceMetres"])
-            if gap.min() > ft:
-                R.fail("B-136", "the building floats: the lowest floor is %.2f to %.2f m above the terrain at every footprint point" % (gap.min(), gap.max()))
-            elif gap.max() < -bt:
-                R.fail("B-136", "the building is buried: the lowest floor is %.2f to %.2f m below the terrain at every footprint point" % (-gap.max(), -gap.min()))
-            else:
-                R.ok("B-136", "floor %.2f m above to %.2f m below the terrain across the footprint (estimate)" % (gap.max(), -gap.min()))
+        if verdicts:
+            R.fail("B-136", verdicts[0][1] + ("" if len(verdicts) == 1 else " (and %d more level(s))" % (len(verdicts) - 1)))
+        else:
+            R.ok("B-136", "no ground-contact level floats or is buried (estimate, %d level(s))" % len(level_pts))
+        # B-141: a level that is not declared but sits on the ground everywhere
+        undeclared = []
+        for st in storeys:
+            if st in grounds:
+                continue
+            pts = level_points(model, geo, st)
+            if not len(pts):
+                continue
+            zt = terrain_lib.heights_at(V, F, pts)
+            have = ~np.isnan(zt)
+            if have.sum() >= 3 and np.mean(np.abs(float(st.Elevation or 0.0) - zt[have]) <= min(ft, bt)) > 0.5:
+                undeclared.append(st.Name)
+        if undeclared:
+            R.fail("B-141", "level(s) %s sit on the terrain but are not declared GroundContact true" % ", ".join(undeclared[:3]))
+        else:
+            R.ok("B-141", "ground-contact level(s): %s" % ", ".join(st.Name for st in grounds))
 
     tp = P[t.id()]
     miss = [k for k in TERRAIN_PROPS if k not in tp]
@@ -313,6 +356,160 @@ def check_terrain(R, model, tcfg, geo, P, storeys, terrains, args):
         R.fail("B-140", "Pset_Declaration_Terrain.Frame does not state the frame (x east, y north, z up)", t.GlobalId)
     else:
         R.ok("B-140", "the frame of the terrain numbers is stated")
+
+
+def is_external(sp, props):
+    """An open-air room: PredefinedType EXTERNAL or Enclosed declared false (B-143)."""
+    return (getattr(sp, "PredefinedType", None) == "EXTERNAL") or props.get("Enclosed") is False
+
+
+def room_polygons(model, geo, room_floor):
+    """Plan polygon (shapely) and floor height of every room that has a floor: {id: (polygon, zfloor)}."""
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+    out = {}
+    for sp in model.by_type("IfcSpace"):
+        if sp.id() not in room_floor:
+            continue
+        ft, zmin, _ = room_floor[sp.id()]
+        parts = [Polygon(t[:, :2]) for t in ft]
+        parts = [q for q in parts if q.area > 1e-9]
+        if parts:
+            out[sp.id()] = (unary_union(parts).buffer(0), float(zmin))
+    return out
+
+
+def check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris_of):
+    """Estimates that need the whole model: rooms overlapping (B-30), every enclosed room having something above it (B-54), every room
+    reachable from a circulation room (B-47) and stair headroom (B-61)."""
+    from shapely.geometry import Point
+    polys = room_polygons(model, geo, room_floor)
+    rooms = {sp.id(): sp for sp in model.by_type("IfcSpace")}
+
+    def label(i):
+        return P[i].get("RoomId") or rooms[i].Name
+
+    def level_key(i):
+        e = container_of(rooms[i])
+        return e.id() if e is not None else None
+
+    # B-30: rooms on one level overlap by no more than the tolerance (a wall thickness)
+    tol = float(prof["geometry"]["roomOverlapToleranceMetres"])
+    ids = sorted(polys)
+    bad = []
+    for a in range(len(ids)):
+        for c in range(a + 1, len(ids)):
+            i, j = ids[a], ids[c]
+            if level_key(i) != level_key(j) or abs(polys[i][1] - polys[j][1]) > 0.05:
+                continue
+            inter = polys[i][0].intersection(polys[j][0])
+            if inter.area > 1e-6 and not inter.buffer(-tol / 2.0).is_empty:
+                bad.append((i, j, inter.area))
+    if bad:
+        i, j, ar = bad[0]
+        R.fail("B-30", "%d pair(s) of rooms on one level overlap by more than %g m, first %s and %s (%.2f m2)" % (
+            len(bad), tol, label(i), label(j), ar), rooms[i].GlobalId)
+    elif len(ids) > 1:
+        R.ok("B-30", "no rooms overlap by more than %g m" % tol)
+
+    # B-54: something (a slab, roof or covering) over every enclosed room, estimate by vertical rays at a few points
+    cover = [e for e in model.by_type("IfcProduct") if e.is_a() in ("IfcSlab", "IfcRoof", "IfcCovering") and e.id() in geo]
+    cover_tris = np.vstack([tris_of(e) for e in cover]) if cover else np.zeros((0, 3, 3))
+    open_rooms = []
+    for i in ids:
+        if is_external(rooms[i], P[i]):
+            continue
+        poly, z = polys[i]
+        height = float(max(geo[i]["v"][:, 2]) - z)
+        pts = [poly.representative_point(), poly.centroid]
+        pts = [p for p in pts if poly.buffer(1e-6).contains(p)]
+        if not len(cover_tris) or not any(segment_hits(cover_tris, np.array([p.x, p.y, z + 0.05]), np.array([p.x, p.y, z + height + 6.0])) for p in pts):
+            open_rooms.append(i)
+    if open_rooms:
+        R.fail("B-54", "%d enclosed room(s) have no slab, roof or covering above them (estimate), first %s" % (len(open_rooms), label(open_rooms[0])),
+               rooms[open_rooms[0]].GlobalId)
+    elif ids:
+        R.ok("B-54", "every enclosed room has a slab, roof or covering above it (estimate)")
+
+    # B-47: rooms reachable from a circulation room through doors and stairs (estimate)
+    prefix = (prof["identifiers"].get("circulationPrefix") or "Circulation").lower()
+    circ = {i for i in ids if str(P[i].get("Function", "")).lower().startswith(prefix)}
+    edges = collections.defaultdict(set)
+
+    def rooms_at(x, y, z, tol_z=0.5):
+        pt = Point(x, y)
+        return [i for i in ids if abs(polys[i][1] - z) <= tol_z and polys[i][0].buffer(1e-6).contains(pt)]
+
+    for d in doors:
+        g = geo.get(d.id())
+        if g is None:
+            continue
+        lo, hi = g["v"].min(0), g["v"].max(0)
+        c = (lo + hi) / 2.0
+        n = np.array([1.0, 0.0]) if (hi[0] - lo[0]) < (hi[1] - lo[1]) else np.array([0.0, 1.0])
+        a = rooms_at(c[0] + 0.5 * n[0], c[1] + 0.5 * n[1], lo[2])
+        b = rooms_at(c[0] - 0.5 * n[0], c[1] - 0.5 * n[1], lo[2])
+        for i in a:
+            for j in b:
+                if i != j:
+                    edges[i].add(j)
+                    edges[j].add(i)
+    for f in flights:
+        g = geo.get(f.id())
+        if g is None:
+            continue
+        v = g["v"]
+        lo, hi = v.min(0), v.max(0)
+        ax = 0 if (hi[0] - lo[0]) >= (hi[1] - lo[1]) else 1
+        end_lo, end_hi = lo[ax], hi[ax]
+        near_lo = v[v[:, ax] <= end_lo + 0.3]
+        near_hi = v[v[:, ax] >= end_hi - 0.3]
+        up_hi = near_hi[:, 2].mean() >= near_lo[:, 2].mean()
+        foot_end, head_end = (end_lo, end_hi) if up_hi else (end_hi, end_lo)
+        sign = 1.0 if foot_end < head_end else -1.0
+        mid = (lo + hi) / 2.0
+        p_foot, p_head = mid.copy(), mid.copy()
+        p_foot[ax] = foot_end + sign * 0.15
+        p_head[ax] = head_end + sign * 0.3
+        a = rooms_at(p_foot[0], p_foot[1], lo[2])
+        b = rooms_at(p_head[0], p_head[1], hi[2])
+        for i in a:
+            for j in b:
+                if i != j:
+                    edges[i].add(j)
+                    edges[j].add(i)
+    if not circ:
+        R.info("B-47", "no room declares a Function starting %r; reachability was not checked" % prefix)
+    elif ids:
+        seen, todo = set(circ), list(circ)
+        while todo:
+            for j in edges[todo.pop()]:
+                if j not in seen:
+                    seen.add(j)
+                    todo.append(j)
+        lost = [i for i in ids if i not in seen]
+        if lost:
+            R.fail("B-47", "%d room(s) cannot be reached from a circulation room through a doorway or stair (estimate), first %s" % (
+                len(lost), label(lost[0])), rooms[lost[0]].GlobalId)
+        else:
+            R.ok("B-47", "every room is reachable from a circulation room (estimate)")
+
+    # B-61: head-room above every tread
+    head = float(prof["geometry"]["stairHeadroomMetres"])
+    blockers = [e for e in model.by_type("IfcProduct") if e.id() in geo and e.is_a() in ("IfcSlab", "IfcRoof", "IfcCovering", "IfcBeam", "IfcWall")]
+    blk = np.vstack([tris_of(e) for e in blockers]) if blockers else np.zeros((0, 3, 3))
+    for f in flights:
+        t = tris_of(f)
+        if t is None or not len(blk):
+            continue
+        n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
+        n = n / (np.linalg.norm(n, axis=1, keepdims=True) + 1e-12)
+        cent = t[n[:, 2] > 0.99].mean(1)
+        cent = np.unique(np.round(cent, 3), axis=0)
+        for c in cent:
+            if segment_hits(blk, c + np.array([0, 0, 0.03]), c + np.array([0, 0, head - 0.03])):
+                R.fail("B-61", "stair flight %s has less than %g m of head-room above the tread at %.2f, %.2f, %.2f" % (f.Name, head, *c), f.GlobalId)
+                break
 
 
 def main():
@@ -608,7 +805,7 @@ def main():
         R.info("B-33", "walkability extension not enabled by the profile; standing points were not checked")
     obstacles = [e for e in products if e.is_a() in ("IfcFurnishingElement", "IfcBuildingElementProxy", "IfcRailing", "IfcTransportElement")
                  and not (e.is_a("IfcBuildingElementProxy") and getattr(e, "PredefinedType", None) == "PROVISIONFORSPACE")]
-    for sp in (rooms_all if walk["enabled"] else []):
+    for sp in ([r for r in rooms_all if not is_external(r, P[r.id()])] if walk["enabled"] else []):
         if sp.id() not in room_floor:
             continue
         ft, zmin, area = room_floor[sp.id()]
@@ -733,6 +930,28 @@ def main():
             if not has:
                 R.fail("B-62", "building %s has %d levels but no stair" % (b.Name, len(levels)), b.GlobalId)
 
+    check_room_geometry(R, model, geo, P, room_floor, flights, doors, prof, tris_of)
+
+    # ---------------------------------------------------------------- below the lowest floor (B-142)
+    if storeys:
+        floor0 = min(float(st.Elevation or 0.0) for st in storeys)
+        allowed_below = ("IfcSlab", "IfcFooting", "IfcPile", "IfcWall", "IfcStairFlight", "IfcStair", "IfcRamp", "IfcRampFlight",
+                         "IfcOpeningElement", "IfcGeographicElement", "IfcBuildingElementProxy", "IfcSite", "IfcBuilding", "IfcBuildingStorey")
+        low = [e for e in products if e.id() in geo and not any(e.is_a(c) for c in allowed_below) and geo[e.id()]["v"][:, 2].min() < floor0 - 0.05]
+        if low:
+            R.fail("B-142", "%d element(s) reach below the lowest finished floor (z %.2f), first %s (%s); only slabs, footings, piles, walls, stairs and ramps may" % (
+                len(low), floor0, low[0].GlobalId, low[0].is_a()), low[0].GlobalId)
+        else:
+            R.ok("B-142", "nothing but slabs, footings, piles, walls, stairs and ramps reaches below the lowest floor")
+
+    # ---------------------------------------------------------------- open-air rooms (B-143)
+    odd = [sp for sp in rooms_all if ((getattr(sp, "PredefinedType", None) == "EXTERNAL") != (P[sp.id()].get("Enclosed") is False))
+           and ("Enclosed" in P[sp.id()] or getattr(sp, "PredefinedType", None) == "EXTERNAL")]
+    if odd:
+        R.fail("B-143", "room %s: PredefinedType EXTERNAL and Enclosed false must go together" % (P[odd[0].id()].get("RoomId") or odd[0].Name), odd[0].GlobalId)
+    elif any(is_external(sp, P[sp.id()]) for sp in rooms_all):
+        R.ok("B-143", "open-air rooms are EXTERNAL with Enclosed false")
+
     # ---------------------------------------------------------------- reserved volumes and zones (B-80, B-81)
     prov_text = len(re.findall(r"^#\d+=IFCBUILDINGELEMENTPROXY\(.*\.PROVISIONFORSPACE\.\);\s*$", text, re.M))
     prov_model = sum(1 for e in model.by_type("IfcBuildingElementProxy") if e.PredefinedType == "PROVISIONFORSPACE")
@@ -795,7 +1014,7 @@ def main():
         R.fail("B-91", "duplicate LuminaireId: %s" % ", ".join(dl[:5]))
     if lum_ids and not any(f["rule"] in ("B-90", "B-91", "B-92", "B-93") and f["status"] == "fail" for f in R.findings):
         R.ok("B-91", "%d luminaire(s) complete; positions match their emissive part within %g m" % (len(lum_ids), tol))
-    for sp in (rooms_all if lum_cfg["enabled"] else []):
+    for sp in ([r for r in rooms_all if not is_external(r, P[r.id()])] if lum_cfg["enabled"] else []):
         rid = P[sp.id()].get("RoomId")
         if rid and rid not in targets:
             R.fail("B-94", "room %s has no authored fixture targeting it" % rid, sp.GlobalId)

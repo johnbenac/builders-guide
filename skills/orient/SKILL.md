@@ -35,7 +35,7 @@ A job with several parts: do the parts in this order, then package: building, fi
 
 ## Facts to keep in mind
 
-* 193 rules in `rules.json`. Each has a default `level` (`required` or `recommended`), `applies_to`, `parameters` (profile values it
+* 197 rules in `rules.json`. Each has a default `level` (`required` or `recommended`), `applies_to`, `parameters` (profile values it
   uses), `extension` (null, or the optional group it belongs to), `statement`, `rationale`, `how_to_check`, `fix_hint`, `examples`.
   A profile can change levels (`ruleLevels`) and switch extensions on.
 * Every checker takes `--profile FILE` and `--json` and prints one report (`schemas/check-report.schema.json`) that names the profile.

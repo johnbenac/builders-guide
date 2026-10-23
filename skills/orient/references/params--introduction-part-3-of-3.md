@@ -1,6 +1,8 @@
 <!-- chunk: params--introduction-part-3-of-3 | source: 07-profile-parameters.md | title: Introduction (part 3 of 3) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `extensions.luminaires.maxPerRoom` | most fixtures per room, or null | `null` | `16` | B-95 |
+| `extensions.signboards.enabled` | consumer generates signs from declared boards | `false` | `true` | - |
 | `extensions.signboards.kinds` | allowed values of SignboardKind | `["entrance_board", "stop_board"]` | `["entrance_board", "stop_board"]` | B-100 |
 | `extensions.signboards.requiredProperties` | properties every board must carry | `["SignboardId", "SignboardKind", "SignboardText", "Signbo...` | `["SignboardId", "SignboardKind", "SignboardText", "Signbo...` | B-100 |
 | `extensions.signboards.displayPixelsPerRadian` | pixels per radian of the display, used for legibility | `1000` | `1090` | B-102 |

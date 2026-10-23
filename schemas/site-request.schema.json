@@ -12,7 +12,8 @@
     "footprint",
     "grading",
     "clearing",
-    "patch"
+    "patch",
+    "buildingAzimuthDegrees"
   ],
   "properties": {
     "format": {
@@ -57,7 +58,7 @@
     },
     "finishedFloorElevationMetres": {
       "type": "number",
-      "description": "height above sea level of the lowest finished floor (file z = 0)"
+      "description": "height above sea level of file z = 0 (the lowest finished floor)"
     },
     "footprint": {
       "type": "object",
@@ -161,6 +162,67 @@
         },
         "version": {
           "type": "string"
+        }
+      }
+    },
+    "buildingAzimuthDegrees": {
+      "type": "number",
+      "description": "angle from east, counter-clockwise, to the file's +X axis, degrees"
+    },
+    "levels": {
+      "type": "array",
+      "description": "the ground-contact levels (B-141), lowest first",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "elevationMetres",
+          "finishedFloorElevationMetres",
+          "footprint"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "elevationMetres": {
+            "type": "number",
+            "description": "level elevation in the file frame"
+          },
+          "finishedFloorElevationMetres": {
+            "type": "number",
+            "description": "height above sea level of this level's finished floor"
+          },
+          "footprint": {
+            "type": "object",
+            "required": [
+              "method",
+              "polygons"
+            ],
+            "properties": {
+              "method": {
+                "enum": [
+                  "union",
+                  "hull"
+                ]
+              },
+              "polygons": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "array",
+                  "minItems": 3,
+                  "items": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

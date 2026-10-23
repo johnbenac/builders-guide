@@ -4,14 +4,14 @@
  "toolVersion": "2.0.0",
  "target": {
   "path": "fallingwater-terrain.ifc",
-  "sha256": "c4a3cf8498346e97bf2d19d2e562f2a7d08897f36082aac2e6f2ab82ed61ffda"
+  "sha256": "396567ae262eef779acffb7dbf7be12dac888760e825b03affcbd592108a5892"
  },
  "result": "pass",
  "exitCode": 0,
  "summary": {
   "requiredFailures": 0,
   "recommendedWarnings": 0,
-  "passes": 22,
+  "passes": 28,
   "info": 6
  },
  "profile": {
@@ -25,8 +25,8 @@
   "doors": 12,
   "windows": 19,
   "luminaires": 0,
-  "triangles": 2398,
-  "vertices": 1386,
+  "triangles": 2390,
+  "vertices": 1382,
   "furniture": 0,
   "finishKeys": 9
  },
@@ -87,7 +87,7 @@
    "message": "length unit is metre"
   },
   {
-   "id": "B-70@56789571",
+   "id": "B-70@8f0b3d3b",
    "rule": "B-70",
    "level": "REQUIRED",
    "status": "pass",
@@ -95,7 +95,7 @@
    "location": {
     "file": "fallingwater-terrain.ifc"
    },
-   "message": "233 GlobalId values, unique, 22 characters"
+   "message": "231 GlobalId values, unique, 22 characters"
   },
   {
    "id": "B-71@5cb8f01e",
@@ -142,7 +142,7 @@
    "message": "every represented product yields triangles"
   },
   {
-   "id": "B-05@c07cfd20",
+   "id": "B-05@c67bb637",
    "rule": "B-05",
    "level": "REQUIRED",
    "status": "pass",
@@ -150,7 +150,7 @@
    "location": {
     "file": "fallingwater-terrain.ifc"
    },
-   "message": "1386 vertices, 2398 triangles"
+   "message": "1382 vertices, 2390 triangles"
   },
   {
    "id": "B-22@70473ba6",
@@ -184,6 +184,61 @@
     "file": "fallingwater-terrain.ifc"
    },
    "message": "12 door(s), each fills an opening that voids a wall"
+  },
+  {
+   "id": "B-30@8e14f1ec",
+   "rule": "B-30",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "no rooms overlap by more than 0.5 m"
+  },
+  {
+   "id": "B-54@76a31920",
+   "rule": "B-54",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "every enclosed room has a slab, roof or covering above it (estimate)"
+  },
+  {
+   "id": "B-47@2a68cce5",
+   "rule": "B-47",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "every room is reachable from a circulation room (estimate)"
+  },
+  {
+   "id": "B-142@311d5df0",
+   "rule": "B-142",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "nothing but slabs, footings, piles, walls, stairs and ramps reaches below the lowest floor"
+  },
+  {
+   "id": "B-143@1bf474c5",
+   "rule": "B-143",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "open-air rooms are EXTERNAL with Enclosed false"
   },
   {
    "id": "B-90@9547bcc1",
@@ -252,7 +307,7 @@
    "message": "the patch extends at least 10 m beyond the footprint"
   },
   {
-   "id": "B-133@6ba2ed34",
+   "id": "B-133@6ef93491",
    "rule": "B-133",
    "level": "REQUIRED",
    "status": "pass",
@@ -260,7 +315,7 @@
    "location": {
     "file": "fallingwater-terrain.ifc"
    },
-   "message": "georeference to SYNTHETIC-SITE, floor 412.000 m above sea level"
+   "message": "georeference to SYNTHETIC-SITE, floor 412.000 m above sea level, azimuth 0.0 degrees"
   },
   {
    "id": "B-134@a1997a59",
@@ -285,7 +340,7 @@
    "message": "every footprint point is at or above sea level"
   },
   {
-   "id": "B-136@b65560c4",
+   "id": "B-136@0b2b0c3f",
    "rule": "B-136",
    "level": "REQUIRED",
    "status": "pass",
@@ -293,7 +348,18 @@
    "location": {
     "file": "fallingwater-terrain.ifc"
    },
-   "message": "floor 0.48 m above to 1.00 m below the terrain across the footprint (estimate)"
+   "message": "no ground-contact level floats or is buried (estimate, 1 level(s))"
+  },
+  {
+   "id": "B-141@e05040ec",
+   "rule": "B-141",
+   "level": "RECOMMENDED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "fallingwater-terrain.ifc"
+   },
+   "message": "ground-contact level(s): Cantilevered house - living / +0 m"
   },
   {
    "id": "B-137@cb322fc5",
@@ -397,5 +463,5 @@
   }
  ],
  "file": "fallingwater-terrain.ifc",
- "sha256": "c4a3cf8498346e97bf2d19d2e562f2a7d08897f36082aac2e6f2ab82ed61ffda"
+ "sha256": "396567ae262eef779acffb7dbf7be12dac888760e825b03affcbd592108a5892"
 }

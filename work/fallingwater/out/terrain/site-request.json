@@ -3,12 +3,13 @@
   "frame": "site: x east, y north, z up, metres; heights above mean sea level",
   "master": {
     "file": "fallingwater-master.ifc",
-    "sha256": "39c83ad1817ca18623f2b6577820d22f944d761a35db26c2835332167e45d1c9"
+    "sha256": "27a7ac2c867f723e675f40f1a409994d23198ee85de559aa4860e280a448bb39"
   },
   "buildingOrigin": {
     "x": 0.0,
     "y": 0.0
   },
+  "buildingAzimuthDegrees": 0.0,
   "finishedFloorElevationMetres": 412.0,
   "footprint": {
     "method": "union",
@@ -41,6 +42,44 @@
       ]
     ]
   },
+  "levels": [
+    {
+      "name": "Cantilevered house - living / +0 m",
+      "elevationMetres": 0.0,
+      "finishedFloorElevationMetres": 412.0,
+      "footprint": {
+        "method": "union",
+        "polygons": [
+          [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              10.0
+            ],
+            [
+              15.0,
+              10.0
+            ],
+            [
+              15.0,
+              -4.8
+            ],
+            [
+              3.0,
+              -4.8
+            ],
+            [
+              3.0,
+              0.0
+            ]
+          ]
+        ]
+      }
+    }
+  ],
   "grading": {
     "maxCutFillSlope": "1:2"
   },

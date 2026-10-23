@@ -19,8 +19,8 @@
     "guide",
     "human"
    ],
-   "sha256": "45a2ab4cf1e5e1698fa41f3615790a6d2e8e9e7adcd622f82fed4644ef72b97c",
-   "bytes": 33392
+   "sha256": "5ddf3f759d65df789ca98c20971542f648d411595785f2cb9ccf65e2b6fd4c51",
+   "bytes": 35173
   },
   {
    "path": "02-interior-decorators-guide.md",
@@ -59,8 +59,8 @@
     "guide",
     "human"
    ],
-   "sha256": "a578f665864d3aae41e5160a7482f8a72c4f7a4289306ace1fc04b22f358a950",
-   "bytes": 10676
+   "sha256": "8ea2dc5bd402e8d61d85738c4202cc2414bdd2c8c4d0b8e4bfd408cab0b387e8",
+   "bytes": 11778
   },
   {
    "path": "06-rules-index.md",
@@ -69,8 +69,8 @@
     "rules",
     "generated"
    ],
-   "sha256": "458a4a70fec5a04c83acbba8ec5ff7aaa57bac4eb07e245f07d8e2ed8dde715e",
-   "bytes": 33016
+   "sha256": "e1f1e3363e20b68584f6e652e03ce0a449275750e98a02e52a2c2bf42c80856e",
+   "bytes": 33943
   },
   {
    "path": "07-profile-parameters.md",
@@ -79,8 +79,8 @@
     "profile",
     "generated"
    ],
-   "sha256": "f41bb91d7cc37200e3964d230555719591486988e8c85e874371b88770e0a433",
-   "bytes": 11358
+   "sha256": "1b3621edc7c29cb69980217ca805261a45632b5cf2bb02d5787c7b55f9929dd4",
+   "bytes": 11608
   },
   {
    "path": "ABOUT.md",
@@ -99,8 +99,8 @@
     "entry",
     "agent"
    ],
-   "sha256": "f6b5d85c56b4c330b5150d7121ac1e0f6261235534ed053f50414ef0d8dd49ea",
-   "bytes": 3978
+   "sha256": "ad5310fd5212337e94a720057e0f051128d7b6942e8757f6a37a66b8ba18c7ab",
+   "bytes": 4218
   },
   {
    "path": "CHANGELOG.md",
@@ -109,8 +109,8 @@
     "policy",
     "human"
    ],
-   "sha256": "9472b5eadb73fbc9d838f067c9d22739fcad775aea4df2d440d3e79ce0e1bf61",
-   "bytes": 4016
+   "sha256": "48810593375e6cf78bade400cfe6e4abc099546b38cd6015f6b3900e34ac71ed",
+   "bytes": 5761
   },
   {
    "path": "CONTRIBUTING.md",
@@ -313,8 +313,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "1f5ae21bf4c61720a9b1877b1211c4886f775dc0f62a261d51fb45b74444d341",
-   "bytes": 2541
+   "sha256": "1cc95cdb35b177fb05929180bed906f151228dfbc4c9902f6225e977ea92bf3e",
+   "bytes": 2644
   },
   {
    "path": "chunks/g1--17-terrain-context-the-rules.md",
@@ -324,8 +324,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "437cb1c923bde3e3097197bb25c97377a7d82e502aefe6df79a3737d3d1c9d26",
-   "bytes": 4264
+   "sha256": "37a425c912a155325dac9ab66749efd4349dd66f1e42492a5e948b79e9cffc2b",
+   "bytes": 4808
   },
   {
    "path": "chunks/g1--2-what-the-profile-gives-you.md",
@@ -357,8 +357,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "281f7d703ae570e38a3831a7d68023a6b675edb63f1919ea42d3d63265f2e18f",
-   "bytes": 1881
+   "sha256": "ff318681a236f789e7bef6ef2462b90bc94ad471d2fedc85cec899daad8be4c3",
+   "bytes": 2238
   },
   {
    "path": "chunks/g1--5-rooms-and-zones.md",
@@ -368,8 +368,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "c1631e8258314fd80fc20d410736108fb02f6c92b2e9134cf4d50850b1c428a0",
-   "bytes": 4540
+   "sha256": "8f7c5d042e1bfc36df781b0a7de271f4c6c8808476006a028932d0d6059d9386",
+   "bytes": 4972
   },
   {
    "path": "chunks/g1--6-walls-doors-windows-and-openings.md",
@@ -390,8 +390,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "61a1ab85502daa12fa2c674c34179b060b9bb8e5c29c20cf12238a9e873b7696",
-   "bytes": 1586
+   "sha256": "93317522964289b02a29238bcdeb408e54bcc0a1db802f60d30b26f283cae639",
+   "bytes": 1955
   },
   {
    "path": "chunks/g1--8-circulation-stairs-ramps-lifts-rails.md",
@@ -896,8 +896,19 @@
     "generated",
     "chunk"
    ],
-   "sha256": "ef1f8d90e0fecec896b53d1d3738b17e1ec78b7b4aa463a90e803b225cc249e5",
-   "bytes": 439
+   "sha256": "976cd4f11a7e4539ddf305af09155c81dee3e8ea194993833af9d0832c610915",
+   "bytes": 470
+  },
+  {
+   "path": "chunks/g5--6-larger-examples.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "038d261319858fe48875482a8d3b7a437bdb5bd046de50aa3d4ea45bcf44913d",
+   "bytes": 1178
   },
   {
    "path": "chunks/g5--introduction.md",
@@ -918,8 +929,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "a9f1eebe060351972783ef2d338274c6dc1e429550d52460268fa69acfcc95bf",
-   "bytes": 22990
+   "sha256": "7e8f665f777d75d6fd9f3912c0b6c20bd43c2d2da79c10de5e17d2900e6fa247",
+   "bytes": 23242
   },
   {
    "path": "chunks/params--extensions.md",
@@ -951,8 +962,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "a9059de715f429aec3218229be7211fdf625d7525f7b09255a440c9fbb8422b7",
-   "bytes": 6069
+   "sha256": "bb3c2e831094d7bc573018057439fdc938f812a6279c3b089b92e045b23ad7e7",
+   "bytes": 6116
   },
   {
    "path": "chunks/params--introduction-part-3-of-3.md",
@@ -962,8 +973,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "494d3f4a1bce06927443c72a23d9a7fa25d5acf94e975c1f8f8fe16e52e4c726",
-   "bytes": 4355
+   "sha256": "9831266ce47ea54b8fa4cf0891dae21cff21241df30b0d8e2e6bcd5890e4c05b",
+   "bytes": 4558
   },
   {
    "path": "chunks/params--rule-levels-in-a-profile.md",
@@ -1148,8 +1159,8 @@
     "agent",
     "content"
    ],
-   "sha256": "0062cca001895d69816312acf19058ea167696c0c0a1b42f0b00c831760cb52b",
-   "bytes": 131904
+   "sha256": "674d4cce6de66c60885557125db4521634a24f3ff743f61f675994529fb0956f",
+   "bytes": 135174
   },
   {
    "path": "llms.txt",
@@ -1159,8 +1170,8 @@
     "agent",
     "index"
    ],
-   "sha256": "794236b80c5b991bfc49ec4ef70ffd3e7fe748b6a40c8388b13e2041f34f52d3",
-   "bytes": 12518
+   "sha256": "58a2f9b4dba623af73df9014c2089a2fab2edf0a056c864626548e315e886e9d",
+   "bytes": 12604
   },
   {
    "path": "profiles/default.json",
@@ -1169,8 +1180,8 @@
     "profile",
     "machine"
    ],
-   "sha256": "b753fe19d999028e92c7ce0c0111e7306bcd748b50bab35aa08588aa860c7ae0",
-   "bytes": 3728
+   "sha256": "d4ccb7791393511b2e5bbe2fc823940f71fc887f6f490b452d0d43e9e26f82f7",
+   "bytes": 3799
   },
   {
    "path": "profiles/example-strict.json",
@@ -1179,8 +1190,8 @@
     "profile",
     "machine"
    ],
-   "sha256": "0807401f5fe40f0986be47c67159be2da494990603fd776e4fdebe0c50dd85b7",
-   "bytes": 4916
+   "sha256": "63922c0f62c9fedde9c7ba5adbd382021239dfb6a22a01c0f44784fd201b0c87",
+   "bytes": 4987
   },
   {
    "path": "profiles/profile.schema.json",
@@ -1190,8 +1201,8 @@
     "schema",
     "machine"
    ],
-   "sha256": "1dc7fbf5696474a305a3431ef16beb9dd10af13085a71b3dc29314aadbea3ea2",
-   "bytes": 15169
+   "sha256": "f77d8e790866804d14379685e305d04076119c2f6e54b696cd02f283cc392f49",
+   "bytes": 15491
   },
   {
    "path": "rules.json",
@@ -1201,8 +1212,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "c24e033010092d8bbd0cf7823d9405f8cf82f1179d5b7bc317c216b1b725b424",
-   "bytes": 178266
+   "sha256": "11fd7dfe9348831891d25c277aa7a8bf37ca9de1ff575fa723b4173d497b1d03",
+   "bytes": 182831
   },
   {
    "path": "schemas/building-metadata.schema.json",
@@ -1291,8 +1302,8 @@
     "schema",
     "machine"
    ],
-   "sha256": "4197f35683a6e0f939ae8c9d03cf48975bf77dee228358a3a188dd7e0a221916",
-   "bytes": 3733
+   "sha256": "c9ab152be0c1010c8657b5fd4195d08438e6d0333129e6345a998bb39813842b",
+   "bytes": 5439
   },
   {
    "path": "schemas/terrain-patch.schema.json",
@@ -1430,8 +1441,8 @@
     "skill",
     "agent"
    ],
-   "sha256": "7016c662f2cd69553151deb9ab282f65aa66e2843ee8139287ea9a8f7cb2ed6f",
-   "bytes": 6753
+   "sha256": "72e7b2873c7a8a8e7885368b4d9330997035bb32e821039dd47f42bebe8be944",
+   "bytes": 8051
   },
   {
    "path": "skills/author-building/references/g1--1-vocabulary.md",
@@ -1518,8 +1529,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "1f5ae21bf4c61720a9b1877b1211c4886f775dc0f62a261d51fb45b74444d341",
-   "bytes": 2541
+   "sha256": "1cc95cdb35b177fb05929180bed906f151228dfbc4c9902f6225e977ea92bf3e",
+   "bytes": 2644
   },
   {
    "path": "skills/author-building/references/g1--17-terrain-context-the-rules.md",
@@ -1529,8 +1540,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "437cb1c923bde3e3097197bb25c97377a7d82e502aefe6df79a3737d3d1c9d26",
-   "bytes": 4264
+   "sha256": "37a425c912a155325dac9ab66749efd4349dd66f1e42492a5e948b79e9cffc2b",
+   "bytes": 4808
   },
   {
    "path": "skills/author-building/references/g1--2-what-the-profile-gives-you.md",
@@ -1562,8 +1573,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "281f7d703ae570e38a3831a7d68023a6b675edb63f1919ea42d3d63265f2e18f",
-   "bytes": 1881
+   "sha256": "ff318681a236f789e7bef6ef2462b90bc94ad471d2fedc85cec899daad8be4c3",
+   "bytes": 2238
   },
   {
    "path": "skills/author-building/references/g1--5-rooms-and-zones.md",
@@ -1573,8 +1584,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "c1631e8258314fd80fc20d410736108fb02f6c92b2e9134cf4d50850b1c428a0",
-   "bytes": 4540
+   "sha256": "8f7c5d042e1bfc36df781b0a7de271f4c6c8808476006a028932d0d6059d9386",
+   "bytes": 4972
   },
   {
    "path": "skills/author-building/references/g1--6-walls-doors-windows-and-openings.md",
@@ -1595,8 +1606,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "61a1ab85502daa12fa2c674c34179b060b9bb8e5c29c20cf12238a9e873b7696",
-   "bytes": 1586
+   "sha256": "93317522964289b02a29238bcdeb408e54bcc0a1db802f60d30b26f283cae639",
+   "bytes": 1955
   },
   {
    "path": "skills/author-building/references/g1--8-circulation-stairs-ramps-lifts-rails.md",
@@ -1793,8 +1804,19 @@
     "reference",
     "generated"
    ],
-   "sha256": "ef1f8d90e0fecec896b53d1d3738b17e1ec78b7b4aa463a90e803b225cc249e5",
-   "bytes": 439
+   "sha256": "976cd4f11a7e4539ddf305af09155c81dee3e8ea194993833af9d0832c610915",
+   "bytes": 470
+  },
+  {
+   "path": "skills/author-building/references/g5--6-larger-examples.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "038d261319858fe48875482a8d3b7a437bdb5bd046de50aa3d4ea45bcf44913d",
+   "bytes": 1178
   },
   {
    "path": "skills/author-building/references/g5--introduction.md",
@@ -1815,8 +1837,8 @@
     "rules",
     "generated"
    ],
-   "sha256": "180178990baa6e53803f6283a3f83bdda89ea94183857f2eda65a18f67ce24c3",
-   "bytes": 33413
+   "sha256": "8b41d33ba14f16ba801b4fecf788dbb31eb029c065fb0605bf59213b5e13eebd",
+   "bytes": 34735
   },
   {
    "path": "skills/author-building/scripts/run_tool.py",
@@ -2117,7 +2139,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "5366c51eb9aed09b07924dcd8594cfedf17c0bf8b6a38e00c64ad172e8f21da9",
+   "sha256": "ccc539fb73346b32b1a6f9b802cb0ecad6ff8d9f7785611f9d0735850c3acbcf",
    "bytes": 4590
   },
   {
@@ -2216,8 +2238,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "a9059de715f429aec3218229be7211fdf625d7525f7b09255a440c9fbb8422b7",
-   "bytes": 6069
+   "sha256": "bb3c2e831094d7bc573018057439fdc938f812a6279c3b089b92e045b23ad7e7",
+   "bytes": 6116
   },
   {
    "path": "skills/orient/references/params--introduction-part-3-of-3.md",
@@ -2227,8 +2249,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "494d3f4a1bce06927443c72a23d9a7fa25d5acf94e975c1f8f8fe16e52e4c726",
-   "bytes": 4355
+   "sha256": "9831266ce47ea54b8fa4cf0891dae21cff21241df30b0d8e2e6bcd5890e4c05b",
+   "bytes": 4558
   },
   {
    "path": "skills/orient/references/params--rule-levels-in-a-profile.md",
@@ -2458,8 +2480,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "ec41fd52939cdc05237173f6f71e7a8b6122dbdfce8174bd51867967b1bd6c8d",
-   "bytes": 3837
+   "sha256": "269b41ec5183de28ad7cccf333d1c71df09770c4a8ca8cab5f12e277fa35597f",
+   "bytes": 4377
   },
   {
    "path": "tools/agent_harness.py",
@@ -2508,8 +2530,8 @@
     "tool",
     "script"
    ],
-   "sha256": "d4b4cfddd49b8764dafc94510c81f14df57230cf7487a4089648ee4815fb9d07",
-   "bytes": 48183
+   "sha256": "1e474d07a4c4ec256d39ffd6952abced8b6022825c0053d73491ba5e6290f615",
+   "bytes": 59345
   },
   {
    "path": "tools/check_item.py",
@@ -2540,6 +2562,26 @@
    ],
    "sha256": "5a613a04c4d395709042c3397a91f34adca7c01794d7011e7c01ef235121aabb",
    "bytes": 21932
+  },
+  {
+   "path": "tools/ifc_author.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "c492cddfa2c9940bb18203ad2c15bf88dee06b79b6fc081e2c521c2818599cff",
+   "bytes": 23085
+  },
+  {
+   "path": "tools/make_fixtures.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "12ce04168dbf400c83521cbcd3df54c0ace42ce31bb337afdb0a0f306d8f9d42",
+   "bytes": 11719
   },
   {
    "path": "tools/make_sample.py",
@@ -2592,6 +2634,16 @@
    "bytes": 2746
   },
   {
+   "path": "tools/preview.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "215c0e989a2bba88e1835558a8585e602b6b65c74981ee27f7d2819056c59ee5",
+   "bytes": 7816
+  },
+  {
    "path": "tools/report.py",
    "purpose": "command-line tool",
    "tags": [
@@ -2607,8 +2659,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "8d9bff43b9f36d50a71c35660c61839ac43e8d7c7070c8e0e1a5a2abb4e73a95",
-   "bytes": 51
+   "sha256": "af26c92691e812667a686981e7b5e23404d37d35c5ca75cc8a7840cd861235be",
+   "bytes": 62
   },
   {
    "path": "tools/rules_index.py",
@@ -2627,8 +2679,8 @@
     "rules",
     "source"
    ],
-   "sha256": "73516ca155fb746c531d0e23bcdbb065f0cb26a1717db6bbb206e2117a502185",
-   "bytes": 90968
+   "sha256": "fcd68cd97dec559ce06cdb2e2d08779ee772daa4705e800570b3005cfab72b52",
+   "bytes": 93364
   },
   {
    "path": "tools/run_example.py",
@@ -2647,8 +2699,8 @@
     "tool",
     "script"
    ],
-   "sha256": "9cd0d13d9234b918280c0947c2c304832b0871796b6f4702a888df54d6c5541a",
-   "bytes": 6239
+   "sha256": "fa51c0508ddf10cf998faa7fff2951ababff6239778b23f5eb2b19f8bf9bf6cd",
+   "bytes": 6356
   },
   {
    "path": "tools/site_request.py",
@@ -2657,8 +2709,8 @@
     "tool",
     "script"
    ],
-   "sha256": "9e43e0fa1c928c0c488488589c39f857bc60a75a5b48366bbea14c4fb7e5ba30",
-   "bytes": 5489
+   "sha256": "91e36f05d89f712d0ab9ff6036e4fc23f5b835a482da5cbc15d8c4ca98b18f14",
+   "bytes": 7343
   },
   {
    "path": "tools/template.html",
@@ -2676,8 +2728,8 @@
     "tool",
     "script"
    ],
-   "sha256": "66aeafc3117970a24c27dd4ace9c1b2a410e1f3e5cfc431b7509217d426efae8",
-   "bytes": 11657
+   "sha256": "2f24da2f06e68003e67b92b31b3bf0ac8e67ba599a82aacc3d4d78f64cfbd39f",
+   "bytes": 12014
   },
   {
    "path": "tools/terrain_lib.py",
@@ -2688,6 +2740,16 @@
    ],
    "sha256": "af9dfd995b19dd39ee475bdd18ed05d864c09889e8896411562c487dfd279e40",
    "bytes": 7684
+  },
+  {
+   "path": "tools/test_fixtures.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "c493a96bd4067ba24eace3ff32c029bb83ac36cd877693b9352f216b14ef4a9b",
+   "bytes": 10689
   },
   {
    "path": "tools/test_map_properties.py",

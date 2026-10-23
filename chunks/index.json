@@ -173,13 +173,14 @@
    "file": "chunks/g1--4-units-axes-origin-and-levels.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "4. Units, axes, origin and levels",
-   "approx_tokens": 469,
+   "approx_tokens": 558,
    "rules": [
     "B-10",
     "B-11",
     "B-12",
     "B-13",
     "B-14",
+    "B-142",
     "B-15"
    ]
   },
@@ -188,8 +189,9 @@
    "file": "chunks/g1--5-rooms-and-zones.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "5. Rooms and zones",
-   "approx_tokens": 1131,
+   "approx_tokens": 1239,
    "rules": [
+    "B-143",
     "B-20",
     "B-21",
     "B-22",
@@ -231,8 +233,9 @@
    "file": "chunks/g1--7-floors-roofs-ceilings-and-slab-openings.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "7. Floors, roofs, ceilings and slab openings",
-   "approx_tokens": 395,
+   "approx_tokens": 487,
    "rules": [
+    "B-144",
     "B-50",
     "B-51",
     "B-51a",
@@ -357,7 +360,7 @@
    "file": "chunks/g1--16-optional-extension-terrain-context.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "16. Optional extension: terrain context",
-   "approx_tokens": 636,
+   "approx_tokens": 661,
    "rules": []
   },
   {
@@ -365,7 +368,7 @@
    "file": "chunks/g1--17-terrain-context-the-rules.md",
    "source": "01-builders-and-architects-guide.md",
    "title": "17. Terrain context: the rules",
-   "approx_tokens": 1061,
+   "approx_tokens": 1196,
    "rules": [
     "B-130",
     "B-131",
@@ -377,7 +380,8 @@
     "B-137",
     "B-138",
     "B-139",
-    "B-140"
+    "B-140",
+    "B-141"
    ]
   },
   {
@@ -844,7 +848,15 @@
    "file": "chunks/g5--5-what-the-example-leaves-out.md",
    "source": "05-worked-example.md",
    "title": "5. What the example leaves out",
-   "approx_tokens": 110,
+   "approx_tokens": 118,
+   "rules": []
+  },
+  {
+   "id": "g5--6-larger-examples",
+   "file": "chunks/g5--6-larger-examples.md",
+   "source": "05-worked-example.md",
+   "title": "6. Larger examples",
+   "approx_tokens": 295,
    "rules": []
   },
   {
@@ -860,7 +872,7 @@
    "file": "chunks/params--introduction-part-2-of-3.md",
    "source": "07-profile-parameters.md",
    "title": "Introduction (part 2 of 3)",
-   "approx_tokens": 1518,
+   "approx_tokens": 1529,
    "rules": []
   },
   {
@@ -868,7 +880,7 @@
    "file": "chunks/params--introduction-part-3-of-3.md",
    "source": "07-profile-parameters.md",
    "title": "Introduction (part 3 of 3)",
-   "approx_tokens": 1089,
+   "approx_tokens": 1140,
    "rules": []
   },
   {

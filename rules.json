@@ -1,7 +1,7 @@
 {
  "format": "rules/1",
  "version": "2.0.0",
- "count": 193,
+ "count": 197,
  "rules": [
   {
    "id": "B-01",
@@ -428,6 +428,33 @@
    "extension": null
   },
   {
+   "id": "B-142",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Put nothing below the lowest finished floor (local z = 0) except slabs, footings, piles, walls, stairs and ramps.",
+   "rationale": "Content below the lowest floor means the origin sits at the wrong height or something is buried by mistake.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-142"
+   },
+   "automated": true,
+   "fix_hint": "Move the origin to the lowest finished floor, or make the element a slab, footing, pile, wall, stair or ramp.",
+   "examples": {
+    "good": "footings and a buried stair below z 0",
+    "bad": "a door below the lowest floor"
+   },
+   "related": [
+    "B-11",
+    "B-13"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
    "id": "B-20",
    "level": "required",
    "applies_to": [
@@ -705,6 +732,34 @@
    "extension": null
   },
   {
+   "id": "B-143",
+   "level": "recommended",
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model an open-air room (terrace, courtyard, deck, path, plaza) as an `IfcSpace` with `PredefinedType` `EXTERNAL` and the boolean property `Enclosed` set to false, and an internal room with `Enclosed` true or absent.",
+   "rationale": "Consumers that look for enclosed rooms must be able to tell an open-air room from an internal one.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-143"
+   },
+   "automated": true,
+   "fix_hint": "Give open-air rooms PredefinedType EXTERNAL and Enclosed false; give internal rooms Enclosed true or none.",
+   "examples": {
+    "good": "a terrace as EXTERNAL with Enclosed false",
+    "bad": "a courtyard modelled as an internal room"
+   },
+   "related": [
+    "B-29",
+    "B-20"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
    "id": "B-30",
    "level": "recommended",
    "applies_to": [
@@ -715,18 +770,20 @@
    "statement": "Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make \"which room is this point in\" ambiguous.",
    "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
    "how_to_check": {
-    "tool": null,
-    "command": null,
-    "method": "review: no script checks this rule; compare the finished work with the statement"
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-30"
    },
-   "automated": false,
-   "fix_hint": "Change the work so that it meets the rule: Let rooms on one level touch along wall centre lines but not overlap by more than the wall thickness; overlapping floors make \"which room is this point in\" ambiguous.",
+   "automated": true,
+   "fix_hint": "Trim the room outlines so that they overlap by no more than a wall thickness.",
    "examples": {
     "good": "",
     "bad": ""
    },
    "related": [],
-   "parameters": [],
+   "parameters": [
+    "geometry.roomOverlapToleranceMetres"
+   ],
    "extension": null
   },
   {
@@ -1050,18 +1107,20 @@
    "statement": "Make every room reachable through a doorway, an open edge or a stair from a circulation room.",
    "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
    "how_to_check": {
-    "tool": null,
-    "command": null,
-    "method": "review: no script checks this rule; compare the finished work with the statement"
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-47"
    },
-   "automated": false,
-   "fix_hint": "Change the work so that it meets the rule: Make every room reachable through a doorway, an open edge or a stair from a circulation room.",
+   "automated": true,
+   "fix_hint": "Add a doorway or stair that links the room to a circulation room, or declare the circulation room's Function.",
    "examples": {
     "good": "",
     "bad": ""
    },
    "related": [],
-   "parameters": [],
+   "parameters": [
+    "identifiers.circulationPrefix"
+   ],
    "extension": null
   },
   {
@@ -1226,17 +1285,44 @@
    "statement": "Model ceilings or roofs.",
    "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
    "how_to_check": {
-    "tool": null,
-    "command": null,
-    "method": "review: no script checks this rule; compare the finished work with the statement"
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-54"
    },
-   "automated": false,
-   "fix_hint": "Change the work so that it meets the rule: Model ceilings or roofs.",
+   "automated": true,
+   "fix_hint": "Add a slab, roof or covering above the room.",
    "examples": {
     "good": "",
     "bad": ""
    },
    "related": [],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "B-144",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Model a pitched or sloped roof with sloped `IfcSlab` `ROOF` pieces that follow the real pitch, and a wall whose faces lean (a battered wall) as one `IfcWall` with an inclined section, not as flat boxes or steps.",
+   "rationale": "Rain, snow, sight lines and shadows depend on the real pitch and the lean of walls.",
+   "how_to_check": {
+    "tool": null,
+    "command": null,
+    "method": "review: no script checks this rule; compare the finished work with the statement"
+   },
+   "automated": false,
+   "fix_hint": "Model the roof as sloped IfcSlab ROOF pieces and a battered wall as one IfcWall with an inclined section.",
+   "examples": {
+    "good": "two sloped roof slabs meeting at a ridge",
+    "bad": "a roof stepped in flat boxes"
+   },
+   "related": [
+    "B-54",
+    "B-06"
+   ],
    "parameters": [],
    "extension": null
   },
@@ -1305,14 +1391,15 @@
     "method": "automated: the finding carries rule id B-61"
    },
    "automated": true,
-   "fix_hint": "Reduce the riser height to the profile's geometry.stairRiserLimitMetres or less.",
+   "fix_hint": "Lower the riser to the profile's limit and cut the slab above the flight (an IfcOpeningElement) so that every tread has the profile's head-room.",
    "examples": {
     "good": "riser 0.167 m",
     "bad": "riser 0.22 m"
    },
    "related": [],
    "parameters": [
-    "geometry.stairRiserLimitMetres"
+    "geometry.stairRiserLimitMetres",
+    "geometry.stairHeadroomMetres"
    ],
    "extension": null
   },
@@ -2343,7 +2430,7 @@
     "building"
    ],
    "guide": "1 Builder's and Architect's",
-   "statement": "Make the terrain cover the building: the plan points of the lowest level's slabs and walls, grown by `extensions.terrain.footprintMarginMetres`, lie inside the patch.",
+   "statement": "Make the terrain cover the building: the plan points of the slabs and walls of every ground-contact level, grown by `extensions.terrain.footprintMarginMetres`, lie inside the patch.",
    "rationale": "A patch that stops short of the footprint cannot say where the ground is under the building.",
    "how_to_check": {
     "tool": "tools/check_ifc.py",
@@ -2371,7 +2458,7 @@
     "building"
    ],
    "guide": "1 Builder's and Architect's",
-   "statement": "Georeference the file with an `IfcMapConversion` from the model context to an `IfcProjectedCRS` named `extensions.terrain.crsName`, in metres, with the local X axis pointing east, scale 1 and `OrthogonalHeight` equal to the height above sea level of the lowest finished floor (local z = 0).",
+   "statement": "Georeference the file with an `IfcMapConversion` from the model context to an `IfcProjectedCRS` named `extensions.terrain.crsName`, in metres, with the local X axis set to the building azimuth (a unit vector, east when the building is not turned), scale 1 and `OrthogonalHeight` equal to the height above sea level of the lowest finished floor (local z = 0).",
    "rationale": "Positions in the file and in the world are tied together only by the georeference; without it the terrain heights cannot be related to the floor.",
    "how_to_check": {
     "tool": "tools/check_ifc.py",
@@ -2429,7 +2516,7 @@
     "building"
    ],
    "guide": "1 Builder's and Architect's",
-   "statement": "Do not put a building in water: the terrain at every footprint point of the lowest level is at or above `extensions.terrain.seaLevelMetres`, and `FootprintInWater` is not true.",
+   "statement": "Do not put a building in water: the terrain at every footprint point of every ground-contact level is at or above `extensions.terrain.seaLevelMetres`, and `FootprintInWater` is not true.",
    "rationale": "A building on seabed is under water in the consumer's world.",
    "how_to_check": {
     "tool": "tools/check_ifc.py",
@@ -2457,7 +2544,7 @@
     "building"
    ],
    "guide": "1 Builder's and Architect's",
-   "statement": "Do not let the building float or sink: the lowest finished floor is not above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point, and not below it by more than `extensions.terrain.buryToleranceMetres` at every footprint point.",
+   "statement": "Do not let the building float or sink: no ground-contact level's floor is above the terrain by more than `extensions.terrain.floatToleranceMetres` at every footprint point of that level, or below it by more than `extensions.terrain.buryToleranceMetres` at every one.",
    "rationale": "A building that is above or below the ground everywhere was placed at the wrong height: it hovers or is buried.",
    "how_to_check": {
     "tool": "tools/check_ifc.py",
@@ -2585,6 +2672,33 @@
    },
    "related": [
     "B-133"
+   ],
+   "parameters": [],
+   "extension": "terrain"
+  },
+  {
+   "id": "B-141",
+   "level": "recommended",
+   "applies_to": [
+    "building"
+   ],
+   "guide": "1 Builder's and Architect's",
+   "statement": "Declare every level that touches the ground with `GroundContact` true in `Pset_Declaration_Level`; without a declaration the lowest level is the only ground-contact level.",
+   "rationale": "On a stepped site several levels meet the ground at different heights; the terrain source can only grade what it is told about.",
+   "how_to_check": {
+    "tool": "tools/check_ifc.py",
+    "command": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
+    "method": "automated: the finding carries rule id B-141"
+   },
+   "automated": true,
+   "fix_hint": "Add Pset_Declaration_Level with GroundContact true to every level that touches the ground.",
+   "examples": {
+    "good": "both stepped levels declared",
+    "bad": "a lower terrace level left undeclared"
+   },
+   "related": [
+    "B-136",
+    "B-132"
    ],
    "parameters": [],
    "extension": "terrain"

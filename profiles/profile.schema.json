@@ -171,6 +171,14 @@
         "maxCurveSegmentsPerCircle": {
           "type": "number",
           "description": "segments per full circle above which tessellation is wasteful"
+        },
+        "stairHeadroomMetres": {
+          "type": "number",
+          "description": "clear height required above every stair tread"
+        },
+        "roomOverlapToleranceMetres": {
+          "type": "number",
+          "description": "largest thickness by which two rooms on one level may overlap (a wall)"
         }
       }
     },

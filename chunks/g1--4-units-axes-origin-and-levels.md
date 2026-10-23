@@ -1,4 +1,4 @@
-<!-- chunk: g1--4-units-axes-origin-and-levels | source: 01-builders-and-architects-guide.md | title: 4. Units, axes, origin and levels | rules: B-10,B-11,B-12,B-13,B-14,B-15 -->
+<!-- chunk: g1--4-units-axes-origin-and-levels | source: 01-builders-and-architects-guide.md | title: 4. Units, axes, origin and levels | rules: B-10,B-11,B-12,B-13,B-14,B-142,B-15 -->
 ## 4. Units, axes, origin and levels
 
 **B-10 · REQUIRED** - Use a right-handed frame with Z up and the horizontal axes the profile states (`frame.horizontalAxes`), in metres. Models authored with another up axis come in turned over.
@@ -12,3 +12,5 @@
 **B-14 · RECOMMENDED** - Use the full hierarchy `IfcProject` > `IfcSite` > `IfcBuilding` > `IfcBuildingStorey`, one `IfcBuilding` per building, and level names that start with the building name (`Clinic - ground / +0 m`).
 
 **B-15 · RECOMMENDED** - Keep floor-to-floor heights regular so that stairs, lifts and openings line up between levels; make tall halls an exception you can name.
+
+**B-142 · RECOMMENDED** - Put nothing below the lowest finished floor (local z = 0) except slabs, footings, piles, walls, stairs and ramps. Foundations, retaining walls and a stair that goes down into the ground are ordinary on a slope; a door, window, room or piece of furniture below the lowest floor means the origin was put at the wrong height.

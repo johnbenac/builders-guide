@@ -19,6 +19,9 @@ Install once: `pip install -r tools/requirements.txt` (IFC reading, arrays, imag
 | `terrain_import.py` | terrain extension: reads a height patch (GeoTIFF) with its sidecar and a site request, reduces it to a triangulated network within an error bound and adds the derived terrain element, georeference and site data to a copy of the master file |
 | `make_sample_terrain.py` | writes a trivial synthetic plane or slope patch and sidecar for tests and examples; real terrain comes from the terrain source |
 | `terrain_lib.py`, `test_terrain.py` | shared terrain helpers (GeoTIFF reader, error-bounded reduction, height lookup) and their tests |
+| `ifc_author.py` | authoring kit: levels, slabs, walls with openings, stairs with correctly sized wells, gable roofs, battered walls, rooms (internal and open-air) with their declaration properties, deterministic output; see `make_fixtures.py` |
+| `make_fixtures.py`, `test_fixtures.py` | three worked buildings built with the kit (cantilevered trays, a rotated stepped hillside block, a courtyard with battered walls) and their tests |
+| `preview.py` | draws one plan per level and an isometric view of a master file (needs matplotlib) |
 | `run_example.py` | builds, checks and packages the whole worked example in one go |
 | `selftest.py` | builds the worked example, breaks it eleven ways, tests the property mapper, the generated files and the agent harness and confirms the checker names the right rule each time |
 | `rules_index.py` | regenerates `06-rules-index.md` and cross-checks every rule id used in the guides and scripts |

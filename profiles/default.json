@@ -45,7 +45,9 @@
     ],
     "stairRiserLimitMetres": 0.19,
     "rampMaxSlope": 0.0833,
-    "maxCurveSegmentsPerCircle": 48
+    "maxCurveSegmentsPerCircle": 48,
+    "stairHeadroomMetres": 2.0,
+    "roomOverlapToleranceMetres": 0.5
   },
   "baseSurfaces": [],
   "buildVolume": null,

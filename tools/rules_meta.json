@@ -500,16 +500,18 @@
     "building",
     "room"
    ],
-   "automated": false,
-   "tool": null,
+   "automated": true,
+   "tool": "check_ifc",
    "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
-   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "fix_hint": "Trim the room outlines so that they overlap by no more than a wall thickness.",
    "examples": {
     "good": "",
     "bad": ""
    },
    "related": [],
-   "parameters": [],
+   "parameters": [
+    "geometry.roomOverlapToleranceMetres"
+   ],
    "extension": null
   },
   "B-31": {
@@ -731,16 +733,18 @@
    "applies_to": [
     "building"
    ],
-   "automated": false,
-   "tool": null,
+   "automated": true,
+   "tool": "check_ifc",
    "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
-   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "fix_hint": "Add a doorway or stair that links the room to a circulation room, or declare the circulation room's Function.",
    "examples": {
     "good": "",
     "bad": ""
    },
    "related": [],
-   "parameters": [],
+   "parameters": [
+    "identifiers.circulationPrefix"
+   ],
    "extension": null
   },
   "B-48": {
@@ -851,10 +855,10 @@
    "applies_to": [
     "building"
    ],
-   "automated": false,
-   "tool": null,
+   "automated": true,
+   "tool": "check_ifc",
    "rationale": "Common practice that keeps a model readable, identifiable and usable by many different consumers.",
-   "fix_hint": "Change the work so that it meets the rule statement, then rerun the check named in how_to_check.",
+   "fix_hint": "Add a slab, roof or covering above the room.",
    "examples": {
     "good": "",
     "bad": ""
@@ -904,14 +908,15 @@
    "automated": true,
    "tool": "check_ifc",
    "rationale": "The walking surface of a stair sits up to one riser from the visible tread.",
-   "fix_hint": "Reduce the riser height to the profile's geometry.stairRiserLimitMetres or less.",
+   "fix_hint": "Lower the riser to the profile's limit and cut the slab above the flight (an IfcOpeningElement) so that every tread has the profile's head-room.",
    "examples": {
     "good": "riser 0.167 m",
     "bad": "riser 0.22 m"
    },
    "related": [],
    "parameters": [
-    "geometry.stairRiserLimitMetres"
+    "geometry.stairRiserLimitMetres",
+    "geometry.stairHeadroomMetres"
    ],
    "extension": null
   },
@@ -3394,6 +3399,83 @@
    ],
    "parameters": [],
    "extension": "terrain"
+  },
+  "B-141": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "On a stepped site several levels meet the ground at different heights; the terrain source can only grade what it is told about.",
+   "fix_hint": "Add Pset_Declaration_Level with GroundContact true to every level that touches the ground.",
+   "examples": {
+    "good": "both stepped levels declared",
+    "bad": "a lower terrace level left undeclared"
+   },
+   "related": [
+    "B-136",
+    "B-132"
+   ],
+   "parameters": [],
+   "extension": "terrain"
+  },
+  "B-142": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Content below the lowest floor means the origin sits at the wrong height or something is buried by mistake.",
+   "fix_hint": "Move the origin to the lowest finished floor, or make the element a slab, footing, pile, wall, stair or ramp.",
+   "examples": {
+    "good": "footings and a buried stair below z 0",
+    "bad": "a door below the lowest floor"
+   },
+   "related": [
+    "B-11",
+    "B-13"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-143": {
+   "applies_to": [
+    "building",
+    "room"
+   ],
+   "automated": true,
+   "tool": "check_ifc",
+   "rationale": "Consumers that look for enclosed rooms must be able to tell an open-air room from an internal one.",
+   "fix_hint": "Give open-air rooms PredefinedType EXTERNAL and Enclosed false; give internal rooms Enclosed true or none.",
+   "examples": {
+    "good": "a terrace as EXTERNAL with Enclosed false",
+    "bad": "a courtyard modelled as an internal room"
+   },
+   "related": [
+    "B-29",
+    "B-20"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  "B-144": {
+   "applies_to": [
+    "building"
+   ],
+   "automated": false,
+   "tool": null,
+   "rationale": "Rain, snow, sight lines and shadows depend on the real pitch and the lean of walls.",
+   "fix_hint": "Model the roof as sloped IfcSlab ROOF pieces and a battered wall as one IfcWall with an inclined section.",
+   "examples": {
+    "good": "two sloped roof slabs meeting at a ridge",
+    "bad": "a roof stepped in flat boxes"
+   },
+   "related": [
+    "B-54",
+    "B-06"
+   ],
+   "parameters": [],
+   "extension": null
   }
  }
 }

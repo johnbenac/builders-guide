@@ -12,7 +12,7 @@ master file:
 * one IfcGeographicElement TERRAIN (an IfcTriangulatedFaceSet) on the IfcSite, with Pset_Declaration_Terrain (source version, hashes,
   pixel size, error bound, frame, vertical datum);
 * an IfcMapConversion to an IfcProjectedCRS named as the sidecar says (a custom frame, not a registry code), whose OrthogonalHeight
-  is the height of the lowest finished floor above sea level;
+  is the height of the lowest finished floor above sea level and whose X axis is the building azimuth from the request;
 * IfcSite.RefElevation (terrain height at the building origin above sea level) and Pset_Declaration_Site (sea level, whether the
   footprint is in water, distance to shore when the source gives it, floor height above sea level).
 
@@ -23,6 +23,7 @@ Requires: pip install ifcopenshell numpy pillow scipy
 """
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -36,8 +37,8 @@ import report as rpt
 import terrain_lib as tl
 
 NS = uuid.UUID("0f1d3c52-7a41-5c0e-8b26-4d9e6a1f3b77")
-FILE_FRAME = ("file frame: x east, y north, z up; x and y are the site frame shifted by the building origin, "
-              "z is measured from the lowest finished floor")
+FILE_FRAME = ("file frame: z up; x and y are the site frame (x east, y north) shifted by the building origin and turned by the "
+              "building azimuth (IfcMapConversion), z is measured from the lowest finished floor")
 
 
 def fail(msg):
@@ -114,11 +115,14 @@ def main():
         fail("the georeferencing tags of the GeoTIFF disagree with the sidecar (pixel size, origin)")
 
     e0, n0, floor = req["buildingOrigin"]["x"], req["buildingOrigin"]["y"], req["finishedFloorElevationMetres"]
+    azimuth = float(req["buildingAzimuthDegrees"])
+    ca, sa = math.cos(math.radians(azimuth)), math.sin(math.radians(azimuth))
     verts_idx, tris, worst = tl.decimate(z, bound)
     sx = origin[0] + (verts_idx[:, 0] + 0.5) * ps
     sy = origin[1] - (verts_idx[:, 1] + 0.5) * ps
     sz = z[verts_idx[:, 1], verts_idx[:, 0]]
-    fx, fy, fz = sx - e0, sy - n0, sz - floor                    # site frame to file frame
+    dx, dy = sx - e0, sy - n0                                   # site frame to file frame: shift, then turn by minus the azimuth
+    fx, fy, fz = ca * dx + sa * dy, -sa * dx + ca * dy, sz - floor
     tris = tl.faces_up(np.column_stack([fx, fy]), tris)
 
     ground_origin = tl.bilinear(z, origin, ps, e0, n0)
@@ -159,7 +163,7 @@ def main():
                               GeodeticDatum=side["crs"].get("geodeticDatum"), VerticalDatum=side["verticalDatum"]["name"],
                               MapProjection=side["crs"].get("mapProjection"), MapUnit=metre)
     model.create_entity("IfcMapConversion", SourceCRS=ctx, TargetCRS=crs, Eastings=float(e0), Northings=float(n0),
-                        OrthogonalHeight=float(floor), XAxisAbscissa=1.0, XAxisOrdinate=0.0, Scale=1.0)
+                        OrthogonalHeight=float(floor), XAxisAbscissa=ca, XAxisOrdinate=sa, Scale=1.0)
     site.RefElevation = float(ground_origin)
 
     plist = model.create_entity("IfcCartesianPointList3D", CoordList=[tuple(map(float, p)) for p in zip(fx, fy, fz)])

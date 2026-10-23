@@ -1,11 +1,11 @@
 roomId,name,occupant,kind,enclosed,level,levelElevationMetres,floorAreaM2,clearHeightM,buildingId,layer
 FW-L0-LIV,Living room,Residence,room,yes,Cantilevered house - living / +0 m,0.0,98.72,2.65,B-FALLINGWATER,permanent
 FW-L0-KIT,Kitchen,Residence,room,yes,Cantilevered house - living / +0 m,0.0,14.3,2.65,B-FALLINGWATER,permanent
-FW-L0-TER,Living terrace,Residence,terrace,no,Cantilevered house - living / +0 m,0.0,53.36,2.65,B-FALLINGWATER,permanent
+FW-L0-TER,Living terrace,Residence,open,no,Cantilevered house - living / +0 m,0.0,53.36,2.65,B-FALLINGWATER,permanent
 FW-L1-HALL,Bedroom hall,Residence,room,yes,Cantilevered house - bedrooms / +3 m,3.0,28.6,2.65,B-FALLINGWATER,permanent
 FW-L1-MAS,Master bedroom,Residence,room,yes,Cantilevered house - bedrooms / +3 m,3.0,43.68,2.65,B-FALLINGWATER,permanent
 FW-L1-BED2,Second bedroom,Residence,room,yes,Cantilevered house - bedrooms / +3 m,3.0,19.6,2.65,B-FALLINGWATER,permanent
 FW-L1-DRS,Dressing room,Residence,room,yes,Cantilevered house - bedrooms / +3 m,3.0,14.3,2.65,B-FALLINGWATER,permanent
-FW-L1-TER,Master terrace,Residence,terrace,no,Cantilevered house - bedrooms / +3 m,3.0,63.6,2.65,B-FALLINGWATER,permanent
+FW-L1-TER,Master terrace,Residence,open,no,Cantilevered house - bedrooms / +3 m,3.0,63.6,2.65,B-FALLINGWATER,permanent
 FW-L2-STU,Upper study,Residence,room,yes,Cantilevered house - upper / +6 m,6.0,25.56,2.65,B-FALLINGWATER,permanent
-FW-L2-TER,Roof terrace,Residence,terrace,no,Cantilevered house - upper / +6 m,6.0,85.5,2.65,B-FALLINGWATER,permanent
+FW-L2-TER,Roof terrace,Residence,open,no,Cantilevered house - upper / +6 m,6.0,85.5,2.65,B-FALLINGWATER,permanent

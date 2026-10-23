@@ -2,7 +2,7 @@
 
 > Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.
 
-Version 2.0.0. 193 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
+Version 2.0.0. 197 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
 
 ## Start here
 
@@ -50,10 +50,10 @@ Version 2.0.0. 193 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [g1--1-vocabulary](chunks/g1--1-vocabulary.md): 1. Vocabulary
 - [g1--2-what-the-profile-gives-you](chunks/g1--2-what-the-profile-gives-you.md): 2. What the profile gives you
 - [g1--3-file-and-schema](chunks/g1--3-file-and-schema.md): 3. File and schema; rules B-01, B-02, B-02a, B-03, B-04, B-05 ...
-- [g1--4-units-axes-origin-and-levels](chunks/g1--4-units-axes-origin-and-levels.md): 4. Units, axes, origin and levels; rules B-10, B-11, B-12, B-13, B-14, B-15
-- [g1--5-rooms-and-zones](chunks/g1--5-rooms-and-zones.md): 5. Rooms and zones; rules B-20, B-21, B-22, B-23, B-24, B-25 ...
+- [g1--4-units-axes-origin-and-levels](chunks/g1--4-units-axes-origin-and-levels.md): 4. Units, axes, origin and levels; rules B-10, B-11, B-12, B-13, B-14, B-142 ...
+- [g1--5-rooms-and-zones](chunks/g1--5-rooms-and-zones.md): 5. Rooms and zones; rules B-143, B-20, B-21, B-22, B-23, B-24 ...
 - [g1--6-walls-doors-windows-and-openings](chunks/g1--6-walls-doors-windows-and-openings.md): 6. Walls, doors, windows and openings; rules B-40, B-40a, B-41, B-42, B-43, B-44 ...
-- [g1--7-floors-roofs-ceilings-and-slab-openings](chunks/g1--7-floors-roofs-ceilings-and-slab-openings.md): 7. Floors, roofs, ceilings and slab openings; rules B-50, B-51, B-51a, B-52, B-53, B-54 ...
+- [g1--7-floors-roofs-ceilings-and-slab-openings](chunks/g1--7-floors-roofs-ceilings-and-slab-openings.md): 7. Floors, roofs, ceilings and slab openings; rules B-144, B-50, B-51, B-51a, B-52, B-53 ...
 - [g1--8-circulation-stairs-ramps-lifts-rails](chunks/g1--8-circulation-stairs-ramps-lifts-rails.md): 8. Circulation, stairs, ramps, lifts, rails; rules B-60, B-61, B-62, B-63, B-64, B-65 ...
 - [g1--9-names-identifiers-property-sets-and-classifica](chunks/g1--9-names-identifiers-property-sets-and-classifica.md): 9. Names, identifiers, property sets and classification; rules B-70, B-71, B-72, B-73, B-74, B-75 ...
 - [g1--10-zones-and-reserved-volumes](chunks/g1--10-zones-and-reserved-volumes.md): 10. Zones and reserved volumes; rules B-80, B-81, B-81a, B-82
@@ -108,6 +108,7 @@ Version 2.0.0. 193 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [g5--3-step-by-step-3-10-package-manifest-and-checks](chunks/g5--3-step-by-step-3-10-package-manifest-and-checks.md): 3. Step by step: 3.10 Package, manifest and checks (guide 4)
 - [g5--4-things-to-try](chunks/g5--4-things-to-try.md): 4. Things to try
 - [g5--5-what-the-example-leaves-out](chunks/g5--5-what-the-example-leaves-out.md): 5. What the example leaves out
+- [g5--6-larger-examples](chunks/g5--6-larger-examples.md): 6. Larger examples
 - [params--introduction-part-1-of-3](chunks/params--introduction-part-1-of-3.md): Introduction (part 1 of 3)
 - [params--introduction-part-2-of-3](chunks/params--introduction-part-2-of-3.md): Introduction (part 2 of 3)
 - [params--introduction-part-3-of-3](chunks/params--introduction-part-3-of-3.md): Introduction (part 3 of 3)

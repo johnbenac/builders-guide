@@ -20,6 +20,23 @@ Terrain context for consumers whose ground comes from their own terrain source (
   `site-request` and a `terrain` section.
 * `tools/gen_all.py` leaves the `work/` folder out of the manifest, and `llms.txt` states the real rule count.
 
+Authoring kit, site-conditioned buildings and larger examples.
+
+* **Authoring kit** `tools/ifc_author.py`: levels, slabs, walls with openings, stairs with wells sized for head-room, gable roofs,
+  battered walls, internal and open-air rooms, footings, deterministic output. `tools/make_fixtures.py` builds three generic buildings with
+  it (cantilevered trays, a rotated stepped hillside block, a courtyard with battered walls); `tools/test_fixtures.py` checks them, runs
+  them through the terrain tools and breaks each rule they exercise. `tools/preview.py` draws plans and an isometric view.
+* **Automated checks** for rules that were review-only: `B-30` (rooms overlapping), `B-47` (reachability from a circulation room through
+  doors and stairs), `B-54` (a slab, roof or covering over every enclosed room) and the head-room half of `B-61`. New profile
+  parameters `geometry.stairHeadroomMetres` and `geometry.roomOverlapToleranceMetres`.
+* **New rules:** `B-142` (nothing but slabs, footings, piles, walls, stairs and ramps below the lowest floor), `B-143` (open-air rooms are
+  `EXTERNAL` with `Enclosed` false; the walkability and luminaire checks skip them), `B-144` (sloped roofs and leaning walls are modelled
+  as such), `B-141` (terrain: declare every ground-contact level).
+* **Terrain, generalised:** the building may be turned from east (`IfcMapConversion` carries the azimuth; `site_request.py --azimuth`;
+  the importer turns the terrain into the file frame) and several levels may touch the ground, each declared with `GroundContact`; the site
+  request lists each level's footprint and floor elevation, and `B-132`, `B-135` and `B-136` apply per ground-contact level.
+* New dependency `matplotlib` (for `preview.py` only).
+
 ## 2.0.0
 
 The set was made portable: core practice is separated from consumer parameters.

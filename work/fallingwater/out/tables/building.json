@@ -34,7 +34,6 @@
   "occupants": [
     "Residence"
   ],
-  "roomIdPrefix": "FW-",
   "counts": {
     "rooms": 10,
     "walls": 29,

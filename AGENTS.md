@@ -10,7 +10,7 @@ people can read the PDF or HTML in `dist/`. Everything is static files and Pytho
 1. Read `skills/orient/SKILL.md` (about 70 lines). It tells you which skill to load.
 2. Load only the skill you need: `skills/author-building`, `skills/decorate-interior`, `skills/author-furniture-library`,
    `skills/accept-and-package-delivery`. Each skill points to small files under its `references/` for detail.
-3. Rules are in `rules.json` (193, stable ids like `B-41`). Each has a default `level`, `statement`, `rationale`, `parameters`,
+3. Rules are in `rules.json` (197, stable ids like `B-41`). Each has a default `level`, `statement`, `rationale`, `parameters`,
    `extension`, `how_to_check`, `fix_hint`, `examples`, `related`.
 4. Consumer-specific numbers are in a **profile** (`profiles/profile.schema.json`; default `profiles/default.json`). Build and check
    against the consumer's profile when you have one.
@@ -25,6 +25,8 @@ python3 tools/make_sample.py work/                            # a complete valid
 python3 tools/map_properties.py in.ifc out.ifc --mapping PROFILE.json   # rename declaration properties to a consumer's names
 python3 tools/site_request.py MASTER.ifc --floor-elevation H --origin E N --out site-request.json   # terrain extension: what the building sends its terrain source
 python3 tools/terrain_import.py patch.tif patch.json MASTER.ifc --request site-request.json --out OUT.ifc   # terrain extension: add the derived terrain patch
+python3 tools/make_fixtures.py fixtures/                      # three larger worked buildings, built with tools/ifc_author.py
+python3 tools/preview.py MASTER.ifc preview/                  # plans and an isometric view, to see your own work
 python3 tools/run_example.py example-out                      # build, check and package the example end to end
 python3 tools/selftest.py                                     # prove the checkers still catch every deliberate fault
 python3 tools/agent_harness.py                                # prove a fresh agent can pass using only this set, under two profiles

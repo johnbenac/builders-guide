@@ -2,11 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 """Write the request a building sends to its terrain source (guide 1, section 16).
 
-    python3 site_request.py MASTER.ifc --floor-elevation H --origin E N [--profile PROFILE.json] [--out site-request.json]
+    python3 site_request.py MASTER.ifc --floor-elevation H --origin E N [--azimuth DEG] [--profile PROFILE.json] [--out site-request.json]
 
-The request holds the footprint polygon of the lowest level (slabs and walls seen from above), the finished floor elevation, the
-grading rule and the clearing margin from the profile, and the smallest patch the source should cut. Coordinates are in the site
-frame (x east, y north, metres): the file's x and y plus the building origin given with --origin. Heights are above sea level.
+The request holds the footprint polygon of the ground-contact levels (slabs and walls seen from above), the finished floor
+elevation of each, the grading rule and the clearing margin from the profile, and the smallest patch the source should cut.
+Ground-contact levels are those declared with GroundContact true in Pset_Declaration_Level (B-141); with no declaration it is the
+lowest level. Coordinates are in the site frame (x east, y north, metres): the file's x and y turned by the building azimuth
+(--azimuth, degrees counter-clockwise from east to the file's +X axis; default 0) and shifted by the building origin given with
+--origin. Heights are above sea level.
 
 --floor-elevation and --origin come from whoever places the building; they are not guessed. Exit codes: 0 written, 2 wrong
 command line, 3 the IFC file cannot be read.
@@ -28,27 +31,39 @@ from terrain_lib import sha256_file
 SITE_FRAME = "site: x east, y north, z up, metres; heights above mean sea level"
 
 
-def lowest_level_elements(model):
+def ground_levels(model):
+    """The levels that touch the ground: those declared with GroundContact true (B-141), else the lowest level."""
     storeys = model.by_type("IfcBuildingStorey")
     if not storeys:
-        return None, []
-    low = min(storeys, key=lambda s: s.Elevation if s.Elevation is not None else 0.0)
+        return []
+    flagged = []
+    for st in storeys:
+        for rel in st.IsDefinedBy or []:
+            ps = getattr(rel, "RelatingPropertyDefinition", None)
+            if ps is not None and ps.is_a("IfcPropertySet") and ps.Name == "Pset_Declaration_Level":
+                for p in ps.HasProperties or []:
+                    if p.Name == "GroundContact" and p.NominalValue is not None and p.NominalValue.wrappedValue is True:
+                        flagged.append(st)
+    return sorted(flagged or [min(storeys, key=lambda x: x.Elevation if x.Elevation is not None else 0.0)],
+                  key=lambda x: x.Elevation or 0.0)
+
+
+def level_elements(model, storey):
     out = []
     for rel in model.by_type("IfcRelContainedInSpatialStructure"):
-        if rel.RelatingStructure == low:
+        if rel.RelatingStructure == storey:
             out += [e for e in rel.RelatedElements if e.is_a("IfcSlab") or e.is_a("IfcWall")]
-    return low, out
+    return out
 
 
-def footprint(model):
-    """Plan footprint (shapely geometry, file frame) of the slabs and walls of the lowest level."""
+def footprint(model, storey):
+    """Plan footprint (shapely geometry, file frame) of the slabs and walls of one level; None when it has none."""
     from shapely.geometry import Polygon
     from shapely.ops import unary_union
     settings = ifcopenshell.geom.settings()
     settings.set("use-world-coords", True)
-    low, elems = lowest_level_elements(model)
     parts = []
-    for e in elems:
+    for e in level_elements(model, storey):
         if not getattr(e, "Representation", None):
             continue
         sh = ifcopenshell.geom.create_shape(settings, e)
@@ -58,9 +73,7 @@ def footprint(model):
             p = Polygon(tri)
             if p.area > 1e-9:
                 parts.append(p)
-    if not parts:
-        return low, None
-    return low, unary_union(parts).buffer(0)
+    return unary_union(parts).buffer(0) if parts else None
 
 
 def polygons_of(geom, method):
@@ -76,11 +89,17 @@ def polygons_of(geom, method):
     return out
 
 
+def to_site(rings, e0, n0, azimuth_degrees):
+    c, sn = np.cos(np.radians(azimuth_degrees)), np.sin(np.radians(azimuth_degrees))
+    return [[[round(e0 + c * x - sn * y, 3), round(n0 + sn * x + c * y, 3)] for x, y in ring] for ring in rings]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("ifc")
     ap.add_argument("--floor-elevation", type=float, required=True, help="height above sea level of the lowest finished floor, metres")
     ap.add_argument("--origin", type=float, nargs=2, required=True, metavar=("E", "N"), help="site-frame position of the file origin, metres")
+    ap.add_argument("--azimuth", type=float, default=0.0, help="angle from east, counter-clockwise, to the file's +X axis, degrees")
     ap.add_argument("--profile")
     ap.add_argument("--hull", action="store_true", help="send the convex hull instead of the exact footprint")
     ap.add_argument("--out", default="site-request.json")
@@ -92,14 +111,22 @@ def main():
     except Exception as exc:
         print("cannot read %s: %s" % (a.ifc, exc), file=sys.stderr)
         sys.exit(3)
-    low, geom = footprint(model)
-    if geom is None or geom.is_empty:
-        print("no slabs or walls on the lowest level of %s: nothing to take a footprint from" % a.ifc, file=sys.stderr)
-        sys.exit(3)
+    from shapely.ops import unary_union
     method = "hull" if a.hull else "union"
-    polys = polygons_of(geom, method)
     e0, n0 = a.origin
-    polys = [[[x + e0, y + n0] for x, y in ring] for ring in polys]
+    levels, geoms = [], []
+    for st in ground_levels(model):
+        g = footprint(model, st)
+        if g is None or g.is_empty:
+            continue
+        geoms.append(g)
+        el = float(st.Elevation or 0.0)
+        levels.append({"name": st.Name, "elevationMetres": el, "finishedFloorElevationMetres": a.floor_elevation + el,
+                       "footprint": {"method": method, "polygons": to_site(polygons_of(g, method), e0, n0, a.azimuth)}})
+    if not levels:
+        print("no slabs or walls on the ground-contact level(s) of %s: nothing to take a footprint from" % a.ifc, file=sys.stderr)
+        sys.exit(3)
+    polys = to_site(polygons_of(unary_union(geoms).buffer(0), method), e0, n0, a.azimuth)
     allp = np.array([pt for ring in polys for pt in ring])
     margin = float(cfg["footprintMarginMetres"])
     req = {
@@ -107,8 +134,10 @@ def main():
         "frame": SITE_FRAME,
         "master": {"file": os.path.basename(a.ifc), "sha256": sha256_file(a.ifc)},
         "buildingOrigin": {"x": e0, "y": n0},
+        "buildingAzimuthDegrees": a.azimuth,
         "finishedFloorElevationMetres": a.floor_elevation,
         "footprint": {"method": method, "polygons": polys},
+        "levels": levels,
         "grading": {"maxCutFillSlope": cfg["grading"]["maxCutFillSlope"]},
         "clearing": {"marginMetres": float(cfg["clearingMarginMetres"])},
         "patch": {"minMarginMetres": margin,
@@ -119,8 +148,8 @@ def main():
     with open(a.out, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(req, fh, indent=2)
         fh.write("\n")
-    print("wrote %s: %d polygon(s) from level %s, floor %.3f m above sea level, patch bounds %s to %s" % (
-        a.out, len(polys), low.Name, a.floor_elevation, req["patch"]["bounds"]["min"], req["patch"]["bounds"]["max"]))
+    print("wrote %s: %d ground-contact level(s), floor %.3f m above sea level, azimuth %g degrees, patch bounds %s to %s" % (
+        a.out, len(levels), a.floor_elevation, a.azimuth, req["patch"]["bounds"]["min"], req["patch"]["bounds"]["max"]))
 
 
 if __name__ == "__main__":
