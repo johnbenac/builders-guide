@@ -1,3 +1,0 @@
-{"format": "profile/1", "name": "terrain-demo", "version": "1.0.0",
- "description": "Default profile with the terrain extension on. The CRS name is the synthetic test ground's.",
- "extensions": {"terrain": {"enabled": true, "crsName": "SYNTHETIC-SITE"}}}
