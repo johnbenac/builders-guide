@@ -3,7 +3,7 @@
 test_sync.py, so that they cannot disagree.
 
 The set is every file under the top folder except version-control and cache folders, any folder whose name starts with a dot
-(virtual environments, tool caches, the CI workflow folder), `deliveries/` at the top (submitted deliveries, see 08-submissions-and-ingest.md), `work/` (scratch output, git-ignored), `dist/` (hand-over files, listed separately) and
+(virtual environments, tool caches, the CI workflow folder), any file at the top whose name starts with a dot other than `.gitignore` (files a checkout or hook tool may drop), `deliveries/` at the top (submitted deliveries, see 08-submissions-and-ingest.md), `work/` (scratch output, git-ignored), `dist/` (hand-over files, listed separately) and
 compiled Python. `MANIFEST.sha256` is the checksum list itself and is not in it.
 """
 import hashlib
@@ -29,6 +29,8 @@ def set_files(root):
         top = os.path.abspath(base) == os.path.abspath(root)
         dirs[:] = sorted(d for d in dirs if d not in EXCLUDE_DIRS and not d.startswith(".") and not (top and d in TOP_EXCLUDE_DIRS))
         for n in names:
+            if top and n.startswith(".") and n != ".gitignore":
+                continue   # tool and hook files that a checkout may drop at the top (never part of the set)
             rel = os.path.relpath(os.path.join(base, n), root).replace(os.sep, "/")
             if rel != CHECKSUM_FILE and not rel.endswith(".pyc"):
                 out.append(rel)

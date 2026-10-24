@@ -4,13 +4,6 @@
  "note": "Every file of the set (the list is tools/fileset.py) except dist/ and MANIFEST.sha256 (see MANIFEST.sha256 and dist/SHA256SUMS.txt).",
  "files": [
   {
-   "path": ".commitlintrc.cjs",
-   "purpose": "supporting file",
-   "tags": [],
-   "sha256": "c575482199cdd7c58534f9f5ec5dbae462823cad39a544f89f59a3cd95da966c",
-   "bytes": 5585
-  },
-  {
    "path": ".gitignore",
    "purpose": "version control ignore list",
    "tags": [
@@ -18,13 +11,6 @@
    ],
    "sha256": "98ba6feee40233da7b7fdf5d13b88ff1114fda140b7568aaeea6d71c50c7be38",
    "bytes": 53
-  },
-  {
-   "path": ".gitlint",
-   "purpose": "supporting file",
-   "tags": [],
-   "sha256": "c0cfd33785e2a17ec40f92e6cb24deef81be47133d42adef198fd84091445cf0",
-   "bytes": 506
   },
   {
    "path": "01-builders-and-architects-guide.md",
@@ -2991,8 +2977,8 @@
     "tool",
     "script"
    ],
-   "sha256": "3ff22a9122a507416f5ea41c2bb5cba709f3cfa9aed972ddf2c8dbcad420d710",
-   "bytes": 2244
+   "sha256": "df0f00bd18b55b24f333a74d323b8fbecf00cee21f99e7553edbe5f7580ee58f",
+   "bytes": 2532
   },
   {
    "path": "tools/gen_all.py",

@@ -1,3 +1,3 @@
-ae4e3923514d81b45ed2d47bebeed1170616ddbf1e25cf40ad6f56e169b97d48  builders-guide-2.3.0.zip
+74343094b712f87d130de20b7572cad8625bcf6bebfb817bfe7cbaff7f26b84e  builders-guide-2.3.0.zip
 71e30e07a33ad5de498a788ba6125fd4e8fab598dea336b267e52d75d5f68b50  builders-guide-2.3.0.html
-115f8a6596feb276085a2c1a30fcb1bb2dbde2df042c2f5f64c7fc382d47830f  builders-guide-2.3.0.pdf
+9f0e11bb0ddddd7c2cf7216686a3d16fe3cac2d54ebe8f2996ca867bcefbe2a8  builders-guide-2.3.0.pdf
