@@ -1,6 +1,7 @@
-<!-- chunk: params--introduction-part-3-of-3 | source: 07-profile-parameters.md | title: Introduction (part 3 of 3) | rules: - -->
+<!-- chunk: params--introduction-part-3-of-4 | source: 07-profile-parameters.md | title: Introduction (part 3 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `extensions.luminaires.positionToleranceMetres` | largest distance between the declared light position and the emissive part, level offset applied | `0.06` | `0.06` | B-92 |
 | `extensions.luminaires.maxPerRoom` | most fixtures per room, or null | `null` | `16` | B-95 |
 | `extensions.signboards.enabled` | consumer generates signs from declared boards | `false` | `true` | - |
 | `extensions.signboards.kinds` | allowed values of SignboardKind | `["entrance_board", "stop_board"]` | `["entrance_board", "stop_board"]` | B-100 |
@@ -23,7 +24,7 @@
 | `extensions.terrain.siteElevationToleranceMetres` | largest difference between IfcSite.RefElevation and the terrain height at the building origin | `0.1` | `0.1` | B-134 |
 | `extensions.terrain.maxTriangles` | most triangles in the terrain element | `200000` | `200000` | B-138 |
 | `extensions.terrain.maxPatchSamples` | most samples read from one height patch; a larger patch is refused before it is loaded | `25000000` | `25000000` | - |
-| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
+| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44, X-80 |
 | `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
 | `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |
 | `textures.normalConvention` | +Y: green channel points up (OpenGL style); -Y: green points down (DirectX style) | `"+Y"` | `"+Y"` | D-41 |
@@ -31,12 +32,11 @@
 | `package.maxPackageMegabytes` | upload size cap of a whole package, or null | `null` | `500` | X-14 |
 | `package.requireProvenance` | every asset needs a provenance entry | `true` | `true` | X-20 |
 | `package.requireLicence` | every asset and the package need a licence | `true` | `true` | X-21 |
-| `submission.maxFiles` | most files in one delivery folder | `200` | `null` | X-73 |
-| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73 |
+| `submission.maxFiles` | most files in one delivery folder (600 since 2.3.0, because proofs add a GLB and a contact sheet for every component) | `600` | `null` | X-73 |
+| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73, X-80 |
 | `submission.maxDeliveryBytes` | largest total size of a delivery folder, in bytes | `104857600` | `null` | X-73 |
 | `submission.maxPathLength` | longest relative path inside a delivery, in characters | `200` | `null` | X-74 |
 | `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
 | `submission.allowedLicences` | licence identifiers a submitter may offer the delivery under | `["CC-BY-4.0", "CC0-1.0"]` | `null` | X-71 |
 | `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
 | `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
-| `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |

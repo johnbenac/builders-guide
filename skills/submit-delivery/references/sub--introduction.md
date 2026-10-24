@@ -5,4 +5,4 @@
 This repository holds the guide set and it is also where outside contributors offer **deliveries**: buildings, interiors, furniture,
 materials, fixtures and hardware. A delivery is reviewed as a pull request. When the maintainers merge it, a separate tool turns the
 accepted delivery into separate, content-addressed component assets and a neutral catalogue. This page is for people and for software
-agents; the rules the automatic checks enforce are X-70 to X-78 in guide 4, section 8.
+agents; the rules the automatic checks enforce are X-70 to X-86 in guide 4, section 8 (X-79 to X-86 are the proofs, below).

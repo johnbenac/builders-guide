@@ -3,6 +3,47 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
+## 2.3.0
+
+Every submitted delivery now carries standalone, reproducible visual proofs: GLB exports of the model and of every component, a GLB validation report
+and a standard set of rendered pictures, tied together by a proof manifest. MINOR under `VERSIONING.md`: new tools, new rules that apply only to
+deliveries submitted as pull requests (`applies_to` `submission`, so they cannot change how any other package passes), a new profile group and a
+relaxed default limit (`submission.maxFiles` 200 to 600, because proofs add files); no building, item or finish passes or fails differently.
+
+**Added**
+
+* **New rules `X-79` to `X-86`** (REQUIRED, `submission` only; guide 4, section 8.1): proof manifest and nothing else in `proofs/` (`X-79`), valid GLB files in
+  metres with Y up (`X-80`, `tools/validate_glb.py`), a GLB of the whole model and of every item, covering, fixture, hardware piece, door, window and texture
+  set, made from the delivered files, with a passing validation report that names each by hash (`X-81`), renders that cover every level, every room kind,
+  the outside and every component (`X-82`), every picture traced by hash to a delivered GLB (`X-83`), pixel and size limits (`X-84`), no personal data or
+  paths in image or GLB metadata (`X-85`), reproducibility: a rebuild gives the same GLB bytes and a re-render the same pictures within a stated
+  tolerance, with a clear skip (not a pass) when the toolchain is missing (`X-86`). `X-79`, `X-81` to `X-86` are checked by `tools/check_proofs.py`
+  (run by `check_all.py` on a delivery; `--reproduce` adds `X-86`), `X-80` by `tools/validate_glb.py`.
+* **Tools:** `export_glb.py` (IFC to GLB, whole model as a named scene graph and one GLB per component, PBR materials, deterministic bytes, the same
+  component GLB files `ingest.py` stores), `validate_glb.py` (pure-Python structure and convention validator, bounding boxes against the IFC file, optional
+  Khronos glTF Validator, pinned in `tools/khronos/package-lock.json`, not vendored), `render.py` (headless numpy software rasteriser: plans, interior
+  views, exterior views, turntable contact sheets; no GPU, display or browser), `build_proofs.py`, `check_proofs.py`, shared `glbkit.py` and `proofkit.py`,
+  and `test_proofs.py`.
+* **`schemas/proofs.schema.json`** (format `proofs/1`): per delivery `proofs/manifest.json` with each GLB (SHA-256, size, source IFC hash), the validation
+  report hash, each render (path, SHA-256, pixel size, camera, light, GLB hash, tool and version) and a coverage statement.
+* **Profile `proofs` group** (default profile 1.3.0): `maxGlbNodes`, `maxExtentMetres`, `interiorViewsPerRoom`, `maxRoomsPerKind`, `exteriorViews`,
+  `turntableFrames`, `minRenderWidth`, `maxRenderPixels`, `maxRenderBytes`, `maxProofBytes`, `renderTolerance`.
+* **Ingest** compares the contributor's proofs with a fresh export from the delivered files and reports any mismatch (the ingest result stays
+  authoritative, nothing is refused for it), links each component to its contact sheet (`proof-render` file) and lists the renders and GLB files in the
+  delivery record (`catalogue-delivery/1` gains an optional `proofs` object).
+* **CI:** `.github/workflows/check-delivery.yml` installs the pinned Khronos validator (public package, no secret, install scripts off), rebuilds the
+  proofs on the runner (`check_proofs.py --reproduce`) and runs `validate_glb.py`; still the plain `pull_request` event with a read-only token and pinned
+  actions, plus `workflow_dispatch` for a maintainer. `tools/ci/run_checks.py` runs the same steps.
+* **Manifest roles** `proof-manifest`, `proof-glb`, `proof-render`, `proof-report` in `schemas/manifest.schema.json`.
+
+**Changed**
+
+* `tools/ingest.py` uses the shared `tools/glbkit.py` for geometry and GLB code; the component GLB bytes, and so the component identifiers, are unchanged
+  from 2.2.0.
+* `tools/preview.py` writes PNG files without the plotting library's version text.
+* `deliveries/example-room` carries real proofs (7 GLB files, 15 renders).
+* `submission.maxFiles` default 200 to 600 (relaxed limit).
+
 ## 2.2.0
 
 Outside contributors can offer deliveries to the same repository as pull requests from forks, with automatic checks, and a merged delivery can be

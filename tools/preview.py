@@ -136,7 +136,7 @@ def plan(model, geo, storey, path, cut=1.2):
     ax.autoscale_view()
     ax.set_title("%s (floor %.2f m, cut at %.1f m)" % (storey.Name, el, el + cut), fontsize=9)
     ax.grid(True, linewidth=0.2)
-    fig.savefig(path, dpi=110, bbox_inches="tight")
+    fig.savefig(path, dpi=110, bbox_inches="tight", metadata={"Software": None})
     plt.close(fig)
     return shown
 
@@ -169,7 +169,7 @@ def iso(model, geo, path, notes):
         ax.view_init(el, az)
         ax.set_axis_off()
     fig.tight_layout()
-    fig.savefig(path, dpi=110)
+    fig.savefig(path, dpi=110, metadata={"Software": None})
     plt.close(fig)
 
 

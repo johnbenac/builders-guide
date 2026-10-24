@@ -11,7 +11,8 @@ PATH is one of
     material    a folder with finishes/ (texture sets, finish-schedule.json, library.json) or a finishes folder itself
     furniture   a folder with items/<itemId>/ or an items folder itself
     package     a delivery package folder (has manifest.json, or delivery.json for a submitted delivery in deliveries/<slug>/);
-                everything inside it is checked too, and a submitted delivery also gets check_submission.py (X-70 to X-78)
+                everything inside it is checked too, and a submitted delivery also gets check_submission.py (X-70 to X-78) and check_proofs.py (X-79 to X-86, stored files only; add
+                `check_proofs.py DIR --reproduce` to rebuild and compare)
 --type auto (the default) picks from PATH. The report has schema check-report/1 (schemas/check-report.schema.json): the
 findings of every check, each with its rule id, level, location, message and fix_hint, plus the full sub-reports under
 `reports`. The report names the profile it was checked against (profiles/default.json unless --profile is given). Exit codes: 0 no REQUIRED rule failed, 1 at least one did, 2 wrong command line, 3 an input could not be read.
@@ -28,7 +29,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import report as rpt  # noqa: E402
 
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 ROOT = rpt.ROOT
 
 
@@ -111,6 +112,7 @@ def package(pkg, a):
     reps = [run("build_package.py", "verify", pkg)]
     if os.path.exists(os.path.join(pkg, "delivery.json")):
         reps.insert(0, run("check_submission.py", pkg))
+        reps.insert(1, run("check_proofs.py", pkg))
     m = find_master(pkg)
     if m:
         sched = os.path.join(pkg, "finishes", "finish-schedule.json")

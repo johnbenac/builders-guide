@@ -36,7 +36,7 @@ except ImportError:
 import report as rpt
 import terrain_lib
 
-TOOL_VERSION = "2.2.0"
+TOOL_VERSION = "2.3.0"
 
 DECLARED_BASE = {"RoomId", "Occupant", "Function", "ZoneId", "ZoneClass", "Requirement", "NetAreaSquareMetres", "BaseLevelMetres", "Enclosed",
                  "GroundContact"}

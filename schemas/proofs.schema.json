@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Proof manifest",
+  "description": "proofs/manifest.json of a delivery (format proofs/1, guide 4, section 8.1): the GLB exports, their validation report and the renders of a delivery, each with its SHA-256, so that every picture can be traced to the exact model it shows and the whole set can be rebuilt and compared. Paths are relative to the delivery folder. Written by tools/build_proofs.py; checked by tools/check_proofs.py (rules X-79 to X-86).",
+  "type": "object",
+  "required": ["format", "delivery", "tools", "profile", "conventions", "sources", "glb", "validation", "renderSettings", "renders", "coverage"],
+  "properties": {
+    "format": {"const": "proofs/1"},
+    "delivery": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {"id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}, "version": {"type": "string"}}
+    },
+    "tools": {
+      "type": "object",
+      "required": ["guideSet", "exportGlb", "validateGlb", "render", "libraries"],
+      "properties": {
+        "guideSet": {"type": "string"},
+        "exportGlb": {"type": "string"},
+        "validateGlb": {"type": "string"},
+        "render": {"type": "object", "required": ["version", "backend"], "properties": {"version": {"type": "string"}, "backend": {"type": "string"}}},
+        "libraries": {"type": "object", "additionalProperties": {"type": "string"}, "description": "versions of the libraries the files were made with (ifcopenshell, numpy, pillow, shapely); informational, and used to decide how strictly a rebuild is compared"}
+      }
+    },
+    "profile": {"type": "object", "required": ["name", "version"], "properties": {"name": {"type": "string"}, "version": {"type": "string"}}},
+    "conventions": {
+      "type": "object",
+      "required": ["units", "glbAxes", "ifcAxes", "axisConversion"],
+      "properties": {"units": {"const": "metres"}, "glbAxes": {"const": "y-up"}, "ifcAxes": {"const": "z-up"}, "axisConversion": {"type": "string"}}
+    },
+    "sources": {
+      "type": "array",
+      "description": "the delivered files the GLB files were made from",
+      "items": {"type": "object", "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/definitions/sha256"}}}
+    },
+    "glb": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "role", "sha256", "bytes", "triangles", "source", "keys"],
+        "properties": {
+          "path": {"$ref": "#/definitions/proofPath"},
+          "role": {"enum": ["model", "component", "material"]},
+          "sha256": {"$ref": "#/definitions/sha256"},
+          "bytes": {"type": "integer", "minimum": 1},
+          "triangles": {"type": "integer", "minimum": 0},
+          "nodes": {"type": "integer", "minimum": 1},
+          "kind": {"type": "string"},
+          "category": {"type": "string"},
+          "names": {"type": "array", "items": {"type": "string"}},
+          "keys": {"type": "array", "minItems": 1, "items": {"type": "string"}, "description": "what this GLB stands for: `model:<ifc path>`, `item:<itemId>`, `ifc:<ifc path>#<GlobalId>` (identical geometry is stored once and lists every GlobalId) or `material:<set>`"},
+          "source": {"type": "object", "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/definitions/sha256"}}},
+          "bounds": {"type": ["object", "null"]}
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes", "result", "tool", "toolVersion", "glb"],
+      "properties": {
+        "path": {"$ref": "#/definitions/proofPath"},
+        "sha256": {"$ref": "#/definitions/sha256"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "result": {"enum": ["pass", "fail"]},
+        "tool": {"type": "string"},
+        "toolVersion": {"type": "string"},
+        "khronos": {"type": "object", "properties": {"used": {"type": "boolean"}, "version": {"type": "string"}}},
+        "glb": {"type": "array", "items": {"type": "object", "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"$ref": "#/definitions/sha256"}}}}
+      }
+    },
+    "renderSettings": {
+      "type": "object",
+      "required": ["backend", "supersampling", "light", "toleranceUsedByChecks"],
+      "properties": {
+        "backend": {"type": "string"},
+        "supersampling": {"type": "integer"},
+        "light": {"type": "object"},
+        "toleranceUsedByChecks": {"type": "object", "properties": {"meanAbsLevels": {"type": "number"}, "differingFraction": {"type": "number"}, "differenceLevels": {"type": "integer"}}}
+      }
+    },
+    "renders": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "sha256", "bytes", "width", "height", "kind", "subject", "glb", "glbSha256", "camera", "light", "tool"],
+        "properties": {
+          "id": {"type": "string"},
+          "path": {"$ref": "#/definitions/proofPath"},
+          "sha256": {"$ref": "#/definitions/sha256"},
+          "bytes": {"type": "integer", "minimum": 1},
+          "width": {"type": "integer", "minimum": 1},
+          "height": {"type": "integer", "minimum": 1},
+          "kind": {"enum": ["plan", "interior", "exterior", "sheet"]},
+          "subject": {
+            "type": "object",
+            "required": ["type", "id"],
+            "properties": {"type": {"enum": ["level", "room", "model", "component", "material"]}, "id": {"type": "string"}, "name": {"type": "string"},
+                           "roomKind": {"type": "string"}, "level": {"type": ["string", "null"]}, "keys": {"type": "array", "items": {"type": "string"}}}
+          },
+          "glb": {"$ref": "#/definitions/proofPath"},
+          "glbSha256": {"$ref": "#/definitions/sha256"},
+          "camera": {"type": "object"},
+          "light": {"type": "object"},
+          "background": {"type": "array", "items": {"type": "integer"}},
+          "tool": {"type": "object", "required": ["name", "version"], "properties": {"name": {"type": "string"}, "version": {"type": "string"}}}
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["statement", "levels", "roomKinds", "exterior", "components"],
+      "properties": {
+        "statement": {"type": "string"},
+        "levels": {"type": "array", "items": {"type": "object", "required": ["name", "renders"], "properties": {"name": {"type": "string"}, "elevationMetres": {"type": "number"}, "renders": {"type": "array", "items": {"type": "string"}}}}},
+        "roomKinds": {"type": "array", "items": {"type": "object", "required": ["kind", "rooms", "renders"], "properties": {"kind": {"type": "string"}, "rooms": {"type": "array", "items": {"type": "string"}}, "roomsNotRendered": {"type": "array", "items": {"type": "string"}}, "renders": {"type": "array", "items": {"type": "string"}}}}},
+        "exterior": {"type": "array", "items": {"type": "string"}},
+        "components": {"type": "array", "items": {"type": "object", "required": ["key", "glb", "sheet"], "properties": {"key": {"type": "string"}, "glb": {"type": "string"}, "sheet": {"type": "string"}}}}
+      }
+    }
+  },
+  "definitions": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proofPath": {"type": "string", "pattern": "^proofs/[A-Za-z0-9._/-]+$"}
+  },
+  "$comment": "SPDX-License-Identifier: Apache-2.0"
+}

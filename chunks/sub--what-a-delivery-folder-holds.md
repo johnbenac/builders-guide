@@ -11,6 +11,7 @@ deliveries/oak-study/
   items/<itemId>/          furniture, fixtures and hardware as items (guide 3): <itemId>.ifc and <itemId>.item.json
   finishes/                finish schedule, library.json and textures/<set>/ (guide 2)
   previews/                pictures of the work (png or jpg) so a reviewer sees it first
+  proofs/                  GLB exports, their validation report, the standard renders and manifest.json (made by tools/build_proofs.py)
   reports/ notes/ tables/  the check reports, the change notes and the room table, as in guide 4
 ```
 

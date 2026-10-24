@@ -169,6 +169,10 @@
               "terrain-sidecar",
               "site-request",
               "table",
+              "proof-manifest",
+              "proof-glb",
+              "proof-render",
+              "proof-report",
               "report",
               "note",
               "other"

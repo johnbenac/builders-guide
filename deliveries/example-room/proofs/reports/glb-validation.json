@@ -1,0 +1,292 @@
+{
+ "schema": "check-report/1",
+ "tool": "validate_glb.py",
+ "toolVersion": "2.3.0",
+ "target": {
+  "path": "example-room"
+ },
+ "result": "pass",
+ "exitCode": 0,
+ "summary": {
+  "requiredFailures": 0,
+  "recommendedWarnings": 0,
+  "passes": 7,
+  "info": 0
+ },
+ "profile": {
+  "name": "default",
+  "version": "1.3.0",
+  "sha256": "c10c620f7d14675bb5a65f4cea2de04e6f5799ed2276880f6099b5c5be3694b7"
+ },
+ "counts": {
+  "files": 7
+ },
+ "findings": [
+  {
+   "id": "X-80@35ceb3d0",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/model.glb"
+   },
+   "message": "proofs/glb/model.glb: valid model GLB (180 triangles, 13 nodes)"
+  },
+  {
+   "id": "X-80@f5757302",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb"
+   },
+   "message": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb: valid component GLB (12 triangles, 1 nodes)"
+  },
+  {
+   "id": "X-80@b079f1a4",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/components/window-north-window-549dfaa2.glb"
+   },
+   "message": "proofs/glb/components/window-north-window-549dfaa2.glb: valid component GLB (12 triangles, 1 nodes)"
+  },
+  {
+   "id": "X-80@146019ee",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb"
+   },
+   "message": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb: valid component GLB (12 triangles, 1 nodes)"
+  },
+  {
+   "id": "X-80@d028726a",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb"
+   },
+   "message": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb: valid component GLB (24 triangles, 1 nodes)"
+  },
+  {
+   "id": "X-80@7ff141e1",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/components/door-entrance-door-ac568674.glb"
+   },
+   "message": "proofs/glb/components/door-entrance-door-ac568674.glb: valid component GLB (12 triangles, 1 nodes)"
+  },
+  {
+   "id": "X-80@5aafe66f",
+   "rule": "X-80",
+   "level": "REQUIRED",
+   "status": "pass",
+   "severity": "pass",
+   "location": {
+    "file": "proofs/glb/materials/plaster-example.glb"
+   },
+   "message": "proofs/glb/materials/plaster-example.glb: valid material GLB (2 triangles, 1 nodes)"
+  }
+ ],
+ "files": [
+  {
+   "path": "proofs/glb/model.glb",
+   "role": "model",
+   "sha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "bytes": 23796,
+   "triangles": 180,
+   "nodes": 13,
+   "boundsIfcFrame": {
+    "min": [
+     0.0,
+     0.0,
+     -0.3
+    ],
+    "max": [
+     5.2,
+     4.2,
+     3.3
+    ]
+   },
+   "ifcBoundsCompared": 11,
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  },
+  {
+   "path": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb",
+   "role": "component",
+   "sha256": "3e85cde234abaed6df6152ab5396353d8fa18e430a0afade6d50c5d0697c1bba",
+   "bytes": 1816,
+   "triangles": 12,
+   "nodes": 1,
+   "boundsIfcFrame": {
+    "min": [
+     -0.8,
+     -0.4,
+     0.0
+    ],
+    "max": [
+     0.8,
+     0.4,
+     0.74
+    ]
+   },
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  },
+  {
+   "path": "proofs/glb/components/window-north-window-549dfaa2.glb",
+   "role": "component",
+   "sha256": "519e49e29be8583487ebdb9787b776a921ec0279af0bf111c226d98a5b6b51da",
+   "bytes": 1800,
+   "triangles": 12,
+   "nodes": 1,
+   "boundsIfcFrame": {
+    "min": [
+     -0.75,
+     -0.01,
+     0.0
+    ],
+    "max": [
+     0.75,
+     0.01,
+     1.2
+    ]
+   },
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  },
+  {
+   "path": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb",
+   "role": "component",
+   "sha256": "877e753bbbf877b40ace1d4b32d1e35badc0a82b727a9f0607d7a19e35b1287b",
+   "bytes": 1796,
+   "triangles": 12,
+   "nodes": 1,
+   "boundsIfcFrame": {
+    "min": [
+     -0.005,
+     -1.5,
+     0.0
+    ],
+    "max": [
+     0.005,
+     1.5,
+     2.4
+    ]
+   },
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  },
+  {
+   "path": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb",
+   "role": "component",
+   "sha256": "ce4150c4294db313f4ce004ef207db356b3572f7709132ae2ff59837e9b628bd",
+   "bytes": 3304,
+   "triangles": 24,
+   "nodes": 1,
+   "boundsIfcFrame": {
+    "min": [
+     -0.15,
+     -0.15,
+     0.0
+    ],
+    "max": [
+     0.15,
+     0.15,
+     0.12
+    ]
+   },
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  },
+  {
+   "path": "proofs/glb/components/door-entrance-door-ac568674.glb",
+   "role": "component",
+   "sha256": "6d008c905b541c148693d5c82acf5e61b1404daf425def0a1dd527165d32eaf6",
+   "bytes": 1824,
+   "triangles": 12,
+   "nodes": 1,
+   "boundsIfcFrame": {
+    "min": [
+     -0.6,
+     -0.02,
+     0.0
+    ],
+    "max": [
+     0.6,
+     0.02,
+     2.3
+    ]
+   },
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  },
+  {
+   "path": "proofs/glb/materials/plaster-example.glb",
+   "role": "material",
+   "sha256": "00c18599b1b206017542c6546847749ea1c5ca795672fd88244ae9fddaafe0bb",
+   "bytes": 961544,
+   "triangles": 2,
+   "nodes": 1,
+   "boundsIfcFrame": {
+    "min": [
+     -2.0,
+     -2.0,
+     0.0
+    ],
+    "max": [
+     2.0,
+     2.0,
+     0.0
+    ]
+   },
+   "khronos": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 0,
+    "hints": 0
+   }
+  }
+ ],
+ "khronos": {
+  "used": true,
+  "version": "2.0.0-dev.3.10"
+ }
+}

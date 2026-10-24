@@ -30,7 +30,6 @@ Exit codes: 0 done; 1 the checks refused the delivery; 2 wrong command line; 3 a
 Requires the packages of tools/requirements.txt (ifcopenshell, numpy, jsonschema).
 """
 import argparse
-import hashlib
 import json
 import math
 import os
@@ -38,7 +37,6 @@ import re
 import shutil
 import signal
 import stat
-import struct
 import subprocess
 import sys
 import tempfile
@@ -48,49 +46,21 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import report as rpt  # noqa: E402
 import check_submission  # noqa: E402
+import glbkit  # noqa: E402
+from glbkit import Failed, kind_and_category, kind_of_class, part_products, r6, rl, read_glb, sha256_bytes, slugify, write_glb  # noqa: E402,F401  (read_glb and write_glb: the tests use them from here)
 
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 ROOT = rpt.ROOT
-MAX_TRIANGLES = 2000000          # per component
+
 MEDIA = {"glb": "model/gltf-binary", "ifc": "application/x-step", "png": "image/png", "jpg": "image/jpeg", "json": "application/json"}
-FURNITURE = {"IfcFurnishingElement", "IfcFurniture", "IfcSystemFurnitureElement"}
-FIXTURE = {"IfcLightFixture", "IfcLamp", "IfcSanitaryTerminal", "IfcElectricAppliance", "IfcFlowTerminal", "IfcAlarm", "IfcOutlet",
-           "IfcSwitchingDevice", "IfcAudioVisualAppliance", "IfcCommunicationsAppliance", "IfcSensor", "IfcWasteTerminal"}
-HARDWARE = {"IfcDiscreteAccessory", "IfcMechanicalFastener", "IfcFastener", "IfcRailing"}
-KIND_OF = {"IfcCovering": "covering", "IfcDoor": "door", "IfcWindow": "window"}
-COVERING_CATEGORY = {"FLOORING": "floor-covering", "CEILING": "ceiling-covering", "CLADDING": "wall-covering", "WRAPPING": "wall-covering",
-                     "MEMBRANE": "covering", "INSULATION": "covering", "SLEEVING": "covering", "MOLDING": "covering", "SKIRTINGBOARD": "covering"}
-SKIP_CLASSES = {"IfcOpeningElement", "IfcVirtualElement", "IfcSpace", "IfcAnnotation", "IfcGrid", "IfcGeographicElement"}
 
 
 class Refused(Exception):
     """The checks or the form of the delivery do not allow ingest (exit 1)."""
 
 
-class Failed(Exception):
-    """A limit, a read error or an internal check failed (exit 3)."""
-
-
-def slugify(text, default="item"):
-    s = re.sub(r"[^a-z0-9]+", "-", str(text or "").lower()).strip("-")
-    return s[:60] or default
-
-
-def sha256_bytes(b):
-    return hashlib.sha256(b).hexdigest()
-
-
 def canonical(obj):
     return (json.dumps(obj, sort_keys=True, indent=1, ensure_ascii=True) + "\n").encode("ascii")
-
-
-def r6(x):
-    v = round(float(x), 6)
-    return 0.0 if v == 0 else v
-
-
-def rl(seq):
-    return [r6(x) for x in seq]
 
 
 # ---------------------------------------------------------------- limits
@@ -181,139 +151,6 @@ def run_checks(copy, profile_path, limits):
     return results
 
 
-# ---------------------------------------------------------------- GLB
-def write_glb(parts):
-    """parts: list of (rgba tuple, Nx3 float array of triangle-soup vertices, Z up). Returns the GLB bytes."""
-    import numpy as np
-    bin_chunks, views, accs, prims, mats = [], [], [], [], []
-    off = 0
-    for rgba, tri in sorted(parts, key=lambda p: tuple(p[0])):
-        v = np.array(tri, dtype=np.float64).reshape(-1, 3)
-        v = np.stack([v[:, 0], v[:, 2], -v[:, 1]], axis=1)                  # Z up -> Y up
-        t = v.reshape(-1, 3, 3)
-        n = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0])
-        ln = np.linalg.norm(n, axis=1)
-        n = n / np.where(ln > 1e-12, ln, 1.0)[:, None]
-        nv = np.repeat(n, 3, axis=0).astype("<f4")
-        pv = v.astype("<f4")
-        for arr, tgt in ((pv, 34962), (nv, 34962)):
-            b = arr.tobytes()
-            views.append({"buffer": 0, "byteOffset": off, "byteLength": len(b), "target": tgt})
-            bin_chunks.append(b)
-            off += len(b)
-        accs.append({"bufferView": len(views) - 2, "componentType": 5126, "count": int(len(pv)), "type": "VEC3",
-                     "min": [float(x) for x in pv.min(axis=0)], "max": [float(x) for x in pv.max(axis=0)]})
-        accs.append({"bufferView": len(views) - 1, "componentType": 5126, "count": int(len(nv)), "type": "VEC3"})
-        mats.append({"pbrMetallicRoughness": {"baseColorFactor": [float(x) for x in rgba], "metallicFactor": 0.0, "roughnessFactor": 0.9},
-                     "alphaMode": "BLEND" if rgba[3] < 0.999 else "OPAQUE", "doubleSided": True})
-        prims.append({"attributes": {"POSITION": len(accs) - 2, "NORMAL": len(accs) - 1}, "material": len(mats) - 1, "mode": 4})
-    doc = {"asset": {"version": "2.0", "generator": "authoring-guide-set ingest " + VERSION},
-           "scene": 0, "scenes": [{"nodes": [0]}], "nodes": [{"mesh": 0}], "meshes": [{"primitives": prims}],
-           "materials": mats, "accessors": accs, "bufferViews": views, "buffers": [{"byteLength": off}],
-           "extras": {"units": "metres", "axisConversion": "(x,y,z) -> (x,z,-y) from the IFC frame (Z up) to glTF (Y up)"}}
-    js = json.dumps(doc, sort_keys=True, separators=(",", ":")).encode("ascii")
-    js += b" " * (-len(js) % 4)
-    bn = b"".join(bin_chunks)
-    bn += b"\0" * (-len(bn) % 4)
-    total = 12 + 8 + len(js) + 8 + len(bn)
-    return b"glTF" + struct.pack("<II", 2, total) + struct.pack("<I4s", len(js), b"JSON") + js + struct.pack("<I4s", len(bn), b"BIN\0") + bn
-
-
-def read_glb(data):
-    """Parse and validate a GLB written by write_glb (also any plain triangle GLB). Returns {'triangles', 'min', 'max', 'primitives'} in glTF axes."""
-    import numpy as np
-    if len(data) < 28 or data[:4] != b"glTF":
-        raise Failed("not a GLB file")
-    ver, total = struct.unpack("<II", data[4:12])
-    if ver != 2 or total != len(data):
-        raise Failed("GLB header: version %d, length %d of %d" % (ver, total, len(data)))
-    jl, jt = struct.unpack("<I4s", data[12:20])
-    if jt != b"JSON" or 20 + jl + 8 > len(data):
-        raise Failed("GLB has no JSON chunk")
-    doc = json.loads(data[20:20 + jl].decode("ascii"))
-    bl, bt = struct.unpack("<I4s", data[20 + jl:28 + jl])
-    if bt != b"BIN\0" or 28 + jl + bl != len(data):
-        raise Failed("GLB has no BIN chunk of the stated length")
-    bn = data[28 + jl:28 + jl + bl]
-    if doc["buffers"][0]["byteLength"] > len(bn):
-        raise Failed("GLB buffer is shorter than declared")
-    tris, lo, hi = 0, None, None
-    for pr in doc["meshes"][0]["primitives"]:
-        acc = doc["accessors"][pr["attributes"]["POSITION"]]
-        bv = doc["bufferViews"][acc["bufferView"]]
-        if acc["componentType"] != 5126 or acc["type"] != "VEC3" or bv["byteOffset"] + acc["count"] * 12 > bl or acc["count"] % 3:
-            raise Failed("GLB position accessor is malformed")
-        arr = np.frombuffer(bn, dtype="<f4", count=acc["count"] * 3, offset=bv["byteOffset"]).reshape(-1, 3)
-        if not np.isfinite(arr).all():
-            raise Failed("GLB holds a non-finite coordinate")
-        if not (np.allclose(arr.min(axis=0), acc["min"]) and np.allclose(arr.max(axis=0), acc["max"])):
-            raise Failed("GLB accessor bounds differ from the data")
-        nacc = doc["accessors"][pr["attributes"]["NORMAL"]]
-        if nacc["count"] != acc["count"]:
-            raise Failed("GLB normals and positions differ in number")
-        tris += acc["count"] // 3
-        lo = arr.min(axis=0) if lo is None else np.minimum(lo, arr.min(axis=0))
-        hi = arr.max(axis=0) if hi is None else np.maximum(hi, arr.max(axis=0))
-    return {"triangles": tris, "min": [float(x) for x in lo], "max": [float(x) for x in hi], "primitives": len(doc["meshes"][0]["primitives"])}
-
-
-# ---------------------------------------------------------------- IFC geometry
-def part_products(root):
-    """The geometry-carrying products of a component root: the root itself, or all parts of an assembly (recursively)."""
-    out = []
-
-    def walk(e):
-        if getattr(e, "Representation", None) and not e.is_a("IfcElementAssembly") and e.is_a() not in SKIP_CLASSES:
-            out.append(e)
-        for rel in getattr(e, "IsDecomposedBy", None) or []:
-            for c in rel.RelatedObjects:
-                walk(c)
-    walk(root)
-    return out
-
-
-def shape_parts(model, root, limits):
-    """[(rgba, triangle soup Nx3 in the root's own frame)] for a component root, and the root's world matrix (4x4)."""
-    import numpy as np
-    import ifcopenshell.geom
-    import ifcopenshell.util.placement as pl
-    settings = ifcopenshell.geom.settings()
-    m_root = pl.get_local_placement(root.ObjectPlacement) if root.ObjectPlacement else np.eye(4)
-    inv = np.linalg.inv(m_root)
-    groups = {}
-    ntri = 0
-    for p in part_products(root):
-        limits.tick()
-        try:
-            sh = ifcopenshell.geom.create_shape(settings, p)
-        except Exception as exc:
-            raise Failed("%s %s (%s): geometry could not be built: %s" % (p.is_a(), p.Name, p.GlobalId, str(exc)[:120]))
-        g = sh.geometry
-        v = np.array(g.verts, dtype=float).reshape(-1, 3)
-        f = np.array(g.faces, dtype=int).reshape(-1, 3)
-        if not len(f):
-            raise Failed("%s %s (%s) has no triangles" % (p.is_a(), p.Name, p.GlobalId))
-        m_part = pl.get_local_placement(p.ObjectPlacement) if p.ObjectPlacement else np.eye(4)
-        m = inv @ m_part
-        v = v @ m[:3, :3].T + m[:3, 3]
-        mid = np.array(g.material_ids, dtype=int)
-        cols = []
-        for mt in g.materials:
-            try:
-                c = mt.diffuse.components if hasattr(mt.diffuse, "components") else mt.diffuse
-                cols.append((r6(min(1.0, max(0.0, c[0]))), r6(min(1.0, max(0.0, c[1]))), r6(min(1.0, max(0.0, c[2]))),
-                             r6(1.0 - float(mt.transparency or 0.0))))
-            except Exception:
-                cols.append((0.8, 0.8, 0.8, 1.0))
-        for i in range(len(f)):
-            col = cols[mid[i]] if 0 <= mid[i] < len(cols) else (0.8, 0.8, 0.8, 1.0)
-            groups.setdefault(col, []).append(v[f[i]])
-        ntri += len(f)
-        if ntri > MAX_TRIANGLES:
-            raise Failed("component %s has more than %d triangles" % (root.Name, MAX_TRIANGLES))
-    return [(c, np.array(t, dtype=float).reshape(-1, 3)) for c, t in sorted(groups.items())], m_root
-
-
 def hexcol(c):
     return "#%02x%02x%02x" % tuple(int(round(x * 255)) for x in c[:3])
 
@@ -359,44 +196,6 @@ def file_entry(store, role, rel_or_data, ext, name_for_media=None):
     data = rel_or_data
     blob, h = store.put(data, ext)
     return {"role": role, "blob": blob, "sha256": h, "bytes": len(data), "mediaType": MEDIA.get(ext, "application/octet-stream")}
-
-
-def bounds_info(parts, recentre):
-    import numpy as np
-    allv = np.concatenate([t for _, t in parts])
-    lo, hi = allv.min(axis=0), allv.max(axis=0)
-    shift = np.zeros(3)
-    if recentre:
-        shift = np.array([(lo[0] + hi[0]) / 2.0, (lo[1] + hi[1]) / 2.0, lo[2]])
-    return lo, hi, shift
-
-
-def kind_and_category(e, parts):
-    cls = e.is_a()
-    ot = slugify(getattr(e, "ObjectType", None), "")
-    if cls == "IfcElementAssembly":
-        kinds = {kind_of_class(p.is_a()) for p in parts}
-        kinds.discard(None)
-        if len(kinds) != 1:
-            return None, None
-        k = kinds.pop()
-        return k, ot or ("luminaire" if k == "fixture" else k)
-    k = kind_of_class(cls)
-    if k is None:
-        return None, None
-    if cls == "IfcCovering":
-        return k, COVERING_CATEGORY.get(str(getattr(e, "PredefinedType", "") or ""), "covering")
-    return k, ot or slugify(cls[3:])
-
-
-def kind_of_class(cls):
-    if cls in FURNITURE:
-        return "furniture"
-    if cls in FIXTURE:
-        return "fixture"
-    if cls in HARDWARE:
-        return "hardware"
-    return KIND_OF.get(cls)
 
 
 def psets_of(e):
@@ -482,17 +281,8 @@ def make_material_sets(copy, store, occ_base, limits):
 
 def make_geometry_component(store, root, model, copy_rel, limits, occ_base, schedule, set_ids, recentre, item=None, extra_files=()):
     import numpy as np
-    parts, m_root = shape_parts(model, root, limits)
-    lo, hi, shift = bounds_info(parts, recentre)
-    parts = [(c, t - shift) for c, t in parts]
-    lo, hi = lo - shift, hi - shift
-    # round to the precision the GLB stores, so the same shape always gives the same bytes
-    parts = [(c, np.round(t, 6) + 0.0) for c, t in parts]
-    glb = write_glb([(c, t) for c, t in parts])
-    info = read_glb(glb)
-    ntri = sum(len(t) // 3 for _, t in parts)
-    if info["triangles"] != ntri:
-        raise Failed("GLB check: %d triangles written, %d expected" % (info["triangles"], ntri))
+    geo = glbkit.component_geometry(model, root, limits, recentre)
+    parts, m_root, lo, hi, shift, ntri, glb, info = (geo[k] for k in ("parts", "m_root", "lo", "hi", "shift", "triangles", "glb", "info"))
     gfile = file_entry(store, "geometry", glb, "glb")
     kind, cat = (item["kind"], item["category"]) if item else kind_and_category(root, part_products(root))
     world = m_root @ np.array([shift[0], shift[1], shift[2], 1.0])
@@ -524,26 +314,8 @@ def master_components(copy, man, store, limits, occ_base, schedule, set_ids):
     for rel in ifcs:
         limits.tick()
         model = ifcopenshell.open(os.path.join(copy, rel))
-        seen = set()
-        for e in sorted(model.by_type("IfcProduct"), key=lambda x: x.GlobalId):
-            cls = e.is_a()
-            if cls in SKIP_CLASSES or e.id() in seen:
-                continue
-            root = e
-            parent = None
-            for rel_ in getattr(e, "Decomposes", None) or []:
-                if rel_.RelatingObject.is_a("IfcElementAssembly"):
-                    parent = rel_.RelatingObject
-            if parent is not None:
-                continue                                    # taken as part of its assembly
-            parts = part_products(root)
-            if not parts:
-                continue
-            kind, cat = kind_and_category(root, parts)
-            if not kind:
-                continue
-            for p in parts:
-                seen.add(p.id())
+        for root, _parts, _kind, _cat in glbkit.master_roots(model):
+            limits.tick()
             out.append(make_geometry_component(store, root, model, rel, limits, occ_base, schedule, set_ids, True))
             if len(out) > rpt.param("submission.ingestMaxComponents", 500):
                 raise Failed("more than %d components" % rpt.param("submission.ingestMaxComponents", 500))
@@ -568,11 +340,8 @@ def item_components(copy, store, limits, occ_base, schedule, set_ids):
         with open(os.path.join(copy, ifc_rel), "rb") as fh:
             idata = fh.read()
         model = ifcopenshell.open(os.path.join(copy, ifc_rel))
-        roots = [e for e in model.by_type("IfcProduct") if e.is_a() not in SKIP_CLASSES and getattr(e, "Representation", None)
-                 and not any(r.RelatingObject.is_a("IfcElementAssembly") for r in (getattr(e, "Decomposes", None) or []))]
-        if len(roots) != 1:
-            raise Failed("%s must hold exactly one top-level product (found %d)" % (ifc_rel, len(roots)))
-        kind = kind_of_class(jd.get("class", "")) or kind_of_class(roots[0].is_a()) or "furniture"
+        root = glbkit.item_root(model, ifc_rel)
+        kind = kind_of_class(jd.get("class", "")) or kind_of_class(root.is_a()) or "furniture"
         extra = [file_entry(store, "source-ifc", idata, "ifc"), file_entry(store, "description", jdata, "json")]
         prev = os.path.join(d, "preview.png")
         if os.path.exists(prev):
@@ -580,14 +349,77 @@ def item_components(copy, store, limits, occ_base, schedule, set_ids):
                 extra.append(file_entry(store, "preview", fh.read(), "png"))
         meta = {k: jd[k] for k in ("itemId", "version", "class", "front", "footprint", "collision", "clearance", "placement", "variants", "budget") if k in jd}
         item = {"kind": kind, "category": slugify(jd.get("category"), "item"), "anchors": jd.get("anchors", []), "meta": meta}
-        comp = make_geometry_component(store, roots[0], model, ifc_rel, limits, occ_base, schedule, set_ids, False, item=item, extra_files=extra)
-        comp["name"] = str(jd.get("name") or roots[0].Name)[:120]
+        comp = make_geometry_component(store, root, model, ifc_rel, limits, occ_base, schedule, set_ids, False, item=item, extra_files=extra)
+        comp["name"] = str(jd.get("name") or root.Name)[:120]
         comp["occurrence"]["name"] = comp["name"]
         comp["geometry"]["pivot"].update({k: v for k, v in (jd.get("pivot") or {}).items() if k in ("kind", "description")})
         comp["geometry"]["pivot"]["kind"] = str((jd.get("pivot") or {}).get("kind", "as-authored"))
         comp["geometry"]["declaredDimensions"] = jd.get("dimensions")
         out.append(comp)
     return out
+
+
+# ---------------------------------------------------------------- proofs (rule X-79 to X-86)
+def proof_records(copy, comps, store, limits):
+    """Compare the contributor's proofs with a fresh export from the delivered files, and link the renders to the components.
+
+    The ingest result stays authoritative: nothing here changes a component or refuses a delivery; a mismatch is reported (and the
+    reproducibility check, check_proofs.py --reproduce, is what a pull request is held to). Returns None when the delivery has no proofs."""
+    mp = os.path.join(copy, "proofs", "manifest.json")
+    if not os.path.exists(mp):
+        return None
+    with open(mp, encoding="utf-8") as fh:
+        pm = json.load(fh)
+    cmp = {"glbMatched": 0, "glbMismatched": [], "glbMissingFromProofs": [], "glbNotInDelivery": [], "rendersChecked": 0, "rendersMismatched": [],
+           "ingestGlbNotInProofs": []}
+    try:
+        import export_glb
+        now = {"proofs/glb/" + e["rel"]: e["sha256"] for g in export_glb.export_delivery(copy, limits).values() for e in g}
+    except Exception as exc:
+        cmp["error"] = "re-export failed: %s" % str(exc)[:160]
+        now = {}
+    stored = {g["path"]: g["sha256"] for g in pm.get("glb", [])}
+    for path, sha in sorted(now.items()):
+        if path not in stored:
+            cmp["glbMissingFromProofs"].append(path)
+        elif stored[path] == sha:
+            cmp["glbMatched"] += 1
+        else:
+            cmp["glbMismatched"].append(path)
+    if now:
+        cmp["glbNotInDelivery"] = sorted(set(stored) - set(now))
+    have = set(stored.values())
+    cmp["ingestGlbNotInProofs"] = sorted({c["files"][0]["sha256"][:12] for c in comps if c["kind"] != "material-set" and c["files"][0]["sha256"] not in have})
+    sheets = {}
+    for r in pm.get("renders", []):
+        with open(os.path.join(copy, r["path"]), "rb") as fh:
+            data = fh.read()
+        cmp["rendersChecked"] += 1
+        if sha256_bytes(data) != r["sha256"]:
+            cmp["rendersMismatched"].append(r["path"])
+            continue
+        if r["kind"] == "sheet":
+            sheets[r["glbSha256"]] = data
+    by_key = {k: g["sha256"] for g in pm.get("glb", []) for k in g["keys"]}
+    for c in comps:
+        sha = by_key.get("material:" + c["name"]) if c["kind"] == "material-set" else c["files"][0]["sha256"]
+        if sha in sheets:
+            c["files"].append(file_entry(store, "proof-render", sheets[sha], "png"))
+    rec = {"manifest": {"sha256": sha256_bytes(open(mp, "rb").read())}, "compare": cmp, "renders": [], "glb": []}
+    for r in pm.get("renders", []):
+        if r["path"] in cmp["rendersMismatched"]:
+            continue
+        with open(os.path.join(copy, r["path"]), "rb") as fh:
+            blob = store.put(fh.read(), "png")[0]
+        rec["renders"].append({"path": r["path"], "sha256": r["sha256"], "bytes": r["bytes"], "blob": blob, "kind": r["kind"], "subject": r["subject"],
+                               "glbSha256": r["glbSha256"], "width": r["width"], "height": r["height"]})
+    for g in pm.get("glb", []):
+        row = {"path": g["path"], "sha256": g["sha256"], "bytes": g["bytes"], "role": g["role"], "keys": g["keys"]}
+        if g["role"] == "model":
+            with open(os.path.join(copy, g["path"]), "rb") as fh:
+                row["blob"] = store.put(fh.read(), "glb")[0]
+        rec["glb"].append(row)
+    return rec
 
 
 # ---------------------------------------------------------------- catalogue
@@ -670,12 +502,13 @@ def ingest(delivery, commit, out, dry, profile_path, ancestor_of, max_seconds, m
             raise Failed("more than %d components" % rpt.param("submission.ingestMaxComponents", 500))
         if not comps:
             raise Refused("the delivery holds nothing that can be taken in as a component")
+        proofs = proof_records(copy, comps, store, limits)
         # the source files themselves, by hash, so the record can point at exactly what was merged
         sources = []
         for f in sorted(man["files"], key=lambda f: f["path"]):
             ext = f["path"].rsplit(".", 1)[-1].lower()
             e = {"path": f["path"], "role": f["role"], "sha256": f["sha256"], "bytes": f["bytes"]}
-            if f["role"] in ("master-ifc", "alternate-ifc", "item-ifc", "item-preview") and ext in ("ifc", "png", "jpg"):
+            if f["role"] in ("master-ifc", "alternate-ifc", "item-ifc", "item-preview", "proof-render") and ext in ("ifc", "png", "jpg"):
                 with open(os.path.join(copy, f["path"]), "rb") as fh:
                     e["blob"] = store.put(fh.read(), ext)[0]
             sources.append(e)
@@ -692,6 +525,8 @@ def ingest(delivery, commit, out, dry, profile_path, ancestor_of, max_seconds, m
                 "components": [{"id": c["id"], "kind": c["kind"], "category": c["category"], "name": c["name"], "sourcePath": c["occurrence"]["sourcePath"]}
                                for c in sorted(comps, key=lambda c: (c["occurrence"]["sourcePath"], c["occurrence"].get("sourceId") or "", c["id"]))],
                 "generator": {"tool": "ingest.py", "version": VERSION}}
+        if proofs:
+            drec["proofs"] = proofs
         drec["_path"] = "catalogue/deliveries/%s.json" % tag
         idx = load_index(out)
         dedup = merge_index(idx, comps, drec)
@@ -721,7 +556,7 @@ def ingest(delivery, commit, out, dry, profile_path, ancestor_of, max_seconds, m
                 atomic_write(os.path.join(out, hand_path), canonical(hand))
         return {"dryRun": dry, "handoff": hand_path, "record": rec_path, "summary": hand["counts"], "components": hand["components"],
                 "blobsToPublish": added, "blobsAlreadyPresent": existing, "checks": checks, "commitVerified": verified,
-                "handoffSha256": sha256_bytes(canonical(hand))}
+                "handoffSha256": sha256_bytes(canonical(hand)), "proofs": (proofs or {}).get("compare")}
     finally:
         shutil.rmtree(work, ignore_errors=True)
         if hasattr(signal, "SIGALRM"):
@@ -763,6 +598,13 @@ def main():
         print("%s: %d component(s) (%d unique), %d new blob(s) (%d bytes), %d already stored%s" % (
             "dry run" if res["dryRun"] else "ingested", s["components"], s["uniqueComponents"], s["blobsNew"], s["bytesNew"], s["blobsExisting"],
             "" if res["commitVerified"] else "; commit not verified against a work tree"))
+        pc = res.get("proofs")
+        if pc is not None:
+            bad = len(pc["glbMismatched"]) + len(pc["glbMissingFromProofs"]) + len(pc["glbNotInDelivery"]) + len(pc["rendersMismatched"]) + len(pc["ingestGlbNotInProofs"])
+            print("proofs: %d GLB file(s) match a fresh export, %d render(s) checked%s" % (pc["glbMatched"], pc["rendersChecked"], "" if not bad and "error" not in pc else
+                  "; MISMATCH: %s" % json.dumps({k: v for k, v in pc.items() if v and k not in ("glbMatched", "rendersChecked")})[:300]))
+        else:
+            print("proofs: none in the delivery")
         for c in res["components"]:
             print("  %-12s %-16s %s  %s%s" % (c["kind"], c["category"], c["id"][:19], c["name"], "  (already in catalogue)" if c["alreadyInCatalogue"] else ""))
         if not res["dryRun"]:

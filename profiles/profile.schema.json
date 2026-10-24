@@ -469,7 +469,7 @@
       "properties": {
         "maxFiles": {
           "type": "integer",
-          "description": "most files in one delivery folder",
+          "description": "most files in one delivery folder (600 since 2.3.0, because proofs add a GLB and a contact sheet for every component)",
           "minimum": 1
         },
         "maxFileBytes": {
@@ -515,6 +515,82 @@
           "type": "integer",
           "description": "most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs",
           "minimum": 1
+        }
+      }
+    },
+    "proofs": {
+      "type": "object",
+      "description": "limits and conventions of the proofs every submitted delivery carries: GLB exports, a validation report and a standard render set (guide 4, section 8.1; tools/export_glb.py, validate_glb.py, render.py, check_proofs.py)",
+      "properties": {
+        "maxGlbNodes": {
+          "type": "integer",
+          "description": "most scene-graph nodes in one GLB",
+          "minimum": 1
+        },
+        "maxExtentMetres": {
+          "type": "integer",
+          "description": "largest size of a GLB along any axis, in metres; a bigger model has probably been exported in the wrong unit",
+          "minimum": 1
+        },
+        "interiorViewsPerRoom": {
+          "type": "integer",
+          "description": "interior views rendered for each room that is shown (camera at a standard eye height, derived from the room's footprint)",
+          "minimum": 1
+        },
+        "maxRoomsPerKind": {
+          "type": "integer",
+          "description": "most rooms of one kind (the room's Function property) that are rendered; the first rooms by identifier",
+          "minimum": 1
+        },
+        "exteriorViews": {
+          "type": "integer",
+          "description": "exterior views of the whole building, evenly spaced around it",
+          "minimum": 1
+        },
+        "turntableFrames": {
+          "type": "integer",
+          "description": "frames of the turntable contact sheet of a component (material sets use a fixed set of four)",
+          "minimum": 1
+        },
+        "minRenderWidth": {
+          "type": "integer",
+          "description": "smallest width of a render, in pixels",
+          "minimum": 1
+        },
+        "maxRenderPixels": {
+          "type": "integer",
+          "description": "most pixels (width times height) of one render",
+          "minimum": 1
+        },
+        "maxRenderBytes": {
+          "type": "integer",
+          "description": "largest file size of one render, in bytes",
+          "minimum": 1
+        },
+        "maxProofBytes": {
+          "type": "integer",
+          "description": "largest total size of the proofs/ folder, in bytes",
+          "minimum": 1
+        },
+        "renderTolerance": {
+          "type": "object",
+          "description": "how far a re-render may differ from the delivered picture: the mean absolute difference over all pixels (0 to 255 levels), the largest share of pixels that differ by more than differenceLevels, and that level",
+          "properties": {
+            "meanAbsLevels": {
+              "type": "number",
+              "minimum": 0
+            },
+            "differingFraction": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "differenceLevels": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
         }
       }
     }

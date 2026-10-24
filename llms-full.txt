@@ -6,7 +6,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.2.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.3.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -43,7 +43,7 @@ The set is also written to be read and run by software agents of any kind. Stati
 | [REPAIR-LOOP.md](REPAIR-LOOP.md) | run, read findings, fix, rerun until no REQUIRED finding remains |
 | `profiles/` | the profile schema, the default profile, and an example of a strict consumer profile |
 | `chunks/`, `MANIFEST.json` | the guides in pieces of about 1,500 tokens or less; every file with purpose and tags |
-| `schemas/` | JSON Schemas: profile, rules, checker report, delivery manifest, submission block, catalogue, material library, furniture item, building summary, finish schedule |
+| `schemas/` | JSON Schemas: profile, rules, checker report, delivery manifest, submission block, proof manifest, catalogue, material library, furniture item, building summary, finish schedule |
 
 ---
 
@@ -130,10 +130,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.2.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
-| `builders-guide-2.2.0.html` | the same, as one web page |
-| `builders-guide-2.2.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.2.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.3.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
+| `builders-guide-2.3.0.html` | the same, as one web page |
+| `builders-guide-2.3.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.3.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.
@@ -217,6 +217,10 @@ contributor forks the repository, builds the delivery in a branch of the fork un
 `main`. A workflow checks it; a maintainer reviews it; a merge to `main` is the acceptance. A separate tool, `tools/ingest.py`, then turns a merged
 delivery into content-addressed component assets and a neutral catalogue, without uploading anything. Deliveries are not part of the guide set
 and are left out of the hand-over files. See `08-submissions-and-ingest.md`.
+
+Every delivery also carries **proofs**: binary glTF (GLB) exports of the model and its components, a validation report, and a standard set of
+rendered pictures (a plan per level, interior and exterior views, a contact sheet per component), all drawn headlessly and reproducibly from the GLB
+files and tied together by a manifest of hashes, so that a reviewer or a catalogue can see the work without opening an IFC program.
 
 ---
 
@@ -1445,6 +1449,40 @@ hold preview pictures under `previews/`. `python3 tools/check_submission.py deli
 
 **X-78 · RECOMMENDED** - Add at least one preview picture under `previews/` (or `items/<id>/preview.png`) so a reviewer sees the work before opening a model.
 
+---
+
+<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce | rules: X-79,X-80,X-81,X-82,X-83,X-84,X-85,X-86 -->
+### 8.1 Proofs: models and pictures that anyone can reproduce
+
+A reviewer should not have to open a modelling program to see what a delivery is. Every submitted delivery therefore carries **proofs** in
+`proofs/`: binary glTF (GLB) exports of the whole model and of every component, a validation report for those exports, and a standard set of
+rendered pictures, all tied together by `proofs/manifest.json` (`schemas/proofs.schema.json`, format `proofs/1`). One command makes them:
+`python3 tools/build_proofs.py deliveries/<slug>` (export with `tools/export_glb.py`, validation with `tools/validate_glb.py`, pictures with
+`tools/render.py`); `python3 tools/check_proofs.py deliveries/<slug> --reproduce` checks them and rebuilds them to compare. Everything runs
+without a graphics card or a display, so the same files come out on a laptop and on a build server. The limits are the `proofs` group of the
+profile (`07-profile-parameters.md`); the numbers below are the defaults.
+
+The GLB files use metres and Y up: a point of the IFC frame (Z up) becomes `(x, y, z) -> (x, z, -y)`. Colours become PBR metallic-roughness
+materials; a texture set becomes a swatch with its maps embedded. The pictures use fixed lighting and a fixed background and are always made
+from the delivered GLB files, never from anything else: a plan per level (cut at 1.2 m above the floor), four interior views for each room kind
+that is present, four exterior views, and for every component a contact sheet of turntable frames (a swatch view for a texture set).
+
+**X-79 · REQUIRED** - Put a proof manifest at `proofs/manifest.json` (format `proofs/1`) that lists every GLB, the GLB validation report and every render with its SHA-256, size and the tool and version that made it, and put nothing else in `proofs/`. A reviewer, a catalogue and the intake tool need one file that says exactly which models and pictures belong to which source, and a way to see that none was changed afterwards.
+
+**X-80 · REQUIRED** - Make every delivered GLB a valid binary glTF 2 file in metres with Y up, with no external reference, no unused buffer, image or material, finite and unit-length normals, tangents where a normal map is used, named scene-graph nodes, and the node, triangle and texture limits of the profile. A GLB that is malformed, in another unit or axis, or that points outside itself shows a consumer a different building than the IFC file does, or crashes it.
+
+**X-81 · REQUIRED** - Deliver a GLB of the whole master model and one of every item, covering, fixture, hardware piece, door, window and texture set, each made from the delivered IFC files (their SHA-256 is recorded), together with a validation report that passes and names every GLB by its SHA-256. The GLB files are what the pictures are made from and what a consumer without an IFC reader opens, so they must correspond to the delivered source and be known to be valid.
+
+**X-82 · REQUIRED** - Include renders that cover every level (a plan), every room kind present (the profile's number of interior views), the outside of the building, and every item, covering, fixture, hardware piece, door, window and texture set (a contact sheet). A picture set that leaves out a level, a kind of room or a component lets a defect there go unseen.
+
+**X-83 · REQUIRED** - Make every render from a GLB of the delivery and record in the manifest the SHA-256 of that GLB, of the picture itself, its pixel size, the camera and the lighting; each recorded GLB hash must be the hash of the delivered GLB file. A picture that cannot be traced to the exact model it shows proves nothing about it.
+
+**X-84 · REQUIRED** - Keep every render within the profile's pixel and file-size limits (`proofs.minRenderWidth`, `proofs.maxRenderPixels`, `proofs.maxRenderBytes`) and the whole `proofs/` folder within `proofs.maxProofBytes`. Pictures are for looking at on shared machines; a very large one costs every reviewer, and a tiny one shows nothing.
+
+**X-85 · REQUIRED** - Keep personal data and local paths out of images and GLB files: renders hold only the image chunks the profile allows, no image holds EXIF, XMP, a colour profile with text or text that names a person, a folder, a host or an address, and no GLB holds a path, an address, an e-mail address or a generator other than the set's. A file that records who made it, where, or on which machine leaks that to everyone who receives the delivery.
+
+**X-86 · REQUIRED** - Make the proofs reproducible: rebuilding the GLB files from the delivered IFC files must give the same bytes, and re-rendering the delivered GLB files must give pictures that differ from the delivered ones by no more than `proofs.renderTolerance`; where the toolchain is not available the check says so and is skipped, not passed. Proofs that cannot be reproduced cannot be trusted, and a rebuild is the cheapest way to see that the pictures do show the model.
+
 Acceptance of a submission is a merge to `main`; see `08-submissions-and-ingest.md` for what happens next. The checks cannot judge quality,
 ownership or taste: a person reviews those, and may decline a delivery that passes every check.
 
@@ -1709,7 +1747,7 @@ To see a building, run `python3 tools/preview.py MASTER.ifc OUT_DIR`: one plan p
 
 ---
 
-<!-- chunk: params--introduction-part-1-of-3 | source: 07-profile-parameters.md | title: Introduction (part 1 of 3) | rules: - -->
+<!-- chunk: params--introduction-part-1-of-4 | source: 07-profile-parameters.md | title: Introduction (part 1 of 4) | rules: - -->
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Profile parameters
 
@@ -1717,7 +1755,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 
 ---
 
-<!-- chunk: params--introduction-part-2-of-3 | source: 07-profile-parameters.md | title: Introduction (part 2 of 3) | rules: - -->
+<!-- chunk: params--introduction-part-2-of-4 | source: 07-profile-parameters.md | title: Introduction (part 2 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
 | `frame.horizontalAxes` | which horizontal directions +X and +Y mean to this consumer (Z is up, right-handed) | `"+X forward, +Y left (right-handed with Z up)"` | `"+X forward, +Y left (right-handed with Z up)"` | B-10 |
@@ -1726,11 +1764,11 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `schema.allowed` | IFC schema identifiers the consumer accepts | `["IFC4"]` | `["IFC4"]` | B-01 |
 | `limits.maxFileMegabytes` | hard size cap of one IFC file, in megabytes | `250` | `100` | B-05, F-50 |
 | `limits.maxVertices` | hard cap on mesh vertices in one file | `10000000` | `5000000` | B-05, F-50 |
-| `limits.maxTriangles` | hard cap on triangles in one file | `5000000` | `3000000` | B-05, F-50 |
+| `limits.maxTriangles` | hard cap on triangles in one file | `5000000` | `3000000` | B-05, F-50, X-80 |
 | `budgets.recommendedFileMegabytes` | size above which a file is slow to load and review | `100` | `60` | B-09 |
-| `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120 |
+| `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120, X-80 |
 | `budgets.maxDistinctColours` | number of distinct (class, colour, opacity) combinations above which the palette is too large to manage | `50` | `30` | D-05 |
-| `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51 |
+| `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51, X-80 |
 | `file.singleLineEntities` | true when the consumer's reader needs every STEP entity on one line | `false` | `true` | B-08 |
 | `identifiers.roomIdMaxLength` | longest allowed room identifier, in characters | `64` | `7` | B-23 |
 | `identifiers.roomIdPattern` | regular expression a room identifier must match | `"^[A-Za-z0-9._-]+$"` | `"^[A-Za-z0-9-]+$"` | B-23 |
@@ -1760,13 +1798,13 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.luminaires.lensNameSuffix` | ending of the name of the emissive part | `" lens"` | `" lens"` | B-90 |
 | `extensions.luminaires.requiredProperties` | properties every luminaire assembly must carry | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | B-91 |
 | `extensions.luminaires.lightTypes` | allowed values of LightType | `["omni", "spot"]` | `["omni", "spot"]` | B-91 |
-| `extensions.luminaires.positionToleranceMetres` | largest distance between the declared light position and the emissive part, level offset applied | `0.06` | `0.06` | B-92 |
 
 ---
 
-<!-- chunk: params--introduction-part-3-of-3 | source: 07-profile-parameters.md | title: Introduction (part 3 of 3) | rules: - -->
+<!-- chunk: params--introduction-part-3-of-4 | source: 07-profile-parameters.md | title: Introduction (part 3 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `extensions.luminaires.positionToleranceMetres` | largest distance between the declared light position and the emissive part, level offset applied | `0.06` | `0.06` | B-92 |
 | `extensions.luminaires.maxPerRoom` | most fixtures per room, or null | `null` | `16` | B-95 |
 | `extensions.signboards.enabled` | consumer generates signs from declared boards | `false` | `true` | - |
 | `extensions.signboards.kinds` | allowed values of SignboardKind | `["entrance_board", "stop_board"]` | `["entrance_board", "stop_board"]` | B-100 |
@@ -1789,7 +1827,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.terrain.siteElevationToleranceMetres` | largest difference between IfcSite.RefElevation and the terrain height at the building origin | `0.1` | `0.1` | B-134 |
 | `extensions.terrain.maxTriangles` | most triangles in the terrain element | `200000` | `200000` | B-138 |
 | `extensions.terrain.maxPatchSamples` | most samples read from one height patch; a larger patch is refused before it is loaded | `25000000` | `25000000` | - |
-| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
+| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44, X-80 |
 | `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
 | `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |
 | `textures.normalConvention` | +Y: green channel points up (OpenGL style); -Y: green points down (DirectX style) | `"+Y"` | `"+Y"` | D-41 |
@@ -1797,15 +1835,34 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `package.maxPackageMegabytes` | upload size cap of a whole package, or null | `null` | `500` | X-14 |
 | `package.requireProvenance` | every asset needs a provenance entry | `true` | `true` | X-20 |
 | `package.requireLicence` | every asset and the package need a licence | `true` | `true` | X-21 |
-| `submission.maxFiles` | most files in one delivery folder | `200` | `null` | X-73 |
-| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73 |
+| `submission.maxFiles` | most files in one delivery folder (600 since 2.3.0, because proofs add a GLB and a contact sheet for every component) | `600` | `null` | X-73 |
+| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73, X-80 |
 | `submission.maxDeliveryBytes` | largest total size of a delivery folder, in bytes | `104857600` | `null` | X-73 |
 | `submission.maxPathLength` | longest relative path inside a delivery, in characters | `200` | `null` | X-74 |
 | `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
 | `submission.allowedLicences` | licence identifiers a submitter may offer the delivery under | `["CC-BY-4.0", "CC0-1.0"]` | `null` | X-71 |
 | `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
 | `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
+
+---
+
+<!-- chunk: params--introduction-part-4-of-4 | source: 07-profile-parameters.md | title: Introduction (part 4 of 4) | rules: - -->
+| Parameter | Meaning | default | strict | Rules |
+|---|---|---|---|---|
 | `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |
+| `proofs.maxGlbNodes` | most scene-graph nodes in one GLB | `20000` | `null` | X-80 |
+| `proofs.maxExtentMetres` | largest size of a GLB along any axis, in metres; a bigger model has probably been exported in the wrong unit | `5000` | `null` | X-80 |
+| `proofs.interiorViewsPerRoom` | interior views rendered for each room that is shown (camera at a standard eye height, derived from the room's footprint) | `4` | `null` | X-82 |
+| `proofs.maxRoomsPerKind` | most rooms of one kind (the room's Function property) that are rendered; the first rooms by identifier | `2` | `null` | - |
+| `proofs.exteriorViews` | exterior views of the whole building, evenly spaced around it | `4` | `null` | X-82 |
+| `proofs.turntableFrames` | frames of the turntable contact sheet of a component (material sets use a fixed set of four) | `8` | `null` | - |
+| `proofs.minRenderWidth` | smallest width of a render, in pixels | `256` | `null` | X-84 |
+| `proofs.maxRenderPixels` | most pixels (width times height) of one render | `2097152` | `null` | X-84 |
+| `proofs.maxRenderBytes` | largest file size of one render, in bytes | `3145728` | `null` | X-84 |
+| `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
+| `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
+| `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |
+| `proofs.renderTolerance.differenceLevels` |  | `8` | `null` | - |
 
 ---
 
@@ -1830,7 +1887,7 @@ An extension is an optional group of rules. It applies only when `extensions.<na
 This repository holds the guide set and it is also where outside contributors offer **deliveries**: buildings, interiors, furniture,
 materials, fixtures and hardware. A delivery is reviewed as a pull request. When the maintainers merge it, a separate tool turns the
 accepted delivery into separate, content-addressed component assets and a neutral catalogue. This page is for people and for software
-agents; the rules the automatic checks enforce are X-70 to X-78 in guide 4, section 8.
+agents; the rules the automatic checks enforce are X-70 to X-86 in guide 4, section 8 (X-79 to X-86 are the proofs, below).
 
 ---
 
@@ -1841,8 +1898,9 @@ agents; the rules the automatic checks enforce are X-70 to X-78 in guide 4, sect
 2. **Build** the delivery in a branch of your fork, in the folder `deliveries/<slug>/`. The slug is lower-case letters, digits and single
    hyphens, for example `oak-study`. Follow guides 1 to 4 and the worked example (guide 5); `deliveries/example-room/` is a small accepted-looking
    delivery to copy from.
-3. **Check** it yourself: `python3 tools/check_all.py deliveries/<slug> --json` must exit 0 (this also runs `tools/check_submission.py`).
-   `tools/ci/run_checks.sh <slug>` runs exactly what the automatic check runs.
+3. **Make the proofs** (`python3 tools/build_proofs.py deliveries/<slug>`, see "Proofs" below), refresh the manifest, then **check** it yourself:
+   `python3 tools/check_all.py deliveries/<slug> --json` must exit 0 (this also runs `tools/check_submission.py` and `tools/check_proofs.py`).
+   `tools/ci/run_checks.sh <slug>` runs exactly what the automatic check runs, including the rebuild of the proofs.
 4. **Open a pull request** from your branch against `main`. Fill in the checklist in the pull request template.
 5. **Automatic check.** A workflow checks the changed delivery folders (see below). Fix every REQUIRED finding and push again.
 6. **Review.** A maintainer reads the delivery. The checks cannot judge quality, ownership or fit, so a delivery that passes can still be
@@ -1868,6 +1926,7 @@ deliveries/oak-study/
   items/<itemId>/          furniture, fixtures and hardware as items (guide 3): <itemId>.ifc and <itemId>.item.json
   finishes/                finish schedule, library.json and textures/<set>/ (guide 2)
   previews/                pictures of the work (png or jpg) so a reviewer sees it first
+  proofs/                  GLB exports, their validation report, the standard renders and manifest.json (made by tools/build_proofs.py)
   reports/ notes/ tables/  the check reports, the change notes and the room table, as in guide 4
 ```
 
@@ -1888,13 +1947,52 @@ own the work or may license it, and that it contains no restricted third-party c
 
 ---
 
+<!-- chunk: sub--proofs | source: 08-submissions-and-ingest.md | title: Proofs | rules: - -->
+## Proofs
+
+Every submitted delivery carries **proofs**: models and pictures that anyone can look at without a modelling program, and rebuild to see that
+they are honest. `python3 tools/build_proofs.py deliveries/<slug>` makes all of them from the delivered files, in three steps, and writes
+`proofs/manifest.json` (`schemas/proofs.schema.json`, format `proofs/1`):
+
+1. **Export** (`tools/export_glb.py`): `proofs/glb/model.glb` (the whole master IFC as a scene graph: `model` > `level:<name>` >
+   `<kind>:<name>#<GlobalId>`), `proofs/glb/components/*.glb` (one per item and per furniture element, covering, fixture or luminaire
+   assembly, hardware piece, door and window, exactly the GLB `ingest.py` stores for it) and `proofs/glb/materials/*.glb` (a 2 x 2 swatch of each
+   texture set with its maps embedded). Units are metres and the axes are Y up: an IFC point (x, y, z) becomes (x, z, -y). Colours are PBR
+   metallic-roughness materials. The files are deterministic and hold no path, time, user or host.
+2. **Validate** (`tools/validate_glb.py`): structure (container, indices, accessors, images, materials, scene graph, nothing unused, no URI),
+   conventions (units and axis note, generator, size, unit-length normals, tangents with a normal map, node names), the profile's budgets, and
+   with `--ifc` each product's bounding box against the IFC file. The Khronos glTF Validator (Apache-2.0, pinned in
+   `tools/khronos/package-lock.json`, `npm ci --prefix tools/khronos`) is run as well when it is installed. The report is
+   `proofs/reports/glb-validation.json` (`check-report/1`, rule X-80).
+3. **Render** (`tools/render.py`), from the GLB files only: a plan for each level (cut at 1.2 m), four interior views for each room kind
+   present (kind = the room's `Function` property; the first two rooms of a kind by identifier), four exterior views, and a contact sheet of
+   eight turntable frames for every component (four fixed frames for a texture swatch).
+
+The renderer is a software rasteriser in numpy (about 400 lines): no graphics card, display, browser or system library, so the same GLB gives
+the same picture on a laptop and on a hosted runner. It draws flat-shaded triangles with a z-buffer, 2 x 2 supersampled, with base colours and
+the base colour texture; it does not draw normal maps, metal, roughness, shadows or reflections. The lighting, background, camera and sizes are
+fixed conventions, recorded for every picture (`tools/render.py` states them). A headless browser with a bundled viewer library, or Blender, would draw
+nicer pictures, but they depend on a graphics stack that differs between machines, so the same file would not give the same picture; the
+choice favours reproducibility over beauty. (Tried while choosing: headless Chromium with software WebGL runs here and repeats itself on one machine, but needs a browser, a
+vendored viewer library of some hundreds of kilobytes, and gives pixels that depend on the browser and graphics-layer build; Blender is optional
+high-quality software that is far larger than this repository and, with a graphics card, differs from machine to machine.) The manifest records, for every GLB, its SHA-256, size and source IFC hash, and for every picture
+its path, SHA-256, pixel size, camera, light, the hash of the GLB it was made from and the tool and version.
+
+`python3 tools/check_proofs.py deliveries/<slug>` checks the manifest against the files (X-79), the GLB files against their sources and the
+validation report (X-81, X-80), the coverage of the pictures (X-82), the traceability of each picture to a delivered GLB (X-83), the size limits
+(X-84) and the metadata of every image and GLB (X-85); with `--reproduce` it also rebuilds the GLB files, compares the bytes, re-renders every
+picture from the delivered GLB and compares it within `proofs.renderTolerance` (X-86). Where the toolchain is not available it says so (an
+`info` finding) and skips; it never reports a skipped check as passed. Make the proofs again after any change to an IFC file, item or texture set.
+
+---
+
 <!-- chunk: sub--limits | source: 08-submissions-and-ingest.md | title: Limits | rules: - -->
 ## Limits
 
-Defaults, all parameters of the profile (`submission` group, see `07-profile-parameters.md`): at most 200 files, 25 MiB per file, 100 MiB per
+Defaults, all parameters of the profile (`submission` and `proofs` groups, see `07-profile-parameters.md`): at most 600 files (proofs add a GLB and a sheet for every component; it was 200 before 2.3.0), 25 MiB per file, 100 MiB per
 delivery; file types ifc, glb, png, jpg, json, md, csv and txt only (csv and txt exist because the room table and `SHA256SUMS.txt` need them);
 no program, script, archive or executable file mode; no symbolic links; relative, portable, case-unique paths of at most 200 characters; images of
-at most 64 million pixels. A consumer that accepts submissions can set other values in its own profile.
+at most 64 million pixels; renders of at least 256 and at most about 2 million pixels and 3 MiB, and `proofs/` of at most 64 MiB. A consumer that accepts submissions can set other values in its own profile.
 
 ---
 
@@ -1904,7 +2002,8 @@ at most 64 million pixels. A consumer that accepts submissions can set other val
 `.github/workflows/check-delivery.yml` (a copy of the same steps without any workflow system is `tools/ci/run_checks.sh`) runs on pull requests
 that touch `deliveries/**`. It installs the pinned requirements (`tools/requirements-ci.txt`), then for each changed delivery runs
 `check_submission.py` and `check_all.py` under `profiles/default.json`, and again under `profiles/<name>.json` when `delivery.json` names a profile
-that exists there. It uploads the JSON reports as an artifact, writes a summary to the run, and fails on any REQUIRED finding.
+that exists there; once under the default profile it also runs `check_proofs.py --reproduce` (it rebuilds the proofs on the runner, which has no graphics card) and
+`validate_glb.py` with the pinned Khronos glTF Validator (installed by `npm ci`, no secret needed). It uploads the JSON reports as an artifact, writes a summary to the run, and fails on any REQUIRED finding.
 
 Pull requests from forks run with a read-only token and no secrets, and the workflow never uses `pull_request_target`. A first-time
 contributor's run may wait until a maintainer approves it. A fork's token cannot write comments, so the result is the run summary and the
@@ -1920,13 +2019,16 @@ checkout of the merged commit of `main` (`--require-ancestor-of origin/main` mak
 network. In order, it:
 
 1. copies the delivery (plain files only) to a temporary folder, with a time limit (`submission.ingestMaxSeconds`) and an optional memory limit;
-2. re-runs `check_submission.py` and `check_all.py` on the copy, and refuses on any REQUIRED finding;
+2. re-runs `check_submission.py` and `check_all.py` on the copy (the latter includes the stored-file checks of the proofs), and refuses on any REQUIRED finding;
 3. splits the delivery into **components**: each item under `items/`; from the master IFC each furniture element, covering (wall, floor or
    ceiling), fixture or luminaire assembly, hardware piece, door and window; each texture set as a material set;
 4. exports each geometry component as a binary glTF (GLB, units metres, Y up) and reads it back to verify it;
 5. stores every file as `blobs/sha256/<hash>.<ext>`; identical bytes (for example a table in `items/` and the same table in the master, or the
    same part in two deliveries) are stored once;
-6. writes `catalogue/index.json` (one entry per distinct component, with every occurrence), `catalogue/deliveries/<slug>@<commit12>.json`
+6. compares the contributor's proofs with a fresh export from the delivered files (GLB hashes, render hashes, and that every component GLB of the
+   ingest is among the proofs) and reports any mismatch in the result; the ingest result stays authoritative and nothing is refused for it. Each
+   component links the contact sheet of its GLB (`proof-render` file), and the delivery record lists every render and the GLB files;
+7. writes `catalogue/index.json` (one entry per distinct component, with every occurrence), `catalogue/deliveries/<slug>@<commit12>.json`
    and the handoff manifest `handoff/<slug>@<commit12>.json`, shaped by `schemas/catalogue.schema.json`.
 
 Each component carries: kind and category; dimensions and bounds; the pivot (items keep the pivot their description declares, master elements are
@@ -1938,7 +2040,7 @@ would be stored and what the output folder already holds, and writes nothing.
 The handoff manifest lists the blobs to publish and the components with their files, licences and submitters. Publishing them anywhere is a
 separate step owned by whoever runs the catalogue; this repository defines no destination.
 
-Limits of this version: components from the master IFC are exported as GLB only (no per-component IFC file; item components also keep their source
+Limits of this version: the renders show base colours and one texture (no normal maps, metal or roughness); a texture set is shown as a swatch, not on a wall; components from the master IFC are exported as GLB only (no per-component IFC file; item components also keep their source
 IFC); walls, slabs, stairs and roofs are not components, only furnishing, coverings, fixtures, hardware, doors and windows; rotations are recorded
 as an angle about the vertical axis; textures are carried as material sets and are not baked into the GLB.
 
@@ -1954,6 +2056,7 @@ gh repo fork UPSTREAM --clone --default-branch-only        # your fork, cloned; 
 cd REPO && git checkout -b delivery-SLUG
 pip install -r tools/requirements.txt
 # build deliveries/SLUG/ (skills/submit-delivery/SKILL.md), then:
+python3 tools/build_proofs.py deliveries/SLUG                         # GLB files, validation report, renders, manifest; then refresh delivery.json
 python3 tools/check_all.py deliveries/SLUG --json --out report.json   # exit 0 required
 git add deliveries/SLUG && git commit -m "feat(deliveries): add SLUG" -m "What it is and what it was checked against."
 git push -u origin delivery-SLUG

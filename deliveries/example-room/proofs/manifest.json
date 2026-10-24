@@ -1,0 +1,1538 @@
+{
+ "format": "proofs/1",
+ "delivery": {
+  "id": "example-room",
+  "version": "1.0.0"
+ },
+ "tools": {
+  "guideSet": "2.3.0",
+  "exportGlb": "2.3.0",
+  "validateGlb": "2.3.0",
+  "render": {
+   "version": "2.3.0",
+   "backend": "numpy-rasteriser/1"
+  },
+  "libraries": {
+   "architecture": "x86_64",
+   "ifcopenshell": "0.9.0.post1",
+   "numpy": "2.4.6",
+   "pillow": "13.0.0",
+   "shapely": "2.2.0"
+  }
+ },
+ "profile": {
+  "name": "default",
+  "version": "1.3.0"
+ },
+ "conventions": {
+  "units": "metres",
+  "glbAxes": "y-up",
+  "ifcAxes": "z-up",
+  "axisConversion": "(x,y,z) -> (x,z,-y) from the IFC frame (Z up) to glTF (Y up)"
+ },
+ "sources": [
+  {
+   "path": "finishes/textures/plaster_example/set.json",
+   "sha256": "f92059c8cdeb718b1561e8cf9c4ff7d26a78d2a33b25751c5693580c22d02b05"
+  },
+  {
+   "path": "ifc/example-room-master.ifc",
+   "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+  },
+  {
+   "path": "items/table.work.1600/table.work.1600.ifc",
+   "sha256": "3e1e47631c9ddcd63169792aefe028b2dc7eaf04f7595a5e02ae3aa46e2ee3c6"
+  }
+ ],
+ "glb": [
+  {
+   "path": "proofs/glb/model.glb",
+   "role": "model",
+   "sha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "bytes": 23796,
+   "triangles": 180,
+   "kind": "model",
+   "category": "model",
+   "names": [
+    "whole model"
+   ],
+   "keys": [
+    "model:ifc/example-room-master.ifc"
+   ],
+   "source": {
+    "path": "ifc/example-room-master.ifc",
+    "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+   },
+   "bounds": {
+    "min": [
+     0.0,
+     0.0,
+     -0.3
+    ],
+    "max": [
+     5.2,
+     4.2,
+     3.3
+    ]
+   },
+   "nodes": 13
+  },
+  {
+   "path": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb",
+   "role": "component",
+   "sha256": "3e85cde234abaed6df6152ab5396353d8fa18e430a0afade6d50c5d0697c1bba",
+   "bytes": 1816,
+   "triangles": 12,
+   "kind": "furniture",
+   "category": "table",
+   "names": [
+    "Work table, 1.6 m",
+    "Work table, 1.6 m"
+   ],
+   "keys": [
+    "item:table.work.1600",
+    "ifc:ifc/example-room-master.ifc#3zDKiH6mrH2Rie17YTXQ7c"
+   ],
+   "source": {
+    "path": "items/table.work.1600/table.work.1600.ifc",
+    "sha256": "3e1e47631c9ddcd63169792aefe028b2dc7eaf04f7595a5e02ae3aa46e2ee3c6"
+   },
+   "bounds": {
+    "min": [
+     -0.8,
+     -0.4,
+     0.0
+    ],
+    "max": [
+     0.8,
+     0.4,
+     0.74
+    ]
+   }
+  },
+  {
+   "path": "proofs/glb/components/window-north-window-549dfaa2.glb",
+   "role": "component",
+   "sha256": "519e49e29be8583487ebdb9787b776a921ec0279af0bf111c226d98a5b6b51da",
+   "bytes": 1800,
+   "triangles": 12,
+   "kind": "window",
+   "category": "window",
+   "names": [
+    "North window"
+   ],
+   "keys": [
+    "ifc:ifc/example-room-master.ifc#21gg1YcgDGVO7O$Ix04IPg"
+   ],
+   "source": {
+    "path": "ifc/example-room-master.ifc",
+    "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+   },
+   "bounds": {
+    "min": [
+     -0.75,
+     -0.01,
+     0.0
+    ],
+    "max": [
+     0.75,
+     0.01,
+     1.2
+    ]
+   }
+  },
+  {
+   "path": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb",
+   "role": "component",
+   "sha256": "877e753bbbf877b40ace1d4b32d1e35badc0a82b727a9f0607d7a19e35b1287b",
+   "bytes": 1796,
+   "triangles": 12,
+   "kind": "covering",
+   "category": "wall-covering",
+   "names": [
+    "West wall timber covering"
+   ],
+   "keys": [
+    "ifc:ifc/example-room-master.ifc#2gU1JQEV9JtR0p6LcN6Bmk"
+   ],
+   "source": {
+    "path": "ifc/example-room-master.ifc",
+    "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+   },
+   "bounds": {
+    "min": [
+     -0.005,
+     -1.5,
+     0.0
+    ],
+    "max": [
+     0.005,
+     1.5,
+     2.4
+    ]
+   }
+  },
+  {
+   "path": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb",
+   "role": "component",
+   "sha256": "ce4150c4294db313f4ce004ef207db356b3572f7709132ae2ff59837e9b628bd",
+   "bytes": 3304,
+   "triangles": 24,
+   "kind": "fixture",
+   "category": "luminaire",
+   "names": [
+    "Example work room luminaire 1"
+   ],
+   "keys": [
+    "ifc:ifc/example-room-master.ifc#3N_Z3EBCDHueqKKhiwabHb"
+   ],
+   "source": {
+    "path": "ifc/example-room-master.ifc",
+    "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+   },
+   "bounds": {
+    "min": [
+     -0.15,
+     -0.15,
+     0.0
+    ],
+    "max": [
+     0.15,
+     0.15,
+     0.12
+    ]
+   }
+  },
+  {
+   "path": "proofs/glb/components/door-entrance-door-ac568674.glb",
+   "role": "component",
+   "sha256": "6d008c905b541c148693d5c82acf5e61b1404daf425def0a1dd527165d32eaf6",
+   "bytes": 1824,
+   "triangles": 12,
+   "kind": "door",
+   "category": "door",
+   "names": [
+    "Entrance door"
+   ],
+   "keys": [
+    "ifc:ifc/example-room-master.ifc#3Z2k6lcTnJFPCzw1CFlWEi"
+   ],
+   "source": {
+    "path": "ifc/example-room-master.ifc",
+    "sha256": "f9b6d7ca059cec49097b2dfe73033270e215926291ab028e062440b3108c0453"
+   },
+   "bounds": {
+    "min": [
+     -0.6,
+     -0.02,
+     0.0
+    ],
+    "max": [
+     0.6,
+     0.02,
+     2.3
+    ]
+   }
+  },
+  {
+   "path": "proofs/glb/materials/plaster-example.glb",
+   "role": "material",
+   "sha256": "00c18599b1b206017542c6546847749ea1c5ca795672fd88244ae9fddaafe0bb",
+   "bytes": 961544,
+   "triangles": 2,
+   "kind": "material-set",
+   "category": "material-set",
+   "names": [
+    "plaster_example"
+   ],
+   "keys": [
+    "material:plaster_example"
+   ],
+   "source": {
+    "path": "finishes/textures/plaster_example/set.json",
+    "sha256": "f92059c8cdeb718b1561e8cf9c4ff7d26a78d2a33b25751c5693580c22d02b05"
+   },
+   "bounds": null
+  }
+ ],
+ "validation": {
+  "path": "proofs/reports/glb-validation.json",
+  "sha256": "c249e89d73e1bc1c17ec03b953b4bbd1e66525c9a5045c22c1c747968330a01b",
+  "bytes": 6012,
+  "result": "pass",
+  "tool": "validate_glb.py",
+  "toolVersion": "2.3.0",
+  "khronos": {
+   "used": true,
+   "version": "2.0.0-dev.3.10"
+  },
+  "glb": [
+   {
+    "path": "proofs/glb/model.glb",
+    "sha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876"
+   },
+   {
+    "path": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb",
+    "sha256": "3e85cde234abaed6df6152ab5396353d8fa18e430a0afade6d50c5d0697c1bba"
+   },
+   {
+    "path": "proofs/glb/components/window-north-window-549dfaa2.glb",
+    "sha256": "519e49e29be8583487ebdb9787b776a921ec0279af0bf111c226d98a5b6b51da"
+   },
+   {
+    "path": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb",
+    "sha256": "877e753bbbf877b40ace1d4b32d1e35badc0a82b727a9f0607d7a19e35b1287b"
+   },
+   {
+    "path": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb",
+    "sha256": "ce4150c4294db313f4ce004ef207db356b3572f7709132ae2ff59837e9b628bd"
+   },
+   {
+    "path": "proofs/glb/components/door-entrance-door-ac568674.glb",
+    "sha256": "6d008c905b541c148693d5c82acf5e61b1404daf425def0a1dd527165d32eaf6"
+   },
+   {
+    "path": "proofs/glb/materials/plaster-example.glb",
+    "sha256": "00c18599b1b206017542c6546847749ea1c5ca795672fd88244ae9fddaafe0bb"
+   }
+  ]
+ },
+ "renderSettings": {
+  "backend": "numpy-rasteriser/1",
+  "supersampling": 2,
+  "light": {
+   "model": "flat-lambert/1",
+   "keyDirection": [
+    0.347833,
+    -0.496904,
+    0.795046
+   ],
+   "fillDirection": [
+    -0.768221,
+    0.512148,
+    0.384111
+   ],
+   "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+  },
+  "toleranceUsedByChecks": {
+   "meanAbsLevels": 0.5,
+   "differingFraction": 0.001,
+   "differenceLevels": 8
+  }
+ },
+ "renders": [
+  {
+   "id": "plan-0-example-building-ground-0-m",
+   "path": "proofs/renders/plan-0-example-building-ground-0-m.png",
+   "sha256": "fba3720c02934f06f0fe3afbd0a02e327c0ab787c5d4485c3220bb201c8b771b",
+   "bytes": 5343,
+   "width": 1280,
+   "height": 960,
+   "kind": "plan",
+   "subject": {
+    "type": "level",
+    "id": "Example building - ground - +0 m",
+    "name": "Example building - ground - +0 m",
+    "elevationMetres": 0.0
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "orthographic",
+    "eye": [
+     2.6,
+     2.1,
+     13.5318
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.35
+    ],
+    "up": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "halfHeightMetres": 2.184
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    255,
+    255,
+    255
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "cutHeightMetres": 1.2
+  },
+  {
+   "id": "room-ex-001-0",
+   "path": "proofs/renders/room-ex-001-0.png",
+   "sha256": "86ec3c34728e70bdaf49a851d1d29bfca556856f5ea3abf294fe41b64aedce96",
+   "bytes": 13367,
+   "width": 1280,
+   "height": 720,
+   "kind": "interior",
+   "subject": {
+    "type": "room",
+    "id": "EX-001",
+    "name": "Example work room",
+    "roomKind": "Work room",
+    "level": "Example building - ground - +0 m"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "perspective",
+    "eye": [
+     0.5,
+     0.5,
+     1.6
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.0
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "verticalFovDegrees": 60.0,
+    "nearMetres": 0.05
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   }
+  },
+  {
+   "id": "room-ex-001-1",
+   "path": "proofs/renders/room-ex-001-1.png",
+   "sha256": "9b5270accaa12fe6ae4df05e6e082b01c964494d2a3270efc37f1fa1e78fe506",
+   "bytes": 19906,
+   "width": 1280,
+   "height": 720,
+   "kind": "interior",
+   "subject": {
+    "type": "room",
+    "id": "EX-001",
+    "name": "Example work room",
+    "roomKind": "Work room",
+    "level": "Example building - ground - +0 m"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "perspective",
+    "eye": [
+     4.7,
+     0.5,
+     1.6
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.0
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "verticalFovDegrees": 60.0,
+    "nearMetres": 0.05
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   }
+  },
+  {
+   "id": "room-ex-001-2",
+   "path": "proofs/renders/room-ex-001-2.png",
+   "sha256": "81e5057d56b133c59fc02f6bd2f71d591f1b93d3eb84f94a4800b5d786ba70d4",
+   "bytes": 18385,
+   "width": 1280,
+   "height": 720,
+   "kind": "interior",
+   "subject": {
+    "type": "room",
+    "id": "EX-001",
+    "name": "Example work room",
+    "roomKind": "Work room",
+    "level": "Example building - ground - +0 m"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "perspective",
+    "eye": [
+     4.7,
+     3.7,
+     1.6
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.0
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "verticalFovDegrees": 60.0,
+    "nearMetres": 0.05
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   }
+  },
+  {
+   "id": "room-ex-001-3",
+   "path": "proofs/renders/room-ex-001-3.png",
+   "sha256": "a2cb81ad1fe3caaaafbb17750c5225184a51fa1b1b2b3978b537ff0f2dae977d",
+   "bytes": 18566,
+   "width": 1280,
+   "height": 720,
+   "kind": "interior",
+   "subject": {
+    "type": "room",
+    "id": "EX-001",
+    "name": "Example work room",
+    "roomKind": "Work room",
+    "level": "Example building - ground - +0 m"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "perspective",
+    "eye": [
+     0.5,
+     3.7,
+     1.6
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.0
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "verticalFovDegrees": 60.0,
+    "nearMetres": 0.05
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   }
+  },
+  {
+   "id": "exterior-0",
+   "path": "proofs/renders/exterior-0.png",
+   "sha256": "60c8a2b05fc030d8f4c8e13e4362479700052590788176bd0b4b4b26ffa3ab3c",
+   "bytes": 9588,
+   "width": 1280,
+   "height": 720,
+   "kind": "exterior",
+   "subject": {
+    "type": "model",
+    "id": "model",
+    "name": "whole model"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "orthographic",
+    "eye": [
+     10.3344,
+     -5.6344,
+     7.3159
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.5
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 3.3385
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "azimuthDegrees": 45.0,
+   "elevationDegrees": 28.0
+  },
+  {
+   "id": "exterior-1",
+   "path": "proofs/renders/exterior-1.png",
+   "sha256": "1f5f7931d6ec2ef6bd959cd62e8e43a842635190a08a4252bf6c9f378d03ffe5",
+   "bytes": 10710,
+   "width": 1280,
+   "height": 720,
+   "kind": "exterior",
+   "subject": {
+    "type": "model",
+    "id": "model",
+    "name": "whole model"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "orthographic",
+    "eye": [
+     10.3344,
+     9.8344,
+     7.3159
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.5
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 3.3385
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "azimuthDegrees": 135.0,
+   "elevationDegrees": 28.0
+  },
+  {
+   "id": "exterior-2",
+   "path": "proofs/renders/exterior-2.png",
+   "sha256": "0d6bd3f3641f5d4eebde1106fa30452088470303b6baaab86d4b112c8469c274",
+   "bytes": 11565,
+   "width": 1280,
+   "height": 720,
+   "kind": "exterior",
+   "subject": {
+    "type": "model",
+    "id": "model",
+    "name": "whole model"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "orthographic",
+    "eye": [
+     -5.1344,
+     9.8344,
+     7.3159
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.5
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 3.3385
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "azimuthDegrees": 225.0,
+   "elevationDegrees": 28.0
+  },
+  {
+   "id": "exterior-3",
+   "path": "proofs/renders/exterior-3.png",
+   "sha256": "86992cf434709cb505765b1fb6f4d80751d6f3bc1728d00273a4b7d93adc6edd",
+   "bytes": 9240,
+   "width": 1280,
+   "height": 720,
+   "kind": "exterior",
+   "subject": {
+    "type": "model",
+    "id": "model",
+    "name": "whole model"
+   },
+   "glb": "proofs/glb/model.glb",
+   "glbSha256": "ecc3e8303f9e53d5907bfb27f272ed72f8e3211e58bf11e6d9ebc281d6125876",
+   "camera": {
+    "projection": "orthographic",
+    "eye": [
+     -5.1344,
+     -5.6344,
+     7.3159
+    ],
+    "target": [
+     2.6,
+     2.1,
+     1.5
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 3.3385
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "azimuthDegrees": 315.0,
+   "elevationDegrees": 28.0
+  },
+  {
+   "id": "sheet-furniture-work-table-1-6-m-57086e7a",
+   "path": "proofs/renders/sheet-furniture-work-table-1-6-m-57086e7a.png",
+   "sha256": "5fa33e05a1def21a0716371302d2309e92b0021513877c774fc662a9cefae853",
+   "bytes": 7253,
+   "width": 1280,
+   "height": 640,
+   "kind": "sheet",
+   "subject": {
+    "type": "component",
+    "id": "item:table.work.1600",
+    "name": "Work table, 1.6 m",
+    "keys": [
+     "item:table.work.1600",
+     "ifc:ifc/example-room-master.ifc#3zDKiH6mrH2Rie17YTXQ7c"
+    ]
+   },
+   "glb": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb",
+   "glbSha256": "3e85cde234abaed6df6152ab5396353d8fa18e430a0afade6d50c5d0697c1bba",
+   "camera": {
+    "projection": "orthographic",
+    "target": [
+     0.0,
+     0.0,
+     0.37
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 1.0841
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "frames": [
+    {
+     "index": 0,
+     "azimuthDegrees": 0.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 1,
+     "azimuthDegrees": 45.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 2,
+     "azimuthDegrees": 90.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 3,
+     "azimuthDegrees": 135.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 4,
+     "azimuthDegrees": 180.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 5,
+     "azimuthDegrees": 225.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 6,
+     "azimuthDegrees": 270.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 7,
+     "azimuthDegrees": 315.0,
+     "elevationDegrees": 20.0
+    }
+   ],
+   "cellPixels": [
+    320,
+    320
+   ],
+   "columns": 4
+  },
+  {
+   "id": "sheet-window-north-window-549dfaa2",
+   "path": "proofs/renders/sheet-window-north-window-549dfaa2.png",
+   "sha256": "b6d8847c55499965f821b3a352f5894449878384b16f8abdcd1cf2cfa81f71c7",
+   "bytes": 7118,
+   "width": 1280,
+   "height": 640,
+   "kind": "sheet",
+   "subject": {
+    "type": "component",
+    "id": "ifc:ifc/example-room-master.ifc#21gg1YcgDGVO7O$Ix04IPg",
+    "name": "North window",
+    "keys": [
+     "ifc:ifc/example-room-master.ifc#21gg1YcgDGVO7O$Ix04IPg"
+    ]
+   },
+   "glb": "proofs/glb/components/window-north-window-549dfaa2.glb",
+   "glbSha256": "519e49e29be8583487ebdb9787b776a921ec0279af0bf111c226d98a5b6b51da",
+   "camera": {
+    "projection": "orthographic",
+    "target": [
+     0.0,
+     0.0,
+     0.6
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 1.0758
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "frames": [
+    {
+     "index": 0,
+     "azimuthDegrees": 0.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 1,
+     "azimuthDegrees": 45.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 2,
+     "azimuthDegrees": 90.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 3,
+     "azimuthDegrees": 135.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 4,
+     "azimuthDegrees": 180.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 5,
+     "azimuthDegrees": 225.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 6,
+     "azimuthDegrees": 270.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 7,
+     "azimuthDegrees": 315.0,
+     "elevationDegrees": 20.0
+    }
+   ],
+   "cellPixels": [
+    320,
+    320
+   ],
+   "columns": 4
+  },
+  {
+   "id": "sheet-covering-west-wall-timber-covering-370e9e10",
+   "path": "proofs/renders/sheet-covering-west-wall-timber-covering-370e9e10.png",
+   "sha256": "20a04dda7405dca5d0cb556dd4f572d813a43847a58183a642329c5e4c73e75b",
+   "bytes": 5730,
+   "width": 1280,
+   "height": 640,
+   "kind": "sheet",
+   "subject": {
+    "type": "component",
+    "id": "ifc:ifc/example-room-master.ifc#2gU1JQEV9JtR0p6LcN6Bmk",
+    "name": "West wall timber covering",
+    "keys": [
+     "ifc:ifc/example-room-master.ifc#2gU1JQEV9JtR0p6LcN6Bmk"
+    ]
+   },
+   "glb": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb",
+   "glbSha256": "877e753bbbf877b40ace1d4b32d1e35badc0a82b727a9f0607d7a19e35b1287b",
+   "camera": {
+    "projection": "orthographic",
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 2.1515
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "frames": [
+    {
+     "index": 0,
+     "azimuthDegrees": 0.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 1,
+     "azimuthDegrees": 45.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 2,
+     "azimuthDegrees": 90.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 3,
+     "azimuthDegrees": 135.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 4,
+     "azimuthDegrees": 180.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 5,
+     "azimuthDegrees": 225.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 6,
+     "azimuthDegrees": 270.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 7,
+     "azimuthDegrees": 315.0,
+     "elevationDegrees": 20.0
+    }
+   ],
+   "cellPixels": [
+    320,
+    320
+   ],
+   "columns": 4
+  },
+  {
+   "id": "sheet-fixture-example-work-room-luminaire-1-84663b66",
+   "path": "proofs/renders/sheet-fixture-example-work-room-luminaire-1-84663b66.png",
+   "sha256": "a9f1cddcc24a2aa22dee712176422125225a35802539074ae78df6cb998782c5",
+   "bytes": 9200,
+   "width": 1280,
+   "height": 640,
+   "kind": "sheet",
+   "subject": {
+    "type": "component",
+    "id": "ifc:ifc/example-room-master.ifc#3N_Z3EBCDHueqKKhiwabHb",
+    "name": "Example work room luminaire 1",
+    "keys": [
+     "ifc:ifc/example-room-master.ifc#3N_Z3EBCDHueqKKhiwabHb"
+    ]
+   },
+   "glb": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb",
+   "glbSha256": "ce4150c4294db313f4ce004ef207db356b3572f7709132ae2ff59837e9b628bd",
+   "camera": {
+    "projection": "orthographic",
+    "target": [
+     0.0,
+     0.0,
+     0.06
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 0.2469
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "frames": [
+    {
+     "index": 0,
+     "azimuthDegrees": 0.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 1,
+     "azimuthDegrees": 45.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 2,
+     "azimuthDegrees": 90.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 3,
+     "azimuthDegrees": 135.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 4,
+     "azimuthDegrees": 180.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 5,
+     "azimuthDegrees": 225.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 6,
+     "azimuthDegrees": 270.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 7,
+     "azimuthDegrees": 315.0,
+     "elevationDegrees": 20.0
+    }
+   ],
+   "cellPixels": [
+    320,
+    320
+   ],
+   "columns": 4
+  },
+  {
+   "id": "sheet-door-entrance-door-ac568674",
+   "path": "proofs/renders/sheet-door-entrance-door-ac568674.png",
+   "sha256": "ffd368c782e927693eb63ae08a751f7ba880a00fccdf21c6f6cb45f3b4730d6d",
+   "bytes": 5232,
+   "width": 1280,
+   "height": 640,
+   "kind": "sheet",
+   "subject": {
+    "type": "component",
+    "id": "ifc:ifc/example-room-master.ifc#3Z2k6lcTnJFPCzw1CFlWEi",
+    "name": "Entrance door",
+    "keys": [
+     "ifc:ifc/example-room-master.ifc#3Z2k6lcTnJFPCzw1CFlWEi"
+    ]
+   },
+   "glb": "proofs/glb/components/door-entrance-door-ac568674.glb",
+   "glbSha256": "6d008c905b541c148693d5c82acf5e61b1404daf425def0a1dd527165d32eaf6",
+   "camera": {
+    "projection": "orthographic",
+    "target": [
+     0.0,
+     0.0,
+     1.15
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 1.4529
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "frames": [
+    {
+     "index": 0,
+     "azimuthDegrees": 0.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 1,
+     "azimuthDegrees": 45.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 2,
+     "azimuthDegrees": 90.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 3,
+     "azimuthDegrees": 135.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 4,
+     "azimuthDegrees": 180.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 5,
+     "azimuthDegrees": 225.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 6,
+     "azimuthDegrees": 270.0,
+     "elevationDegrees": 20.0
+    },
+    {
+     "index": 7,
+     "azimuthDegrees": 315.0,
+     "elevationDegrees": 20.0
+    }
+   ],
+   "cellPixels": [
+    320,
+    320
+   ],
+   "columns": 4
+  },
+  {
+   "id": "sheet-plaster-example",
+   "path": "proofs/renders/sheet-plaster-example.png",
+   "sha256": "8cee79984813c3b586fd7e2eee6b9a8d502e2b40cc09d7864a5520de413ff03e",
+   "bytes": 67589,
+   "width": 1280,
+   "height": 320,
+   "kind": "sheet",
+   "subject": {
+    "type": "material",
+    "id": "material:plaster_example",
+    "name": "plaster_example",
+    "keys": [
+     "material:plaster_example"
+    ]
+   },
+   "glb": "proofs/glb/materials/plaster-example.glb",
+   "glbSha256": "00c18599b1b206017542c6546847749ea1c5ca795672fd88244ae9fddaafe0bb",
+   "camera": {
+    "projection": "orthographic",
+    "target": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "halfHeightMetres": 3.1678
+   },
+   "light": {
+    "model": "flat-lambert/1",
+    "keyDirection": [
+     0.347833,
+     -0.496904,
+     0.795046
+    ],
+    "fillDirection": [
+     -0.768221,
+     0.512148,
+     0.384111
+    ],
+    "shade": "0.30 + 0.12*(0.5+0.5*nz) + 0.55*max(0,n.key) + 0.20*max(0,n.fill), at most 1"
+   },
+   "background": [
+    236,
+    238,
+    240
+   ],
+   "tool": {
+    "name": "render.py",
+    "version": "2.3.0"
+   },
+   "frames": [
+    {
+     "index": 0,
+     "azimuthDegrees": 0,
+     "elevationDegrees": 90.0
+    },
+    {
+     "index": 1,
+     "azimuthDegrees": 0,
+     "elevationDegrees": 35.0
+    },
+    {
+     "index": 2,
+     "azimuthDegrees": 120,
+     "elevationDegrees": 35.0
+    },
+    {
+     "index": 3,
+     "azimuthDegrees": 240,
+     "elevationDegrees": 35.0
+    }
+   ],
+   "cellPixels": [
+    320,
+    320
+   ],
+   "columns": 4
+  }
+ ],
+ "coverage": {
+  "statement": "1 level(s) each with a plan; 1 room kind(s) (Work room) each with interior views of the first room(s) by identifier, 1 of 1 room(s) in all; 4 exterior view(s); 7 component key(s) in 6 GLB file(s), each with a contact sheet. Rooms of a kind beyond the profile's limit are not rendered; identical geometry shares one GLB and one sheet.",
+  "levels": [
+   {
+    "name": "Example building - ground - +0 m",
+    "elevationMetres": 0.0,
+    "renders": [
+     "proofs/renders/plan-0-example-building-ground-0-m.png"
+    ]
+   }
+  ],
+  "roomKinds": [
+   {
+    "kind": "Work room",
+    "rooms": [
+     "EX-001"
+    ],
+    "roomsNotRendered": [],
+    "renders": [
+     "proofs/renders/room-ex-001-0.png",
+     "proofs/renders/room-ex-001-1.png",
+     "proofs/renders/room-ex-001-2.png",
+     "proofs/renders/room-ex-001-3.png"
+    ]
+   }
+  ],
+  "exterior": [
+   "proofs/renders/exterior-0.png",
+   "proofs/renders/exterior-1.png",
+   "proofs/renders/exterior-2.png",
+   "proofs/renders/exterior-3.png"
+  ],
+  "components": [
+   {
+    "key": "item:table.work.1600",
+    "glb": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb",
+    "sheet": "proofs/renders/sheet-furniture-work-table-1-6-m-57086e7a.png"
+   },
+   {
+    "key": "ifc:ifc/example-room-master.ifc#3zDKiH6mrH2Rie17YTXQ7c",
+    "glb": "proofs/glb/components/furniture-work-table-1-6-m-57086e7a.glb",
+    "sheet": "proofs/renders/sheet-furniture-work-table-1-6-m-57086e7a.png"
+   },
+   {
+    "key": "ifc:ifc/example-room-master.ifc#21gg1YcgDGVO7O$Ix04IPg",
+    "glb": "proofs/glb/components/window-north-window-549dfaa2.glb",
+    "sheet": "proofs/renders/sheet-window-north-window-549dfaa2.png"
+   },
+   {
+    "key": "ifc:ifc/example-room-master.ifc#2gU1JQEV9JtR0p6LcN6Bmk",
+    "glb": "proofs/glb/components/covering-west-wall-timber-covering-370e9e10.glb",
+    "sheet": "proofs/renders/sheet-covering-west-wall-timber-covering-370e9e10.png"
+   },
+   {
+    "key": "ifc:ifc/example-room-master.ifc#3N_Z3EBCDHueqKKhiwabHb",
+    "glb": "proofs/glb/components/fixture-example-work-room-luminaire-1-84663b66.glb",
+    "sheet": "proofs/renders/sheet-fixture-example-work-room-luminaire-1-84663b66.png"
+   },
+   {
+    "key": "ifc:ifc/example-room-master.ifc#3Z2k6lcTnJFPCzw1CFlWEi",
+    "glb": "proofs/glb/components/door-entrance-door-ac568674.glb",
+    "sheet": "proofs/renders/sheet-door-entrance-door-ac568674.png"
+   },
+   {
+    "key": "material:plaster_example",
+    "glb": "proofs/glb/materials/plaster-example.glb",
+    "sheet": "proofs/renders/sheet-plaster-example.png"
+   }
+  ]
+ }
+}

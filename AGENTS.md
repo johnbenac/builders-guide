@@ -10,7 +10,7 @@ people can read the PDF or HTML in `dist/`. Everything is static files and Pytho
 1. Read `skills/orient/SKILL.md` (about 70 lines). It tells you which skill to load.
 2. Load only the skill you need: `skills/author-building`, `skills/decorate-interior`, `skills/author-furniture-library`,
    `skills/accept-and-package-delivery`, `skills/submit-delivery`. Each skill points to small files under its `references/` for detail.
-3. Rules are in `rules.json` (206, stable ids like `B-41`). Each has a default `level`, `statement`, `rationale`, `parameters`,
+3. Rules are in `rules.json` (214, stable ids like `B-41`). Each has a default `level`, `statement`, `rationale`, `parameters`,
    `extension`, `how_to_check`, `fix_hint`, `examples`, `related`.
 4. Consumer-specific numbers are in a **profile** (`profiles/profile.schema.json`; default `profiles/default.json`). Build and check
    against the consumer's profile when you have one.
@@ -31,8 +31,14 @@ python3 tools/run_example.py example-out                      # build, check and
 python3 tools/selftest.py                                     # prove the checkers still catch every deliberate fault
 python3 tools/agent_harness.py                                # prove a fresh agent can pass using only this set, under two profiles
 python3 tools/check_submission.py deliveries/SLUG --json      # form checks of a submitted delivery (X-70 to X-78); check_all.py runs them too
+python3 tools/build_proofs.py deliveries/SLUG                 # GLB exports, validation report, standard renders and proofs/manifest.json (X-79 to X-86)
+python3 tools/check_proofs.py deliveries/SLUG --reproduce     # check the proofs, rebuild them and compare (needs ifcopenshell, numpy, pillow, shapely)
+python3 tools/export_glb.py DELIVERY_OR.ifc --out DIR         # IFC to GLB, whole model and every component
+python3 tools/validate_glb.py DIR_OR.glb --json               # structure and convention checks of GLB files (X-80)
+python3 tools/render.py GLB_DIR --out DIR                     # headless deterministic renders: plans, interiors, exteriors, contact sheets
 python3 tools/ingest.py deliveries/SLUG --commit HASH --out OUT --dry-run   # maintainers: split a MERGED delivery into components and a catalogue
 python3 tools/test_submission.py                              # prove the submission checks and ingest still behave
+python3 tools/test_proofs.py                                  # prove the proof tools catch every deliberate fault and reproduce the sample
 python3 tools/gen_all.py --write                              # regenerate rules.json, chunks, llms files, references, MANIFEST.json
 ```
 
@@ -50,6 +56,7 @@ Exit codes of every checker: 0 no REQUIRED failure, 1 at least one REQUIRED fail
   `gen_all.py --write`. `python3 tools/test_sync.py` fails if they differ.
 * To contribute a delivery, fork the repository, build it in a branch of your fork under `deliveries/<slug>/` and open a pull request against
   `main` (`skills/submit-delivery/SKILL.md`). Change only your delivery folder. Acceptance is a merge; ingest runs on merged commits only.
+  Every delivery carries `proofs/` made by `tools/build_proofs.py` (GLB files, validation report, renders); never edit them by hand, rebuild them.
 * Describe requirements as what any consumer needs ("the consumer", "the profile"). Do not name products, vendors or projects, and do
   not claim conformance to or endorsement by any standard or body.
 

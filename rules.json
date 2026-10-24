@@ -1,7 +1,7 @@
 {
  "format": "rules/1",
- "version": "2.2.0",
- "count": 206,
+ "version": "2.3.0",
+ "count": 214,
  "rules": [
   {
    "id": "B-01",
@@ -5291,6 +5291,234 @@
    },
    "related": [],
    "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-79",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Put a proof manifest at `proofs/manifest.json` (format `proofs/1`) that lists every GLB, the GLB validation report and every render with its SHA-256, size and the tool and version that made it, and put nothing else in `proofs/`.",
+   "rationale": "One file must say exactly which models and pictures belong to which source, so that a change after the fact is visible.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-79"
+   },
+   "automated": true,
+   "fix_hint": "Run python3 tools/build_proofs.py deliveries/SLUG; it writes proofs/manifest.json and everything it lists. Delete files in proofs/ that it did not write.",
+   "examples": {
+    "good": "proofs/manifest.json lists 6 GLB files, a report and 14 renders, each with its hash",
+    "bad": "a stray notes.md inside proofs/"
+   },
+   "related": [
+    "X-81",
+    "X-83"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-80",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Make every delivered GLB a valid binary glTF 2 file in metres with Y up, with no external reference, no unused buffer, image or material, finite and unit-length normals, tangents where a normal map is used, named scene-graph nodes, and the node, triangle and texture limits of the profile.",
+   "rationale": "A GLB that is malformed, in another unit or axis, or that points outside itself shows consumers a different building than the IFC file or crashes them.",
+   "how_to_check": {
+    "tool": "tools/validate_glb.py",
+    "command": "python3 tools/validate_glb.py deliveries/SLUG/proofs/glb --profile PROFILE.json --json",
+    "method": "automated: the finding carries rule id X-80"
+   },
+   "automated": true,
+   "fix_hint": "Re-export with python3 tools/export_glb.py (do not edit GLB files by hand), then run python3 tools/validate_glb.py on them and fix what it names; each finding carries a code and a hint.",
+   "examples": {
+    "good": "a GLB in metres, Y up, every buffer used, unit normals",
+    "bad": "a GLB whose image is a file name, or whose triangles exceed limits.maxTriangles"
+   },
+   "related": [
+    "X-81",
+    "X-85"
+   ],
+   "parameters": [
+    "limits.maxTriangles",
+    "budgets.recommendedTriangles",
+    "budgets.maxItemTriangles",
+    "textures.sizesPixels",
+    "proofs.maxGlbNodes",
+    "proofs.maxExtentMetres",
+    "submission.maxFileBytes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-81",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Deliver a GLB of the whole master model and one of every item, covering, fixture, hardware piece, door, window and texture set, each made from the delivered IFC files (their SHA-256 is recorded), together with a validation report that passes and names every GLB by its SHA-256.",
+   "rationale": "The GLB files are what the pictures are made from and what a consumer without an IFC reader opens; they must correspond to the delivered source and be known to be valid.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-81"
+   },
+   "automated": true,
+   "fix_hint": "Run python3 tools/build_proofs.py deliveries/SLUG after the last change to any IFC file, texture set or item; it regenerates the GLB files and the validation report together.",
+   "examples": {
+    "good": "one GLB per item, covering, fixture, door, window and texture set, plus model.glb, and a passing report",
+    "bad": "a new chair added to the IFC file but no GLB for it"
+   },
+   "related": [
+    "X-80",
+    "X-79"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-82",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Include renders that cover every level (a plan), every room kind present (the profile's number of interior views), the outside of the building, and every item, covering, fixture, hardware piece, door, window and texture set (a contact sheet).",
+   "rationale": "A picture set that leaves out a level, a kind of room or a component lets a defect there go unseen.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-82"
+   },
+   "automated": true,
+   "fix_hint": "Run python3 tools/build_proofs.py deliveries/SLUG; it renders the standard set. A room needs a Function property so that its kind is known.",
+   "examples": {
+    "good": "a plan for every level, four views of each room kind, four exterior views, a sheet per component",
+    "bad": "a second level with no plan"
+   },
+   "related": [
+    "X-83"
+   ],
+   "parameters": [
+    "proofs.interiorViewsPerRoom",
+    "proofs.exteriorViews"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-83",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Make every render from a GLB of the delivery and record in the manifest the SHA-256 of that GLB, of the picture itself, its pixel size, the camera and the lighting; each recorded GLB hash must be the hash of the delivered GLB file.",
+   "rationale": "A picture that cannot be traced to the exact model it shows proves nothing about it.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-83"
+   },
+   "automated": true,
+   "fix_hint": "Re-render with python3 tools/build_proofs.py deliveries/SLUG; do not rename, resize or edit the pictures afterwards.",
+   "examples": {
+    "good": "a render whose glb hash is the hash of proofs/glb/model.glb",
+    "bad": "a render made from an earlier version of the model"
+   },
+   "related": [
+    "X-79",
+    "X-81"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-84",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Keep every render within the profile's pixel and file-size limits (`proofs.minRenderWidth`, `proofs.maxRenderPixels`, `proofs.maxRenderBytes`) and the whole `proofs/` folder within `proofs.maxProofBytes`.",
+   "rationale": "Pictures are for looking at on shared machines: a very large one costs every reviewer and a tiny one shows nothing.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-84"
+   },
+   "automated": true,
+   "fix_hint": "Use the default sizes of tools/render.py; lower --scale only within the profile's minimum and raise nothing above its maximum.",
+   "examples": {
+    "good": "1280 by 720 pixels, 60 KiB",
+    "bad": "a 12000 by 8000 pixel render"
+   },
+   "related": [],
+   "parameters": [
+    "proofs.minRenderWidth",
+    "proofs.maxRenderPixels",
+    "proofs.maxRenderBytes",
+    "proofs.maxProofBytes"
+   ],
+   "extension": null
+  },
+  {
+   "id": "X-85",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Keep personal data and local paths out of images and GLB files: renders hold only the image chunks the profile allows, no image holds EXIF, XMP, a colour profile with text or text that names a person, a folder, a host or an address, and no GLB holds a path, an address, an e-mail address or a generator other than the set's.",
+   "rationale": "A file that records who made it, where or on which machine leaks that to everyone who receives the delivery.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-85"
+   },
+   "automated": true,
+   "fix_hint": "Rebuild the proofs with tools/build_proofs.py, which writes images and GLB files without metadata. For your own pictures, re-save them without EXIF, XMP or text chunks.",
+   "examples": {
+    "good": "a PNG with only IHDR, IDAT and IEND chunks",
+    "bad": "a PNG with a tEXt chunk naming a folder on someone's disk"
+   },
+   "related": [
+    "X-77"
+   ],
+   "parameters": [],
+   "extension": null
+  },
+  {
+   "id": "X-86",
+   "level": "required",
+   "applies_to": [
+    "submission"
+   ],
+   "guide": "4 Delivery and Acceptance",
+   "statement": "Make the proofs reproducible: rebuilding the GLB files from the delivered IFC files must give the same bytes, and re-rendering the delivered GLB files must give pictures that differ from the delivered ones by no more than `proofs.renderTolerance`; where the toolchain is not available the check says so and is skipped, not passed.",
+   "rationale": "Proofs that cannot be reproduced cannot be trusted, and a rebuild is the cheapest way to see that the pictures show the model.",
+   "how_to_check": {
+    "tool": "tools/check_proofs.py",
+    "command": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
+    "method": "automated: the finding carries rule id X-86"
+   },
+   "automated": true,
+   "fix_hint": "Run python3 tools/check_proofs.py deliveries/SLUG --reproduce with the pinned requirements (tools/requirements-ci.txt); if the GLB bytes differ, rebuild the proofs with that toolchain.",
+   "examples": {
+    "good": "the rebuilt GLB files are byte-identical and every re-render is within tolerance",
+    "bad": "a render edited after it was made"
+   },
+   "related": [
+    "X-83"
+   ],
+   "parameters": [
+    "proofs.renderTolerance"
+   ],
    "extension": null
   }
  ]

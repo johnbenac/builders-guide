@@ -1,0 +1,9 @@
+{
+  "name": "khronos-glb-validator-pin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pins the Khronos glTF Validator (Apache-2.0) that tools/validate_glb.py --khronos uses. Not vendored: npm ci installs it from the lock file.",
+  "dependencies": {
+    "gltf-validator": "2.0.0-dev.3.10"
+  }
+}

@@ -19,7 +19,8 @@ made to the guides. Contributors use forks, never branches of this repository:
 
 1. Fork the repository.
 2. In a branch of your fork, build the delivery in `deliveries/<slug>/` (`deliveries/README.md`, `08-submissions-and-ingest.md`).
-3. Run `python3 tools/check_all.py deliveries/<slug>` until it exits 0.
+3. Make the proofs (`python3 tools/build_proofs.py deliveries/<slug>`: GLB files, validation report and renders, tied together by `proofs/manifest.json`), refresh the
+   package manifest, and run `python3 tools/check_all.py deliveries/<slug>` until it exits 0.
 4. Open a pull request against `main`, change only your delivery folder, and complete the checklist in the template.
 
 A workflow checks the pull request; the first run of a first-time contributor may wait for a maintainer's approval. Accepted deliveries are
@@ -34,7 +35,8 @@ third-party content. Agents: `skills/submit-delivery/SKILL.md`.
    `MANIFEST.json`).
 2. Regenerate: `python3 tools/gen_all.py --write`.
 3. Run the tests: `python3 tools/test_sync.py`, `python3 tools/selftest.py`, `python3 tools/agent_harness.py` and
-   `python3 tools/test_submission.py` (`pip install -r tools/requirements.txt` first; the last also needs `requirements-preview.txt`).
+   `python3 tools/test_submission.py` and `python3 tools/test_proofs.py` (`pip install -r tools/requirements.txt` first; `test_submission.py` also needs
+   `requirements-preview.txt`, and `test_proofs.py` uses the Khronos glTF Validator when `npm ci --prefix tools/khronos` has been run).
 4. Add a line to `CHANGELOG.md` and follow `VERSIONING.md`.
 
 ## Style

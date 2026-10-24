@@ -23,7 +23,7 @@
    "file": "chunks/readme--for-agents.md",
    "source": "README.md",
    "title": "For agents",
-   "approx_tokens": 308,
+   "approx_tokens": 312,
    "rules": []
   },
   {
@@ -130,7 +130,7 @@
    "file": "chunks/about--submissions.md",
    "source": "ABOUT.md",
    "title": "Submissions",
-   "approx_tokens": 187,
+   "approx_tokens": 293,
    "rules": []
   },
   {
@@ -744,7 +744,7 @@
    "file": "chunks/g4--8-submitting-a-delivery-as-a-pull-request.md",
    "source": "04-delivery-and-acceptance-guide.md",
    "title": "8. Submitting a delivery as a pull request",
-   "approx_tokens": 1093,
+   "approx_tokens": 1034,
    "rules": [
     "X-70",
     "X-71",
@@ -755,6 +755,23 @@
     "X-76",
     "X-77",
     "X-78"
+   ]
+  },
+  {
+   "id": "g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr",
+   "file": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce",
+   "approx_tokens": 1354,
+   "rules": [
+    "X-79",
+    "X-80",
+    "X-81",
+    "X-82",
+    "X-83",
+    "X-84",
+    "X-85",
+    "X-86"
    ]
   },
   {
@@ -894,27 +911,35 @@
    "rules": []
   },
   {
-   "id": "params--introduction-part-1-of-3",
-   "file": "chunks/params--introduction-part-1-of-3.md",
+   "id": "params--introduction-part-1-of-4",
+   "file": "chunks/params--introduction-part-1-of-4.md",
    "source": "07-profile-parameters.md",
-   "title": "Introduction (part 1 of 3)",
+   "title": "Introduction (part 1 of 4)",
    "approx_tokens": 149,
    "rules": []
   },
   {
-   "id": "params--introduction-part-2-of-3",
-   "file": "chunks/params--introduction-part-2-of-3.md",
+   "id": "params--introduction-part-2-of-4",
+   "file": "chunks/params--introduction-part-2-of-4.md",
    "source": "07-profile-parameters.md",
-   "title": "Introduction (part 2 of 3)",
-   "approx_tokens": 1529,
+   "title": "Introduction (part 2 of 4)",
+   "approx_tokens": 1490,
    "rules": []
   },
   {
-   "id": "params--introduction-part-3-of-3",
-   "file": "chunks/params--introduction-part-3-of-3.md",
+   "id": "params--introduction-part-3-of-4",
+   "file": "chunks/params--introduction-part-3-of-4.md",
    "source": "07-profile-parameters.md",
-   "title": "Introduction (part 3 of 3)",
-   "approx_tokens": 1487,
+   "title": "Introduction (part 3 of 4)",
+   "approx_tokens": 1507,
+   "rules": []
+  },
+  {
+   "id": "params--introduction-part-4-of-4",
+   "file": "chunks/params--introduction-part-4-of-4.md",
+   "source": "07-profile-parameters.md",
+   "title": "Introduction (part 4 of 4)",
+   "approx_tokens": 463,
    "rules": []
   },
   {
@@ -938,7 +963,7 @@
    "file": "chunks/sub--introduction.md",
    "source": "08-submissions-and-ingest.md",
    "title": "Introduction",
-   "approx_tokens": 168,
+   "approx_tokens": 178,
    "rules": []
   },
   {
@@ -946,7 +971,7 @@
    "file": "chunks/sub--the-path-of-a-delivery.md",
    "source": "08-submissions-and-ingest.md",
    "title": "The path of a delivery",
-   "approx_tokens": 426,
+   "approx_tokens": 473,
    "rules": []
   },
   {
@@ -954,7 +979,15 @@
    "file": "chunks/sub--what-a-delivery-folder-holds.md",
    "source": "08-submissions-and-ingest.md",
    "title": "What a delivery folder holds",
-   "approx_tokens": 511,
+   "approx_tokens": 545,
+   "rules": []
+  },
+  {
+   "id": "sub--proofs",
+   "file": "chunks/sub--proofs.md",
+   "source": "08-submissions-and-ingest.md",
+   "title": "Proofs",
+   "approx_tokens": 1038,
    "rules": []
   },
   {
@@ -962,7 +995,7 @@
    "file": "chunks/sub--limits.md",
    "source": "08-submissions-and-ingest.md",
    "title": "Limits",
-   "approx_tokens": 161,
+   "approx_tokens": 209,
    "rules": []
   },
   {
@@ -970,7 +1003,7 @@
    "file": "chunks/sub--the-automatic-check.md",
    "source": "08-submissions-and-ingest.md",
    "title": "The automatic check",
-   "approx_tokens": 269,
+   "approx_tokens": 331,
    "rules": []
   },
   {
@@ -978,7 +1011,7 @@
    "file": "chunks/sub--ingest.md",
    "source": "08-submissions-and-ingest.md",
    "title": "Ingest",
-   "approx_tokens": 692,
+   "approx_tokens": 846,
    "rules": []
   },
   {
@@ -986,7 +1019,7 @@
    "file": "chunks/sub--for-agents.md",
    "source": "08-submissions-and-ingest.md",
    "title": "For agents",
-   "approx_tokens": 296,
+   "approx_tokens": 333,
    "rules": []
   },
   {

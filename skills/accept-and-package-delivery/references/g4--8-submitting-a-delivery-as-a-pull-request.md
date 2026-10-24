@@ -28,6 +28,3 @@ hold preview pictures under `previews/`. `python3 tools/check_submission.py deli
 **X-77 · REQUIRED** - Make every file what its name says: PNG and JPEG images that are real images within `submission.maxImagePixels`, GLB files that are binary glTF 2 of the stated length, IFC files that are IFC text files, JSON that parses, text in UTF-8 without NUL bytes or active markup (script, iframe, object, embed). A renamed file can hide content from review and can crash a reader.
 
 **X-78 · RECOMMENDED** - Add at least one preview picture under `previews/` (or `items/<id>/preview.png`) so a reviewer sees the work before opening a model.
-
-Acceptance of a submission is a merge to `main`; see `08-submissions-and-ingest.md` for what happens next. The checks cannot judge quality,
-ownership or taste: a person reviews those, and may decline a delivery that passes every check.

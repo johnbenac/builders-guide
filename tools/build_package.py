@@ -58,6 +58,10 @@ def role_of(rel):
         if name.endswith(".item.json"):
             return "item-description"
         return "item-preview"
+    if rel.startswith("proofs/"):
+        return {"manifest.json": "proof-manifest"}.get(name) if rel == "proofs/manifest.json" else (
+            "proof-glb" if rel.startswith("proofs/glb/") else "proof-render" if rel.startswith("proofs/renders/") else
+            "proof-report" if rel.startswith("proofs/reports/") else "other")
     if rel.startswith("terrain/"):
         if name.endswith(".tif") or name.endswith(".tiff"):
             return "terrain-patch"
@@ -321,7 +325,7 @@ def report(R):
         if lvl == "OFF":
             continue
         fs.append(rpt.finding(rule, "pass" if ok else ("fail" if lvl == "REQUIRED" else "warn"), msg, file=manifest_name(OPTS["root"]), level=lvl))
-    rep = rpt.make_report("build_package.py", "2.2.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
+    rep = rpt.make_report("build_package.py", "2.3.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
     if OPTS["report"]:
         rpt.write(rep, OPTS["report"])
     if OPTS["json"]:
@@ -354,7 +358,7 @@ if __name__ == "__main__":
     elif len(argv) == 2 and argv[0] == "verify":
         OPTS["root"] = argv[1]
         if not os.path.isdir(argv[1]):
-            rep = rpt.make_report("build_package.py", "2.2.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
+            rep = rpt.make_report("build_package.py", "2.3.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
             print(json.dumps(rep, indent=1) if OPTS["json"] else "ERROR input not found: " + argv[1])
             sys.exit(rep["exitCode"])
         verify(argv[1])

@@ -12,6 +12,7 @@
 
 - [ ] `python3 tools/check_all.py deliveries/<slug>` exits 0 (this includes `tools/check_submission.py`).
 - [ ] The reports in the delivery's `reports/` folder were made from the files as submitted.
+- [ ] The proofs in `proofs/` were made by `python3 tools/build_proofs.py deliveries/<slug>` from the files as submitted, and `python3 tools/check_proofs.py deliveries/<slug> --reproduce` passes.
 - [ ] A preview picture is in `previews/` (recommended).
 
 ## Licence and sign-off

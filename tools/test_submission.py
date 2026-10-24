@@ -270,6 +270,12 @@ expect(snap(out) == before and json.loads(p.stdout)["summary"]["blobsNew"] == 0,
 # deduplication across deliveries: the same bytes under another slug and commit add occurrences, not blobs
 d2 = os.path.join(repo, "deliveries", "second-room")
 shutil.copytree(D, d2)
+pm_path = os.path.join(d2, "proofs", "manifest.json")                  # the proofs name their delivery
+pm = json.load(open(pm_path))
+pm["delivery"]["id"] = "second-room"
+with open(pm_path, "w", newline="\n") as fh:
+    json.dump(pm, fh, indent=1, ensure_ascii=True)
+    fh.write("\n")
 doc = json.load(open(os.path.join(d2, "delivery.json")))
 doc["delivery"]["id"] = "second-room"
 doc["submission"]["submitter"]["handle"] = "another-contributor"

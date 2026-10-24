@@ -91,6 +91,11 @@
         "checks": {"type": "array", "items": {"type": "object", "required": ["profile", "tool", "result", "requiredFailures"]}},
         "sources": {"type": "array", "items": {"type": "object", "required": ["path", "role", "sha256", "bytes"], "properties": {"blob": {"$ref": "#/definitions/blobPath"}}}},
         "componentIds": {"type": "array", "items": {"$ref": "#/definitions/componentId"}},
+        "proofs": {"type": "object", "description": "since 2.3.0, when the delivery has proofs: the manifest hash, the result of comparing the contributor's GLB files and renders with a fresh export (ingest stays authoritative; a mismatch is reported, not refused), every render with its blob, and the GLB files",
+                   "required": ["manifest", "compare", "renders", "glb"],
+                   "properties": {"manifest": {"type": "object"}, "compare": {"type": "object"},
+                                  "renders": {"type": "array", "items": {"type": "object", "required": ["path", "sha256", "blob", "kind", "glbSha256"]}},
+                                  "glb": {"type": "array", "items": {"type": "object", "required": ["path", "sha256", "role", "keys"]}}}},
         "components": {"type": "array", "items": {"type": "object", "required": ["id", "kind", "category", "name", "sourcePath"]}},
         "generator": {"$ref": "#/definitions/generator"}
       }

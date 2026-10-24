@@ -3,7 +3,8 @@
 # is read-only, no secret is available to it, and the code under test is never given more than that. Do NOT change the trigger to
 # `pull_request_target`: that would run contributed files with write access and secrets.
 # A first-time contributor's run may wait for a maintainer to approve it (repository setting: "Require approval for first-time
-# contributors"). The result is the job summary of the run, the JSON reports (artifact `delivery-check-reports`) and, for pull requests
+# contributors"). Besides the form and package checks it rebuilds the delivery's proofs (GLB files and renders) on the runner, which has
+# no graphics card: the renderer is a software rasteriser (tools/render.py). The result is the job summary of the run, the JSON reports (artifact `delivery-check-reports`) and, for pull requests
 # from branches of this repository only, a comment (a fork's token cannot write comments).
 name: check-delivery
 
@@ -11,18 +12,19 @@ on:
   pull_request:
     paths:
       - "deliveries/**"
+  workflow_dispatch:        # a maintainer can run the same checks on every delivery of a branch by hand (needs write access to the repository)
 
 permissions:
   contents: read
 
 concurrency:
-  group: check-delivery-${{ github.event.pull_request.number }}
+  group: check-delivery-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -35,12 +37,16 @@ jobs:
           cache-dependency-path: tools/requirements-ci.txt
       - name: Install pinned requirements
         run: python -m pip install -r tools/requirements-ci.txt
+      - name: Install the pinned Khronos glTF Validator
+        # Public package, pinned by tools/khronos/package-lock.json (with its integrity hash); no secret is needed and install scripts are off.
+        run: npm ci --ignore-scripts --no-audit --no-fund --prefix tools/khronos
       - name: Check the changed deliveries
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CI_REQUIRE_KHRONOS: "1"
         run: |
           set +e
-          bash tools/ci/run_checks.sh --base "$BASE_SHA" --out ci-reports
+          bash tools/ci/run_checks.sh ${BASE_SHA:+--base "$BASE_SHA"} --out ci-reports
           status=$?
           cat ci-reports/summary.md >> "$GITHUB_STEP_SUMMARY"
           exit $status

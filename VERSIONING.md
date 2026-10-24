@@ -29,4 +29,4 @@ A delivery's version follows guide 4 (X-30 to X-31). A delivered version is neve
 ## Formats
 
 `profile/1`, `check-report/1`, `rules/1`, `delivery-manifest/1`, `finish-schedule/1`, `item/1`, `material-library/1` and
-`building-metadata/1`, `catalogue-index/1`, `catalogue-delivery/1` and `ingest-handoff/1` are format identifiers. An incompatible change gets a new number (`profile/2`) and a MAJOR release of the set.
+`building-metadata/1`, `catalogue-index/1`, `catalogue-delivery/1`, `ingest-handoff/1` and `proofs/1` are format identifiers. An incompatible change gets a new number (`profile/2`) and a MAJOR release of the set.

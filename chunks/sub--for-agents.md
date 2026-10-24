@@ -8,6 +8,7 @@ gh repo fork UPSTREAM --clone --default-branch-only        # your fork, cloned; 
 cd REPO && git checkout -b delivery-SLUG
 pip install -r tools/requirements.txt
 # build deliveries/SLUG/ (skills/submit-delivery/SKILL.md), then:
+python3 tools/build_proofs.py deliveries/SLUG                         # GLB files, validation report, renders, manifest; then refresh delivery.json
 python3 tools/check_all.py deliveries/SLUG --json --out report.json   # exit 0 required
 git add deliveries/SLUG && git commit -m "feat(deliveries): add SLUG" -m "What it is and what it was checked against."
 git push -u origin delivery-SLUG

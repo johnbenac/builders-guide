@@ -32,7 +32,7 @@ a { color: #1f4e79; text-decoration: none; }
 <body>
 <h1 class="title first" style="border:none">Authoring Guide Set for
 Digital Buildings, Materials and Furniture (IFC)</h1>
-<div class="subtitle">Version 2.2.0, 2026-10-23. Application-neutral
+<div class="subtitle">Version 2.3.0, 2026-10-23. Application-neutral
 guides and tools for outside organisations and their agents.</div>
 <nav id="TOC">
 <ul>
@@ -218,6 +218,7 @@ id="toc-the-path-of-a-delivery">The path of a delivery</a></li>
 <li><a href="#what-a-delivery-folder-holds"
 id="toc-what-a-delivery-folder-holds">What a delivery folder
 holds</a></li>
+<li><a href="#proofs" id="toc-proofs">Proofs</a></li>
 <li><a href="#limits" id="toc-limits">Limits</a></li>
 <li><a href="#the-automatic-check" id="toc-the-automatic-check">The
 automatic check</a></li>
@@ -245,7 +246,7 @@ mini-loop</a></li>
 <h1
 id="authoring-guide-set-for-ifc-buildings-materials-and-furniture">Authoring
 Guide Set for IFC Buildings, Materials and Furniture</h1>
-<p>Version 2.2.0 (2026-10-23). Application-neutral guides, rules,
+<p>Version 2.3.0 (2026-10-23). Application-neutral guides, rules,
 checkers and examples for people and software agents who create digital
 buildings, finishes, wall coverings and furniture in the IFC
 building-data format, so that their work can be used by many different
@@ -323,8 +324,8 @@ purpose and tags</td>
 <tr class="even">
 <td><code>schemas/</code></td>
 <td>JSON Schemas: profile, rules, checker report, delivery manifest,
-submission block, catalogue, material library, furniture item, building
-summary, finish schedule</td>
+submission block, proof manifest, catalogue, material library, furniture
+item, building summary, finish schedule</td>
 </tr>
 </tbody>
 </table>
@@ -502,21 +503,21 @@ it</td>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>builders-guide-2.2.0.pdf</code></td>
+<td><code>builders-guide-2.3.0.pdf</code></td>
 <td>all guides, the worked example, the submissions page and the rules
 index in one document</td>
 </tr>
 <tr class="even">
-<td><code>builders-guide-2.2.0.html</code></td>
+<td><code>builders-guide-2.3.0.html</code></td>
 <td>the same, as one web page</td>
 </tr>
 <tr class="odd">
-<td><code>builders-guide-2.2.0.zip</code></td>
+<td><code>builders-guide-2.3.0.zip</code></td>
 <td>the whole set, with <code>MANIFEST.sha256</code></td>
 </tr>
 <tr class="even">
 <td><code>SHA256SUMS.txt</code>,
-<code>builders-guide-2.2.0.zip.sha256</code></td>
+<code>builders-guide-2.3.0.zip.sha256</code></td>
 <td>SHA-256 of the three files above</td>
 </tr>
 </tbody>
@@ -552,7 +553,7 @@ you which skill to load.</li>
 <code>skills/accept-and-package-delivery</code>,
 <code>skills/submit-delivery</code>. Each skill points to small files
 under its <code>references/</code> for detail.</li>
-<li>Rules are in <code>rules.json</code> (206, stable ids like
+<li>Rules are in <code>rules.json</code> (214, stable ids like
 <code>B-41</code>). Each has a default <code>level</code>,
 <code>statement</code>, <code>rationale</code>, <code>parameters</code>,
 <code>extension</code>, <code>how_to_check</code>,
@@ -589,10 +590,22 @@ python3 tools/agent_harness.py                                # prove a fresh ag
     only this set, under two profiles
 python3 tools/check_submission.py deliveries/SLUG --json      # form checks of a submitted delivery
     (X-70 to X-78); check_all.py runs them too
+python3 tools/build_proofs.py deliveries/SLUG                 # GLB exports, validation report,
+    standard renders and proofs/manifest.json (X-79 to X-86)
+python3 tools/check_proofs.py deliveries/SLUG --reproduce     # check the proofs, rebuild them and
+    compare (needs ifcopenshell, numpy, pillow, shapely)
+python3 tools/export_glb.py DELIVERY_OR.ifc --out DIR         # IFC to GLB, whole model and every
+    component
+python3 tools/validate_glb.py DIR_OR.glb --json               # structure and convention checks of
+    GLB files (X-80)
+python3 tools/render.py GLB_DIR --out DIR                     # headless deterministic renders:
+    plans, interiors, exteriors, contact sheets
 python3 tools/ingest.py deliveries/SLUG --commit HASH --out OUT --dry-run   # maintainers: split a
     MERGED delivery into components and a catalogue
 python3 tools/test_submission.py                              # prove the submission checks and
     ingest still behave
+python3 tools/test_proofs.py                                  # prove the proof tools catch every
+    deliberate fault and reproduce the sample
 python3 tools/gen_all.py --write                              # regenerate rules.json, chunks, llms
     files, references, MANIFEST.json</code></pre>
 <p>Exit codes of every checker: 0 no REQUIRED failure, 1 at least one
@@ -620,7 +633,9 @@ of your fork under <code>deliveries/&lt;slug&gt;/</code> and open a pull
 request against <code>main</code>
 (<code>skills/submit-delivery/SKILL.md</code>). Change only your
 delivery folder. Acceptance is a merge; ingest runs on merged commits
-only.</li>
+only. Every delivery carries <code>proofs/</code> made by
+<code>tools/build_proofs.py</code> (GLB files, validation report,
+renders); never edit them by hand, rebuild them.</li>
 <li>Describe requirements as what any consumer needs ("the consumer",
 "the profile"). Do not name products, vendors or projects, and do not
 claim conformance to or endorsement by any standard or body.</li>
@@ -3081,6 +3096,92 @@ can crash a reader.</p>
 picture under <code>previews/</code> (or
 <code>items/&lt;id&gt;/preview.png</code>) so a reviewer sees the work
 before opening a model.</p>
+<h3 id="81-proofs-models-and-pictures-that-anyone-can-reproduce">8.1
+Proofs: models and pictures that anyone can reproduce</h3>
+<p>A reviewer should not have to open a modelling program to see what a
+delivery is. Every submitted delivery therefore carries
+<strong>proofs</strong> in <code>proofs/</code>: binary glTF (GLB)
+exports of the whole model and of every component, a validation report
+for those exports, and a standard set of rendered pictures, all tied
+together by <code>proofs/manifest.json</code>
+(<code>schemas/proofs.schema.json</code>, format <code>proofs/1</code>).
+One command makes them:
+<code>python3 tools/build_proofs.py deliveries/&lt;slug&gt;</code>
+(export with <code>tools/export_glb.py</code>, validation with
+<code>tools/validate_glb.py</code>, pictures with
+<code>tools/render.py</code>);
+<code>python3 tools/check_proofs.py deliveries/&lt;slug&gt; --reproduce</code>
+checks them and rebuilds them to compare. Everything runs without a
+graphics card or a display, so the same files come out on a laptop and
+on a build server. The limits are the <code>proofs</code> group of the
+profile (<code>07-profile-parameters.md</code>); the numbers below are
+the defaults.</p>
+<p>The GLB files use metres and Y up: a point of the IFC frame (Z up)
+becomes <code>(x, y, z) -&gt; (x, z, -y)</code>. Colours become PBR
+metallic-roughness materials; a texture set becomes a swatch with its
+maps embedded. The pictures use fixed lighting and a fixed background
+and are always made from the delivered GLB files, never from anything
+else: a plan per level (cut at 1.2 m above the floor), four interior
+views for each room kind that is present, four exterior views, and for
+every component a contact sheet of turntable frames (a swatch view for a
+texture set).</p>
+<p><strong>X-79 · REQUIRED</strong> - Put a proof manifest at
+<code>proofs/manifest.json</code> (format <code>proofs/1</code>) that
+lists every GLB, the GLB validation report and every render with its
+SHA-256, size and the tool and version that made it, and put nothing
+else in <code>proofs/</code>. A reviewer, a catalogue and the intake
+tool need one file that says exactly which models and pictures belong to
+which source, and a way to see that none was changed afterwards.</p>
+<p><strong>X-80 · REQUIRED</strong> - Make every delivered GLB a valid
+binary glTF 2 file in metres with Y up, with no external reference, no
+unused buffer, image or material, finite and unit-length normals,
+tangents where a normal map is used, named scene-graph nodes, and the
+node, triangle and texture limits of the profile. A GLB that is
+malformed, in another unit or axis, or that points outside itself shows
+a consumer a different building than the IFC file does, or crashes
+it.</p>
+<p><strong>X-81 · REQUIRED</strong> - Deliver a GLB of the whole master
+model and one of every item, covering, fixture, hardware piece, door,
+window and texture set, each made from the delivered IFC files (their
+SHA-256 is recorded), together with a validation report that passes and
+names every GLB by its SHA-256. The GLB files are what the pictures are
+made from and what a consumer without an IFC reader opens, so they must
+correspond to the delivered source and be known to be valid.</p>
+<p><strong>X-82 · REQUIRED</strong> - Include renders that cover every
+level (a plan), every room kind present (the profile's number of
+interior views), the outside of the building, and every item, covering,
+fixture, hardware piece, door, window and texture set (a contact sheet).
+A picture set that leaves out a level, a kind of room or a component
+lets a defect there go unseen.</p>
+<p><strong>X-83 · REQUIRED</strong> - Make every render from a GLB of
+the delivery and record in the manifest the SHA-256 of that GLB, of the
+picture itself, its pixel size, the camera and the lighting; each
+recorded GLB hash must be the hash of the delivered GLB file. A picture
+that cannot be traced to the exact model it shows proves nothing about
+it.</p>
+<p><strong>X-84 · REQUIRED</strong> - Keep every render within the
+profile's pixel and file-size limits
+(<code>proofs.minRenderWidth</code>,
+<code>proofs.maxRenderPixels</code>, <code>proofs.maxRenderBytes</code>)
+and the whole <code>proofs/</code> folder within
+<code>proofs.maxProofBytes</code>. Pictures are for looking at on shared
+machines; a very large one costs every reviewer, and a tiny one shows
+nothing.</p>
+<p><strong>X-85 · REQUIRED</strong> - Keep personal data and local paths
+out of images and GLB files: renders hold only the image chunks the
+profile allows, no image holds EXIF, XMP, a colour profile with text or
+text that names a person, a folder, a host or an address, and no GLB
+holds a path, an address, an e-mail address or a generator other than
+the set's. A file that records who made it, where, or on which machine
+leaks that to everyone who receives the delivery.</p>
+<p><strong>X-86 · REQUIRED</strong> - Make the proofs reproducible:
+rebuilding the GLB files from the delivered IFC files must give the same
+bytes, and re-rendering the delivered GLB files must give pictures that
+differ from the delivered ones by no more than
+<code>proofs.renderTolerance</code>; where the toolchain is not
+available the check says so and is skipped, not passed. Proofs that
+cannot be reproduced cannot be trusted, and a rebuild is the cheapest
+way to see that the pictures do show the model.</p>
 <p>Acceptance of a submission is a merge to <code>main</code>; see
 <code>08-submissions-and-ingest.md</code> for what happens next. The
 checks cannot judge quality, ownership or taste: a person reviews those,
@@ -3505,8 +3606,8 @@ furniture, materials, fixtures and hardware. A delivery is reviewed as a
 pull request. When the maintainers merge it, a separate tool turns the
 accepted delivery into separate, content-addressed component assets and
 a neutral catalogue. This page is for people and for software agents;
-the rules the automatic checks enforce are X-70 to X-78 in guide 4,
-section 8.</p>
+the rules the automatic checks enforce are X-70 to X-86 in guide 4,
+section 8 (X-79 to X-86 are the proofs, below).</p>
 <h2 id="the-path-of-a-delivery">The path of a delivery</h2>
 <ol type="1">
 <li><strong>Fork</strong> this repository (your own copy on the hosting
@@ -3517,11 +3618,15 @@ letters, digits and single hyphens, for example <code>oak-study</code>.
 Follow guides 1 to 4 and the worked example (guide 5);
 <code>deliveries/example-room/</code> is a small accepted-looking
 delivery to copy from.</li>
-<li><strong>Check</strong> it yourself:
+<li><strong>Make the proofs</strong>
+(<code>python3 tools/build_proofs.py deliveries/&lt;slug&gt;</code>, see
+"Proofs" below), refresh the manifest, then <strong>check</strong> it
+yourself:
 <code>python3 tools/check_all.py deliveries/&lt;slug&gt; --json</code>
-must exit 0 (this also runs <code>tools/check_submission.py</code>).
+must exit 0 (this also runs <code>tools/check_submission.py</code> and
+<code>tools/check_proofs.py</code>).
 <code>tools/ci/run_checks.sh &lt;slug&gt;</code> runs exactly what the
-automatic check runs.</li>
+automatic check runs, including the rebuild of the proofs.</li>
 <li><strong>Open a pull request</strong> from your branch against
 <code>main</code>. Fill in the checklist in the pull request
 template.</li>
@@ -3555,6 +3660,8 @@ differences:</p>
     &lt;itemId&gt;.item.json
   finishes/                finish schedule, library.json and textures/&lt;set&gt;/ (guide 2)
   previews/                pictures of the work (png or jpg) so a reviewer sees it first
+  proofs/                  GLB exports, their validation report, the standard renders and
+    manifest.json (made by tools/build_proofs.py)
   reports/ notes/ tables/  the check reports, the change notes and the room table, as in guide 4</code></pre>
 <p><code>delivery.json</code> is built with
 <code>python3 tools/build_package.py init DIR meta.json --manifest-name delivery.json</code>;
@@ -3605,15 +3712,88 @@ library)</td>
 states CC0. By opening the pull request the contributor attests that
 they own the work or may license it, and that it contains no restricted
 third-party content (X-22, X-76).</p>
+<h2 id="proofs">Proofs</h2>
+<p>Every submitted delivery carries <strong>proofs</strong>: models and
+pictures that anyone can look at without a modelling program, and
+rebuild to see that they are honest.
+<code>python3 tools/build_proofs.py deliveries/&lt;slug&gt;</code> makes
+all of them from the delivered files, in three steps, and writes
+<code>proofs/manifest.json</code>
+(<code>schemas/proofs.schema.json</code>, format
+<code>proofs/1</code>):</p>
+<ol type="1">
+<li><strong>Export</strong> (<code>tools/export_glb.py</code>):
+<code>proofs/glb/model.glb</code> (the whole master IFC as a scene
+graph: <code>model</code> &gt; <code>level:&lt;name&gt;</code> &gt;
+<code>&lt;kind&gt;:&lt;name&gt;#&lt;GlobalId&gt;</code>),
+<code>proofs/glb/components/*.glb</code> (one per item and per furniture
+element, covering, fixture or luminaire assembly, hardware piece, door
+and window, exactly the GLB <code>ingest.py</code> stores for it) and
+<code>proofs/glb/materials/*.glb</code> (a 2 x 2 swatch of each texture
+set with its maps embedded). Units are metres and the axes are Y up: an
+IFC point (x, y, z) becomes (x, z, -y). Colours are PBR
+metallic-roughness materials. The files are deterministic and hold no
+path, time, user or host.</li>
+<li><strong>Validate</strong> (<code>tools/validate_glb.py</code>):
+structure (container, indices, accessors, images, materials, scene
+graph, nothing unused, no URI), conventions (units and axis note,
+generator, size, unit-length normals, tangents with a normal map, node
+names), the profile's budgets, and with <code>--ifc</code> each
+product's bounding box against the IFC file. The Khronos glTF Validator
+(Apache-2.0, pinned in <code>tools/khronos/package-lock.json</code>,
+<code>npm ci --prefix tools/khronos</code>) is run as well when it is
+installed. The report is <code>proofs/reports/glb-validation.json</code>
+(<code>check-report/1</code>, rule X-80).</li>
+<li><strong>Render</strong> (<code>tools/render.py</code>), from the GLB
+files only: a plan for each level (cut at 1.2 m), four interior views
+for each room kind present (kind = the room's <code>Function</code>
+property; the first two rooms of a kind by identifier), four exterior
+views, and a contact sheet of eight turntable frames for every component
+(four fixed frames for a texture swatch).</li>
+</ol>
+<p>The renderer is a software rasteriser in numpy (about 400 lines): no
+graphics card, display, browser or system library, so the same GLB gives
+the same picture on a laptop and on a hosted runner. It draws
+flat-shaded triangles with a z-buffer, 2 x 2 supersampled, with base
+colours and the base colour texture; it does not draw normal maps,
+metal, roughness, shadows or reflections. The lighting, background,
+camera and sizes are fixed conventions, recorded for every picture
+(<code>tools/render.py</code> states them). A headless browser with a
+bundled viewer library, or Blender, would draw nicer pictures, but they
+depend on a graphics stack that differs between machines, so the same
+file would not give the same picture; the choice favours reproducibility
+over beauty. (Tried while choosing: headless Chromium with software
+WebGL runs here and repeats itself on one machine, but needs a browser,
+a vendored viewer library of some hundreds of kilobytes, and gives
+pixels that depend on the browser and graphics-layer build; Blender is
+optional high-quality software that is far larger than this repository
+and, with a graphics card, differs from machine to machine.) The
+manifest records, for every GLB, its SHA-256, size and source IFC hash,
+and for every picture its path, SHA-256, pixel size, camera, light, the
+hash of the GLB it was made from and the tool and version.</p>
+<p><code>python3 tools/check_proofs.py deliveries/&lt;slug&gt;</code>
+checks the manifest against the files (X-79), the GLB files against
+their sources and the validation report (X-81, X-80), the coverage of
+the pictures (X-82), the traceability of each picture to a delivered GLB
+(X-83), the size limits (X-84) and the metadata of every image and GLB
+(X-85); with <code>--reproduce</code> it also rebuilds the GLB files,
+compares the bytes, re-renders every picture from the delivered GLB and
+compares it within <code>proofs.renderTolerance</code> (X-86). Where the
+toolchain is not available it says so (an <code>info</code> finding) and
+skips; it never reports a skipped check as passed. Make the proofs again
+after any change to an IFC file, item or texture set.</p>
 <h2 id="limits">Limits</h2>
-<p>Defaults, all parameters of the profile (<code>submission</code>
-group, see <code>07-profile-parameters.md</code>): at most 200 files, 25
-MiB per file, 100 MiB per delivery; file types ifc, glb, png, jpg, json,
-md, csv and txt only (csv and txt exist because the room table and
-<code>SHA256SUMS.txt</code> need them); no program, script, archive or
-executable file mode; no symbolic links; relative, portable, case-unique
-paths of at most 200 characters; images of at most 64 million pixels. A
-consumer that accepts submissions can set other values in its own
+<p>Defaults, all parameters of the profile (<code>submission</code> and
+<code>proofs</code> groups, see <code>07-profile-parameters.md</code>):
+at most 600 files (proofs add a GLB and a sheet for every component; it
+was 200 before 2.3.0), 25 MiB per file, 100 MiB per delivery; file types
+ifc, glb, png, jpg, json, md, csv and txt only (csv and txt exist
+because the room table and <code>SHA256SUMS.txt</code> need them); no
+program, script, archive or executable file mode; no symbolic links;
+relative, portable, case-unique paths of at most 200 characters; images
+of at most 64 million pixels; renders of at least 256 and at most about
+2 million pixels and 3 MiB, and <code>proofs/</code> of at most 64 MiB.
+A consumer that accepts submissions can set other values in its own
 profile.</p>
 <h2 id="the-automatic-check">The automatic check</h2>
 <p><code>.github/workflows/check-delivery.yml</code> (a copy of the same
@@ -3624,9 +3804,13 @@ steps without any workflow system is
 runs <code>check_submission.py</code> and <code>check_all.py</code>
 under <code>profiles/default.json</code>, and again under
 <code>profiles/&lt;name&gt;.json</code> when <code>delivery.json</code>
-names a profile that exists there. It uploads the JSON reports as an
-artifact, writes a summary to the run, and fails on any REQUIRED
-finding.</p>
+names a profile that exists there; once under the default profile it
+also runs <code>check_proofs.py --reproduce</code> (it rebuilds the
+proofs on the runner, which has no graphics card) and
+<code>validate_glb.py</code> with the pinned Khronos glTF Validator
+(installed by <code>npm ci</code>, no secret needed). It uploads the
+JSON reports as an artifact, writes a summary to the run, and fails on
+any REQUIRED finding.</p>
 <p>Pull requests from forks run with a read-only token and no secrets,
 and the workflow never uses <code>pull_request_target</code>. A
 first-time contributor's run may wait until a maintainer approves it. A
@@ -3644,7 +3828,8 @@ else). It never uploads and uses no network. In order, it:</p>
 time limit (<code>submission.ingestMaxSeconds</code>) and an optional
 memory limit;</li>
 <li>re-runs <code>check_submission.py</code> and
-<code>check_all.py</code> on the copy, and refuses on any REQUIRED
+<code>check_all.py</code> on the copy (the latter includes the
+stored-file checks of the proofs), and refuses on any REQUIRED
 finding;</li>
 <li>splits the delivery into <strong>components</strong>: each item
 under <code>items/</code>; from the master IFC each furniture element,
@@ -3657,6 +3842,13 @@ Y up) and reads it back to verify it;</li>
 <code>blobs/sha256/&lt;hash&gt;.&lt;ext&gt;</code>; identical bytes (for
 example a table in <code>items/</code> and the same table in the master,
 or the same part in two deliveries) are stored once;</li>
+<li>compares the contributor's proofs with a fresh export from the
+delivered files (GLB hashes, render hashes, and that every component GLB
+of the ingest is among the proofs) and reports any mismatch in the
+result; the ingest result stays authoritative and nothing is refused for
+it. Each component links the contact sheet of its GLB
+(<code>proof-render</code> file), and the delivery record lists every
+render and the GLB files;</li>
 <li>writes <code>catalogue/index.json</code> (one entry per distinct
 component, with every occurrence),
 <code>catalogue/deliveries/&lt;slug&gt;@&lt;commit12&gt;.json</code> and
@@ -3678,8 +3870,10 @@ what the output folder already holds, and writes nothing.</p>
 with their files, licences and submitters. Publishing them anywhere is a
 separate step owned by whoever runs the catalogue; this repository
 defines no destination.</p>
-<p>Limits of this version: components from the master IFC are exported
-as GLB only (no per-component IFC file; item components also keep their
+<p>Limits of this version: the renders show base colours and one texture
+(no normal maps, metal or roughness); a texture set is shown as a
+swatch, not on a wall; components from the master IFC are exported as
+GLB only (no per-component IFC file; item components also keep their
 source IFC); walls, slabs, stairs and roofs are not components, only
 furnishing, coverings, fixtures, hardware, doors and windows; rotations
 are recorded as an angle about the vertical axis; textures are carried
@@ -3693,6 +3887,8 @@ contribute to.</p>
 cd REPO &amp;&amp; git checkout -b delivery-SLUG
 pip install -r tools/requirements.txt
 # build deliveries/SLUG/ (skills/submit-delivery/SKILL.md), then:
+python3 tools/build_proofs.py deliveries/SLUG                         # GLB files, validation
+    report, renders, manifest; then refresh delivery.json
 python3 tools/check_all.py deliveries/SLUG --json --out report.json   # exit 0 required
 git add deliveries/SLUG &amp;&amp; git commit -m &quot;feat(deliveries): add SLUG&quot; -m &quot;What it is and what it was
     checked against.&quot;
@@ -3844,7 +4040,7 @@ deliver.</p>
 <code>tools/rules_index.py</code>; do not edit by hand.</p>
 <p>The same rules, with machine fields, are in
 <code>rules.json</code>.</p>
-<p><strong>206 rules: 67 REQUIRED and 139 RECOMMENDED.</strong></p>
+<p><strong>214 rules: 75 REQUIRED and 139 RECOMMENDED.</strong></p>
 <table>
 <thead>
 <tr class="header">
@@ -3875,15 +4071,15 @@ deliver.</p>
 </tr>
 <tr class="even">
 <td>4 Delivery and Acceptance</td>
-<td style="text-align: right;">18</td>
+<td style="text-align: right;">26</td>
 <td style="text-align: right;">9</td>
-<td style="text-align: right;">27</td>
+<td style="text-align: right;">35</td>
 </tr>
 <tr class="odd">
 <td><strong>All</strong></td>
-<td style="text-align: right;"><strong>67</strong></td>
+<td style="text-align: right;"><strong>75</strong></td>
 <td style="text-align: right;"><strong>139</strong></td>
-<td style="text-align: right;"><strong>206</strong></td>
+<td style="text-align: right;"><strong>214</strong></td>
 </tr>
 </tbody>
 </table>
@@ -5551,6 +5747,84 @@ markup (script, iframe, object, embed).</td>
 <td>Add at least one preview picture under <code>previews/</code> (or
 <code>items/&lt;id&gt;/preview.png</code>) so a reviewer sees the work
 before opening a model.</td>
+</tr>
+<tr class="odd">
+<td>X-79</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Put a proof manifest at <code>proofs/manifest.json</code> (format
+<code>proofs/1</code>) that lists every GLB, the GLB validation report
+and every render with its SHA-256, size and the tool and version that
+made it, and put nothing else in <code>proofs/</code>.</td>
+</tr>
+<tr class="even">
+<td>X-80</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Make every delivered GLB a valid binary glTF 2 file in metres with Y
+up, with no external reference, no unused buffer, image or material,
+finite and unit-length normals, tangents where a normal map is used,
+named scene-graph nodes, and the node, triangle and texture limits of
+the profile.</td>
+</tr>
+<tr class="odd">
+<td>X-81</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Deliver a GLB of the whole master model and one of every item,
+covering, fixture, hardware piece, door, window and texture set, each
+made from the delivered IFC files (their SHA-256 is recorded), together
+with a validation report that passes and names every GLB by its
+SHA-256.</td>
+</tr>
+<tr class="even">
+<td>X-82</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Include renders that cover every level (a plan), every room kind
+present (the profile's number of interior views), the outside of the
+building, and every item, covering, fixture, hardware piece, door,
+window and texture set (a contact sheet).</td>
+</tr>
+<tr class="odd">
+<td>X-83</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Make every render from a GLB of the delivery and record in the
+manifest the SHA-256 of that GLB, of the picture itself, its pixel size,
+the camera and the lighting; each recorded GLB hash must be the hash of
+the delivered GLB file.</td>
+</tr>
+<tr class="even">
+<td>X-84</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Keep every render within the profile's pixel and file-size limits
+(<code>proofs.minRenderWidth</code>,
+<code>proofs.maxRenderPixels</code>, <code>proofs.maxRenderBytes</code>)
+and the whole <code>proofs/</code> folder within
+<code>proofs.maxProofBytes</code>.</td>
+</tr>
+<tr class="odd">
+<td>X-85</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Keep personal data and local paths out of images and GLB files:
+renders hold only the image chunks the profile allows, no image holds
+EXIF, XMP, a colour profile with text or text that names a person, a
+folder, a host or an address, and no GLB holds a path, an address, an
+e-mail address or a generator other than the set's.</td>
+</tr>
+<tr class="even">
+<td>X-86</td>
+<td>REQUIRED</td>
+<td>4</td>
+<td>Make the proofs reproducible: rebuilding the GLB files from the
+delivered IFC files must give the same bytes, and re-rendering the
+delivered GLB files must give pictures that differ from the delivered
+ones by no more than <code>proofs.renderTolerance</code>; where the
+toolchain is not available the check says so and is skipped, not
+passed.</td>
 </tr>
 </tbody>
 </table>

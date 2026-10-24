@@ -6,7 +6,8 @@
 
 Runs tools/run_example.py in a temporary folder, then turns its package into a submission: the manifest becomes `delivery.json`
 with a `submission` block, licences become CC BY 4.0, a preview picture is drawn with tools/preview.py (needs
-tools/requirements-preview.txt), and `notes/open-points.md` is added. The output is deterministic. Refuses to overwrite an existing
+tools/requirements-preview.txt), `notes/open-points.md` is added, and the proofs (GLB files, validation report, renders and manifest) are
+built with tools/build_proofs.py. The output is deterministic. Refuses to overwrite an existing
 delivery folder.
 """
 import json
@@ -60,7 +61,7 @@ def main():
             "submitter": {"handle": "example-contributor"},
             "licence": "CC-BY-4.0",
             "profile": meta["profile"],
-            "toolVersions": {"authoring-guide-set": "2.2.0", "ifcopenshell": __import__("ifcopenshell").version},
+            "toolVersions": {"authoring-guide-set": "2.3.0", "ifcopenshell": __import__("ifcopenshell").version},
             "attestation": {"ownWork": True, "mayLicense": True, "noRestrictedContent": True}}
         mp = os.path.join(tmp, "meta.json")
         with open(mp, "w", encoding="utf-8", newline="\n") as fh:
@@ -71,6 +72,11 @@ def main():
         py("build_package.py", "init", pkg, mp, "--manifest-name", "delivery.json")
         os.makedirs(dest_root, exist_ok=True)
         shutil.copytree(pkg, dest)
+        # the proofs are made in the final folder (their manifest names the delivery by its folder), then the package manifest is written again
+        r = subprocess.run([sys.executable, os.path.join(HERE, "build_proofs.py"), dest], capture_output=True, text=True)
+        if r.returncode:
+            sys.exit("FAILED build_proofs.py\n%s%s" % (r.stdout[-800:], r.stderr[-800:]))
+        py("build_package.py", "init", dest, mp, "--manifest-name", "delivery.json")
     print("wrote", dest)
 
 

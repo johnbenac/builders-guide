@@ -91,7 +91,8 @@ except Exception as exc:
 
 # 3 automation honesty
 tools = {"check_ifc": "tools/check_ifc.py", "check_texture_set": "tools/check_texture_set.py", "check_item": "tools/check_item.py",
-         "build_package": "tools/build_package.py", "check_submission": "tools/check_submission.py"}
+         "build_package": "tools/build_package.py", "check_submission": "tools/check_submission.py",
+         "validate_glb": "tools/validate_glb.py", "check_proofs": "tools/check_proofs.py"}
 emitted = {}
 for name, rel in tools.items():
     src = load(rel)

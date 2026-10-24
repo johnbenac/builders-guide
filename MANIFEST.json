@@ -1,16 +1,30 @@
 {
  "format": "set-manifest/1",
- "version": "2.2.0",
+ "version": "2.3.0",
  "note": "Every file of the set (the list is tools/fileset.py) except dist/ and MANIFEST.sha256 (see MANIFEST.sha256 and dist/SHA256SUMS.txt).",
  "files": [
+  {
+   "path": ".commitlintrc.cjs",
+   "purpose": "supporting file",
+   "tags": [],
+   "sha256": "c575482199cdd7c58534f9f5ec5dbae462823cad39a544f89f59a3cd95da966c",
+   "bytes": 5585
+  },
   {
    "path": ".gitignore",
    "purpose": "version control ignore list",
    "tags": [
     "config"
    ],
-   "sha256": "0287d084496b9ec19238ab473389df5c1a2ed9c1f5114246b8d08c8ca0eccb27",
-   "bytes": 25
+   "sha256": "98ba6feee40233da7b7fdf5d13b88ff1114fda140b7568aaeea6d71c50c7be38",
+   "bytes": 53
+  },
+  {
+   "path": ".gitlint",
+   "purpose": "supporting file",
+   "tags": [],
+   "sha256": "c0cfd33785e2a17ec40f92e6cb24deef81be47133d42adef198fd84091445cf0",
+   "bytes": 506
   },
   {
    "path": "01-builders-and-architects-guide.md",
@@ -49,8 +63,8 @@
     "guide",
     "human"
    ],
-   "sha256": "ea4fede00b24c4c35c7008f623101c028434f070673c3c3aaf9abe95e34c3a7b",
-   "bytes": 23877
+   "sha256": "b858f48a4e2a35d20681dd86814474550019aafb8049bf1589d0e9b64c1fa89a",
+   "bytes": 28788
   },
   {
    "path": "05-worked-example.md",
@@ -69,8 +83,8 @@
     "rules",
     "generated"
    ],
-   "sha256": "ed8614cd32b3958a54e00795990db15df7c62cc9ed5783ff3caf1dd02e15b838",
-   "bytes": 36155
+   "sha256": "4f1341fb6091bc1f98f395c29fa1eea754bcf28276538176892d9f87015c305c",
+   "bytes": 38496
   },
   {
    "path": "07-profile-parameters.md",
@@ -79,8 +93,8 @@
     "profile",
     "generated"
    ],
-   "sha256": "766c5892bd8c41f53e2f0c00e411b37577ccbc5dd5530196cf0bc876d67801df",
-   "bytes": 12997
+   "sha256": "332e53dc582937e4682ae54f2edf70ddbb33e7e2dbc7ae638b5a1cacee834375",
+   "bytes": 14566
   },
   {
    "path": "08-submissions-and-ingest.md",
@@ -90,8 +104,8 @@
     "human",
     "submission"
    ],
-   "sha256": "63c0592dc362110ce50db2e60283904303e39ae244b9cf85d48f1d0237143dd4",
-   "bytes": 9312
+   "sha256": "bd5a10576b1cb9c7aa90bb8cca54603652f84a299f2385adaa9eab630b5fd73f",
+   "bytes": 14933
   },
   {
    "path": "ABOUT.md",
@@ -100,8 +114,8 @@
     "entry",
     "human"
    ],
-   "sha256": "6cb86724611b6ba367db9c000bc8aa6c1dd2bd8bb3f5d29e23f53054bccf10d3",
-   "bytes": 4360
+   "sha256": "d7dcb7fbb62c8f2c09fde9a5efa3c5a5b4d14aa283b754d20189340238896d6c",
+   "bytes": 4784
   },
   {
    "path": "AGENTS.md",
@@ -110,8 +124,8 @@
     "entry",
     "agent"
    ],
-   "sha256": "a704ba821c43ebb5933c087b1d4db5e8daf395dea090231d1cf5eb5f3971d903",
-   "bytes": 5196
+   "sha256": "15d6543dab6ef1bbc434f87f5605125a9887243e6b5d4bc7bc939009dab08a9f",
+   "bytes": 6152
   },
   {
    "path": "CHANGELOG.md",
@@ -120,8 +134,8 @@
     "policy",
     "human"
    ],
-   "sha256": "966f87a6882050952662d159d705dd593abe8f0cbbb6f130e72b2976b4d0a1e0",
-   "bytes": 10668
+   "sha256": "8638e12039bf46fa338328000dc913ec003f2f14da890c035fab77251868aa4d",
+   "bytes": 14763
   },
   {
    "path": "CONTRIBUTING.md",
@@ -130,8 +144,8 @@
     "policy",
     "human"
    ],
-   "sha256": "a21f29b20068fc1f290116e01871d5c7b706dde2062c6187c410e0eee8d30923",
-   "bytes": 3333
+   "sha256": "e2a3f07b27ca7a03d8cfad122181f7034ee9411134bcfb4674bd33803fc177a7",
+   "bytes": 3676
   },
   {
    "path": "LICENSE.md",
@@ -150,8 +164,8 @@
     "entry",
     "human"
    ],
-   "sha256": "93e2b8bee93e6b5aced7c2f736e82414e515b6f8029c2ed3136fc7cbf0059c41",
-   "bytes": 7887
+   "sha256": "f95f23244ea36fbb77fb9e711a29b865268780ad324f5d0d8657a3966501b81a",
+   "bytes": 7903
   },
   {
    "path": "REPAIR-LOOP.md",
@@ -170,8 +184,8 @@
     "policy",
     "human"
    ],
-   "sha256": "05f15ca10b8adf233278abf25f975b554345ee3a203f69cdf1e35aa9eba2d703",
-   "bytes": 2288
+   "sha256": "fa5d1112e0ed5078d6fc3f8aa4fc3b9306b7fc3f43b7dc49bebf0690e221c7ee",
+   "bytes": 2300
   },
   {
    "path": "chunks/about--how-a-consumer-adopts-it.md",
@@ -214,8 +228,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "1afd8bd1990371a94b5abd2d719a2c0889f3adb5a58638dd35b275ede838edc5",
-   "bytes": 746
+   "sha256": "968095ca6e81d6ce16c514cb8215517e10dd2442f71aa1594b7a35715390da1d",
+   "bytes": 1170
   },
   {
    "path": "chunks/about--what-it-does-not-do.md",
@@ -746,6 +760,17 @@
    "bytes": 3103
   },
   {
+   "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "5eb62815bb8adfebfedb4f41f5f8c51ba6efbad1101e6a023d9fc694ab6e06e8",
+   "bytes": 5422
+  },
+  {
    "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
@@ -753,8 +778,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "8a4245f1b0f0bfd255c642b7f75bc110b761fb6da8c3d0d7f2f90a033c74d8db",
-   "bytes": 4380
+   "sha256": "1a594f6016100757bdefff8fed9a82d547703e77125abfc9ce452f3a072f77d3",
+   "bytes": 4143
   },
   {
    "path": "chunks/g4--introduction.md",
@@ -962,8 +987,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "f37075b7fb0975592b1d572b17cbe709d9f84bf78ffc99a6a7bff7a4e54e6634",
-   "bytes": 25409
+   "sha256": "eb4b1d3b76ae356062016c60140818b6e5f58cbde3c40d393b4e29b2f611e008",
+   "bytes": 26280
   },
   {
    "path": "chunks/params--extensions.md",
@@ -977,37 +1002,48 @@
    "bytes": 717
   },
   {
-   "path": "chunks/params--introduction-part-1-of-3.md",
+   "path": "chunks/params--introduction-part-1-of-4.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
     "content",
     "generated",
     "chunk"
    ],
-   "sha256": "865d6276ec3fb6a512988835a2dd4b362aa390ad2753bdcd95e61b704f164648",
+   "sha256": "495580370a88c67f698a69ebc09d73b4173bdaf03ba44523c2762e50d3165386",
    "bytes": 595
   },
   {
-   "path": "chunks/params--introduction-part-2-of-3.md",
+   "path": "chunks/params--introduction-part-2-of-4.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
     "content",
     "generated",
     "chunk"
    ],
-   "sha256": "bb3c2e831094d7bc573018057439fdc938f812a6279c3b089b92e045b23ad7e7",
-   "bytes": 6116
+   "sha256": "1eb4185d0a2d3cfaa94899f96d58e8498596eba50f276041752a5b2096e34912",
+   "bytes": 5958
   },
   {
-   "path": "chunks/params--introduction-part-3-of-3.md",
+   "path": "chunks/params--introduction-part-3-of-4.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
     "content",
     "generated",
     "chunk"
    ],
-   "sha256": "78ea4dbf9a09717120ff101218b7f71fed76e08563e20c1a22913606a04cf296",
-   "bytes": 5947
+   "sha256": "aea151da454a06247677207b3ba1f1aecb46f59d1c0adfd7cc2f7dbc3c730e42",
+   "bytes": 6028
+  },
+  {
+   "path": "chunks/params--introduction-part-4-of-4.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "c233c0df73f865334120187b04e76dc03670f9eb7a139f01b48aaeccb97193d8",
+   "bytes": 1850
   },
   {
    "path": "chunks/params--rule-levels-in-a-profile.md",
@@ -1039,8 +1075,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "4216bed1f81b52b8a4e44faaea815c57bc13cc16dcc5e323adbb5162b839c289",
-   "bytes": 1232
+   "sha256": "5091e8f46b2e691dcd441080445a4cd84631e6ccfc5888bfae01dea84c2e58da",
+   "bytes": 1248
   },
   {
    "path": "chunks/readme--hand-over-files.md",
@@ -1050,7 +1086,7 @@
     "generated",
     "chunk"
    ],
-   "sha256": "007514fb3b33f833a53c30eb0c3bad757caf3d4ce5359eec6a568681efbf438d",
+   "sha256": "8f45bd820f812322640f8e36043fd719245390e69d0a7992565e271e1bc7dcc8",
    "bytes": 747
   },
   {
@@ -1072,7 +1108,7 @@
     "generated",
     "chunk"
    ],
-   "sha256": "d40afb47d3c4c098f304aafdfa0a7097afe0e97123d0bfa1e06ff3034429b033",
+   "sha256": "4952cc6a3d0db8ced8cd3bce500e0161a66f2743a63be769dcb25aca8b39748f",
    "bytes": 896
   },
   {
@@ -1204,8 +1240,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "dfbb47801f5b1b250275a7c149c2cd19ed3b3fff76544a144d3eeee931a2911c",
-   "bytes": 1183
+   "sha256": "77889dda634385a37f8da005f1bc6c8d39ea4e4b7efab99ad93a19a9a2d7f155",
+   "bytes": 1331
   },
   {
    "path": "chunks/sub--ingest.md",
@@ -1215,8 +1251,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "1ed66054ed6f0ad6b9927c57b5677c6a1b362461371f99e4bd16f35013bfa9e6",
-   "bytes": 2766
+   "sha256": "762d4e6d53bd332c7269a563961d395f94bba6071694a1b8e7634af6472a9aff",
+   "bytes": 3384
   },
   {
    "path": "chunks/sub--introduction.md",
@@ -1226,8 +1262,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "1e5f89b3cb2ae12e5dc6a55ed66133ecad734dab4fd0096781046324770b4d96",
-   "bytes": 672
+   "sha256": "877e6e6dfa6f0f39d51b2a59f439bd9220b524debaa9f30c7d718edca66f8756",
+   "bytes": 709
   },
   {
    "path": "chunks/sub--limits.md",
@@ -1237,8 +1273,19 @@
     "generated",
     "chunk"
    ],
-   "sha256": "a503b3ade5458bd2bea30554c821f9061dac310722f66a35ca8c59254e0af895",
-   "bytes": 641
+   "sha256": "d312d467b4e7254be7f8b793dc2a9f927862e472e0f0e1414f070e8698670480",
+   "bytes": 834
+  },
+  {
+   "path": "chunks/sub--proofs.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "0f115eb05b34a6e998c857651d19bc1c92f395670008a3cbcde94d348b8c4037",
+   "bytes": 4149
   },
   {
    "path": "chunks/sub--the-automatic-check.md",
@@ -1248,8 +1295,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "3c1bd1e7a6d0028c1ae14d8c89be46d2a6c6408872d69ddab5aa6511b02a93eb",
-   "bytes": 1076
+   "sha256": "841d1c354af55a3cb6945ef7c030e1a1ee8e58fc1cea75b82255d39eb95ad3ed",
+   "bytes": 1321
   },
   {
    "path": "chunks/sub--the-path-of-a-delivery.md",
@@ -1259,8 +1306,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "8cbf09d1069e36a766e1bd96bcd6f80f4bc78a7d72ca47ae87f9167a4e0ce9d4",
-   "bytes": 1704
+   "sha256": "83dee6e5d7247a1dd9af93d2d61b6a6e05408412143d41fd2a0866a902379494",
+   "bytes": 1892
   },
   {
    "path": "chunks/sub--what-a-delivery-folder-holds.md",
@@ -1270,8 +1317,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "b1b687c95d9a171f2cc2cf5273701c6c7296da5bbbf621f6045c99a3e45320e9",
-   "bytes": 2044
+   "sha256": "89c05b932c70df193c3adb923511c0602b5f8da4abbd12266431a39ff54cfe8f",
+   "bytes": 2180
   },
   {
    "path": "llms-full.txt",
@@ -1280,8 +1327,8 @@
     "agent",
     "content"
    ],
-   "sha256": "96f98150ed551e8892a49eb4223ea98315230c80acc1e7bd25603f9b5e3ecf34",
-   "bytes": 152938
+   "sha256": "68684b32978d374669e19ffc7378e3f85f31953d012a52547df0a54fd525f8f5",
+   "bytes": 166068
   },
   {
    "path": "llms.txt",
@@ -1291,8 +1338,8 @@
     "agent",
     "index"
    ],
-   "sha256": "654dd388edf40473d2d499f558341722bf7aaf72b623ff1dbe702dcc910b890f",
-   "bytes": 13899
+   "sha256": "41f57db0ddab64e5f8b8aa259e08aef7157658625a873b39160616b1fda789a6",
+   "bytes": 14894
   },
   {
    "path": "profiles/default.json",
@@ -1301,8 +1348,8 @@
     "profile",
     "machine"
    ],
-   "sha256": "e634c132ebb0edb81310d8a94ab191c650228abb657e2f29ef49e2d3c3114e43",
-   "bytes": 4265
+   "sha256": "c10c620f7d14675bb5a65f4cea2de04e6f5799ed2276880f6099b5c5be3694b7",
+   "bytes": 4688
   },
   {
    "path": "profiles/example-strict.json",
@@ -1322,8 +1369,8 @@
     "schema",
     "machine"
    ],
-   "sha256": "c069b838200cc18fcb82f37d61abbfc157515d4a1f4f6b8945f7e3040b5d27cb",
-   "bytes": 17759
+   "sha256": "d66f843483f9b3630906582545caa9ea470ba5b88ae7162c1b7403423ac17e61",
+   "bytes": 20780
   },
   {
    "path": "rules.json",
@@ -1333,8 +1380,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "81cb08bd4ff2813d83fd3e345921a903d6a4785e34ba365481816b9ae1dc739e",
-   "bytes": 193534
+   "sha256": "af299133e482aaa5bc6de13e7c8a1614dd68699bd1fa75ab76eac268b7e71151",
+   "bytes": 203813
   },
   {
    "path": "schemas/building-metadata.schema.json",
@@ -1353,8 +1400,8 @@
     "schema",
     "machine"
    ],
-   "sha256": "b2b438baf8aca57332d094407a53220c6151b2455bcdff0f342ea0079682078a",
-   "bytes": 8617
+   "sha256": "0eb89968b51664526533ac1877c57ab85d2b2af4f89088c4930f32084200940d",
+   "bytes": 9395
   },
   {
    "path": "schemas/check-report.schema.json",
@@ -1393,8 +1440,8 @@
     "schema",
     "machine"
    ],
-   "sha256": "bd668ddfda19817587bed36ef88853bcd4df21afd28fcc50854368eb0ba542d6",
-   "bytes": 7277
+   "sha256": "8a57dfe829d6f5c9c5d106f14d7b0d821896d41a56ca2c2e31df15034c9fd2ea",
+   "bytes": 7396
   },
   {
    "path": "schemas/material-library.schema.json",
@@ -1405,6 +1452,16 @@
    ],
    "sha256": "1699a72c6c100a0343350907c3355763fc48153b14cb6acf31d388756fb8edb6",
    "bytes": 1307
+  },
+  {
+   "path": "schemas/proofs.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "6fd23c7a41d9e05d7f1024325ef07053c32f03ea6d33cb45c3a1181572a5c6c0",
+   "bytes": 7525
   },
   {
    "path": "schemas/rules.schema.json",
@@ -1463,7 +1520,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "302b682312e224c1bfdb967edf3b7e08a0a89664e35ec4a1ae9b6dcd1ad2770f",
+   "sha256": "65ebd23efd78854661b0a6e4edb23f89937e5d950508980bbdad3c00bcdb44ef",
    "bytes": 4974
   },
   {
@@ -1544,6 +1601,17 @@
    "bytes": 3103
   },
   {
+   "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "5eb62815bb8adfebfedb4f41f5f8c51ba6efbad1101e6a023d9fc694ab6e06e8",
+   "bytes": 5422
+  },
+  {
    "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
@@ -1551,8 +1619,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "8a4245f1b0f0bfd255c642b7f75bc110b761fb6da8c3d0d7f2f90a033c74d8db",
-   "bytes": 4380
+   "sha256": "1a594f6016100757bdefff8fed9a82d547703e77125abfc9ce452f3a072f77d3",
+   "bytes": 4143
   },
   {
    "path": "skills/accept-and-package-delivery/references/g4--introduction.md",
@@ -1593,7 +1661,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "9a630af6e484eed9804194f9816fe1d1ad38e86d35d3a487f246392cf75b48ba",
+   "sha256": "22b55d46e5a0d4f875006047107ef47c0bed938cf3a7d5809d164717eb3c5126",
    "bytes": 8051
   },
   {
@@ -2009,7 +2077,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "07a17450929be4ba94f06ce99a0be212b6be81afe2204dd8f8e496c1bcc9a68b",
+   "sha256": "dd54437448d37041fe9cea9816798b710f58cfde100122fd327feddeea65f1e2",
    "bytes": 4224
   },
   {
@@ -2161,7 +2229,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "69630c33f982ac66ba68af8ef8f0aeb70e064a17f512e56d8b504fdb5d97ebbf",
+   "sha256": "5310cbd8c12db09f3975c1509294b2f6d040c21ee98e345ac9f29640bc043edb",
    "bytes": 4534
   },
   {
@@ -2291,8 +2359,8 @@
     "skill",
     "agent"
    ],
-   "sha256": "33ff49d771d46db69bf28d60b13972baeaf567fcef930d29e6c45cec88200bb0",
-   "bytes": 4755
+   "sha256": "25777081065a375717757b57987d3ffc5e1f5a44e3ac2af3a452041ee424c0a2",
+   "bytes": 4807
   },
   {
    "path": "skills/orient/references/about--how-a-consumer-adopts-it.md",
@@ -2335,8 +2403,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "1afd8bd1990371a94b5abd2d719a2c0889f3adb5a58638dd35b275ede838edc5",
-   "bytes": 746
+   "sha256": "968095ca6e81d6ce16c514cb8215517e10dd2442f71aa1594b7a35715390da1d",
+   "bytes": 1170
   },
   {
    "path": "skills/orient/references/about--what-it-does-not-do.md",
@@ -2383,37 +2451,48 @@
    "bytes": 717
   },
   {
-   "path": "skills/orient/references/params--introduction-part-1-of-3.md",
+   "path": "skills/orient/references/params--introduction-part-1-of-4.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
     "skill",
     "reference",
     "generated"
    ],
-   "sha256": "865d6276ec3fb6a512988835a2dd4b362aa390ad2753bdcd95e61b704f164648",
+   "sha256": "495580370a88c67f698a69ebc09d73b4173bdaf03ba44523c2762e50d3165386",
    "bytes": 595
   },
   {
-   "path": "skills/orient/references/params--introduction-part-2-of-3.md",
+   "path": "skills/orient/references/params--introduction-part-2-of-4.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
     "skill",
     "reference",
     "generated"
    ],
-   "sha256": "bb3c2e831094d7bc573018057439fdc938f812a6279c3b089b92e045b23ad7e7",
-   "bytes": 6116
+   "sha256": "1eb4185d0a2d3cfaa94899f96d58e8498596eba50f276041752a5b2096e34912",
+   "bytes": 5958
   },
   {
-   "path": "skills/orient/references/params--introduction-part-3-of-3.md",
+   "path": "skills/orient/references/params--introduction-part-3-of-4.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
     "skill",
     "reference",
     "generated"
    ],
-   "sha256": "78ea4dbf9a09717120ff101218b7f71fed76e08563e20c1a22913606a04cf296",
-   "bytes": 5947
+   "sha256": "aea151da454a06247677207b3ba1f1aecb46f59d1c0adfd7cc2f7dbc3c730e42",
+   "bytes": 6028
+  },
+  {
+   "path": "skills/orient/references/params--introduction-part-4-of-4.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "c233c0df73f865334120187b04e76dc03670f9eb7a139f01b48aaeccb97193d8",
+   "bytes": 1850
   },
   {
    "path": "skills/orient/references/params--rule-levels-in-a-profile.md",
@@ -2445,8 +2524,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "4216bed1f81b52b8a4e44faaea815c57bc13cc16dcc5e323adbb5162b839c289",
-   "bytes": 1232
+   "sha256": "5091e8f46b2e691dcd441080445a4cd84631e6ccfc5888bfae01dea84c2e58da",
+   "bytes": 1248
   },
   {
    "path": "skills/orient/references/readme--hand-over-files.md",
@@ -2456,7 +2535,7 @@
     "reference",
     "generated"
    ],
-   "sha256": "007514fb3b33f833a53c30eb0c3bad757caf3d4ce5359eec6a568681efbf438d",
+   "sha256": "8f45bd820f812322640f8e36043fd719245390e69d0a7992565e271e1bc7dcc8",
    "bytes": 747
   },
   {
@@ -2478,7 +2557,7 @@
     "reference",
     "generated"
    ],
-   "sha256": "d40afb47d3c4c098f304aafdfa0a7097afe0e97123d0bfa1e06ff3034429b033",
+   "sha256": "4952cc6a3d0db8ced8cd3bce500e0161a66f2743a63be769dcb25aca8b39748f",
    "bytes": 896
   },
   {
@@ -2619,8 +2698,8 @@
     "skill",
     "agent"
    ],
-   "sha256": "e608863cd024f65ec504c7b5c9da4c22781e04b18fce2edce2f8f19b086fdd6b",
-   "bytes": 4633
+   "sha256": "ced7cb743c0cf19b66fa8ab82912006e110c1b639e95ee0eb2d032ba09b99591",
+   "bytes": 7508
   },
   {
    "path": "skills/submit-delivery/references/rules.md",
@@ -2630,8 +2709,8 @@
     "rules",
     "generated"
    ],
-   "sha256": "ada3af610e1b27834c2e3fc29bd278362b9ae793870056c4427fdb35401418ee",
-   "bytes": 3593
+   "sha256": "17787a7705768955fb0937c3ec7aa6d22d3f397f7aab578b91aa27649d0c663b",
+   "bytes": 7363
   },
   {
    "path": "skills/submit-delivery/references/sub--for-agents.md",
@@ -2641,8 +2720,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "dfbb47801f5b1b250275a7c149c2cd19ed3b3fff76544a144d3eeee931a2911c",
-   "bytes": 1183
+   "sha256": "77889dda634385a37f8da005f1bc6c8d39ea4e4b7efab99ad93a19a9a2d7f155",
+   "bytes": 1331
   },
   {
    "path": "skills/submit-delivery/references/sub--ingest.md",
@@ -2652,8 +2731,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "1ed66054ed6f0ad6b9927c57b5677c6a1b362461371f99e4bd16f35013bfa9e6",
-   "bytes": 2766
+   "sha256": "762d4e6d53bd332c7269a563961d395f94bba6071694a1b8e7634af6472a9aff",
+   "bytes": 3384
   },
   {
    "path": "skills/submit-delivery/references/sub--introduction.md",
@@ -2663,8 +2742,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "1e5f89b3cb2ae12e5dc6a55ed66133ecad734dab4fd0096781046324770b4d96",
-   "bytes": 672
+   "sha256": "877e6e6dfa6f0f39d51b2a59f439bd9220b524debaa9f30c7d718edca66f8756",
+   "bytes": 709
   },
   {
    "path": "skills/submit-delivery/references/sub--limits.md",
@@ -2674,8 +2753,19 @@
     "reference",
     "generated"
    ],
-   "sha256": "a503b3ade5458bd2bea30554c821f9061dac310722f66a35ca8c59254e0af895",
-   "bytes": 641
+   "sha256": "d312d467b4e7254be7f8b793dc2a9f927862e472e0f0e1414f070e8698670480",
+   "bytes": 834
+  },
+  {
+   "path": "skills/submit-delivery/references/sub--proofs.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "0f115eb05b34a6e998c857651d19bc1c92f395670008a3cbcde94d348b8c4037",
+   "bytes": 4149
   },
   {
    "path": "skills/submit-delivery/references/sub--the-automatic-check.md",
@@ -2685,8 +2775,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "3c1bd1e7a6d0028c1ae14d8c89be46d2a6c6408872d69ddab5aa6511b02a93eb",
-   "bytes": 1076
+   "sha256": "841d1c354af55a3cb6945ef7c030e1a1ee8e58fc1cea75b82255d39eb95ad3ed",
+   "bytes": 1321
   },
   {
    "path": "skills/submit-delivery/references/sub--the-path-of-a-delivery.md",
@@ -2696,8 +2786,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "8cbf09d1069e36a766e1bd96bcd6f80f4bc78a7d72ca47ae87f9167a4e0ce9d4",
-   "bytes": 1704
+   "sha256": "83dee6e5d7247a1dd9af93d2d61b6a6e05408412143d41fd2a0866a902379494",
+   "bytes": 1892
   },
   {
    "path": "skills/submit-delivery/references/sub--what-a-delivery-folder-holds.md",
@@ -2707,8 +2797,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "b1b687c95d9a171f2cc2cf5273701c6c7296da5bbbf621f6045c99a3e45320e9",
-   "bytes": 2044
+   "sha256": "89c05b932c70df193c3adb923511c0602b5f8da4abbd12266431a39ff54cfe8f",
+   "bytes": 2180
   },
   {
    "path": "skills/submit-delivery/scripts/run_tool.py",
@@ -2744,7 +2834,7 @@
    "tags": [
     "template"
    ],
-   "sha256": "4a9f75f0c2c0743f6e92f438ec49ce5d9e2dfc532f8933e8dbedafb7fbc5fb3a",
+   "sha256": "7ce1b0ed74d6c5fc9d7871dedb4fce9420aab5621181dff702c23cc92a4b1d51",
    "bytes": 1324
   },
   {
@@ -2762,8 +2852,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "abca8e8a762706db49405895f7e2d3e9422072101240acd376436215e49cec37",
-   "bytes": 6211
+   "sha256": "7e7d125ede2062aad6c6e4edb30bc9b4092dad8000d453f0a285891a03a750ed",
+   "bytes": 7989
   },
   {
    "path": "tools/agent_harness.py",
@@ -2772,7 +2862,7 @@
     "tool",
     "script"
    ],
-   "sha256": "8b93b35bb679034940f30452ae8d2fd171f0a96d5c4d56ca70f24093afc46385",
+   "sha256": "5ca04aa1fe57537502510e3019bb6b78a285e3bcaf378a9f3436419105ab6024",
    "bytes": 19857
   },
   {
@@ -2782,7 +2872,7 @@
     "tool",
     "script"
    ],
-   "sha256": "5a52d7f034e5ada71540df97e5926eca6e232344858a601956368b71661b9cbc",
+   "sha256": "90f7360c0b16c23f4a7e810114c744d6e21e84e7e2afe538220db5cae9d72932",
    "bytes": 6736
   },
   {
@@ -2792,8 +2882,18 @@
     "tool",
     "script"
    ],
-   "sha256": "b4861ee2638116953bc9bcbc5cfaf6791dc185ee9debd55ed28497a4065de87c",
-   "bytes": 17440
+   "sha256": "5e65c605984e2630e595b315c962df2736111c0f960cace23da71e083915140f",
+   "bytes": 17772
+  },
+  {
+   "path": "tools/build_proofs.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "800d8793162f3b60e4592d045e3738027ea209b361ec69d4b0331dd0e0447503",
+   "bytes": 12189
   },
   {
    "path": "tools/check_all.py",
@@ -2802,8 +2902,8 @@
     "tool",
     "script"
    ],
-   "sha256": "2e8e404de5913f6080cd242321d4c08b4adb1cfbace97ed2998d9589d4d878f5",
-   "bytes": 9365
+   "sha256": "5dedab6d097c453cc10e4ae9e888e57e44091a22348a8d057ff4a694be62be6c",
+   "bytes": 9549
   },
   {
    "path": "tools/check_ifc.py",
@@ -2812,7 +2912,7 @@
     "tool",
     "script"
    ],
-   "sha256": "a8d608e0144fbb1db539604fe51769e582e894149156620e7d23cfe2bc9fb640",
+   "sha256": "f0705af5d630c5f69cd71a926fa3c79d98cd8228df9a88219298edd4da725289",
    "bytes": 67351
   },
   {
@@ -2822,8 +2922,18 @@
     "tool",
     "script"
    ],
-   "sha256": "66d513e8274f5e743f8c859b64037d3f338cef758083ea2edd8a69ee68795c33",
+   "sha256": "02f28673510b2616c90cda0cbf901fe8f6d8007fef56c651b7ad5c71791661cb",
    "bytes": 7170
+  },
+  {
+   "path": "tools/check_proofs.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "2f5a868c2a4b60c9c4aa42b941365352f3583043cbaa5ba782e661ef575821b8",
+   "bytes": 22157
   },
   {
    "path": "tools/check_submission.py",
@@ -2832,7 +2942,7 @@
     "tool",
     "script"
    ],
-   "sha256": "001bfed8f9d0404c11cf91ef857258f67c19ec7947d9b6857cccc9f71f98e694",
+   "sha256": "0b1a0a0074dd7f245580963675cae9d033f307138b2b50d5cf5a6174a95424fc",
    "bytes": 12929
   },
   {
@@ -2842,7 +2952,7 @@
     "tool",
     "script"
    ],
-   "sha256": "b6d5a5ac04430ecd653a2f39e4975d7d91f32feb67a98de2aae8a01abec3ec09",
+   "sha256": "391fa2128c290fb5293d31d38d39da750a3430b5b0fb9f98c61d4250acdc1ac9",
    "bytes": 7603
   },
   {
@@ -2852,8 +2962,8 @@
     "tool",
     "script"
    ],
-   "sha256": "ee4e65e7409ad47c88b687597b7f3fbcc45e04dc10f8cedc9b15d9e50775d5f5",
-   "bytes": 6060
+   "sha256": "f840fdb57f67e09b1cdd9e72b6033fb7a09e8fc1710806fe4b139f9cc93b9363",
+   "bytes": 6873
   },
   {
    "path": "tools/ci/run_checks.sh",
@@ -2863,6 +2973,16 @@
    ],
    "sha256": "6b3297cc1d321aca61c832cd5f3d78524018318017e302ccfa2bd3a8279f720c",
    "bytes": 879
+  },
+  {
+   "path": "tools/export_glb.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "4077e421798bcf759e5fad18639cb6f5f207127101ce7579353afc489cbf13cd",
+   "bytes": 19910
   },
   {
    "path": "tools/fileset.py",
@@ -2881,8 +3001,18 @@
     "tool",
     "script"
    ],
-   "sha256": "79afa0562295b3f34bdcd9ad84105486ca79985633ccf6ad41229c2c070d53d2",
-   "bytes": 23523
+   "sha256": "892f69cb103a88d744b60520e50de67b3ca4fdbb8b9fdf6c7d8558e413becbf9",
+   "bytes": 24365
+  },
+  {
+   "path": "tools/glbkit.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "a97be0bd1379ef53038ce5412b0403b68501aac873c5c527512103fc5ae2379a",
+   "bytes": 24938
   },
   {
    "path": "tools/ifc_author.py",
@@ -2901,8 +3031,35 @@
     "tool",
     "script"
    ],
-   "sha256": "bade652b1ae89d6b082b4a3a451d880a2395481a53001f76f9c72526642862ab",
-   "bytes": 41132
+   "sha256": "2aa61f42d2ffebf224470bc28e1dd853d9091541a21d69f21c8be29742928487",
+   "bytes": 34177
+  },
+  {
+   "path": "tools/khronos/package-lock.json",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "f5d4491cefbcc4d3ae651c94f95aa78cd605dbde6a6a7938971c734e419acf61",
+   "bytes": 516
+  },
+  {
+   "path": "tools/khronos/package.json",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "0cb9b318cc3e4752d16e9c00e1a69394f1f0665f0d498778f9125d6f507c080a",
+   "bytes": 308
+  },
+  {
+   "path": "tools/khronos/validate.mjs",
+   "purpose": "tool support file",
+   "tags": [
+    "tool"
+   ],
+   "sha256": "72efa1ac342bf2245666728cc716b764471da09dfdaf92988146da94acabbd1d",
+   "bytes": 1164
   },
   {
    "path": "tools/leakscan.py",
@@ -2941,8 +3098,8 @@
     "tool",
     "script"
    ],
-   "sha256": "e0eee512aea2f2315594259a27cff7b2c15dece592ee37d7e14877c2cce87f6b",
-   "bytes": 4322
+   "sha256": "200ff3d88999041f7c81eb32c9f19755f6098926b62828f3c4026d3f0ec85161",
+   "bytes": 4890
   },
   {
    "path": "tools/make_sample_item.py",
@@ -2991,8 +3148,28 @@
     "tool",
     "script"
    ],
-   "sha256": "0d1c33642a25b30e2771cdff537213d9aa87ec599fbb6eab236ef03c570da574",
-   "bytes": 8966
+   "sha256": "23c7b633c62d879a83486fd948707e402af0975df606002ced87415884192ea6",
+   "bytes": 9024
+  },
+  {
+   "path": "tools/proofkit.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "f1f1f0529f91365cf85db98b6532a359eb9014c823b6ab5de57c47dddecaf289",
+   "bytes": 7733
+  },
+  {
+   "path": "tools/render.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "7ed57fe66a73178fc8dbfa638f84393db43fcf3b3be701673103654cb377530f",
+   "bytes": 24585
   },
   {
    "path": "tools/report.py",
@@ -3066,8 +3243,8 @@
     "rules",
     "source"
    ],
-   "sha256": "27e47b322845de7039f76e319dc00e931f010d778b9a09be0a5a722ab570a281",
-   "bytes": 98962
+   "sha256": "badc32231be2b353f4650dfa4b08c8a12ac7c42af188d097de91d05e180e4d22",
+   "bytes": 104741
   },
   {
    "path": "tools/run_example.py",
@@ -3076,7 +3253,7 @@
     "tool",
     "script"
    ],
-   "sha256": "4a7ba2289abf5fbe11b2820f0e5d08260f86f7a9edb2b2a52a9230e599274f9d",
+   "sha256": "c6096e366748adcbcf7bb92708e567b3de4eb74e23d0c4496941a65643e46bb1",
    "bytes": 8291
   },
   {
@@ -3159,14 +3336,24 @@
    "bytes": 2408
   },
   {
+   "path": "tools/test_proofs.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "1a0eb0b16545a20f239b5b2125e6d49f30ce85527322eaa35fa5f697f317f903",
+   "bytes": 27252
+  },
+  {
    "path": "tools/test_submission.py",
    "purpose": "command-line tool",
    "tags": [
     "tool",
     "script"
    ],
-   "sha256": "080c9fb12eab68ee9c628c7b9f426e66dc64838ca011233009d2f2d415b65d7b",
-   "bytes": 18259
+   "sha256": "2f5e60fe3afdd0b35c2e321946804cbf0686bd29bbebf297d9e1d0f1175c1bba",
+   "bytes": 18545
   },
   {
    "path": "tools/test_sync.py",
@@ -3175,8 +3362,8 @@
     "tool",
     "script"
    ],
-   "sha256": "a6590b4a66fc62c096957838fbb0c77d9d1ea59dac3878ec9bf43c089918d495",
-   "bytes": 9785
+   "sha256": "585a10acab817dd2f01ffa056724a898fe02195cfc019c3903e627581e759cc0",
+   "bytes": 9876
   },
   {
    "path": "tools/test_terrain.py",
@@ -3187,6 +3374,16 @@
    ],
    "sha256": "f19149171c9b44515c4167b287e3a4f3ce5591b8a0515f306e10741743b0d53c",
    "bytes": 11514
+  },
+  {
+   "path": "tools/validate_glb.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "7520bba696f9495d707e3ed338b36dee1f001c3e8fa58d4268c60d5e9e6782cb",
+   "bytes": 40091
   }
  ]
 }

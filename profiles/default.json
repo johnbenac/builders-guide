@@ -2,7 +2,7 @@
   "_license": "Apache-2.0",
   "format": "profile/1",
   "name": "default",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "General-purpose values for exchanging IFC buildings, finishes and furniture. Publicly defensible defaults, not any one consumer's contract. A consumer publishes its own profile in the same shape.",
   "frame": {
     "horizontalAxes": "+X forward, +Y left (right-handed with Z up)",
@@ -167,7 +167,7 @@
     "requireLicence": true
   },
   "submission": {
-    "maxFiles": 200,
+    "maxFiles": 600,
     "maxFileBytes": 26214400,
     "maxDeliveryBytes": 104857600,
     "maxPathLength": 200,
@@ -188,5 +188,22 @@
     "ingestMaxComponents": 500,
     "ingestMaxSeconds": 300,
     "maxImagePixels": 67108864
+  },
+  "proofs": {
+    "maxGlbNodes": 20000,
+    "maxExtentMetres": 5000,
+    "interiorViewsPerRoom": 4,
+    "maxRoomsPerKind": 2,
+    "exteriorViews": 4,
+    "turntableFrames": 8,
+    "minRenderWidth": 256,
+    "maxRenderPixels": 2097152,
+    "maxRenderBytes": 3145728,
+    "maxProofBytes": 67108864,
+    "renderTolerance": {
+      "meanAbsLevels": 0.5,
+      "differingFraction": 0.001,
+      "differenceLevels": 8
+    }
   }
 }

@@ -11,11 +11,11 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `schema.allowed` | IFC schema identifiers the consumer accepts | `["IFC4"]` | `["IFC4"]` | B-01 |
 | `limits.maxFileMegabytes` | hard size cap of one IFC file, in megabytes | `250` | `100` | B-05, F-50 |
 | `limits.maxVertices` | hard cap on mesh vertices in one file | `10000000` | `5000000` | B-05, F-50 |
-| `limits.maxTriangles` | hard cap on triangles in one file | `5000000` | `3000000` | B-05, F-50 |
+| `limits.maxTriangles` | hard cap on triangles in one file | `5000000` | `3000000` | B-05, F-50, X-80 |
 | `budgets.recommendedFileMegabytes` | size above which a file is slow to load and review | `100` | `60` | B-09 |
-| `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120 |
+| `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120, X-80 |
 | `budgets.maxDistinctColours` | number of distinct (class, colour, opacity) combinations above which the palette is too large to manage | `50` | `30` | D-05 |
-| `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51 |
+| `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51, X-80 |
 | `file.singleLineEntities` | true when the consumer's reader needs every STEP entity on one line | `false` | `true` | B-08 |
 | `identifiers.roomIdMaxLength` | longest allowed room identifier, in characters | `64` | `7` | B-23 |
 | `identifiers.roomIdPattern` | regular expression a room identifier must match | `"^[A-Za-z0-9._-]+$"` | `"^[A-Za-z0-9-]+$"` | B-23 |
@@ -68,7 +68,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.terrain.siteElevationToleranceMetres` | largest difference between IfcSite.RefElevation and the terrain height at the building origin | `0.1` | `0.1` | B-134 |
 | `extensions.terrain.maxTriangles` | most triangles in the terrain element | `200000` | `200000` | B-138 |
 | `extensions.terrain.maxPatchSamples` | most samples read from one height patch; a larger patch is refused before it is loaded | `25000000` | `25000000` | - |
-| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44 |
+| `textures.sizesPixels` | allowed texture map sizes in pixels (square) | `[512, 1024, 2048]` | `[1024]` | D-44, X-80 |
 | `textures.densityPixelsPerMetre` | smallest and largest texel density | `[250, 2500]` | `[340, 2050]` | D-45 |
 | `textures.maps` | map file names a set must contain, without extension | `["albedo", "normal", "orm"]` | `["albedo", "normal", "orm"]` | D-40, D-41 |
 | `textures.normalConvention` | +Y: green channel points up (OpenGL style); -Y: green points down (DirectX style) | `"+Y"` | `"+Y"` | D-41 |
@@ -76,8 +76,8 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `package.maxPackageMegabytes` | upload size cap of a whole package, or null | `null` | `500` | X-14 |
 | `package.requireProvenance` | every asset needs a provenance entry | `true` | `true` | X-20 |
 | `package.requireLicence` | every asset and the package need a licence | `true` | `true` | X-21 |
-| `submission.maxFiles` | most files in one delivery folder | `200` | `null` | X-73 |
-| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73 |
+| `submission.maxFiles` | most files in one delivery folder (600 since 2.3.0, because proofs add a GLB and a contact sheet for every component) | `600` | `null` | X-73 |
+| `submission.maxFileBytes` | largest single file in a delivery, in bytes | `26214400` | `null` | X-73, X-80 |
 | `submission.maxDeliveryBytes` | largest total size of a delivery folder, in bytes | `104857600` | `null` | X-73 |
 | `submission.maxPathLength` | longest relative path inside a delivery, in characters | `200` | `null` | X-74 |
 | `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
@@ -85,6 +85,19 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
 | `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
 | `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |
+| `proofs.maxGlbNodes` | most scene-graph nodes in one GLB | `20000` | `null` | X-80 |
+| `proofs.maxExtentMetres` | largest size of a GLB along any axis, in metres; a bigger model has probably been exported in the wrong unit | `5000` | `null` | X-80 |
+| `proofs.interiorViewsPerRoom` | interior views rendered for each room that is shown (camera at a standard eye height, derived from the room's footprint) | `4` | `null` | X-82 |
+| `proofs.maxRoomsPerKind` | most rooms of one kind (the room's Function property) that are rendered; the first rooms by identifier | `2` | `null` | - |
+| `proofs.exteriorViews` | exterior views of the whole building, evenly spaced around it | `4` | `null` | X-82 |
+| `proofs.turntableFrames` | frames of the turntable contact sheet of a component (material sets use a fixed set of four) | `8` | `null` | - |
+| `proofs.minRenderWidth` | smallest width of a render, in pixels | `256` | `null` | X-84 |
+| `proofs.maxRenderPixels` | most pixels (width times height) of one render | `2097152` | `null` | X-84 |
+| `proofs.maxRenderBytes` | largest file size of one render, in bytes | `3145728` | `null` | X-84 |
+| `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
+| `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
+| `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |
+| `proofs.renderTolerance.differenceLevels` |  | `8` | `null` | - |
 
 ## Rule levels in a profile
 

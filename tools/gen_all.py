@@ -20,7 +20,7 @@ import fileset  # noqa: E402
 import rules_index  # noqa: E402
 
 ROOT = rules_index.ROOT = os.path.abspath(os.path.join(HERE, ".."))
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 MAX_CHUNK_CHARS = 6000          # about 1,500 tokens
 DOCS = [("readme", "README.md"), ("about", "ABOUT.md"), ("g1", "01-builders-and-architects-guide.md"), ("g2", "02-interior-decorators-guide.md"),
         ("g3", "03-furniture-and-fixtures-guide.md"), ("g4", "04-delivery-and-acceptance-guide.md"),
@@ -31,6 +31,8 @@ TOOL_CMD = {
     "check_item": "python3 tools/check_item.py ITEM_DIR --profile PROFILE.json --json",
     "build_package": "python3 tools/build_package.py verify PACKAGE_DIR --profile PROFILE.json --json",
     "check_submission": "python3 tools/check_submission.py deliveries/SLUG --profile PROFILE.json --json",
+    "validate_glb": "python3 tools/validate_glb.py deliveries/SLUG/proofs/glb --profile PROFILE.json --json",
+    "check_proofs": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
 }
 SKILLS = {
     "orient": {"docs": ["readme", "about", "repair", "params"], "rules": None},
@@ -291,10 +293,14 @@ def llms(index, skills_present, count):
           "- [schemas/finish-schedule.schema.json](schemas/finish-schedule.schema.json): finish schedule",
           "- [schemas/set.schema.json](schemas/set.schema.json): texture set description",
           "- [schemas/submission.schema.json](schemas/submission.schema.json): the submission block of a submitted delivery",
+          "- [schemas/proofs.schema.json](schemas/proofs.schema.json): proofs/manifest.json of a delivery (GLB files, validation report, renders)",
           "- [schemas/catalogue.schema.json](schemas/catalogue.schema.json): the neutral catalogue written by tools/ingest.py", "",
           "## Tools", "",
           "- [tools/check_all.py](tools/check_all.py): one command, one JSON report, per deliverable type",
           "- [tools/check_submission.py](tools/check_submission.py): form checks of a submitted delivery (X-70 to X-78)",
+          "- [tools/build_proofs.py](tools/build_proofs.py): makes a delivery's proofs: GLB files, validation report, standard renders, manifest (X-79 to X-86)",
+          "- [tools/check_proofs.py](tools/check_proofs.py): checks the proofs; `--reproduce` rebuilds and compares them",
+          "- [tools/export_glb.py](tools/export_glb.py), [tools/validate_glb.py](tools/validate_glb.py), [tools/render.py](tools/render.py): IFC to GLB, GLB validation, headless renders",
           "- [tools/ingest.py](tools/ingest.py): turns an accepted (merged) delivery into component assets and a catalogue",
           "- [tools/README.md](tools/README.md): every tool", "",
           "## Guide sections (each file is about 1,500 tokens or less)", ""]

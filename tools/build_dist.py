@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fileset  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 NAME = "builders-guide-" + VERSION
 DIST = os.path.join(ROOT, "dist")
 ORDER = ["README.md", "AGENTS.md", "01-builders-and-architects-guide.md", "02-interior-decorators-guide.md",

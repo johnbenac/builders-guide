@@ -3,7 +3,7 @@ name: orient
 description: Start here when you are asked to create, check or hand over IFC buildings, interior finishes, wall coverings, furniture or fixtures for a consumer you cannot see (a viewer, simulator, game runtime, BIM tool or archive). Explains what the guide set is, how profiles carry consumer-specific numbers, which skill to load (author-building, decorate-interior, author-furniture-library, accept-and-package-delivery, submit-delivery), the commands, and the repair loop. Use it first whenever the task mentions IFC, a profile, a room table, a finish schedule, an item library or a delivery package.
 license: CC-BY-4.0
 metadata:
-  version: "2.2.0"
+  version: "2.3.0"
   audience: any agent, any harness
 ---
 
@@ -36,7 +36,7 @@ A job with several parts: do the parts in this order, then package: building, fi
 
 ## Facts to keep in mind
 
-* 206 rules in `rules.json`. Each has a default `level` (`required` or `recommended`), `applies_to`, `parameters` (profile values it
+* 214 rules in `rules.json`. Each has a default `level` (`required` or `recommended`), `applies_to`, `parameters` (profile values it
   uses), `extension` (null, or the optional group it belongs to), `statement`, `rationale`, `how_to_check`, `fix_hint`, `examples`.
   A profile can change levels (`ruleLevels`) and switch extensions on.
 * Every checker takes `--profile FILE` and `--json` and prints one report (`schemas/check-report.schema.json`) that names the profile.
@@ -70,6 +70,6 @@ notes list any RECOMMENDED findings you left open.
 | the loop in detail | `references/repair--the-loop.md`, `references/repair--stop-conditions.md` |
 | what the set is and how a consumer adopts it | `references/about--what-it-is.md`, `references/about--how-a-consumer-adopts-it.md` |
 | how rules are written | `references/readme--how-rules-are-written.md` |
-| every profile parameter | `references/params--introduction-part-2-of-3.md` |
+| every profile parameter | `references/params--introduction-part-1-of-4.md` to `references/params--introduction-part-4-of-4.md` |
 
 Run any tool from anywhere with `python3 scripts/run_tool.py TOOL ARGS`.

@@ -5,7 +5,9 @@
     python3 tools/ci/run_checks.py [--base REF] [--out DIR] [SLUG ...]
 
 For each delivery (deliveries/<slug>/): check_submission.py and check_all.py under profiles/default.json, and under profiles/<name>.json
-when delivery.json names a profile that exists there. Every JSON report is written to DIR (default ci-reports) with summary.md. The
+when delivery.json names a profile that exists there; and, once under the default profile, check_proofs.py --reproduce (rebuilds the GLB files and
+re-renders the pictures, rule X-86) and validate_glb.py with the Khronos glTF Validator when it is installed (`npm ci --prefix tools/khronos`;
+set CI_REQUIRE_KHRONOS=1 to make its absence an error). Every JSON report is written to DIR (default ci-reports) with summary.md. The
 delivery is only read: nothing in it is run. Exit 0 when no REQUIRED rule failed, 1 otherwise.
 """
 import json
@@ -86,10 +88,17 @@ def main():
             profiles.append((name, os.path.join("profiles", name + ".json")))
         lines += ["### `%s`" % slug, "", "| Check | Profile | Result | REQUIRED failures | RECOMMENDED warnings |", "|---|---|---|---|---|"]
         shown = []
+        require_khronos = os.environ.get("CI_REQUIRE_KHRONOS") == "1"
         for pname, ppath in profiles:
-            for tool, tag in (("check_submission.py", "submission"), ("check_all.py", "all")):
+            steps = [("check_submission.py", "submission", []), ("check_all.py", "all", [])]
+            if ppath is None:
+                steps.append(("check_proofs.py", "proofs", ["--reproduce"]))
+                if os.path.isdir(os.path.join(d, "proofs", "glb")):
+                    steps.append(("validate_glb.py", "glb", ["--khronos", "on" if require_khronos else "auto"]))
+            for tool, tag, more in steps:
                 rep_path = os.path.join(out, "%s.%s.%s.json" % (slug, pname, tag))
-                cmd = [sys.executable, os.path.join(TOOLS, tool), os.path.join("deliveries", slug), "--json", "--out", rep_path] + (["--profile", ppath] if ppath else [])
+                target = os.path.join("deliveries", slug, "proofs", "glb") if tool == "validate_glb.py" else os.path.join("deliveries", slug)
+                cmd = [sys.executable, os.path.join(TOOLS, tool), target, "--json", "--out", rep_path] + more + (["--profile", ppath] if ppath else [])
                 try:
                     p = run(cmd)
                     with open(rep_path, encoding="utf-8") as fh:

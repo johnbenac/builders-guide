@@ -196,7 +196,7 @@ def run_profile(label, profile_path):
                            {"asset": "finishes/textures/plaster_example", "type": "texture-set", "source": "procedural", "author": "Harness", "licence": "free to reuse"},
                            {"asset": "items/table.work.1600", "type": "item", "source": "original", "author": "Harness", "licence": "free to reuse"}],
             "licence": {"statement": "Free to reuse (test)."},
-            "checks": {"tool": "check_ifc.py", "toolVersion": "2.2.0", "report": "reports/check_ifc.json", "result": "pass"}}
+            "checks": {"tool": "check_ifc.py", "toolVersion": "2.3.0", "report": "reports/check_ifc.json", "result": "pass"}}
     meta_path = os.path.join(work, "package-meta.json")
     json.dump(meta, open(meta_path, "w"))
     p = tool("build_package.py", "init", pkg, meta_path)
