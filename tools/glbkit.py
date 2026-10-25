@@ -389,13 +389,20 @@ def accessor_array(doc, bn, index):
 
 
 def node_matrix(node):
+    """The 4x4 local matrix of a node (matrix, or translation * rotation * scale). Failed when a transform is malformed (wrong length, not finite
+    numbers), so that no caller falls back to an identity or crashes with a traceback."""
     import numpy as np
+
+    def vec(key, default, n):
+        v = node.get(key, default)
+        if not (isinstance(v, list) and len(v) == n and all(isinstance(x, (int, float)) and not isinstance(x, bool) and np.isfinite(x) for x in v)):
+            raise Failed("node %r: %s must be %d finite numbers" % (node.get("name", ""), key, n))
+        return v
     if "matrix" in node:
-        return np.array(node["matrix"], dtype=np.float64).reshape(4, 4).T
-    t = node.get("translation", [0, 0, 0])
-    q = node.get("rotation", [0, 0, 0, 1])
-    s = node.get("scale", [1, 1, 1])
-    x, y, z, w = q
+        return np.array(vec("matrix", None, 16), dtype=np.float64).reshape(4, 4).T
+    t = vec("translation", [0, 0, 0], 3)
+    x, y, z, w = vec("rotation", [0, 0, 0, 1], 4)
+    s = vec("scale", [1, 1, 1], 3)
     r = np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
                   [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
                   [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])

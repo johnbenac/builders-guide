@@ -380,6 +380,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
     else:
         sc_nodes = scenes[sc].get("nodes", [])
     parent = {}
+    transform_bad = False
     for ni, n in enumerate(nodes):
         w = "/nodes/%d" % ni
         if "mesh" in n and rng(f, doc, "meshes", n["mesh"], w + "/mesh"):
@@ -391,12 +392,10 @@ def validate_one(data, label, role, item, tex_sizes, params):
                 parent[c] = ni
         if "matrix" in n and ("translation" in n or "rotation" in n or "scale" in n):
             f.bad("GLB-NODE", "%s has both a matrix and translation/rotation/scale" % w, "Use one or the other.", w)
-        if "rotation" in n:
-            q = n["rotation"]
-            if not (isinstance(q, list) and len(q) == 4 and abs(math.sqrt(sum(float(x) ** 2 for x in q)) - 1.0) < 1e-3):
-                f.bad("GLB-NODE", "%s rotation is not a unit quaternion" % w, "Normalise the quaternion.", w)
-        if "scale" in n and (not isinstance(n["scale"], list) or any(not isinstance(x, (int, float)) or x <= 0 for x in n["scale"])):
-            f.bad("GLB-NODE", "%s scale must be positive" % w, "Mirroring and zero scale are not allowed; bake them into the vertices.", w)
+        for msg in node_transform_problems(n):
+            transform_bad = True
+            f.bad("GLB-NODE", "%s (%s): %s" % (w, n.get("name", ""), msg), "Write translation (3 numbers), rotation (a unit quaternion), scale (3 positive numbers) or a "
+                  "matrix (16 numbers, last row 0 0 0 1, positive determinant). Mirroring, zero scale and projection are not allowed; bake them into the vertices.", w)
     # cycles / reachability
     reach, stack = set(), list(sc_nodes)
     while stack:
@@ -423,7 +422,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
         if un:
             f.bad("GLB-UNUSED", "%s %s is not used by anything" % (kind, ", ".join(map(str, un[:5]))), "Remove unused %ss; the file may hold nothing that is not shown." % kind, "/%ss" % kind)
     # ---- the extent and the bounds are those of the scene: every node's transform applied to the mesh it holds
-    wb = world_bounds(doc, nodes, sc_nodes, mesh_pos)
+    wb = None if transform_bad else world_bounds(doc, nodes, sc_nodes, mesh_pos)
     if wb is not None:
         lo, hi = wb
         info["bounds"] = {"min": [float(x) for x in lo], "max": [float(x) for x in hi]}
@@ -481,10 +480,16 @@ def validate_one(data, label, role, item, tex_sizes, params):
         for gid_name, lst in sorted(gids.items()):
             if len(lst) > 1:
                 f.bad("GLB-IDENT", "GlobalId %s is on %d nodes (%s ...)" % (gid_name, len(lst), lst[0]), "One node per product.", "/nodes", level="RECOMMENDED")
-        try:
-            pairs = coplanar.glb_overlaps(data, params["coincidentMinAreaM2"])
-        except Exception:
-            pairs = []                                   # a GLB that cannot be read this far has other findings
+        pairs = []
+        if not transform_bad:                            # an unreadable transform is already a REQUIRED finding; the check needs readable ones
+            try:
+                pairs = coplanar.glb_overlaps(data, params["coincidentMinAreaM2"])
+            except Failed as exc:
+                f.bad("GLB-COPLANAR", "the coincident-face check could not run: %s" % exc, "Fix the file; until then no warning does not mean no coincident faces.", "/nodes",
+                      level="RECOMMENDED")
+            except Exception as exc:                     # a defect of the check or of the file that no other check names: say so, never report "clean"
+                f.bad("GLB-COPLANAR", "internal error in the coincident-face check (%s: %s)" % (type(exc).__name__, str(exc)[:160]),
+                      "Report this with the file; the result of this check is unknown.", "/nodes")
         if pairs:
             f.bad("GLB-COPLANAR", "%d pair(s) of nodes have coincident same-facing faces over %g m2 (%.2f m2 in all); the largest: %s and %s, %.2f m2"
                   % (len(pairs), params["coincidentMinAreaM2"], sum(p[2] for p in pairs), pairs[0][0], pairs[0][1], pairs[0][2]),
@@ -516,6 +521,41 @@ def validate_one(data, label, role, item, tex_sizes, params):
     return f, info
 
 
+def node_transform_problems(n):
+    """[message] for a node whose translation, rotation, scale or matrix cannot be used: wrong length, not finite numbers, a rotation that is not a unit
+    quaternion, a scale that is not positive, or a matrix that mirrors (determinant not positive), projects (last row not 0 0 0 1) or has a zero axis."""
+    import numpy as np
+
+    def numbers(v, count):
+        return isinstance(v, list) and len(v) == count and all(isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) for x in v)
+    out = []
+    if "matrix" in n:
+        mt = n["matrix"]
+        if not numbers(mt, 16):
+            out.append("matrix must be 16 finite numbers")
+        else:
+            a = np.array(mt, dtype=float).reshape(4, 4).T                       # column-major
+            if not np.allclose(a[3], [0, 0, 0, 1], atol=1e-9):
+                out.append("matrix is not affine (its last row must be 0 0 0 1)")
+            elif np.linalg.det(a[:3, :3]) <= 0 or (np.linalg.norm(a[:3, :3], axis=0) <= 0).any():
+                out.append("matrix mirrors or collapses an axis (its determinant must be positive)")
+    if "translation" in n and not numbers(n["translation"], 3):
+        out.append("translation must be 3 finite numbers")
+    if "rotation" in n:
+        q = n["rotation"]
+        if not numbers(q, 4):
+            out.append("rotation must be 4 finite numbers")
+        elif abs(math.sqrt(sum(float(x) ** 2 for x in q)) - 1.0) >= 1e-3:
+            out.append("rotation is not a unit quaternion")
+    if "scale" in n:
+        sc = n["scale"]
+        if not numbers(sc, 3):
+            out.append("scale must be 3 finite numbers")
+        elif not all(x > 0 for x in sc):
+            out.append("scale must be positive")
+    return out
+
+
 def world_bounds(doc, nodes, sc_nodes, mesh_pos):
     """(min, max) in glTF axes of everything the default scene draws, with the transform of every node on the path applied (translation, rotation, scale
     or matrix) to the vertices of its mesh. A mesh used by several nodes counts once for each. None when the graph or a transform cannot be read
@@ -539,7 +579,7 @@ def world_bounds(doc, nodes, sc_nodes, mesh_pos):
             for c in node.get("children", []) or []:
                 if isinstance(c, int) and 0 <= c < len(nodes):
                     stack.append((c, m))
-    except (TypeError, ValueError, KeyError, IndexError):
+    except (Failed, TypeError, ValueError, KeyError, IndexError):
         return None
     return None if lo is None else (lo, hi)
 
@@ -658,7 +698,8 @@ def validate_files(specs, ifc=None, use_khronos="auto"):
         entry = {"path": s["label"], "role": role, "sha256": glbkit.sha256_bytes(data), "bytes": len(data), "triangles": info["triangles"], "nodes": info["nodes"]}
         if info["bounds"]:
             lo, hi = info["bounds"]["min"], info["bounds"]["max"]
-            entry["boundsIfcFrame"] = {"min": [round(lo[0], 6), round(-hi[2], 6), round(lo[1], 6)], "max": [round(hi[0], 6), round(-lo[2], 6), round(hi[1], 6)]}
+            r6 = lambda x: round(float(x), 6) + 0.0          # noqa: E731  (+ 0.0 turns -0.0 into 0.0, so an unchanged input gives an unchanged report)
+            entry["boundsIfcFrame"] = {"min": [r6(lo[0]), r6(-hi[2]), r6(lo[1])], "max": [r6(hi[0]), r6(-lo[2]), r6(hi[1])]}
         ifc_path = s.get("ifc") or (ifc if role == "model" else None)
         if ifc_path and role == "model" and not f.codes & {"GLB-CONTAINER"}:
             try:
