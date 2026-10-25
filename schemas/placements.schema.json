@@ -23,13 +23,13 @@
           "kind": {"type": "string"},
           "category": {"type": "string"},
           "level": {"type": ["string", "null"]},
-          "pivot": {"enum": ["placement", "footprint", "override", "world"], "description": "where the origin comes from: the IFC placement, the footprint centre at the lowest point, a pivot file, or (terrain) the model origin"},
+          "pivot": {"enum": ["placement", "footprint", "override", "world"], "description": "where the origin comes from: the IFC placement, the footprint centre at the lowest point (also the fallback for a placement that is not a proper rotation), a pivot file, or (terrain) the model origin"},
           "originIfc": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
-          "rotationZDegrees": {"type": "number", "description": "turn of the node about the vertical axis (placement pivots only; 0 otherwise)"},
+          "rotationZDegrees": {"type": ["number", "null"], "description": "turn of the NODE about the vertical axis, in degrees: the yaw of a placement pivot whose placement is upright, 0 for a node without rotation (footprint, override, terrain); null when the node's rotation is not a turn about the vertical (a tilted or inverted placement), which only the node's quaternion in the GLB describes"},
           "mesh": {"type": "integer", "minimum": 0},
           "instanceOf": {"type": ["string", "null"], "description": "name of the first node that uses this mesh, null for that node itself"},
           "triangles": {"type": "integer", "minimum": 0},
-          "placementIfc": {"type": ["array", "null"], "description": "the 4 x 4 placement of the product in the IFC frame, row by row", "items": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4}, "minItems": 4, "maxItems": 4}
+          "placementIfc": {"type": ["array", "null"], "description": "the 4 x 4 placement of the product in the IFC file, row by row; it is the node's transform only for pivot placement. For footprint and override nodes the geometry is already turned into world orientation, so this is the product's placement and not the node's; null for terrain (pivot world)", "items": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4}, "minItems": 4, "maxItems": 4}
         }
       }
     }

@@ -216,7 +216,7 @@ def write_scene_glb(name, levels, loose, extras, indexed=False):
                     accs.append({"bufferView": vi, "componentType": 5123 if small else 5125, "count": int(len(ix)), "type": "SCALAR"})
                     pr["indices"] = len(accs) - 1
                 prims.append(pr)
-            meshes.append({"name": c["name"], "primitives": prims})
+            meshes.append({"name": ("shape:" + fp[:10]) if fp is not None else c["name"], "primitives": prims})      # a shared mesh is named by its shape, not by a node
             mesh_index = len(meshes) - 1
             c["instanceOf"] = None
             if fp is not None:

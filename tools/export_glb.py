@@ -35,9 +35,14 @@ origin at the centre of the footprint at the lowest point, without rotation (as 
 `{GlobalId: [x, y] or [x, y, z]}` in IFC world coordinates (metres) that overrides the origin of single products, for example the foot of a
 hinge line (z defaults to the lowest point). A product whose placement is not a proper rotation (a mirror, a scale) falls back to `footprint`.
 Every export with `placement` or `footprint` also writes `placements.json` (format `placements/1`): per node the product, the origin in the IFC
-frame, the turn about the vertical, the 4 x 4 placement, the mesh and which node it is an instance of. `--indexed` shares vertices that agree in
-position and normal (indexed primitives, roughly a third of the bytes of the triangle soup); `proofs.glbIndexed` sets the default. The component
-GLB files and the swatches are not changed by any of these options.
+frame, the turn of the node about the vertical (null when the node is tilted or inverted: its quaternion in the GLB is exact), the 4 x 4 IFC
+placement of the product (null for terrain; for `footprint` and `override` nodes the geometry is already turned into world orientation, so that is
+the product's placement and not the node's), the mesh and which node it is an instance of. Terrain stays in world coordinates (pivot `world`).
+`--pivot-file` entries that match no node that takes a pivot (a mistyped GlobalId, a volume left out, a part of an assembly, terrain) are an error, and
+the applied ones are recorded in `extras.pivotOverrides`. `--indexed` shares vertices that agree in position and normal (indexed primitives): flat
+normals make a vertex shared only between coplanar triangles, so it saves roughly 15 to 25 percent of the bytes of box-like geometry; the large saving
+of a model with many repeated products comes from sharing identical shapes (`--pivots placement`). `proofs.glbIndexed` sets the default and
+`--no-indexed` overrides it. The component GLB files and the swatches are not changed by any of these options.
 
 Coincident faces (`--coplanar`, profile `proofs.glbCoplanar`, default `off`): `union` replaces, inside each product of the whole-model GLB, the
 coplanar same-facing triangles that overlap (two boxes of one element sharing a plane, drawn in two colours) by the union of their polygons, so the
@@ -183,7 +188,7 @@ def to_gltf_matrix(m):
 def pivot_node(m_root, parts, world, mode, override):
     """The local geometry and the node transform of one product. m_root: its 4x4 placement (IFC frame); parts: its geometry in that frame;
     world: the same in world coordinates (from m_root). Returns (local parts, node dict or None, pivot origin in the IFC frame, rotation about Z in
-    degrees, pivot kind). node is None for `world`."""
+    degrees, or None when the node's rotation is not a turn about the vertical, pivot kind). node is None for `world`."""
     import numpy as np
     if mode == "world":
         return world, None, (0.0, 0.0, 0.0), 0.0, "world"
@@ -195,7 +200,8 @@ def pivot_node(m_root, parts, world, mode, override):
         g = to_gltf_matrix(m_root)
         q = glbkit.quaternion_of(g[:3, :3])
         node = {"translation": [float(g[0, 3]), float(g[1, 3]), float(g[2, 3])], "rotation": q if not np.allclose(q, [0, 0, 0, 1], atol=1e-9) else None}
-        yaw = float(np.degrees(np.arctan2(m_root[1, 0], m_root[0, 0])))
+        upright = abs(m_root[2, 2] - 1.0) < 1e-9 and abs(m_root[0, 2]) < 1e-9 and abs(m_root[1, 2]) < 1e-9 and abs(m_root[2, 0]) < 1e-9 and abs(m_root[2, 1]) < 1e-9
+        yaw = float(np.degrees(np.arctan2(m_root[1, 0], m_root[0, 0]))) if upright else None      # None: tilted or inverted, the quaternion of the node says how
         return local, node, tuple(float(v) for v in m_root[:3, 3]), yaw, "placement"
     if override is not None:
         o = np.array([override[0], override[1], override[2] if len(override) > 2 else lo[2]], dtype=float)
@@ -255,9 +261,10 @@ def expected_levels_and_rooms(path, volumes=None):
     return levels, rooms
 
 
-def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexed=None, overrides=None, coplanar_union=None):
+def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexed=None, overrides=None, coplanar_union=None, check_overrides=True):
     """The whole-model GLB of one IFC file. Returns dict(glb, sha256, triangles, nodes, bounds, rooms, levels, counts, excluded, placements).
-    pivots: world, placement or footprint (see the module doc); overrides: {GlobalId: [x, y(, z)]} pivot points in IFC world coordinates."""
+    pivots: world, placement or footprint (see the module doc); overrides: {GlobalId: [x, y(, z)]} pivot points in IFC world coordinates; an
+    entry that no node uses is an error unless check_overrides is false (a delivery with several master files checks the union itself)."""
     import numpy as np
     import ifcopenshell
     limits = limits or glbkit.NullLimits()
@@ -267,6 +274,7 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
     union = coplanar_mode(coplanar_union) == "union"
     union_stats = [0, 0.0]
     overrides = overrides or {}
+    used_overrides = set()
     placements = []
     skip_volume = glbkit.exclusion_reason if volumes == "exclude" else None
     model = ifcopenshell.open(path)
@@ -294,6 +302,8 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
                 union_stats[1] += area
             world = [(c, np.round(t @ m_root[:3, :3].T + m_root[:3, 3], 6) + 0.0) for c, t in parts]
             local, own, origin, yaw, pk = pivot_node(m_root, parts, world, pivots, overrides.get(e.GlobalId))
+            if own is not None and e.GlobalId in overrides:
+                used_overrides.add(e.GlobalId)
         allv = np.concatenate([t for _, t in world])
         lo_all = allv.min(axis=0) if lo_all is None else np.minimum(lo_all, allv.min(axis=0))
         hi_all = allv.max(axis=0) if hi_all is None else np.maximum(hi_all, allv.max(axis=0))
@@ -304,12 +314,17 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
                 "parts": local}
         if own is not None:
             node["node"] = own
+        if pivots != "world":                  # one row per node; terrain stays in world coordinates (pivot "world", no placement)
             placements.append((node, e, kind, cat, origin, yaw, pk, None if cls == "IfcGeographicElement" else m_root, sum(len(t) // 3 for _, t in world)))
         counts[kind] = counts.get(kind, 0) + 1
         nnodes += 1
         (by_level[lv.id()] if lv is not None and lv.id() in by_level else loose).append(node)
     if lo_all is None:
         raise Failed("%s holds no geometry to export" % rel)
+    unused = sorted(set(overrides) - used_overrides)
+    if unused and check_overrides:
+        raise Failed("pivot file: %d entr%s match no product node that takes a pivot (a wrong GlobalId, a volume left out, a part of an assembly, terrain), for example %s"
+                     % (len(unused), "y" if len(unused) == 1 else "ies", ", ".join(unused[:3])))
     levels = [{"name": safe_name(s.Name, 80), "extras": {"elevation": r6(float(s.Elevation or 0.0))}, "components": by_level[s.id()]} for s in storeys]
     levels = [lv for lv in levels if lv["components"]] + [lv for lv in levels if not lv["components"]]
     rooms = room_records(model)
@@ -322,6 +337,8 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
         extras["excluded"] = excluded
     if pivots != "world":
         extras["nodePivots"] = pivots
+    if used_overrides:
+        extras["pivotOverrides"] = sorted(used_overrides)
     if indexed:
         extras["indexed"] = True
     if union:
@@ -332,13 +349,13 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
         rows = []
         for node, e, kind, cat, origin, yaw, pk, m_root, ntr in placements:
             rows.append({"node": node["name"], "globalId": e.GlobalId, "ifcClass": e.is_a(), "kind": kind, "category": cat, "level": node["extras"]["level"],
-                         "pivot": pk, "originIfc": rl(origin), "rotationZDegrees": round(yaw, 4), "mesh": node["mesh"], "instanceOf": node["instanceOf"],
+                         "pivot": pk, "originIfc": rl(origin), "rotationZDegrees": None if yaw is None else round(yaw, 4) + 0.0, "mesh": node["mesh"], "instanceOf": node["instanceOf"],
                          "triangles": ntr, "placementIfc": [rl(r) for r in m_root] if m_root is not None else None})
         rows.sort(key=lambda r: r["node"])
         table = {"format": "placements/1", "model": rel, "ifcSha256": ifc_sha, "modelSha256": sha256_bytes(glb), "nodePivots": pivots,
                  "meshes": len({r["mesh"] for r in rows}), "nodes": rows}
     return {"glb": glb, "sha256": sha256_bytes(glb), "triangles": ntri, "nodes": nnodes + len(levels) + 1,
-            "bounds": extras["bounds"], "rooms": rooms, "levels": extras["levels"], "counts": extras["counts"], "excluded": excluded, "placements": table}
+            "bounds": extras["bounds"], "rooms": rooms, "levels": extras["levels"], "counts": extras["counts"], "excluded": excluded, "placements": table, "usedOverrides": sorted(used_overrides)}
 
 
 def component_list(delivery, limits=None):
@@ -412,15 +429,20 @@ def material_list(delivery):
 def export_delivery(delivery, limits=None, volumes=None, pivots=None, indexed=None, overrides=None, coplanar_union=None):
     """Everything export_glb writes, in memory: {"models": [...], "components": [...], "materials": [...]}. Components with identical GLB
     bytes are merged into one entry listing all their keys and names; every entry has `rel`, the path below the output folder."""
-    models = []
+    models, used_all = [], set()
     masters = find_masters(delivery)
     for rel in masters:
         p = os.path.join(delivery, rel)
-        m = model_glb(p, rel, sha_file(p), limits, volumes, pivots, indexed, overrides, coplanar_union)
+        m = model_glb(p, rel, sha_file(p), limits, volumes, pivots, indexed, overrides, coplanar_union, check_overrides=False)
+        used_all.update(m["usedOverrides"])
         m["source"] = {"path": rel, "sha256": sha_file(p)}
         m["keys"], m["kind"], m["category"], m["names"] = ["model:" + rel], "model", "model", ["whole model"]
         m["rel"] = "model.glb" if len(masters) == 1 else "model-%s.glb" % slugify(os.path.splitext(os.path.basename(rel))[0])
         models.append(m)
+    unused = sorted(set(overrides or {}) - used_all)
+    if unused:
+        raise Failed("pivot file: %d entr%s match no product node of any master file that takes a pivot (a wrong GlobalId, a volume left out, a part of an assembly, "
+                     "terrain), for example %s" % (len(unused), "y" if len(unused) == 1 else "ies", ", ".join(unused[:3])))
     merged, order = {}, []
     for c in component_list(delivery, limits) + material_list(delivery):
         if c["sha256"] in merged:
@@ -482,6 +504,24 @@ def write_all(result, out_dir):
     return index
 
 
+def parse_pivot_file(obj):
+    """{GlobalId: [x, y, z or None]} from the JSON of a pivot file; ValueError with the reason when it is not {GlobalId: [x, y] or [x, y, z]} of finite numbers."""
+    import math
+    if not isinstance(obj, dict) or not obj:
+        raise ValueError("must be a JSON object {GlobalId: [x, y] or [x, y, z]} with at least one entry")
+    out = {}
+    for gid, v in obj.items():
+        if not (isinstance(gid, str) and re.fullmatch(r"[0-9A-Za-z_$]{22}", gid)):
+            raise ValueError("%r is not a GlobalId (22 characters)" % (gid,))
+        if not (isinstance(v, list) and len(v) in (2, 3)):
+            raise ValueError("%s: expected [x, y] or [x, y, z]" % gid)
+        for x in v:
+            if isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x):
+                raise ValueError("%s: %r is not a finite number" % (gid, x))
+        out[gid] = [float(x) for x in v]
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("path", help="a delivery folder, or one .ifc file")
@@ -492,7 +532,7 @@ def main():
     ap.add_argument("--pivots", choices=PIVOT_MODES, help="world (default): vertices baked into world coordinates; placement: each product has its own origin and the model GLB "
                     "shares identical shapes; footprint: origin at the centre of the footprint at the lowest point")
     ap.add_argument("--pivot-file", help="JSON {GlobalId: [x, y(, z)]} of pivot points in IFC world coordinates (for example door hinges)")
-    ap.add_argument("--indexed", action="store_true", default=None, help="share vertices that agree in position and normal")
+    ap.add_argument("--indexed", action=argparse.BooleanOptionalAction, default=None, help="share vertices that agree in position and normal (--no-indexed overrides a profile that sets proofs.glbIndexed)")
     ap.add_argument("--coplanar", choices=COPLANAR_MODES, help="union: merge overlapping coplanar same-facing triangles inside each product (needs shapely 2.1)")
     ap.add_argument("--volumes", choices=VOLUME_MODES, help="mesh: zones and reservation volumes are exported like any product; exclude: left out and listed in extras.excluded")
     a = ap.parse_args()
@@ -502,12 +542,14 @@ def main():
         sys.exit(3)
     overrides = None
     if a.pivot_file:
+        if pivots_mode(a.pivots) == "world":
+            print("ERROR --pivot-file needs --pivots placement or footprint (with world pivots every origin is the model origin and the file would do nothing)", file=sys.stderr)
+            sys.exit(2)
         try:
             with open(a.pivot_file, encoding="utf-8") as fh:
-                overrides = json.load(fh)
-            assert isinstance(overrides, dict) and all(isinstance(v, list) and len(v) in (2, 3) and all(isinstance(x, (int, float)) for x in v) for v in overrides.values())
-        except (OSError, ValueError, AssertionError):
-            print("ERROR --pivot-file must be a JSON object {GlobalId: [x, y] or [x, y, z]}", file=sys.stderr)
+                overrides = parse_pivot_file(json.load(fh))
+        except (OSError, ValueError) as exc:
+            print("ERROR --pivot-file %s: %s" % (a.pivot_file, exc), file=sys.stderr)
             sys.exit(2)
     try:
         if os.path.isfile(a.path):

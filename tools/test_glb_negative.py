@@ -274,6 +274,99 @@ doc, bn = glbkit.split_glb(g_ex)
 expect(all(node_box(g_ex, gid) is None for gid in listed), "extras.excluded lists only products that have no node")
 
 
+# ------------------------------------------------------------------ 3. pivot files: explicit errors, nothing ignored
+def pivot_run(content, *args, raw=False, name="pf.json", out="o_pf"):
+    pf = os.path.join(work, name)
+    with open(pf, "w") as fh:
+        fh.write(content if raw else json.dumps(content))
+    shutil.rmtree(os.path.join(work, out), ignore_errors=True)
+    return py("export_glb.py", VARIANT, "--out", os.path.join(work, out), "--pivot-file", pf, *args)
+
+
+GOOD = IDS["tilted"]
+r = pivot_run({GOOD: [1.0, 2.0]}, "--pivots", "placement")
+expect(r.returncode == 0, "a good pivot file works: %s" % r.stderr[-200:])
+for label, content in {"NaN": '{"%s": [NaN, 2]}' % GOOD, "Infinity": '{"%s": [Infinity, 2]}' % GOOD, "1e400": '{"%s": [1e400, 2]}' % GOOD,
+                       "a boolean": '{"%s": [true, 2]}' % GOOD, "a string": '{"%s": ["1", 2]}' % GOOD, "one number": '{"%s": [1]}' % GOOD,
+                       "four numbers": '{"%s": [1, 2, 3, 4]}' % GOOD, "a key that is not a GlobalId": '{"hinge": [1, 2]}', "an empty object": "{}", "a list": "[1, 2]",
+                       "invalid JSON": "{"}.items():
+    r = pivot_run(content, "--pivots", "placement", raw=True)
+    expect(r.returncode == 2 and "ERROR" in r.stderr and "Traceback" not in r.stderr and not os.path.exists(os.path.join(work, "o_pf", "model.glb")),
+           "pivot file with %s: exit 2, a message, no output: %s" % (label, (r.returncode, r.stderr[-120:])))
+r = pivot_run({GOOD: [1.0, 2.0]}, raw=False)
+expect(r.returncode == 2 and "--pivots" in r.stderr, "a pivot file with world pivots (the default) is refused, it would do nothing: %s" % r.stderr[-150:])
+unknown = "ZZZZZZZZZZZZZZZZZZZZZZ"
+r = pivot_run({unknown: [1.0, 2.0]}, "--pivots", "placement")
+expect(r.returncode == 3 and unknown in r.stderr and not os.path.exists(os.path.join(work, "o_pf", "model.glb")), "an unknown GlobalId in a pivot file fails and names it: %s" % r.stderr[-200:])
+for label, gid in (("terrain", IDS["terrain"]), ("a volume left out", IDS["proxy"]), ("a part of an assembly", IDS["chair"])):
+    r = pivot_run({gid: [1.0, 2.0]}, "--pivots", "placement", "--volumes", "exclude")
+    expect(r.returncode == 3 and gid in r.stderr, "a pivot file entry for %s is ignored by the exporter, so it fails: %s" % (label, r.stderr[-200:]))
+pf_ok = os.path.join(work, "pf-ok.json")
+with open(pf_ok, "w") as fh:
+    json.dump({GOOD: [1.0, 2.0]}, fh)
+g = export(VARIANT, os.path.join(work, "o_pf_ok"), "--pivots", "footprint", "--pivot-file", pf_ok)
+expect(glbkit.split_glb(g)[0]["extras"].get("pivotOverrides") == [GOOD], "the applied pivot overrides are recorded in extras.pivotOverrides")
+expect("pivotOverrides" not in glbkit.split_glb(export(VARIANT, os.path.join(work, "o_pf_none"), "--pivots", "footprint"))[0]["extras"], "no override, no extras.pivotOverrides")
+
+# ------------------------------------------------------------------ 4. tilted, inverted and terrain placements
+g_world = export(VARIANT, os.path.join(work, "o_w"), "--volumes", "exclude")
+for mode in ("placement", "footprint"):
+    out = os.path.join(work, "o_" + mode)
+    g = export(VARIANT, out, "--volumes", "exclude", "--pivots", mode, "--indexed")
+    for key in ("tilted", "inverted", "asm", "terrain"):
+        a, b = node_box(g, IDS[key]), node_box(g_world, IDS[key])
+        expect(a is not None and b is not None and np.allclose(a[0], b[0], atol=1e-4) and np.allclose(a[1], b[1], atol=1e-4), "%s: %s has the same world box as in the baked export" % (mode, key))
+    expect(validate_ifc(g, VARIANT)["result"] == "pass", "%s: tilted, inverted, terrain and assembly nodes pass validate_glb --ifc" % mode)
+    doc, bn = glbkit.split_glb(g)
+    leaf = [n for n in doc["nodes"] if "mesh" in n]
+    table = json.load(open(os.path.join(out, "model.placements.json")))
+    __import__("jsonschema").validate(table, json.load(open(os.path.join(ROOT, "schemas", "placements.schema.json"))))
+    expect(len(table["nodes"]) == len(leaf), "%s: one placements row per leaf node, terrain included (%d rows, %d nodes)" % (mode, len(table["nodes"]), len(leaf)))
+    rows = {r["globalId"]: r for r in table["nodes"]}
+    t = rows[IDS["terrain"]]
+    expect(t["pivot"] == "world" and t["originIfc"] == [0.0, 0.0, 0.0] and t["rotationZDegrees"] == 0.0 and t["placementIfc"] is None, "%s: the terrain row is world, identity: %s" % (mode, t))
+    if mode == "placement":
+        expect(rows[IDS["tilted"]]["rotationZDegrees"] is None, "placement: a tilted placement has no 'rotation about the vertical' (null): %s" % rows[IDS["tilted"]]["rotationZDegrees"])
+        expect(rows[IDS["inverted"]]["rotationZDegrees"] is None, "placement: an inverted placement has no 'rotation about the vertical' (null): %s" % rows[IDS["inverted"]]["rotationZDegrees"])
+        expect(rows[IDS["asm"]]["rotationZDegrees"] == 0.0, "placement: an upright placement keeps its yaw")
+        node_t = next(n for n in leaf if n["extras"]["globalId"] == IDS["tilted"])
+        q = np.array(node_t["rotation"])
+        expect(abs(np.linalg.norm(q) - 1) < 1e-6 and abs(q[1]) > 0.1 and abs(q[0]) + abs(q[2]) > 0.1, "placement: the tilted node carries a quaternion that is more than a turn about Y: %s" % q.tolist())
+    else:
+        expect(rows[IDS["tilted"]]["pivot"] == "footprint" and rows[IDS["tilted"]]["rotationZDegrees"] == 0.0 and rows[IDS["tilted"]]["placementIfc"] is not None,
+               "footprint: the row says the node has no rotation and keeps the product's IFC placement for information")
+    # shared meshes are named by their shape, not after the first node that uses them
+    terrain_mesh = next(n["mesh"] for n in leaf if n["extras"]["globalId"] == IDS["terrain"])
+    names = [m.get("name", "") for i, m in enumerate(doc["meshes"]) if i != terrain_mesh]
+    expect(names and all(n.startswith("shape:") for n in names), "%s: meshes that nodes share are named by shape: %s" % (mode, names[:3]))
+# the default stays as it was: meshes carry the node's name
+doc_w = glbkit.split_glb(g_world)[0]
+expect(all(not m.get("name", "").startswith("shape:") for m in doc_w["meshes"]), "world pivots: meshes keep the node names (default bytes unchanged)")
+
+# --indexed can be switched off against a profile that turns it on
+prof = os.path.join(work, "indexed-profile.json")
+with open(prof, "w") as fh:
+    json.dump({"name": "indexed-test", "version": "1.0.0", "proofs": {"glbIndexed": True}}, fh)
+on = export(VARIANT, os.path.join(work, "o_i_on"), "--profile", prof)
+off = export(VARIANT, os.path.join(work, "o_i_off"), "--profile", prof, "--no-indexed")
+expect(glbkit.split_glb(on)[0]["extras"].get("indexed") is True and "indexed" not in glbkit.split_glb(off)[0]["extras"] and off == export(VARIANT, os.path.join(work, "o_i_plain")),
+       "--no-indexed overrides proofs.glbIndexed")
+rpt.load_profile(None)
+
+
+# the bytes do not depend on the hash seed of the interpreter
+seeds = []
+for seed in ("0", "7"):
+    env = dict(os.environ, PYTHONHASHSEED=seed)
+    o = os.path.join(work, "o_seed" + seed)
+    shutil.rmtree(o, ignore_errors=True)
+    r = subprocess.run([sys.executable, "-I", os.path.join(HERE, "export_glb.py"), VARIANT, "--out", o, "--pivots", "placement", "--indexed", "--volumes", "exclude"],
+                       capture_output=True, text=True, env=env)
+    assert r.returncode == 0, r.stderr
+    seeds.append((open(os.path.join(o, "model.glb"), "rb").read(), open(os.path.join(o, "model.placements.json"), "rb").read()))
+expect(seeds[0] == seeds[1], "placement + indexed export is byte-identical under different PYTHONHASHSEED values")
+
+
 if __name__ == "__main__":
     print("test_glb_negative: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)
