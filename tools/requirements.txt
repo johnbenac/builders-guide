@@ -1,6 +1,8 @@
-# core: every checker (shapely is used by check_ifc.py since 2.1.0)
+# core: every checker (shapely is used by check_ifc.py since 2.1.0; the coplanar union needs shapely 2.1 for its constrained Delaunay triangulation;
+# scipy is used by walkcheck.py and the terrain tools)
 ifcopenshell>=0.8.0,<0.10
 numpy>=1.24,<3
 pillow>=10.0,<14
 jsonschema>=4.0,<5
-shapely>=2.0,<3
+shapely>=2.1,<3
+scipy>=1.10,<2
