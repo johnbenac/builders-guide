@@ -487,6 +487,37 @@ for glb_ in (g_ex, export(VARIANT, os.path.join(work, "o_walk"), "--volumes", "e
 expect(walkcheck.walk(g_ex, (1.0, 1.0, 0.0), [0.30])["radii"]["0.30"]["rooms"] == walkcheck.walk(export(VARIANT, os.path.join(work, "o_walk"), "--volumes", "exclude", "--pivots", "placement"), (1.0, 1.0, 0.0), [0.30])["radii"]["0.30"]["rooms"],
        "baked and pivoted exports of one model walk the same")
 
+# ------------------------------------------------------------------ 6. a staged copy of the set is what it says
+import check_set  # noqa: E402
+
+problems, details = check_set.check(ROOT, check_set.versions(ROOT)["CHANGELOG.md"])
+expect(not problems and details["listed"] > 300, "this set is whole and coherent: %s" % problems)
+cp = os.path.join(work, "staged")
+shutil.rmtree(cp, ignore_errors=True)
+shutil.copytree(ROOT, cp, ignore=shutil.ignore_patterns("deliveries", "work", "__pycache__", ".git", "node_modules", "dist"))
+r = py("check_set.py", cp, "--expect", details["version"], "--require", "tools/export_glb.py", "--require", "tools/validate_glb.py")
+expect(r.returncode == 0, "a clean copy passes: %s" % r.stdout)
+r = py("check_set.py", cp, "--expect", "9.9.9")
+expect(r.returncode == 1 and "expected 9.9.9" in r.stdout, "a copy that is not the stated version fails: %s" % r.stdout)
+os.remove(os.path.join(cp, "tools", "walkcheck.py"))
+r = py("check_set.py", cp, "--require", "tools/walkcheck.py", "--json")
+rj = json.loads(r.stdout)
+expect(r.returncode == 1 and "tools/walkcheck.py" in rj["missing"] and any("required file missing" in x for x in rj["problems"]), "a missing tool is named (manifest and --require)")
+shutil.copy(os.path.join(ROOT, "tools", "walkcheck.py"), os.path.join(cp, "tools", "walkcheck.py"))
+with open(os.path.join(cp, "tools", "export_glb.py"), "a") as fh:
+    fh.write("# edited\n")
+r = py("check_set.py", cp, "--json")
+rj = json.loads(r.stdout)
+expect(r.returncode == 1 and rj["differing"] == ["tools/export_glb.py"], "an edited tool is named: %s" % rj["differing"])
+shutil.copy(os.path.join(ROOT, "tools", "export_glb.py"), os.path.join(cp, "tools", "export_glb.py"))
+cl = os.path.join(cp, "CHANGELOG.md")
+txt = open(cl).read().replace("## %s" % details["version"], "## 2.1.0", 1)
+open(cl, "w").write(txt)
+r = py("check_set.py", cp, "--json")
+rj = json.loads(r.stdout)
+expect(r.returncode == 1 and any(x.startswith("version: the files disagree") for x in rj["problems"]), "a CHANGELOG that says 2.1.0 over 2.3.0 tools is incoherent: %s" % rj["problems"])
+expect(py("check_set.py", os.path.join(work, "variant")).returncode == 3 and py("check_set.py", cp, "--expect", "x").returncode == 2, "exit codes 3 (not a set) and 2 (usage)")
+
 if __name__ == "__main__":
     print("test_glb_options: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)
