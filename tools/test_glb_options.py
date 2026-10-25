@@ -491,7 +491,7 @@ expect(walkcheck.walk(g_ex, (1.0, 1.0, 0.0), [0.30])["radii"]["0.30"]["rooms"] =
 # ------------------------------------------------------------------ 6. a staged copy of the set is what it says
 import check_set  # noqa: E402
 
-problems, details = check_set.check(ROOT, check_set.versions(ROOT)["CHANGELOG.md"])
+problems, details = check_set.check(ROOT, check_set.versions(ROOT)[0]["CHANGELOG.md"])
 expect(not problems and details["listed"] > 300, "this set is whole and coherent: %s" % problems)
 cp = os.path.join(work, "staged")
 shutil.rmtree(cp, ignore_errors=True)
