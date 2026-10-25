@@ -133,6 +133,10 @@ def main():
     with open(os.path.join(DIST, "SHA256SUMS.txt"), "w", newline="\n") as fh:
         for p in (zpath, html, pdf):
             fh.write("%s  %s\n" % (sha(p), os.path.basename(p)))
+    # the finished hand-over files and the tree agree on the version, both manifests, the documents and the zip
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "check_set.py"), ROOT, "--expect", VERSION, "--strict"], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit("the finished set does not pass tools/check_set.py:\n" + r.stdout + r.stderr)
     print("built", ", ".join(os.path.basename(p) for p in (html, pdf, zpath)))
 
 

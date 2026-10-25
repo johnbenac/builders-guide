@@ -598,6 +598,169 @@ finally:
     builtins.__import__ = real_import
 
 
+# ------------------------------------------------------------------ 7. a staged copy of the set: empty, truncated, tampered, escaping or stale manifests
+import check_set  # noqa: E402
+import hashlib  # noqa: E402
+import zipfile  # noqa: E402
+
+
+def staged(name):
+    """A fresh copy of the set (without deliveries, dist and caches) whose version is a release and whose manifests are regenerated for the copy."""
+    cp = os.path.join(work, name)
+    shutil.rmtree(cp, ignore_errors=True)
+    shutil.copytree(ROOT, cp, ignore=shutil.ignore_patterns("deliveries", "work", "__pycache__", ".git", "node_modules", "dist", ".*"))
+    ver = json.load(open(os.path.join(ROOT, "rules.json")))["version"]
+    with open(os.path.join(cp, "CHANGELOG.md"), encoding="utf-8") as fh:
+        text = fh.read()
+    import re as _re
+    text = _re.sub(r"^## Unreleased[^\n]*", "## " + ver, text, count=1, flags=_re.M)
+    with open(os.path.join(cp, "CHANGELOG.md"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+    r = subprocess.run([sys.executable, "-I", os.path.join(cp, "tools", "gen_all.py"), "--write"], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-300:]
+    return cp, ver
+
+
+def cs(cp, *args):
+    r = py("check_set.py", cp, "--json", *args)
+    try:
+        return r.returncode, json.loads(r.stdout), r.stderr
+    except ValueError:
+        return r.returncode, {"problems": [r.stdout + r.stderr]}, r.stderr
+
+
+def make_dist(cp, ver):
+    """A small dist/ for the copy: two documents, a zip of the whole set and the checksum files, the way build_dist.py writes them."""
+    d = os.path.join(cp, "dist")
+    shutil.rmtree(d, ignore_errors=True)
+    os.makedirs(d)
+    name = "builders-guide-" + ver
+    for ext, body in (("html", b"<html>guide</html>"), ("pdf", b"%PDF-1.4 guide")):
+        with open(os.path.join(d, "%s.%s" % (name, ext)), "wb") as fh:
+            fh.write(body)
+    sys.path.insert(0, cp + "/tools")
+    import fileset as fs  # the copy's own list
+    sys.path.pop(0)
+    with open(os.path.join(cp, "MANIFEST.sha256"), "w", newline="\n") as fh:
+        fh.write(fs.checksum_text(cp))
+    zp = os.path.join(d, name + ".zip")
+    with zipfile.ZipFile(zp, "w", zipfile.ZIP_DEFLATED) as z:
+        for rel in fs.set_files(cp) + fs.dist_files(cp) + ["MANIFEST.sha256"]:
+            z.writestr(name + "/" + rel, open(os.path.join(cp, rel), "rb").read())
+    zh = hashlib.sha256(open(zp, "rb").read()).hexdigest()
+    open(zp + ".sha256", "w").write("%s  %s\n" % (zh, os.path.basename(zp)))
+    with open(os.path.join(d, "SHA256SUMS.txt"), "w") as fh:
+        for fn in (name + ".zip", name + ".html", name + ".pdf"):
+            fh.write("%s  %s\n" % (hashlib.sha256(open(os.path.join(d, fn), "rb").read()).hexdigest(), fn))
+    return name
+
+
+cp, VER = staged("staged-a")
+code, rj, err = cs(cp, "--expect", VER)
+expect(code == 0 and rj["listed"] > 300 and rj["extra"] == [], "a clean staged copy passes and has no extra files: %s %s" % (code, rj["problems"] or rj.get("extra")))
+shutil.copy(os.path.join(cp, "MANIFEST.sha256"), os.path.join(work, "MANIFEST.sha256.good"))
+good_manifest = open(os.path.join(work, "MANIFEST.sha256.good")).read()
+
+
+def put_manifest(text):
+    with open(os.path.join(cp, "MANIFEST.sha256"), "w", newline="\n") as fh:
+        fh.write(text)
+
+
+put_manifest("")
+code, rj, _ = cs(cp)
+expect(code == 1 and any("lists no files" in x for x in rj["problems"]), "an empty MANIFEST.sha256 fails: %s %s" % (code, rj["problems"][:2]))
+put_manifest("\n".join(("%s *%s" % tuple(ln.split("  ", 1))) for ln in good_manifest.splitlines()) + "\n")
+code, rj, _ = cs(cp)
+expect(code == 1 and any("line 1 is not" in x for x in rj["problems"]), "a binary-mode (hash *path) manifest fails with its line number: %s" % rj["problems"][:2])
+put_manifest("".join(good_manifest.splitlines(True)[:5]))
+code, rj, _ = cs(cp)
+expect(code == 1 and any("MANIFEST.json lists" in x for x in rj["problems"]), "a manifest truncated to 5 rows fails (MANIFEST.json lists more): %s" % rj["problems"][:2])
+put_manifest(good_manifest.rstrip("\n"))
+code, rj, _ = cs(cp)
+expect(code == 1 and any("newline" in x for x in rj["problems"]), "a manifest without its final newline fails: %s" % rj["problems"][:2])
+put_manifest(good_manifest + "0" * 64 + "  /etc/hostname\n" + "0" * 64 + "  ../../outside.txt\n")
+code, rj, _ = cs(cp)
+expect(code == 1 and sum("is not a path inside the set" in x for x in rj["problems"]) == 2, "absolute and .. paths in the manifest are refused: %s" % rj["problems"][:3])
+# a file removed with its row from MANIFEST.sha256 only, or from both lists
+put_manifest("".join(ln for ln in good_manifest.splitlines(True) if not ln.rstrip().endswith("  tools/render.py")))
+os.remove(os.path.join(cp, "tools", "render.py"))
+code, rj, _ = cs(cp)
+expect(code == 1 and any("MANIFEST.json lists" in x for x in rj["problems"]), "a tool deleted together with its MANIFEST.sha256 row is still found through MANIFEST.json: %s" % rj["problems"][:2])
+shutil.copy(os.path.join(ROOT, "tools", "render.py"), os.path.join(cp, "tools", "render.py"))
+put_manifest(good_manifest)
+# a program added to tools/
+with open(os.path.join(cp, "tools", "evil.py"), "w") as fh:
+    fh.write("print(1)\n")
+code, rj, _ = cs(cp)
+expect(code == 0 and rj["extra"] == ["tools/evil.py"], "an unlisted program is named in `extra` and passes without --strict: %s" % rj["extra"])
+r = py("check_set.py", cp)
+expect("tools/evil.py" in r.stdout, "... and is named in the text output: %s" % r.stdout[-200:])
+code, rj, _ = cs(cp, "--strict")
+expect(code == 1 and any(x.startswith("extra:") for x in rj["problems"]), "... and fails with --strict")
+os.remove(os.path.join(cp, "tools", "evil.py"))
+# a symbolic link as a listed file, a dangling tool link, a non-UTF-8 CHANGELOG
+os.remove(os.path.join(cp, "AGENTS.md"))
+os.symlink("/etc/hostname", os.path.join(cp, "AGENTS.md"))
+code, rj, err = cs(cp)
+expect(code == 1 and any("symbolic links" in x for x in rj["problems"]) and "Traceback" not in err, "a listed file that is a symbolic link is refused: %s" % rj["problems"][:2])
+os.remove(os.path.join(cp, "AGENTS.md"))
+shutil.copy(os.path.join(ROOT, "AGENTS.md"), os.path.join(cp, "AGENTS.md"))
+os.symlink("/nonexistent/target.py", os.path.join(cp, "tools", "dangling.py"))
+code, rj, err = cs(cp)
+expect(code in (0, 1) and "Traceback" not in err and rj.get("result") in ("pass", "fail"), "a dangling symbolic link in tools/ is not a traceback: %s %s" % (code, err[-150:]))
+os.remove(os.path.join(cp, "tools", "dangling.py"))
+cl = os.path.join(cp, "CHANGELOG.md")
+orig_cl = open(cl, "rb").read()
+with open(cl, "ab") as fh:
+    fh.write(b"\xff\xfe")
+code, rj, err = cs(cp)
+expect(code == 1 and "Traceback" not in err and rj.get("problems"), "a CHANGELOG that is not UTF-8 is a failed check with JSON, not a traceback: %s %s" % (code, err[-150:]))
+open(cl, "wb").write(orig_cl)
+# a tree under development
+open(cl, "wb").write(orig_cl.replace(b"## " + VER.encode(), b"## Unreleased (proposed)", 1))
+code, rj, _ = cs(cp)
+expect(code == 1 and any("not a release" in x for x in rj["problems"]), "a CHANGELOG headed Unreleased is not a release: %s" % rj["problems"][:2])
+code, rj, _ = cs(cp, "--allow-unreleased")
+expect(code == 1, "(--allow-unreleased accepts the heading, but the changed CHANGELOG no longer matches its manifest row) %s" % rj["problems"][:1])
+open(cl, "wb").write(orig_cl)
+code, rj, _ = cs(cp, "--expect", VER)
+expect(code == 0, "(control) the copy is clean again: %s" % rj["problems"][:2])
+
+# dist/: stale version, tampered zip, tampered document, wrong checksum file
+name = make_dist(cp, VER)
+code, rj, _ = cs(cp, "--expect", VER)
+expect(code == 0 and rj["dist"]["zip"] == name + ".zip", "a copy with a complete dist/ passes: %s" % rj["problems"][:3])
+zp = os.path.join(cp, "dist", name + ".zip")
+orig_zip = open(zp, "rb").read()
+with zipfile.ZipFile(zp, "w") as z:
+    for rel in check_set.fileset.set_files(cp) + check_set.fileset.dist_files(cp) + ["MANIFEST.sha256"]:
+        data = open(os.path.join(cp, rel), "rb").read()
+        if rel == "tools/export_glb.py":
+            data += b"# tampered\n"
+        if rel != "tools/walkcheck.py":
+            z.writestr(name + "/" + rel, data)
+    z.writestr(name + "/tools/extra.py", b"x = 1\n")
+code, rj, _ = cs(cp)
+text = " ".join(rj["problems"])
+expect(code == 1 and "lacks 1" in text and "holds 1 file(s) that are not in the manifest" in text and "differ from the manifest, for example tools/export_glb.py" in text and "SHA256SUMS.txt says" in text,
+       "a zip with a changed, a missing and an extra member is refused: %s" % rj["problems"])
+open(zp, "wb").write(orig_zip)
+html = os.path.join(cp, "dist", name + ".html")
+open(html, "ab").write(b" ")
+code, rj, _ = cs(cp)
+expect(code == 1 and any("dist/" + name + ".html" in x for x in rj["problems"]), "a changed dist document is refused: %s" % rj["problems"][:2])
+open(html, "wb").write(b"<html>guide</html>")
+os.rename(html, os.path.join(cp, "dist", "builders-guide-1.0.0.html"))
+code, rj, _ = cs(cp)
+expect(code == 1 and any("1.0.0" in x and "stale" in x for x in rj["problems"]), "a dist document of another version is refused as stale: %s" % rj["problems"][:3])
+os.rename(os.path.join(cp, "dist", "builders-guide-1.0.0.html"), html)
+shutil.rmtree(os.path.join(cp, "dist"))
+code, rj, _ = cs(cp, "--expect", VER)
+expect(code == 0 and rj["dist"] is None, "a staged copy without dist/ is fine (the documents are exempt from 'missing')")
+expect(py("check_set.py", os.path.join(work, "variant")).returncode == 3 and py("check_set.py", cp, "--expect", "x").returncode == 2, "exit codes 3 (not a set) and 2 (usage)")
+
+
 if __name__ == "__main__":
     print("test_glb_negative: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)
