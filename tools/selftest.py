@@ -5,7 +5,8 @@ that the checker names the right rule each time.
 
     python3 selftest.py [WORK_DIR]
 
-Requires: pip install -r tools/requirements-terrain.txt (and requirements-preview.txt for the preview check)
+Also runs the other tests of the tools (map_properties, terrain, fixtures, hardening, the GLB option and negative tests, sync, agent harness).
+Requires: pip install -r tools/requirements.txt (and requirements-preview.txt for the preview check)
 """
 import json
 import os
@@ -163,6 +164,8 @@ subprocess.run([sys.executable, os.path.join(HERE, "test_map_properties.py"), os
 subprocess.run([sys.executable, os.path.join(HERE, "test_terrain.py"), os.path.join(work, "terrain")], check=True)
 subprocess.run([sys.executable, os.path.join(HERE, "test_fixtures.py"), os.path.join(work, "fixtures")], check=True)
 subprocess.run([sys.executable, os.path.join(HERE, "test_hardening.py"), os.path.join(work, "hardening")], check=True)
+subprocess.run([sys.executable, os.path.join(HERE, "test_glb_options.py"), os.path.join(work, "glb-options")], check=True)
+subprocess.run([sys.executable, os.path.join(HERE, "test_glb_negative.py"), os.path.join(work, "glb-negative")], check=True)
 subprocess.run([sys.executable, os.path.join(HERE, "test_sync.py")], check=True)
 subprocess.run([sys.executable, os.path.join(HERE, "agent_harness.py"), os.path.join(work, "harness")], check=True, stdout=subprocess.DEVNULL)
 print("agent_harness: passed")
