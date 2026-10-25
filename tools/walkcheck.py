@@ -295,7 +295,7 @@ def _xyz(text):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("glb")
-    ap.add_argument("--start", type=_xyz, required=True, help="where the walk starts (X,Y,Z in the IFC frame, metres); must be on a standing place")
+    ap.add_argument("--start", type=_xyz, required=True, help="where the walk starts (X,Y,Z in the IFC frame, metres); must be on a standing place; write a negative first number as --start=-8,7,0")
     ap.add_argument("--radius", type=float, nargs="+", default=[0.30], help="body radii in metres (default 0.30; 0.45 is a 0.9 m route)")
     ap.add_argument("--waypoint", action="append", default=[], metavar="NAME=X,Y,Z", help="report whether this place is connected to the start")
     ap.add_argument("--doors", choices=["open", "solid"], default="open")
