@@ -209,6 +209,116 @@ nd["rotation"] = [0.0, 0.7071068, 0.0, 0.7071068]
 rep = validate(repack(d, b), VARIANT)
 expect("GLB-BOUNDS" in codes(rep) or "GLB-BBOX-IFC" in codes(rep), "a rotation that is not in the IFC file is caught by the bounds comparison: %s" % codes(rep))
 
+# ------------------------------------------------------------------ 2. pivots, instancing, indexed meshes, placements table
+def per_product_boxes(data):
+    doc, bn = glbkit.split_glb(data)
+    out = {}
+    for it in glbkit.triangles_of(doc, bn):
+        t = it["tri"].reshape(-1, 3)
+        gid = it["extras"]["globalId"]
+        lo, hi = t.min(axis=0), t.max(axis=0)
+        out[gid] = (lo, hi) if gid not in out else (np.minimum(out[gid][0], lo), np.maximum(out[gid][1], hi))
+    return out
+
+
+def triangle_count(data):
+    doc, bn = glbkit.split_glb(data)
+    return sum(len(i["tri"]) for i in glbkit.triangles_of(doc, bn))
+
+
+world = g_ex
+boxes_world = per_product_boxes(world)
+for mode in ("placement", "footprint"):
+    out = os.path.join(work, "o_" + mode)
+    g = export(VARIANT, out, "--volumes", "exclude", "--pivots", mode)
+    rep = validate(g, VARIANT)
+    expect(rep["result"] == "pass" and not codes(rep), "%s: the pivoted model passes validate_glb --ifc: %s" % (mode, codes(rep)))
+    boxes = per_product_boxes(g)
+    expect(boxes.keys() == boxes_world.keys() and all(np.allclose(boxes[k][0], boxes_world[k][0], atol=1e-4) and np.allclose(boxes[k][1], boxes_world[k][1], atol=1e-4) for k in boxes),
+           "%s: every product has the same world box as in the baked export" % mode)
+    expect(triangle_count(g) == triangle_count(world), "%s: the same number of triangles" % mode)
+    expect(g == export(VARIANT, os.path.join(work, "o_%s2" % mode), "--volumes", "exclude", "--pivots", mode), "%s: the export is deterministic" % mode)
+    doc, _, leaf = nodes_of(g)
+    expect(doc["extras"]["nodePivots"] == mode, "%s: extras.nodePivots names the mode" % mode)
+    table = json.load(open(os.path.join(out, "model.placements.json")))
+    expect(table["format"] == "placements/1" and len(table["nodes"]) == len(leaf) and table["modelSha256"] == glbkit.sha256_bytes(g),
+           "%s: the placements table lists every node and the hash of the model" % mode)
+    names = {r["node"] for r in table["nodes"]}
+    expect(all(r["instanceOf"] in names | {None} for r in table["nodes"]), "%s: instanceOf names a node of the table" % mode)
+    if mode == "placement":
+        t1 = next(n for n in leaf if n["name"].startswith("furniture:Work table"))
+        t2 = next(n for n in leaf if n["name"].startswith("furniture:Second table"))
+        expect(t1["mesh"] == t2["mesh"], "placement: the two tables (same shape, one turned) share one mesh")
+        r2 = next(n for n in table["nodes"] if n["node"] == t2["name"])
+        expect("rotation" in t2 and abs(r2["rotationZDegrees"] - 30.0) < 1e-3 and np.allclose(r2["originIfc"][:2], [1.0, 1.0], atol=1e-6),
+               "placement: the second table is a translation and a 30 degree turn about the vertical: %s" % r2)
+        expect(np.allclose(t2["translation"], [1.0, 0.0, -1.0], atol=1e-6), "placement: translation is the placement in glTF axes: %s" % t2["translation"])
+        expect(len({n["mesh"] for n in leaf}) < len(leaf), "placement: fewer meshes than nodes")
+        q = np.array(t2["rotation"])
+        expect(abs(np.linalg.norm(q) - 1) < 1e-6 and abs(q[1] - np.sin(np.radians(15))) < 1e-6 and abs(q[0]) < 1e-9 and abs(q[2]) < 1e-9, "placement: the rotation is about glTF Y by 30 degrees: %s" % q.tolist())
+        pivot_ok = [n for n in leaf if n.get("translation") or n.get("rotation")]
+        expect(len(pivot_ok) >= 1, "placement: nodes carry transforms")
+    else:
+        expect(all("translation" in n and "rotation" not in n for n in leaf if n["extras"]["kind"] in ("furniture", "window", "door")), "footprint: translation only")
+        # the footprint pivot is the centre of the footprint at the lowest point
+        r = next(r for r in table["nodes"] if r["node"].startswith("furniture:Work table"))
+        lo, hi = boxes_world[r["globalId"]]
+        expect(np.allclose(r["originIfc"], [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]], atol=1e-5), "footprint: origin of the Work table is its footprint centre at the lowest point")
+# a pivot file puts the origin of one product on a given point (a hinge) and keeps its world geometry
+pf = os.path.join(work, "pivots.json")
+json.dump({IDS["table2"]: [2.0, 1.25]}, open(pf, "w"))
+out = os.path.join(work, "o_override")
+g = export(VARIANT, out, "--volumes", "exclude", "--pivots", "placement", "--pivot-file", pf)
+doc, _, leaf = nodes_of(g)
+t2 = next(n for n in leaf if n["extras"]["globalId"] == IDS["table2"])
+lo2 = boxes_world[IDS["table2"]][0]
+expect(np.allclose(t2["translation"], [2.0, lo2[2], -1.25], atol=1e-6) and "rotation" not in t2, "pivot file: origin at the given point, z at the lowest point: %s" % t2)
+expect(validate(g, VARIANT)["result"] == "pass" and all(np.allclose(per_product_boxes(g)[k][0], boxes_world[k][0], atol=1e-4) for k in boxes_world), "pivot file: world geometry unchanged")
+bad_pf = os.path.join(work, "bad-pivots.json")
+json.dump([1, 2], open(bad_pf, "w"))
+expect(py("export_glb.py", VARIANT, "--out", os.path.join(work, "o_badpf"), "--pivot-file", bad_pf).returncode == 2, "a malformed pivot file is a command-line error (exit 2)")
+# a mirrored placement cannot be a node transform: it falls back to the footprint pivot
+parts = [((0.5, 0.5, 0.5, 1.0), np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=float))]
+mir = np.diag([-1.0, 1.0, 1.0, 1.0])
+world_parts = [(c, t @ mir[:3, :3].T) for c, t in parts]
+_, node, _, _, kind = export_glb.pivot_node(mir, parts, world_parts, "placement", None)
+expect(kind == "footprint" and node["rotation"] is None, "a mirrored placement falls back to the footprint pivot")
+# quaternions agree with the reader's matrices
+rng_ = np.random.default_rng(3)
+for _ in range(20):
+    qq = rng_.normal(size=4)
+    qq /= np.linalg.norm(qq)
+    m4 = glbkit.node_matrix({"rotation": [float(v) for v in qq]})
+    q2 = glbkit.quaternion_of(m4[:3, :3])
+    expect(np.allclose(glbkit.node_matrix({"rotation": q2})[:3, :3], m4[:3, :3], atol=1e-7), "quaternion_of inverts node_matrix")
+# indexed meshes
+gi = export(VARIANT, os.path.join(work, "o_idx"), "--volumes", "exclude", "--indexed")
+doc, _, leaf = nodes_of(gi)
+expect(all("indices" in pr for n in leaf for pr in doc["meshes"][n["mesh"]]["primitives"]) and len(gi) < len(world), "indexed: every primitive has indices and the file is smaller (%d < %d)" % (len(gi), len(world)))
+expect(validate(gi, VARIANT)["result"] == "pass" and triangle_count(gi) == triangle_count(world), "indexed: passes and keeps the triangles")
+both = export(VARIANT, os.path.join(work, "o_both"), "--volumes", "exclude", "--indexed", "--pivots", "placement")
+expect(validate(both, VARIANT)["result"] == "pass" and len(both) < len(gi), "indexed + placement: passes and is smaller again (%d < %d)" % (len(both), len(gi)))
+# the defaults did not change: the delivered proofs of the sample are what a default export gives
+dflt = export(SAMPLE, os.path.join(work, "o_default"))
+expect(dflt == open(os.path.join(SAMPLE, "proofs", "glb", "model.glb"), "rb").read(), "the default export is byte for byte the 2.3.0 one")
+
+# the proofs of a delivery follow the profile: build, check and reproduce with pivots, indexing and excluded volumes
+pdel = os.path.join(work, "pdelivery")
+shutil.rmtree(pdel, ignore_errors=True)
+shutil.copytree(SAMPLE, pdel)
+shutil.copy(VARIANT, os.path.join(pdel, "ifc", "example-room-master.ifc"))
+pprof = os.path.join(work, "proofs-profile.json")
+json.dump({"name": "pivots-test", "version": "1.0.0", "proofs": {"glbVolumes": "exclude", "glbPivots": "placement", "glbIndexed": True}}, open(pprof, "w"))
+r = py("build_proofs.py", pdel, "--profile", pprof, "--json")
+expect(r.returncode == 0, "build_proofs with pivots, indexing and excluded volumes: %s" % (r.stdout + r.stderr)[-400:])
+pm = open(os.path.join(pdel, "proofs", "glb", "model.glb"), "rb").read()
+expect(glbkit.split_glb(pm)[0]["extras"].get("nodePivots") == "placement", "the delivered proof model is the pivoted one")
+rpt.load_profile(None)
+r = py("check_proofs.py", pdel, "--reproduce", "--profile", pprof, "--json")
+rj = json.loads(r.stdout)
+expect(not any(f["status"] == "fail" for f in rj["findings"]) and any(f["rule"] == "X-86" and f["status"] == "pass" for f in rj["findings"]),
+       "check_proofs --reproduce passes (X-86 included) on the pivoted proofs: %s" % [f["message"][:120] for f in rj["findings"] if f["status"] == "fail"])
+
 if __name__ == "__main__":
     print("test_glb_options: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)

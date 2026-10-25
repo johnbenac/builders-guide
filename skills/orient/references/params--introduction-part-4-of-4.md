@@ -13,6 +13,8 @@
 | `proofs.maxRenderBytes` | largest file size of one render, in bytes | `3145728` | `null` | X-84 |
 | `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
 | `proofs.glbVolumes` | what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list | `"mesh"` | `null` | X-80 |
+| `proofs.glbPivots` | where each product of the whole-model GLB has its origin: world bakes every vertex into world coordinates (every origin is the model origin); placement uses the origin of the product's IFC placement, so the node carries the placement and identical shapes share one mesh; footprint uses the centre of the footprint at the lowest point | `"world"` | `null` | X-80 |
+| `proofs.glbIndexed` | share vertices that agree in position and normal in the whole-model GLB (indexed primitives) | `false` | `null` | X-80 |
 | `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
 | `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |
 | `proofs.renderTolerance.differenceLevels` |  | `8` | `null` | - |

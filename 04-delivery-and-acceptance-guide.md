@@ -293,7 +293,9 @@ The GLB files use metres and Y up: a point of the IFC frame (Z up) becomes `(x, 
 materials; a texture set becomes a swatch with its maps embedded. Zones and reservation volumes state a requirement, not a thing: when the
 profile sets `proofs.glbVolumes` to `exclude` (or `export_glb.py --volumes exclude` is used), they get no mesh and no node and are listed in the
 `extras.excluded` of the whole-model GLB, which `validate_glb.py --ifc` accepts as the written reason for a missing node (only those two kinds,
-never a wall or a slab). The pictures use fixed lighting and a fixed background and are always made
+never a wall or a slab). A consumer that moves or turns single things (a door about its hinge, a chair) sets `proofs.glbPivots` to `placement`: each
+product then has its own origin, the node carries the placement, identical shapes share one mesh, and `placements.json` lists every node; a profile
+may also ask for indexed meshes (`proofs.glbIndexed`). The pictures use fixed lighting and a fixed background and are always made
 from the delivered GLB files, never from anything else: a plan per level (cut at 1.2 m above the floor), four interior views for each room kind
 that is present, four exterior views, and for every component a contact sheet of turntable frames (a swatch view for a texture set).
 

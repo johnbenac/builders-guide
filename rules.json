@@ -5352,7 +5352,9 @@
     "proofs.maxGlbNodes",
     "proofs.maxExtentMetres",
     "submission.maxFileBytes",
-    "proofs.glbVolumes"
+    "proofs.glbVolumes",
+    "proofs.glbPivots",
+    "proofs.glbIndexed"
    ],
    "extension": null
   },

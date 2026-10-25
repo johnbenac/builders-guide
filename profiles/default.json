@@ -201,6 +201,8 @@
     "maxRenderBytes": 3145728,
     "maxProofBytes": 67108864,
     "glbVolumes": "mesh",
+    "glbPivots": "world",
+    "glbIndexed": false,
     "renderTolerance": {
       "meanAbsLevels": 0.5,
       "differingFraction": 0.001,

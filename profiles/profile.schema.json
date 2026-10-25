@@ -580,6 +580,19 @@
           ],
           "description": "what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list"
         },
+        "glbPivots": {
+          "type": "string",
+          "enum": [
+            "world",
+            "placement",
+            "footprint"
+          ],
+          "description": "where each product of the whole-model GLB has its origin: world bakes every vertex into world coordinates (every origin is the model origin); placement uses the origin of the product's IFC placement, so the node carries the placement and identical shapes share one mesh; footprint uses the centre of the footprint at the lowest point"
+        },
+        "glbIndexed": {
+          "type": "boolean",
+          "description": "share vertices that agree in position and normal in the whole-model GLB (indexed primitives)"
+        },
         "renderTolerance": {
           "type": "object",
           "description": "how far a re-render may differ from the delivered picture: the mean absolute difference over all pixels (0 to 255 levels), the largest share of pixels that differ by more than differenceLevels, and that level",
