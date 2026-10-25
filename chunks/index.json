@@ -761,8 +761,8 @@
    "id": "g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr",
    "file": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md",
    "source": "04-delivery-and-acceptance-guide.md",
-   "title": "8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce",
-   "approx_tokens": 1354,
+   "title": "8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 1 of 2)",
+   "approx_tokens": 1560,
    "rules": [
     "X-79",
     "X-80",
@@ -773,6 +773,14 @@
     "X-85",
     "X-86"
    ]
+  },
+  {
+   "id": "g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2",
+   "file": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 2 of 2)",
+   "approx_tokens": 123,
+   "rules": []
   },
   {
    "id": "g5--introduction",
@@ -923,7 +931,7 @@
    "file": "chunks/params--introduction-part-2-of-4.md",
    "source": "07-profile-parameters.md",
    "title": "Introduction (part 2 of 4)",
-   "approx_tokens": 1490,
+   "approx_tokens": 1522,
    "rules": []
   },
   {
@@ -931,7 +939,7 @@
    "file": "chunks/params--introduction-part-3-of-4.md",
    "source": "07-profile-parameters.md",
    "title": "Introduction (part 3 of 4)",
-   "approx_tokens": 1507,
+   "approx_tokens": 1510,
    "rules": []
   },
   {
@@ -939,7 +947,7 @@
    "file": "chunks/params--introduction-part-4-of-4.md",
    "source": "07-profile-parameters.md",
    "title": "Introduction (part 4 of 4)",
-   "approx_tokens": 463,
+   "approx_tokens": 773,
    "rules": []
   },
   {

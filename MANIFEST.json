@@ -49,8 +49,8 @@
     "guide",
     "human"
    ],
-   "sha256": "b858f48a4e2a35d20681dd86814474550019aafb8049bf1589d0e9b64c1fa89a",
-   "bytes": 28788
+   "sha256": "227b8a250a2400b3878303b59a9d71e4a72122659c1f0452de78e69dc611dabb",
+   "bytes": 29835
   },
   {
    "path": "05-worked-example.md",
@@ -79,8 +79,8 @@
     "profile",
     "generated"
    ],
-   "sha256": "332e53dc582937e4682ae54f2edf70ddbb33e7e2dbc7ae638b5a1cacee834375",
-   "bytes": 14566
+   "sha256": "8db7a295fa1591176629ecbb7abef66bf5abfbd58793b22e4e5854dddf8adbdc",
+   "bytes": 15944
   },
   {
    "path": "08-submissions-and-ingest.md",
@@ -110,8 +110,8 @@
     "entry",
     "agent"
    ],
-   "sha256": "15d6543dab6ef1bbc434f87f5605125a9887243e6b5d4bc7bc939009dab08a9f",
-   "bytes": 6152
+   "sha256": "915584a67b1047cb44a05bfdb50ae4ad6c68ecf7ad2b6352d8b99b10f5c35a05",
+   "bytes": 6681
   },
   {
    "path": "CHANGELOG.md",
@@ -120,8 +120,8 @@
     "policy",
     "human"
    ],
-   "sha256": "8638e12039bf46fa338328000dc913ec003f2f14da890c035fab77251868aa4d",
-   "bytes": 14763
+   "sha256": "bc85250bdb8f5d32e419dcc7fd6d7fa27fd4f1a89560718a7fbc77a4a4bd74ea",
+   "bytes": 17289
   },
   {
    "path": "CONTRIBUTING.md",
@@ -130,8 +130,8 @@
     "policy",
     "human"
    ],
-   "sha256": "e2a3f07b27ca7a03d8cfad122181f7034ee9411134bcfb4674bd33803fc177a7",
-   "bytes": 3676
+   "sha256": "cd24f223fcea901514cfdac56d599d78f35014ee7f39ab9aaf0ea16780e6025b",
+   "bytes": 3713
   },
   {
    "path": "LICENSE.md",
@@ -170,8 +170,8 @@
     "policy",
     "human"
    ],
-   "sha256": "fa5d1112e0ed5078d6fc3f8aa4fc3b9306b7fc3f43b7dc49bebf0690e221c7ee",
-   "bytes": 2300
+   "sha256": "b7db01342637ca9fddb8dd101f3acc76b16989e25e79408156b9be241c2b1166",
+   "bytes": 2333
   },
   {
    "path": "chunks/about--how-a-consumer-adopts-it.md",
@@ -746,6 +746,17 @@
    "bytes": 3103
   },
   {
+   "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "d075db915f3538dffc3cc0d7742f9f0b9c3707f9f100e86f8d1c6f3784df15f9",
+   "bytes": 489
+  },
+  {
    "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
@@ -753,8 +764,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "5eb62815bb8adfebfedb4f41f5f8c51ba6efbad1101e6a023d9fc694ab6e06e8",
-   "bytes": 5422
+   "sha256": "fb7d3c353a00e30544c89ae66cd5fe366a5838459dac89daf7e785674b6c81fc",
+   "bytes": 6246
   },
   {
    "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request.md",
@@ -973,8 +984,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "eb4b1d3b76ae356062016c60140818b6e5f58cbde3c40d393b4e29b2f611e008",
-   "bytes": 26280
+   "sha256": "e67abd16f0571e39d78212ed632e8568d44ea2f0a7b1f90000dc172e9c49d92d",
+   "bytes": 26672
   },
   {
    "path": "chunks/params--extensions.md",
@@ -1006,8 +1017,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "1eb4185d0a2d3cfaa94899f96d58e8498596eba50f276041752a5b2096e34912",
-   "bytes": 5958
+   "sha256": "fb6d46c2174787d4d8fe998239b9000747f595d44c35cdbe1274397a4e67e18d",
+   "bytes": 6085
   },
   {
    "path": "chunks/params--introduction-part-3-of-4.md",
@@ -1017,8 +1028,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "aea151da454a06247677207b3ba1f1aecb46f59d1c0adfd7cc2f7dbc3c730e42",
-   "bytes": 6028
+   "sha256": "c19570b2d5b57354dc13e019b101ed5af26eb865f21d1ff0fad354a75fc6b2cb",
+   "bytes": 6039
   },
   {
    "path": "chunks/params--introduction-part-4-of-4.md",
@@ -1028,8 +1039,8 @@
     "generated",
     "chunk"
    ],
-   "sha256": "c233c0df73f865334120187b04e76dc03670f9eb7a139f01b48aaeccb97193d8",
-   "bytes": 1850
+   "sha256": "89df136b937b37046832e275bd4319bbea8eaca44125a373d5fd9995be99bbfa",
+   "bytes": 3090
   },
   {
    "path": "chunks/params--rule-levels-in-a-profile.md",
@@ -1313,8 +1324,8 @@
     "agent",
     "content"
    ],
-   "sha256": "68684b32978d374669e19ffc7378e3f85f31953d012a52547df0a54fd525f8f5",
-   "bytes": 166068
+   "sha256": "e62889c1a7efb3d57f9603bf0cddd7b6c9f5709ca5c6c95ac68bee27c45e853b",
+   "bytes": 168765
   },
   {
    "path": "llms.txt",
@@ -1324,8 +1335,8 @@
     "agent",
     "index"
    ],
-   "sha256": "41f57db0ddab64e5f8b8aa259e08aef7157658625a873b39160616b1fda789a6",
-   "bytes": 14894
+   "sha256": "c1d7ac1336065f91a2b7d7f003f4b5415ca5443ecba30a2d1312129eca14fc22",
+   "bytes": 15623
   },
   {
    "path": "profiles/default.json",
@@ -1334,8 +1345,8 @@
     "profile",
     "machine"
    ],
-   "sha256": "c10c620f7d14675bb5a65f4cea2de04e6f5799ed2276880f6099b5c5be3694b7",
-   "bytes": 4688
+   "sha256": "fbf8918617c4fdd7bb6824634860d0c30bab975a365697b4103b978bcda58ef6",
+   "bytes": 4829
   },
   {
    "path": "profiles/example-strict.json",
@@ -1355,8 +1366,8 @@
     "schema",
     "machine"
    ],
-   "sha256": "d66f843483f9b3630906582545caa9ea470ba5b88ae7162c1b7403423ac17e61",
-   "bytes": 20780
+   "sha256": "95b09f9ad0bcb31cc7956304dcdfaf0a31a42a342d22ecb905032d76a631c38d",
+   "bytes": 22619
   },
   {
    "path": "rules.json",
@@ -1366,8 +1377,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "af299133e482aaa5bc6de13e7c8a1614dd68699bd1fa75ab76eac268b7e71151",
-   "bytes": 203813
+   "sha256": "f64b241efc226d01613e52fc11f93d2cee15c65dc335c4aabee43bbd492e1930",
+   "bytes": 203952
   },
   {
    "path": "schemas/building-metadata.schema.json",
@@ -1440,6 +1451,16 @@
    "bytes": 1307
   },
   {
+   "path": "schemas/placements.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "4d5ec64f660a278d57a27e7e8014d32872c18155f68ecc0c69539683ad5cf8a7",
+   "bytes": 2448
+  },
+  {
    "path": "schemas/proofs.schema.json",
    "purpose": "JSON Schema",
    "tags": [
@@ -1498,6 +1519,16 @@
    ],
    "sha256": "5abda6130937985b20ed56ddcb4db2d5ac5239e1031da49b093df66b2bbece55",
    "bytes": 4503
+  },
+  {
+   "path": "schemas/walk-report.schema.json",
+   "purpose": "JSON Schema",
+   "tags": [
+    "schema",
+    "machine"
+   ],
+   "sha256": "ea9393880fd83d170b414e991f3efb842956be8fc895756e75849e129ace2556",
+   "bytes": 3165
   },
   {
    "path": "skills/accept-and-package-delivery/SKILL.md",
@@ -1587,6 +1618,17 @@
    "bytes": 3103
   },
   {
+   "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "d075db915f3538dffc3cc0d7742f9f0b9c3707f9f100e86f8d1c6f3784df15f9",
+   "bytes": 489
+  },
+  {
    "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
@@ -1594,8 +1636,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "5eb62815bb8adfebfedb4f41f5f8c51ba6efbad1101e6a023d9fc694ab6e06e8",
-   "bytes": 5422
+   "sha256": "fb7d3c353a00e30544c89ae66cd5fe366a5838459dac89daf7e785674b6c81fc",
+   "bytes": 6246
   },
   {
    "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request.md",
@@ -2455,8 +2497,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "1eb4185d0a2d3cfaa94899f96d58e8498596eba50f276041752a5b2096e34912",
-   "bytes": 5958
+   "sha256": "fb6d46c2174787d4d8fe998239b9000747f595d44c35cdbe1274397a4e67e18d",
+   "bytes": 6085
   },
   {
    "path": "skills/orient/references/params--introduction-part-3-of-4.md",
@@ -2466,8 +2508,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "aea151da454a06247677207b3ba1f1aecb46f59d1c0adfd7cc2f7dbc3c730e42",
-   "bytes": 6028
+   "sha256": "c19570b2d5b57354dc13e019b101ed5af26eb865f21d1ff0fad354a75fc6b2cb",
+   "bytes": 6039
   },
   {
    "path": "skills/orient/references/params--introduction-part-4-of-4.md",
@@ -2477,8 +2519,8 @@
     "reference",
     "generated"
    ],
-   "sha256": "c233c0df73f865334120187b04e76dc03670f9eb7a139f01b48aaeccb97193d8",
-   "bytes": 1850
+   "sha256": "89df136b937b37046832e275bd4319bbea8eaca44125a373d5fd9995be99bbfa",
+   "bytes": 3090
   },
   {
    "path": "skills/orient/references/params--rule-levels-in-a-profile.md",
@@ -2838,8 +2880,8 @@
    "tags": [
     "tool"
    ],
-   "sha256": "7e7d125ede2062aad6c6e4edb30bc9b4092dad8000d453f0a285891a03a750ed",
-   "bytes": 7989
+   "sha256": "f48f18bbd7172ed13b82518c098df3d984540ca8cb8aceb4012ca035902ad513",
+   "bytes": 9102
   },
   {
    "path": "tools/agent_harness.py",
@@ -2922,6 +2964,16 @@
    "bytes": 22157
   },
   {
+   "path": "tools/check_set.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "52a0a884a91c3d1a669f4e4c8f457b1b7156bd03739c66f8c2d3f8fc3929c3e2",
+   "bytes": 7223
+  },
+  {
    "path": "tools/check_submission.py",
    "purpose": "command-line tool",
    "tags": [
@@ -2961,14 +3013,24 @@
    "bytes": 879
   },
   {
+   "path": "tools/coplanar.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "cd156c90b7ada213a3d927f419ce84a0ad3a874533d21fd000ef51f3437b55d9",
+   "bytes": 11861
+  },
+  {
    "path": "tools/export_glb.py",
    "purpose": "command-line tool",
    "tags": [
     "tool",
     "script"
    ],
-   "sha256": "4077e421798bcf759e5fad18639cb6f5f207127101ce7579353afc489cbf13cd",
-   "bytes": 19910
+   "sha256": "a670943404d272e2f8ab200bd3cd2dc597e42bc9ecf281215a1e816813c6ae96",
+   "bytes": 30683
   },
   {
    "path": "tools/fileset.py",
@@ -2987,8 +3049,8 @@
     "tool",
     "script"
    ],
-   "sha256": "892f69cb103a88d744b60520e50de67b3ca4fdbb8b9fdf6c7d8558e413becbf9",
-   "bytes": 24365
+   "sha256": "ce412f97b3c423a1c8e132aafa83992b2c4ccc6d047ad56cc735df9dc34771ce",
+   "bytes": 24877
   },
   {
    "path": "tools/glbkit.py",
@@ -2997,8 +3059,8 @@
     "tool",
     "script"
    ],
-   "sha256": "a97be0bd1379ef53038ce5412b0403b68501aac873c5c527512103fc5ae2379a",
-   "bytes": 24938
+   "sha256": "99f36ca3fa209b5005e64937d4b45315664f9746c8ce75ec21cd133b2bdd89b5",
+   "bytes": 30653
   },
   {
    "path": "tools/ifc_author.py",
@@ -3229,8 +3291,8 @@
     "rules",
     "source"
    ],
-   "sha256": "badc32231be2b353f4650dfa4b08c8a12ac7c42af188d097de91d05e180e4d22",
-   "bytes": 104741
+   "sha256": "70c6ef5725c09de3043a66f78904091b69cd9d65b7a29856bfd23a774b20983e",
+   "bytes": 104880
   },
   {
    "path": "tools/run_example.py",
@@ -3302,6 +3364,16 @@
    "bytes": 11409
   },
   {
+   "path": "tools/test_glb_options.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "d43d191b3d59a839037e21c76731e85aaaaefcad06ce691315a8a5aaa70253e5",
+   "bytes": 34843
+  },
+  {
    "path": "tools/test_hardening.py",
    "purpose": "command-line tool",
    "tags": [
@@ -3368,8 +3440,18 @@
     "tool",
     "script"
    ],
-   "sha256": "7520bba696f9495d707e3ed338b36dee1f001c3e8fa58d4268c60d5e9e6782cb",
-   "bytes": 40091
+   "sha256": "151065428a2a311ef92bc4bb82587efde759fc006fc3b6b1661e625f07b83771",
+   "bytes": 46285
+  },
+  {
+   "path": "tools/walkcheck.py",
+   "purpose": "command-line tool",
+   "tags": [
+    "tool",
+    "script"
+   ],
+   "sha256": "1cf66f0f3e69836473d14e67ca18bd5f1f1d2657f37d860fdcd872991f836d61",
+   "bytes": 18448
   }
  ]
 }

@@ -97,6 +97,8 @@ def check(root, expect=None, require=()):
     for rel, digest in sorted(files.items()):
         p = os.path.join(root, rel)
         if not os.path.isfile(p):
+            if rel.split("/", 1)[0] in SKIP_DIRS:
+                continue  # release artefacts (dist/) are built by tools/build_dist.py and are not part of a git checkout
             missing.append(rel)
         elif sha256_file(p) != digest:
             wrong.append(rel)
