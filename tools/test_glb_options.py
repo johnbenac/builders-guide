@@ -161,6 +161,54 @@ g_prof = export(VARIANT, os.path.join(work, "o_prof"), "--profile", prof)
 expect(g_prof == g_ex, "profile proofs.glbVolumes=exclude gives the same bytes as --volumes exclude")
 rpt.load_profile(None)
 
+# ------------------------------------------------------------------ 3. bounds and identity respect node transforms
+def pivoted(data, name_start, delta_gltf, translation_error=(0.0, 0.0, 0.0)):
+    """The same scene with one node's vertices moved by -delta (so the node has a real origin) and the node translated by +delta (+ an error)."""
+    doc, bn = glbkit.split_glb(data)
+    bn = bytearray(bn)
+    node = next(n for n in doc["nodes"] if n.get("name", "").startswith(name_start))
+    for pr in doc["meshes"][node["mesh"]]["primitives"]:
+        acc = doc["accessors"][pr["attributes"]["POSITION"]]
+        bv = doc["bufferViews"][acc["bufferView"]]
+        arr = np.frombuffer(bn, dtype="<f4", count=acc["count"] * 3, offset=bv["byteOffset"]).reshape(-1, 3)
+        arr -= np.array(delta_gltf, dtype="<f4")
+        acc["min"], acc["max"] = [float(x) for x in arr.min(axis=0)], [float(x) for x in arr.max(axis=0)]
+    node["translation"] = [float(d + e) for d, e in zip(delta_gltf, translation_error)]
+    return doc, bn
+
+
+base = g_ex
+doc0, _ = glbkit.split_glb(base)
+tname = next(n["name"] for n in doc0["nodes"] if n.get("name", "").startswith("furniture:Work table"))
+d, b = pivoted(base, tname, (2.0, 0.0, -1.5))
+good_pivot = repack(d, b)
+rep = validate(good_pivot, VARIANT)
+expect(rep["result"] == "pass" and not codes(rep), "a node with a pivot (moved vertices + translation) passes the bounds and IFC comparison: %s" % codes(rep))
+expect(rep["files"][0]["boundsIfcFrame"] == validate(base, VARIANT)["files"][0]["boundsIfcFrame"], "the reported bounds are those of the scene, not of the mesh arrays")
+d, b = pivoted(base, tname, (2.0, 0.0, -1.5), (0.5, 0.0, 0.0))
+rep = validate(repack(d, b), VARIANT)
+expect("GLB-BBOX-IFC" in codes(rep), "a node whose transform puts it 0.5 m from its IFC box is caught: %s" % codes(rep))
+d, b = pivoted(base, tname, (2.0, 0.0, -1.5), (9000.0, 0.0, 0.0))
+rep = validate(repack(d, b), VARIANT)
+expect({"GLB-BOUNDS", "GLB-EXTENT"} <= set(codes(rep)), "extent and extras.bounds are those of the transformed scene: %s" % codes(rep))
+d, b = pivoted(base, tname, (2.0, 0.0, -1.5))
+nd = next(n for n in d["nodes"] if n.get("name") == tname)
+nd["extras"]["globalId"] = "0000000000000000000000"
+rep = validate(repack(d, b))
+expect("GLB-IDENT" in codes(rep) and rep["result"] == "pass", "a node whose extras.globalId differs from its name is a RECOMMENDED finding: %s" % codes(rep))
+nd["extras"]["globalId"] = tname.rsplit("#", 1)[1]
+other = next(n for n in d["nodes"] if n.get("name", "").startswith("furniture:Second table"))
+other["extras"]["globalId"] = nd["extras"]["globalId"]
+other["name"] = "furniture:Second table#" + nd["extras"]["globalId"]
+rep = validate(repack(d, b))
+expect("GLB-IDENT" in codes(rep), "one GlobalId on two nodes is named: %s" % codes(rep))
+# a rotation that is not in the IFC file moves the box
+d, b = pivoted(base, tname, (0.0, 0.0, 0.0))
+nd = next(n for n in d["nodes"] if n.get("name") == tname)
+nd["rotation"] = [0.0, 0.7071068, 0.0, 0.7071068]
+rep = validate(repack(d, b), VARIANT)
+expect("GLB-BOUNDS" in codes(rep) or "GLB-BBOX-IFC" in codes(rep), "a rotation that is not in the IFC file is caught by the bounds comparison: %s" % codes(rep))
+
 if __name__ == "__main__":
     print("test_glb_options: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)

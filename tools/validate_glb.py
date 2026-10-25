@@ -266,7 +266,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
     # ---- meshes
     meshes = doc.get("meshes", [])
     tri_total, lo, hi = 0, None, None
-    prim_by_mesh = {}
+    prim_by_mesh, mesh_pos = {}, {}
     for mi, mesh in enumerate(meshes):
         for pi, pr in enumerate(mesh.get("primitives", []) or []):
             w = "/meshes/%d/primitives/%d" % (mi, pi)
@@ -305,6 +305,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
             tri_total += ntri
             lo = pos.min(axis=0) if lo is None else np.minimum(lo, pos.min(axis=0))
             hi = pos.max(axis=0) if hi is None else np.maximum(hi, pos.max(axis=0))
+            mesh_pos.setdefault(mi, []).append(pos)
             # attributes
             for name, acc_i in at.items():
                 if not rng(f, doc, "accessors", acc_i, "%s/attributes/%s" % (w, name)):
@@ -419,6 +420,11 @@ def validate_one(data, label, role, item, tex_sizes, params):
         un = sorted(set(range(count)) - used)
         if un:
             f.bad("GLB-UNUSED", "%s %s is not used by anything" % (kind, ", ".join(map(str, un[:5]))), "Remove unused %ss; the file may hold nothing that is not shown." % kind, "/%ss" % kind)
+    # ---- the extent and the bounds are those of the scene: every node's transform applied to the mesh it holds
+    wb = world_bounds(doc, nodes, sc_nodes, mesh_pos)
+    if wb is not None:
+        lo, hi = wb
+        info["bounds"] = {"min": [float(x) for x in lo], "max": [float(x) for x in hi]}
     # ---- conventions
     ex = doc.get("extras") if isinstance(doc.get("extras"), dict) else {}
     if ex.get("units") != "metres":
@@ -459,6 +465,20 @@ def validate_one(data, label, role, item, tex_sizes, params):
                     cn = nodes[ci].get("name", "")
                     if not LEAF_NAME.match(cn or "") or "mesh" not in nodes[ci]:
                         f.bad("GLB-NAMES", "node %r is not a mesh node named <kind>:<name>#<GlobalId>" % (cn,), "Name leaf nodes as export_glb.py does.", "/nodes/%d" % ci)
+        gids = {}
+        for ni, n in enumerate(nodes):
+            nm = n.get("name") or ""
+            if "mesh" not in n or "#" not in nm or not LEAF_NAME.match(nm):
+                continue
+            gid_name = nm.rsplit("#", 1)[1]
+            ex_n = n.get("extras") if isinstance(n.get("extras"), dict) else {}
+            if ex_n.get("globalId") != gid_name:
+                f.bad("GLB-IDENT", "node %r: extras.globalId is %r, the GlobalId in its name is %r" % (nm, ex_n.get("globalId"), gid_name),
+                      "Write the product's GlobalId into the node name and into extras.globalId.", "/nodes/%d" % ni, level="RECOMMENDED")
+            gids.setdefault(gid_name, []).append(nm)
+        for gid_name, lst in sorted(gids.items()):
+            if len(lst) > 1:
+                f.bad("GLB-IDENT", "GlobalId %s is on %d nodes (%s ...)" % (gid_name, len(lst), lst[0]), "One node per product.", "/nodes", level="RECOMMENDED")
         dup = {x for x in names if x and names.count(x) > 1}
         if dup:
             f.bad("GLB-NAMES", "node name %r is used more than once" % sorted(dup)[0], "Names include the GlobalId, so they are unique.", "/nodes")
@@ -483,6 +503,34 @@ def validate_one(data, label, role, item, tex_sizes, params):
         if not (len(nodes) == 1 and re.match(r"^material:[A-Za-z0-9 ._,()+-]{1,60}$", nodes[0].get("name", ""))):
             f.bad("GLB-NAMES", "a material swatch has one node named material:<name>", "Export with tools/export_glb.py.", "/nodes")
     return f, info
+
+
+def world_bounds(doc, nodes, sc_nodes, mesh_pos):
+    """(min, max) in glTF axes of everything the default scene draws, with the transform of every node on the path applied (translation, rotation, scale
+    or matrix) to the vertices of its mesh. A mesh used by several nodes counts once for each. None when the graph or a transform cannot be read
+    (the other checks name that), or when no node draws anything."""
+    import numpy as np
+    lo = hi = None
+    seen = set()
+    stack = [(i, np.eye(4)) for i in sc_nodes if isinstance(i, int) and 0 <= i < len(nodes)]
+    try:
+        while stack:
+            i, parent = stack.pop()
+            if i in seen:
+                continue
+            seen.add(i)
+            node = nodes[i]
+            m = parent @ glbkit.node_matrix(node)
+            for pos in mesh_pos.get(node.get("mesh"), []) if isinstance(node.get("mesh"), int) else []:
+                w = pos @ m[:3, :3].T + m[:3, 3]
+                lo = w.min(axis=0) if lo is None else np.minimum(lo, w.min(axis=0))
+                hi = w.max(axis=0) if hi is None else np.maximum(hi, w.max(axis=0))
+            for c in node.get("children", []) or []:
+                if isinstance(c, int) and 0 <= c < len(nodes):
+                    stack.append((c, m))
+    except (TypeError, ValueError, KeyError, IndexError):
+        return None
+    return None if lo is None else (lo, hi)
 
 
 def ifc_bounds_problems(glb_data, ifc_path):
