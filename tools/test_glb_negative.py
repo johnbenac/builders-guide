@@ -367,6 +367,87 @@ for seed in ("0", "7"):
 expect(seeds[0] == seeds[1], "placement + indexed export is byte-identical under different PYTHONHASHSEED values")
 
 
+# ------------------------------------------------------------------ 5. coincident faces: edges of the old bucketing, tessellation, union agrees with the finder, budget
+def plane_quad(n, p0, x0, y0, x1, y1, up=True):
+    """A quad (two triangles) in the plane through p0 with unit normal n, with in-plane corners (x0, y0)..(x1, y1)."""
+    n = np.asarray(n, float) / np.linalg.norm(n)
+    u, v = coplanar._basis(n)
+    c = [np.asarray(p0) + u * x + v * y for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1))]
+    tri = [c[0], c[1], c[2], c[0], c[2], c[3]]
+    return np.array(tri if up else [tri[0], tri[2], tri[1], tri[3], tri[5], tri[4]], float).reshape(-1, 3, 3)
+
+
+# a normal on the border of a rounding cell (x = 0.1) with noise on either side: the pair must still be found
+n1 = np.array([0.1 + 5e-10, 0.0, np.sqrt(1 - (0.1 + 5e-10) ** 2)])
+n2 = np.array([0.1 - 5e-10, 0.0, np.sqrt(1 - (0.1 - 5e-10) ** 2)])
+tt = np.concatenate([plane_quad(n1, (0, 0, 0), 0, 0, 2, 2), plane_quad(n2, (0, 0, 0), 1, 1, 3, 3)])
+rows = coplanar.find_overlaps(tt, np.repeat([0, 1], 2), 0.005)
+expect(len(rows) == 1 and abs(rows[0][2] - 1.0) < 1e-6, "two coplanar quads whose normals straddle a rounding border are found: %s" % rows)
+for edge in (0.09, 0.095, 0.1, 0.11, 0.5, 0.7071):
+    na = np.array([edge + 3e-10, 0.2, 0.0])
+    na[2] = np.sqrt(max(0.0, 1 - na[0] ** 2 - na[1] ** 2))
+    nb = np.array([edge - 3e-10, 0.2, 0.0])
+    nb[2] = np.sqrt(max(0.0, 1 - nb[0] ** 2 - nb[1] ** 2))
+    tt = np.concatenate([plane_quad(na, (1, 2, 3), 0, 0, 2, 2), plane_quad(nb, (1, 2, 3), 1, 1, 3, 3)])
+    expect(len(coplanar.find_overlaps(tt, np.repeat([0, 1], 2), 0.005)) == 1, "normal x %.4f +- 3e-10: the overlap is found" % edge)
+# two planes 3 mm apart, and two planes at 1 degree, are not coincident
+tt = np.concatenate([plane_quad((0, 0, 1), (0, 0, 0), 0, 0, 2, 2), plane_quad((0, 0, 1), (0, 0, 0.003), 0, 0, 2, 2)])
+expect(coplanar.find_overlaps(tt, np.repeat([0, 1], 2), 0.005) == [], "planes 3 mm apart are not coincident")
+tt = np.concatenate([plane_quad((0, 0, 1), (0, 0, 0), 0, 0, 2, 2), plane_quad((np.sin(np.radians(1)), 0, np.cos(np.radians(1))), (0, 0, 0), 0, 0, 2, 2)])
+expect(coplanar.find_overlaps(tt, np.repeat([0, 1], 2), 0.005) == [], "planes one degree apart are not coincident")
+# fine tessellation is not invisible: 1 cm squares duplicated in a second node
+sq = []
+for i in range(100):
+    for j in range(100):
+        sq.append(plane_quad((0, 0, 1), (0, 0, 0), i * 0.01, j * 0.01, (i + 1) * 0.01, (j + 1) * 0.01))
+fine = np.concatenate(sq)
+rows = coplanar.find_overlaps(np.concatenate([fine, fine]), np.repeat([0, 1], len(fine)), 0.005)
+expect(len(rows) == 1 and abs(rows[0][2] - 1.0) < 1e-6, "a 1 m2 patch tessellated into 1 cm squares and duplicated is found: %s" % rows)
+
+# union and finder agree: after the union the finder finds nothing, also at 1 mm and at a cell border
+for dz in (0.001, 2e-7, 0.0019):
+    z0 = 0.10049999
+    a_ = plane_quad((0, 0, 1), (0, 0, z0), 0, 0, 2, 2)
+    b_ = plane_quad((0, 0, 1), (0, 0, z0 + dz), 1, 1, 3, 3)
+    new, planes, removed = coplanar.union_within({"a": a_, "b": b_})
+    both = np.concatenate([new["a"], new["b"]])
+    left = coplanar.find_overlaps(both, np.concatenate([np.zeros(len(new["a"]), int), np.ones(len(new["b"]), int)]), 1e-4)
+    expect(planes == 1 and abs(removed - 1.0) < 1e-6 and not left, "union at dz=%g leaves nothing for the finder: planes %s, removed %s, left %s" % (dz, planes, removed, left))
+# parts of one colour lose no triangle, and the colours decide a shared area in a fixed order
+red, blue = (0.9, 0.1, 0.1, 1.0), (0.1, 0.1, 0.9, 1.0)
+q1 = plane_quad((0, 0, 1), (0, 0, 0), 0, 0, 1, 1).reshape(-1, 3)
+q2 = plane_quad((0, 0, 1), (0, 0, 0), 5, 5, 6, 6).reshape(-1, 3)
+same_colour, planes, _ = coplanar.union_parts([(red, q1), (red, q2)])
+expect(len(same_colour) == 1 and len(same_colour[0][1]) == 12, "two parts of one colour keep all their triangles: %s" % [len(p[1]) // 3 for p in same_colour])
+big = plane_quad((0, 0, 1), (0, 0, 0), 0, 0, 2, 2).reshape(-1, 3)
+sm = plane_quad((0, 0, 1), (0, 0, 0), 1, 1, 3, 3).reshape(-1, 3)
+for order in ([(red, big), (blue, sm)], [(blue, sm), (red, big)]):
+    out, planes, removed = coplanar.union_parts(order)
+    areas = {p[0]: float(np.linalg.norm(np.cross(p[1].reshape(-1, 3, 3)[:, 1] - p[1].reshape(-1, 3, 3)[:, 0], p[1].reshape(-1, 3, 3)[:, 2] - p[1].reshape(-1, 3, 3)[:, 0]), axis=1).sum() / 2) for p in out}
+    expect(abs(areas[blue] - 4.0) < 1e-6 and abs(areas[red] - 3.0) < 1e-6, "the lowest (r, g, b, a) keeps the shared area whatever the input order: %s" % areas)
+
+# the budget: an error that says so, never a clean result
+tt = np.concatenate([plane_quad((0, 0, 1), (0, 0, 0), 0, 0, 2, 2), plane_quad((0, 0, 1), (0, 0, 0), 1, 1, 3, 3)])
+try:
+    coplanar.find_overlaps(tt, np.repeat([0, 1], 2), 0.005, max_triangles=3)
+    expect(False, "a triangle budget that is too small must raise")
+except glbkit.Failed as exc:
+    expect("budget" in str(exc), "the triangle budget raises Failed: %s" % exc)
+try:
+    coplanar.find_overlaps(tt, np.repeat([0, 1], 2), 0.005, seconds=-1)
+    expect(False, "a time budget that is used up must raise")
+except glbkit.Failed as exc:
+    expect("time" in str(exc), "the time budget raises Failed: %s" % exc)
+dup = os.path.join(work, "dup.glb")
+with open(dup, "wb") as fh:
+    fh.write(scene([comp("A", "structure", "AAAAAAAAAAAAAAAAAAAAAA", (0, 0, 0, 2, 2, 1)), comp("B", "structure", "BBBBBBBBBBBBBBBBBBBBBB", (0, 0, 0, 2, 2, 1))]))
+r = py("coplanar.py", dup, "--max-triangles", "5")
+expect(r.returncode == 3 and "budget" in r.stderr and "Traceback" not in r.stderr, "coplanar.py: an exhausted budget is exit 3 with a message: %s %s" % (r.returncode, r.stderr[-150:]))
+r = py("coplanar.py", dup)
+expect(r.returncode == 0 and "pair(s)" in r.stdout, "coplanar.py finds the duplicated boxes: %s" % r.stdout[:150])
+expect(py("coplanar.py", dup, "--min-area", "-1").returncode == 2, "coplanar.py: a negative --min-area is a command-line error")
+
+
 if __name__ == "__main__":
     print("test_glb_negative: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)

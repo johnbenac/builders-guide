@@ -389,8 +389,8 @@ rpt.load_profile(None)
 orig_shape_parts = glbkit.shape_parts
 
 
-def fake_shape_parts(model_, root, limits):
-    parts, m_root = orig_shape_parts(model_, root, limits)
+def fake_shape_parts(model_, root, limits, skip=None):
+    parts, m_root = orig_shape_parts(model_, root, limits, skip)
     if root.GlobalId == IDS["table2"]:
         parts = [((0.9, 0.1, 0.1, 1.0), np.array(quad(0, 0, 2, 2, 0.8) + quad(0, 0, 2, 2, 0.0, up=True), float)),
                  ((0.1, 0.1, 0.9, 1.0), np.array(quad(1, 1, 3, 3, 0.8), float))]
