@@ -6,7 +6,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.3.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.4.0 (2026-10-24). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -130,10 +130,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.3.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
-| `builders-guide-2.3.0.html` | the same, as one web page |
-| `builders-guide-2.3.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.3.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.4.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
+| `builders-guide-2.4.0.html` | the same, as one web page |
+| `builders-guide-2.4.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.4.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.
@@ -1467,7 +1467,7 @@ materials; a texture set becomes a swatch with its maps embedded. Zones and rese
 profile sets `proofs.glbVolumes` to `exclude` (or `export_glb.py --volumes exclude` is used), they get no mesh and no node and are listed in the
 `extras.excluded` of the whole-model GLB, which `validate_glb.py --ifc` accepts as the written reason for a missing node (only those two kinds,
 never a wall or a slab). A consumer that moves or turns single things (a door about its hinge, a chair) sets `proofs.glbPivots` to `placement`: each
-product then has its own origin, the node carries the placement, identical shapes share one mesh, and `placements.json` lists every node; a profile
+product then has its own origin, the node carries the placement, identical shapes share one mesh, and `model.placements.json` lists every node; a profile
 may also ask for indexed meshes (`proofs.glbIndexed`). Two surfaces in one plane facing the same way fight for the same pixels (z-fighting);
 `validate_glb.py` warns when two nodes share more than `budgets.coincidentFaceMinAreaM2` of such area (an estimate, RECOMMENDED), `tools/coplanar.py`
 lists the pairs, and `proofs.glbCoplanar` set to `union` merges the overlaps inside one product. The pictures use fixed lighting and a fixed background and are always made

@@ -3,32 +3,57 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
-## Unreleased (proposed 2.4.0)
+## 2.4.0
 
-Optional GLB export features and checks that consumers who move, open and walk through the model need, and a check of staged copies. Proposed MINOR
-under `VERSIONING.md`: every new behaviour of an existing tool is behind an option or a profile parameter whose default reproduces 2.3.0 (the default
-GLB bytes are unchanged), new tools, new profile parameters with defaults that keep existing deliveries passing, and new automated checks that can
-only warn (`RECOMMENDED`, estimates).
+Optional GLB export features and checks that consumers who move, open and walk through the model need, and a check of staged copies. MINOR under
+`VERSIONING.md`: every new behaviour of an existing tool is behind an option or a profile parameter whose default reproduces 2.3.0 (the default GLB bytes
+of the sample delivery and of the three generated fixtures are unchanged), new tools, new profile parameters with defaults that keep existing deliveries
+passing (default profile 1.3.0 to 1.4.0), and new automated checks that can only warn (`RECOMMENDED`, estimates). The two places where a REQUIRED check is
+stricter are named under **Compatibility**.
 
 **Added**
 
 * **Zones and reservation volumes in the whole-model GLB** (`X-80`, `X-81`): `export_glb.py --volumes exclude` (profile `proofs.glbVolumes`, default
-  `mesh`) leaves `IfcSpatialZone` and `PROVISIONFORSPACE` proxies out and lists them in `extras.excluded`; `validate_glb.py --ifc` accepts a missing node only
-  for a product on that list that is one of those two kinds, refuses a listed product that has a node, and reports the number of all products without a node.
+  `mesh`) leaves `IfcSpatialZone` and `PROVISIONFORSPACE` proxies out, also when they are parts of an assembly, and lists them in `extras.excluded`;
+  `validate_glb.py --ifc` accepts a missing node only for a product on that list that is one of those two kinds, refuses a listed product that has a
+  node, and reports the number of all products without a node.
 * **Per-product pivots, instancing, indexed meshes, placements table** (`X-80`, `X-81`): `export_glb.py --pivots world|placement|footprint` (profile
-  `proofs.glbPivots`, default `world`), `--pivot-file` (hinge points), `--indexed` (`proofs.glbIndexed`), `placements.json` (`schemas/placements.schema.json`, format
-  `placements/1`). Component GLB files and swatches are unchanged, so component identifiers are unchanged.
+  `proofs.glbPivots`, default `world`), `--pivot-file` (hinge points; every entry must match a node that takes a pivot, and the applied ones are recorded
+  in `extras.pivotOverrides`), `--indexed` / `--no-indexed` (`proofs.glbIndexed`), and `model.placements.json` (`schemas/placements.schema.json`, format
+  `placements/1`, one row per node, terrain included). Meshes that nodes share are named `shape:<hash>`. Component GLB files and swatches are unchanged,
+  so component identifiers are unchanged.
 * **`GLB-IDENT`** (`X-80`, `RECOMMENDED`): the GlobalId in a node name equals `extras.globalId`, and one GlobalId is on one node.
-* **Coincident faces:** `tools/coplanar.py` (pairs of nodes with same-facing coplanar overlapping faces, and the union of such overlaps inside one product), `GLB-COPLANAR` (`X-80`,
-  `RECOMMENDED`, an estimate; profile `budgets.coincidentFaceMinAreaM2`, default 0.005), `export_glb.py --coplanar union` (`proofs.glbCoplanar`, default `off`).
+* **Coincident faces:** `tools/coplanar.py` (pairs of nodes with same-facing coplanar overlapping faces, and the union of such overlaps inside one product;
+  one definition of "the same plane" for both, a stated triangle and time budget), `GLB-COPLANAR` (`X-80`, `RECOMMENDED`, an estimate; profile
+  `budgets.coincidentFaceMinAreaM2`, default 0.005; "could not run" is a finding, never a clean result), `export_glb.py --coplanar union`
+  (`proofs.glbCoplanar`, default `off`).
 * **`tools/walkcheck.py`** (`schemas/walk-report.schema.json`, format `walk-report/1`): a 3D voxel walk through a whole-model GLB at one or more body radii.
-* **`tools/check_set.py`:** a staged copy of the set agrees with itself on its version, is whole, and holds what it must.
-* **`tools/test_glb_options.py`** tests all of the above.
+  The step height defaults to the profile's `geometry.stairRiserLimitMetres` (`--step`, `--riser`, `--profile`), the grid covers the whole model, and the
+  memory it needs is checked against a stated budget (`--max-memory-mb`) before anything is allocated.
+* **`tools/check_set.py`:** a staged copy of the set agrees with itself on its version, both manifests list the same files with the same hashes, nothing
+  escapes the folder, the zip and checksum files in `dist/` match, and it holds what it must. `test_sync.py` runs it on the repository and `build_dist.py`
+  on the finished hand-over files.
+* **`tools/test_glb_options.py`** and **`tools/test_glb_negative.py`** test all of the above, the second one what must be refused.
+* **`.github/workflows/check-set.yml`**: `gen_all.py --check`, `test_sync.py` and `selftest.py` run on pull requests and pushes to `main` that change the
+  tools, profiles, schemas, rules, guides or skills.
 
 **Changed**
 
-* `validate_glb.py` takes the transforms of the nodes into account for `GLB-BOUNDS`, `GLB-EXTENT` and the bounds it reports (a GLB whose nodes carry their own pivots no longer
-  reports wrong bounds); for a GLB whose vertices are baked into world space the result is the same as before.
+* `validate_glb.py` takes the transforms of the nodes into account for `GLB-BOUNDS`, `GLB-EXTENT` and the bounds it reports (a GLB whose nodes carry their own
+  pivots no longer reports wrong bounds); for a GLB whose vertices are baked into world space the result is the same as before.
+* `tools/requirements.txt` and `tools/requirements-ci.txt` declare scipy (used by `walkcheck.py`); the shapely floor is 2.1 (the constrained Delaunay
+  triangulation of the coplanar union, as the documentation already said).
+* The default profile is 1.4.0: `budgets.coincidentFaceMinAreaM2` and `proofs.glbVolumes`, `glbPivots`, `glbIndexed`, `glbCoplanar`, all with defaults
+  that reproduce 2.3.0.
+
+**Compatibility**
+
+* A GLB with node transforms (none is written by 2.3.0: its vertices are baked into world space) whose `extras.bounds` were computed from the raw vertices
+  passed `GLB-BOUNDS` and `GLB-EXTENT` (REQUIRED) before and can fail now, because the bounds are those of the scene. `GLB-NODE` (REQUIRED) now also refuses
+  a malformed transform (wrong length, not finite) and a `matrix` that mirrors, collapses an axis or projects, which the `scale` rule already refused for
+  `scale`. `extras.excluded`, when present, is validated (`GLB-EXTRAS`, REQUIRED). These cannot affect a GLB written by `export_glb.py` 2.3.0 or by
+  `build_proofs.py`, so no delivery of the set passes or fails differently; a hand-made GLB with transforms could.
+* `walkcheck.py`, `coplanar.py` and `check_set.py` are new; nothing depends on them.
 
 ## 2.3.0
 

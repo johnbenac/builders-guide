@@ -34,7 +34,7 @@ hinge when the author put the placement there, and identical shapes (every produ
 origin at the centre of the footprint at the lowest point, without rotation (as the component GLB files do). `--pivot-file` is a JSON object
 `{GlobalId: [x, y] or [x, y, z]}` in IFC world coordinates (metres) that overrides the origin of single products, for example the foot of a
 hinge line (z defaults to the lowest point). A product whose placement is not a proper rotation (a mirror, a scale) falls back to `footprint`.
-Every export with `placement` or `footprint` also writes `placements.json` (format `placements/1`): per node the product, the origin in the IFC
+Every export with `placement` or `footprint` also writes `model.placements.json` (beside model.glb; format `placements/1`): per node the product, the origin in the IFC
 frame, the turn of the node about the vertical (null when the node is tilted or inverted: its quaternion in the GLB is exact), the 4 x 4 IFC
 placement of the product (null for terrain; for `footprint` and `override` nodes the geometry is already turned into world orientation, so that is
 the product's placement and not the node's), the mesh and which node it is an instance of. Terrain stays in world coordinates (pivot `world`).
@@ -66,7 +66,7 @@ import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed, r6, rl, sha256_bytes, slugify  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 STRUCTURE = {"IfcWall", "IfcWallStandardCase", "IfcSlab", "IfcRoof", "IfcStair", "IfcStairFlight", "IfcRamp", "IfcRampFlight", "IfcColumn",
              "IfcBeam", "IfcMember", "IfcPlate", "IfcFooting", "IfcCurtainWall", "IfcBuildingElementProxy", "IfcCovering"}
 NODE_KINDS = ("furniture", "covering", "fixture", "hardware", "door", "window", "structure", "terrain", "other")

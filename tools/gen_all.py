@@ -20,7 +20,7 @@ import fileset  # noqa: E402
 import rules_index  # noqa: E402
 
 ROOT = rules_index.ROOT = os.path.abspath(os.path.join(HERE, ".."))
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 MAX_CHUNK_CHARS = 6000          # about 1,500 tokens
 DOCS = [("readme", "README.md"), ("about", "ABOUT.md"), ("g1", "01-builders-and-architects-guide.md"), ("g2", "02-interior-decorators-guide.md"),
         ("g3", "03-furniture-and-fixtures-guide.md"), ("g4", "04-delivery-and-acceptance-guide.md"),

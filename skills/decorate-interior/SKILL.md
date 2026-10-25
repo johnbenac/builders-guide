@@ -3,7 +3,7 @@ name: decorate-interior
 description: Define finishes for IFC buildings (wall coverings, floors, ceilings, accents, trims, glass) and deliver a reusable material library of texture sets and a finish schedule that any consumer can map to its own materials. Use when choosing colours for IFC elements, writing a finish schedule, authoring or checking texture sets (albedo, normal, orm), or when a check reports a D-rule finding.
 license: CC-BY-4.0
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
   rules: "D-01 to D-85"
 ---
 

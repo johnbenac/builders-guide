@@ -14,7 +14,7 @@ materials; a texture set becomes a swatch with its maps embedded. Zones and rese
 profile sets `proofs.glbVolumes` to `exclude` (or `export_glb.py --volumes exclude` is used), they get no mesh and no node and are listed in the
 `extras.excluded` of the whole-model GLB, which `validate_glb.py --ifc` accepts as the written reason for a missing node (only those two kinds,
 never a wall or a slab). A consumer that moves or turns single things (a door about its hinge, a chair) sets `proofs.glbPivots` to `placement`: each
-product then has its own origin, the node carries the placement, identical shapes share one mesh, and `placements.json` lists every node; a profile
+product then has its own origin, the node carries the placement, identical shapes share one mesh, and `model.placements.json` lists every node; a profile
 may also ask for indexed meshes (`proofs.glbIndexed`). Two surfaces in one plane facing the same way fight for the same pixels (z-fighting);
 `validate_glb.py` warns when two nodes share more than `budgets.coincidentFaceMinAreaM2` of such area (an estimate, RECOMMENDED), `tools/coplanar.py`
 lists the pairs, and `proofs.glbCoplanar` set to `union` merges the overlaps inside one product. The pictures use fixed lighting and a fixed background and are always made

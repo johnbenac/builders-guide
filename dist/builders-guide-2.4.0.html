@@ -32,7 +32,7 @@ a { color: #1f4e79; text-decoration: none; }
 <body>
 <h1 class="title first" style="border:none">Authoring Guide Set for
 Digital Buildings, Materials and Furniture (IFC)</h1>
-<div class="subtitle">Version 2.3.0, 2026-10-23. Application-neutral
+<div class="subtitle">Version 2.4.0, 2026-10-24. Application-neutral
 guides and tools for outside organisations and their agents.</div>
 <nav id="TOC">
 <ul>
@@ -246,7 +246,7 @@ mini-loop</a></li>
 <h1
 id="authoring-guide-set-for-ifc-buildings-materials-and-furniture">Authoring
 Guide Set for IFC Buildings, Materials and Furniture</h1>
-<p>Version 2.3.0 (2026-10-23). Application-neutral guides, rules,
+<p>Version 2.4.0 (2026-10-24). Application-neutral guides, rules,
 checkers and examples for people and software agents who create digital
 buildings, finishes, wall coverings and furniture in the IFC
 building-data format, so that their work can be used by many different
@@ -503,21 +503,21 @@ it</td>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>builders-guide-2.3.0.pdf</code></td>
+<td><code>builders-guide-2.4.0.pdf</code></td>
 <td>all guides, the worked example, the submissions page and the rules
 index in one document</td>
 </tr>
 <tr class="even">
-<td><code>builders-guide-2.3.0.html</code></td>
+<td><code>builders-guide-2.4.0.html</code></td>
 <td>the same, as one web page</td>
 </tr>
 <tr class="odd">
-<td><code>builders-guide-2.3.0.zip</code></td>
+<td><code>builders-guide-2.4.0.zip</code></td>
 <td>the whole set, with <code>MANIFEST.sha256</code></td>
 </tr>
 <tr class="even">
 <td><code>SHA256SUMS.txt</code>,
-<code>builders-guide-2.3.0.zip.sha256</code></td>
+<code>builders-guide-2.4.0.zip.sha256</code></td>
 <td>SHA-256 of the three files above</td>
 </tr>
 </tbody>
@@ -598,6 +598,14 @@ python3 tools/export_glb.py DELIVERY_OR.ifc --out DIR         # IFC to GLB, whol
     component
 python3 tools/validate_glb.py DIR_OR.glb --json               # structure and convention checks of
     GLB files (X-80)
+python3 tools/export_glb.py DELIVERY --out DIR --volumes exclude --pivots placement --indexed   #
+    scene GLB with per-product pivots, shared meshes, model.placements.json
+python3 tools/coplanar.py DIR/model.glb                       # pairs of nodes with coincident faces
+    (z-fighting)
+python3 tools/walkcheck.py DIR/model.glb --start X,Y,Z --radius 0.30 0.45 --json   # can a body of
+    that radius reach every room
+python3 tools/check_set.py SET_DIR --expect X.Y.Z             # is a staged copy of this set whole
+    and the version it says (X.Y.Z: the version in its CHANGELOG.md)
 python3 tools/render.py GLB_DIR --out DIR                     # headless deterministic renders:
     plans, interiors, exteriors, contact sheets
 python3 tools/ingest.py deliveries/SLUG --commit HASH --out OUT --dry-run   # maintainers: split a
@@ -3119,12 +3127,30 @@ the defaults.</p>
 <p>The GLB files use metres and Y up: a point of the IFC frame (Z up)
 becomes <code>(x, y, z) -&gt; (x, z, -y)</code>. Colours become PBR
 metallic-roughness materials; a texture set becomes a swatch with its
-maps embedded. The pictures use fixed lighting and a fixed background
-and are always made from the delivered GLB files, never from anything
-else: a plan per level (cut at 1.2 m above the floor), four interior
-views for each room kind that is present, four exterior views, and for
-every component a contact sheet of turntable frames (a swatch view for a
-texture set).</p>
+maps embedded. Zones and reservation volumes state a requirement, not a
+thing: when the profile sets <code>proofs.glbVolumes</code> to
+<code>exclude</code> (or <code>export_glb.py --volumes exclude</code> is
+used), they get no mesh and no node and are listed in the
+<code>extras.excluded</code> of the whole-model GLB, which
+<code>validate_glb.py --ifc</code> accepts as the written reason for a
+missing node (only those two kinds, never a wall or a slab). A consumer
+that moves or turns single things (a door about its hinge, a chair) sets
+<code>proofs.glbPivots</code> to <code>placement</code>: each product
+then has its own origin, the node carries the placement, identical
+shapes share one mesh, and <code>model.placements.json</code> lists
+every node; a profile may also ask for indexed meshes
+(<code>proofs.glbIndexed</code>). Two surfaces in one plane facing the
+same way fight for the same pixels (z-fighting);
+<code>validate_glb.py</code> warns when two nodes share more than
+<code>budgets.coincidentFaceMinAreaM2</code> of such area (an estimate,
+RECOMMENDED), <code>tools/coplanar.py</code> lists the pairs, and
+<code>proofs.glbCoplanar</code> set to <code>union</code> merges the
+overlaps inside one product. The pictures use fixed lighting and a fixed
+background and are always made from the delivered GLB files, never from
+anything else: a plan per level (cut at 1.2 m above the floor), four
+interior views for each room kind that is present, four exterior views,
+and for every component a contact sheet of turntable frames (a swatch
+view for a texture set).</p>
 <p><strong>X-79 · REQUIRED</strong> - Put a proof manifest at
 <code>proofs/manifest.json</code> (format <code>proofs/1</code>) that
 lists every GLB, the GLB validation report and every render with its

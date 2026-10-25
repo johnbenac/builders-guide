@@ -20,6 +20,8 @@ from PIL import Image
 
 import report as rpt
 
+VERSION = "2.4.0"
+
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$")
 rows = []
 
@@ -64,7 +66,7 @@ def main():
     tx = rpt.load_profile(a.profile)["textures"]
     d = a.set_dir
     if not os.path.isdir(d):
-        rep = rpt.make_report("check_texture_set.py", "2.3.0", {"path": d}, [], error="input not found: %s" % d)
+        rep = rpt.make_report("check_texture_set.py", VERSION, {"path": d}, [], error="input not found: %s" % d)
         print(json.dumps(rep, indent=1) if a.json else "ERROR input not found: %s" % d)
         sys.exit(rep["exitCode"])
     imgs = {}
@@ -139,7 +141,7 @@ def main():
             add("D-41", "REQUIRED", float(o[..., 0].mean()) > 0.4 and float(o[..., 1].mean()) > 0.02,
                 "orm map: occlusion mean %.2f, roughness mean %.2f, metalness mean %.2f" % tuple(float(o[..., i].mean()) for i in range(3)))
     name = os.path.basename(os.path.abspath(d))
-    rep = rpt.make_report("check_texture_set.py", "2.3.0", {"path": name}, rpt.from_rows(rows, name), extra={"set": name})
+    rep = rpt.make_report("check_texture_set.py", VERSION, {"path": name}, rpt.from_rows(rows, name), extra={"set": name})
     if a.report:
         rpt.write(rep, a.report)
     if a.json:

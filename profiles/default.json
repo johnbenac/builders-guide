@@ -2,7 +2,7 @@
   "_license": "Apache-2.0",
   "format": "profile/1",
   "name": "default",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "General-purpose values for exchanging IFC buildings, finishes and furniture. Publicly defensible defaults, not any one consumer's contract. A consumer publishes its own profile in the same shape.",
   "frame": {
     "horizontalAxes": "+X forward, +Y left (right-handed with Z up)",

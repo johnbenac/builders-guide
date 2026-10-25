@@ -30,7 +30,7 @@ import report as rpt  # noqa: E402
 import validate_glb  # noqa: E402
 from glbkit import Failed, sha256_bytes  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 MAX_ROOM_NOTE = 12
 
 

@@ -3,7 +3,7 @@ name: accept-and-package-delivery
 description: Package a delivery (master IFC, finish schedule, texture sets, items, tables, reports) with a manifest of SHA-256 hashes, versions, provenance and licences, run the final checks against a consumer profile, and decide whether to accept, ask for revision or reject someone else's delivery. Use when assembling or verifying a delivery package, writing manifest.json, choosing a version number, or when a check reports an X-rule finding.
 license: CC-BY-4.0
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
   rules: "X-01 to X-60"
 ---
 
@@ -38,7 +38,9 @@ metadata:
 3. No REQUIRED failure: review what scripts only estimate (B-33, B-61, B-101, B-102), finishes and wrap, lighting, clearances.
    **Accepted** or **accepted with notes** (list the RECOMMENDED findings).
 4. Record the master file's hash with the outcome (`references/g4--7-how-a-receiving-party-accepts-returns-or-refus.md`).
-5. If the consumer needs its own property names, rename with `python3 tools/map_properties.py in.ifc out.ifc --mapping CONSUMER_PROFILE.json`.
+5. If the packet carries its own copy of the guide set (a vendored folder), `python3 tools/check_set.py THAT_FOLDER --expect X.Y.Z` says whether it is whole and the
+   version it claims.
+6. If the consumer needs its own property names, rename with `python3 tools/map_properties.py in.ifc out.ifc --mapping CONSUMER_PROFILE.json`.
 
 ## Version numbers
 

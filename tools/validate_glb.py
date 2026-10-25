@@ -45,7 +45,7 @@ import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 RULE = "X-80"
 TOP_KEYS = {"asset", "scene", "scenes", "nodes", "meshes", "materials", "accessors", "bufferViews", "buffers", "images", "textures",
             "samplers", "extras", "extensionsUsed", "extensionsRequired", "extensions", "cameras", "animations", "skins"}

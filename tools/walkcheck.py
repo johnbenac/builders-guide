@@ -52,7 +52,7 @@ import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 SUPPORT_KINDS = {"structure", "covering", "terrain"}
 FEET_LO = 0.05            # the feet occupy 5 cm to `step` above the surface
 FEET_RADIUS = 0.025

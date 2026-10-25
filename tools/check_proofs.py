@@ -26,7 +26,7 @@ import glbkit  # noqa: E402
 import proofkit  # noqa: E402
 import report as rpt  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 
 
 def sha_file(path):
