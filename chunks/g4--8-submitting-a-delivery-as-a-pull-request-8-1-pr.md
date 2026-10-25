@@ -1,4 +1,4 @@
-<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce | rules: X-79,X-80,X-81,X-82,X-83,X-84,X-85,X-86 -->
+<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 1 of 2) | rules: X-79,X-80,X-81,X-82,X-83,X-84,X-85,X-86 -->
 ### 8.1 Proofs: models and pictures that anyone can reproduce
 
 A reviewer should not have to open a modelling program to see what a delivery is. Every submitted delivery therefore carries **proofs** in
@@ -10,7 +10,14 @@ without a graphics card or a display, so the same files come out on a laptop and
 profile (`07-profile-parameters.md`); the numbers below are the defaults.
 
 The GLB files use metres and Y up: a point of the IFC frame (Z up) becomes `(x, y, z) -> (x, z, -y)`. Colours become PBR metallic-roughness
-materials; a texture set becomes a swatch with its maps embedded. The pictures use fixed lighting and a fixed background and are always made
+materials; a texture set becomes a swatch with its maps embedded. Zones and reservation volumes state a requirement, not a thing: when the
+profile sets `proofs.glbVolumes` to `exclude` (or `export_glb.py --volumes exclude` is used), they get no mesh and no node and are listed in the
+`extras.excluded` of the whole-model GLB, which `validate_glb.py --ifc` accepts as the written reason for a missing node (only those two kinds,
+never a wall or a slab). A consumer that moves or turns single things (a door about its hinge, a chair) sets `proofs.glbPivots` to `placement`: each
+product then has its own origin, the node carries the placement, identical shapes share one mesh, and `model.placements.json` lists every node; a profile
+may also ask for indexed meshes (`proofs.glbIndexed`). Two surfaces in one plane facing the same way fight for the same pixels (z-fighting);
+`validate_glb.py` warns when two nodes share more than `budgets.coincidentFaceMinAreaM2` of such area (an estimate, RECOMMENDED), `tools/coplanar.py`
+lists the pairs, and `proofs.glbCoplanar` set to `union` merges the overlaps inside one product. The pictures use fixed lighting and a fixed background and are always made
 from the delivered GLB files, never from anything else: a plan per level (cut at 1.2 m above the floor), four interior views for each room kind
 that is present, four exterior views, and for every component a contact sheet of turntable frames (a swatch view for a texture set).
 
@@ -29,6 +36,3 @@ that is present, four exterior views, and for every component a contact sheet of
 **X-85 · REQUIRED** - Keep personal data and local paths out of images and GLB files: renders hold only the image chunks the profile allows, no image holds EXIF, XMP, a colour profile with text or text that names a person, a folder, a host or an address, and no GLB holds a path, an address, an e-mail address or a generator other than the set's. A file that records who made it, where, or on which machine leaks that to everyone who receives the delivery.
 
 **X-86 · REQUIRED** - Make the proofs reproducible: rebuilding the GLB files from the delivered IFC files must give the same bytes, and re-rendering the delivered GLB files must give pictures that differ from the delivered ones by no more than `proofs.renderTolerance`; where the toolchain is not available the check says so and is skipped, not passed. Proofs that cannot be reproduced cannot be trusted, and a rebuild is the cheapest way to see that the pictures do show the model.
-
-Acceptance of a submission is a merge to `main`; see `08-submissions-and-ingest.md` for what happens next. The checks cannot judge quality,
-ownership or taste: a person reviews those, and may decline a delivery that passes every check.

@@ -1,6 +1,6 @@
 {
  "format": "rules/1",
- "version": "2.3.0",
+ "version": "2.4.0",
  "count": 214,
  "rules": [
   {
@@ -5351,7 +5351,12 @@
     "textures.sizesPixels",
     "proofs.maxGlbNodes",
     "proofs.maxExtentMetres",
-    "submission.maxFileBytes"
+    "submission.maxFileBytes",
+    "proofs.glbVolumes",
+    "proofs.glbPivots",
+    "proofs.glbIndexed",
+    "proofs.glbCoplanar",
+    "budgets.coincidentFaceMinAreaM2"
    ],
    "extension": null
   },

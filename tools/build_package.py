@@ -20,6 +20,8 @@ import sys
 
 import report as rpt
 
+VERSION = "2.4.0"
+
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$")
 STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 MANIFEST_NAMES = ("manifest.json", "delivery.json")
@@ -325,7 +327,7 @@ def report(R):
         if lvl == "OFF":
             continue
         fs.append(rpt.finding(rule, "pass" if ok else ("fail" if lvl == "REQUIRED" else "warn"), msg, file=manifest_name(OPTS["root"]), level=lvl))
-    rep = rpt.make_report("build_package.py", "2.3.0", {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
+    rep = rpt.make_report("build_package.py", VERSION, {"path": os.path.basename(os.path.abspath(OPTS["root"]))}, fs)
     if OPTS["report"]:
         rpt.write(rep, OPTS["report"])
     if OPTS["json"]:
@@ -358,7 +360,7 @@ if __name__ == "__main__":
     elif len(argv) == 2 and argv[0] == "verify":
         OPTS["root"] = argv[1]
         if not os.path.isdir(argv[1]):
-            rep = rpt.make_report("build_package.py", "2.3.0", {"path": argv[1]}, [], error="input not found: %s" % argv[1])
+            rep = rpt.make_report("build_package.py", VERSION, {"path": argv[1]}, [], error="input not found: %s" % argv[1])
             print(json.dumps(rep, indent=1) if OPTS["json"] else "ERROR input not found: " + argv[1])
             sys.exit(rep["exitCode"])
         verify(argv[1])

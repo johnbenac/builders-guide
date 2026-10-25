@@ -17,6 +17,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_all  # noqa: E402  (the one place the version of the set is written)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 SLUG = "example-room"
@@ -61,7 +64,7 @@ def main():
             "submitter": {"handle": "example-contributor"},
             "licence": "CC-BY-4.0",
             "profile": meta["profile"],
-            "toolVersions": {"authoring-guide-set": "2.3.0", "ifcopenshell": __import__("ifcopenshell").version},
+            "toolVersions": {"authoring-guide-set": gen_all.VERSION, "ifcopenshell": __import__("ifcopenshell").version},
             "attestation": {"ownWork": True, "mayLicense": True, "noRestrictedContent": True}}
         mp = os.path.join(tmp, "meta.json")
         with open(mp, "w", encoding="utf-8", newline="\n") as fh:

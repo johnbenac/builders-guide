@@ -20,7 +20,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import report as rpt  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 NAME_CHARS = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 RESERVED = {"con", "prn", "aux", "nul"} | {"com%d" % i for i in range(1, 10)} | {"lpt%d" % i for i in range(1, 10)}

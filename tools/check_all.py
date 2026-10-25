@@ -29,7 +29,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import report as rpt  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 ROOT = rpt.ROOT
 
 

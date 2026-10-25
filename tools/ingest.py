@@ -49,7 +49,7 @@ import check_submission  # noqa: E402
 import glbkit  # noqa: E402
 from glbkit import Failed, kind_and_category, kind_of_class, part_products, r6, rl, read_glb, sha256_bytes, slugify, write_glb  # noqa: E402,F401  (read_glb and write_glb: the tests use them from here)
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 ROOT = rpt.ROOT
 
 MEDIA = {"glb": "model/gltf-binary", "ifc": "application/x-step", "png": "image/png", "jpg": "image/jpeg", "json": "application/json"}

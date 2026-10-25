@@ -12,6 +12,7 @@
 | `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120, X-80 |
 | `budgets.maxDistinctColours` | number of distinct (class, colour, opacity) combinations above which the palette is too large to manage | `50` | `30` | D-05 |
 | `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51, X-80 |
+| `budgets.coincidentFaceMinAreaM2` | smallest overlap, in square metres, of same-facing coplanar faces of two nodes that validate_glb.py reports as coincident (an estimate, RECOMMENDED); smaller overlaps are ignored | `0.005` | `null` | X-80 |
 | `file.singleLineEntities` | true when the consumer's reader needs every STEP entity on one line | `false` | `true` | B-08 |
 | `identifiers.roomIdMaxLength` | longest allowed room identifier, in characters | `64` | `7` | B-23 |
 | `identifiers.roomIdPattern` | regular expression a room identifier must match | `"^[A-Za-z0-9._-]+$"` | `"^[A-Za-z0-9-]+$"` | B-23 |
@@ -40,4 +41,3 @@
 | `extensions.luminaires.enabled` | consumer turns declared fixtures into lights | `false` | `true` | - |
 | `extensions.luminaires.lensNameSuffix` | ending of the name of the emissive part | `" lens"` | `" lens"` | B-90 |
 | `extensions.luminaires.requiredProperties` | properties every luminaire assembly must carry | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | B-91 |
-| `extensions.luminaires.lightTypes` | allowed values of LightType | `["omni", "spot"]` | `["omni", "spot"]` | B-91 |

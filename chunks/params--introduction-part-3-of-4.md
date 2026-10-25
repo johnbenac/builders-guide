@@ -1,6 +1,7 @@
 <!-- chunk: params--introduction-part-3-of-4 | source: 07-profile-parameters.md | title: Introduction (part 3 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `extensions.luminaires.lightTypes` | allowed values of LightType | `["omni", "spot"]` | `["omni", "spot"]` | B-91 |
 | `extensions.luminaires.positionToleranceMetres` | largest distance between the declared light position and the emissive part, level offset applied | `0.06` | `0.06` | B-92 |
 | `extensions.luminaires.maxPerRoom` | most fixtures per room, or null | `null` | `16` | B-95 |
 | `extensions.signboards.enabled` | consumer generates signs from declared boards | `false` | `true` | - |
@@ -39,4 +40,3 @@
 | `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
 | `submission.allowedLicences` | licence identifiers a submitter may offer the delivery under | `["CC-BY-4.0", "CC0-1.0"]` | `null` | X-71 |
 | `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
-| `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |

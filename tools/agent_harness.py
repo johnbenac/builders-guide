@@ -24,6 +24,9 @@ import tempfile
 
 import ifcopenshell
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_all  # noqa: E402  (the one place the version of the set is written)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -196,7 +199,7 @@ def run_profile(label, profile_path):
                            {"asset": "finishes/textures/plaster_example", "type": "texture-set", "source": "procedural", "author": "Harness", "licence": "free to reuse"},
                            {"asset": "items/table.work.1600", "type": "item", "source": "original", "author": "Harness", "licence": "free to reuse"}],
             "licence": {"statement": "Free to reuse (test)."},
-            "checks": {"tool": "check_ifc.py", "toolVersion": "2.3.0", "report": "reports/check_ifc.json", "result": "pass"}}
+            "checks": {"tool": "check_ifc.py", "toolVersion": gen_all.VERSION, "report": "reports/check_ifc.json", "result": "pass"}}
     meta_path = os.path.join(work, "package-meta.json")
     json.dump(meta, open(meta_path, "w"))
     p = tool("build_package.py", "init", pkg, meta_path)

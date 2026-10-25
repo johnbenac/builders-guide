@@ -34,9 +34,14 @@ third-party content. Agents: `skills/submit-delivery/SKILL.md`.
    (`rules.json`, `06-rules-index.md`, `07-profile-parameters.md`, `chunks/`, `llms.txt`, `llms-full.txt`, `skills/*/references/`,
    `MANIFEST.json`).
 2. Regenerate: `python3 tools/gen_all.py --write`.
-3. Run the tests: `python3 tools/test_sync.py`, `python3 tools/selftest.py`, `python3 tools/agent_harness.py` and
-   `python3 tools/test_submission.py` and `python3 tools/test_proofs.py` (`pip install -r tools/requirements.txt` first; `test_submission.py` also needs
-   `requirements-preview.txt`, and `test_proofs.py` uses the Khronos glTF Validator when `npm ci --prefix tools/khronos` has been run).
+3. Run the tests: `python3 tools/test_sync.py`, `python3 tools/selftest.py` (it also runs `test_glb_options.py`, `test_glb_negative.py`,
+   `test_hardening.py`, `test_fixtures.py` and `agent_harness.py`), `python3 tools/test_submission.py` and `python3 tools/test_proofs.py`
+   (`pip install -r tools/requirements.txt` first; `test_submission.py` also needs `requirements-preview.txt`, and `test_proofs.py` uses the Khronos
+   glTF Validator when `npm ci --prefix tools/khronos` has been run). A workflow (`.github/workflows/check-set.yml`) runs `gen_all.py --check`,
+   `test_sync.py` and `selftest.py` on every pull request that changes the tools, profiles, schemas, rules, guides or skills.
+   `test_sync.py` compares the file list of the zip in `dist/` with the tree: a change that adds or removes a file, or changes the version, is
+   finished by a maintainer with `python3 tools/build_dist.py` (needs `requirements-dist.txt`, pandoc and a Chromium-based browser), which also
+   runs `check_set.py --strict` on the result.
 4. Add a line to `CHANGELOG.md` and follow `VERSIONING.md`.
 
 ## Style

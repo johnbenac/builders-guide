@@ -21,7 +21,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fileset  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-VERSION = "2.3.0"
+VERSION = "2.4.0"
+RELEASE_DATE = (2026, 10, 24)         # the date of the release: it is in the subtitle and in the zip member times, so the same tree gives the same files
 NAME = "builders-guide-" + VERSION
 DIST = os.path.join(ROOT, "dist")
 ORDER = ["README.md", "AGENTS.md", "01-builders-and-architects-guide.md", "02-interior-decorators-guide.md",
@@ -100,7 +101,7 @@ def main():
     html = os.path.join(DIST, NAME + ".html")
     subprocess.run(["pandoc", "-f", "gfm", "-t", "html5", "--template", os.path.join(ROOT, "tools", "template.html"), "--toc",
                     "--toc-depth=2", "-M", "title=Authoring Guide Set for Digital Buildings, Materials and Furniture (IFC)",
-                    "-M", "subtitle=Version %s, 2026-10-23. Application-neutral guides and tools for outside organisations and their agents." % VERSION,
+                    "-M", "subtitle=Version %s, %04d-%02d-%02d. Application-neutral guides and tools for outside organisations and their agents." % ((VERSION,) + RELEASE_DATE),
                     "-M", "toc=true", md, "-o", html], check=True)
     os.remove(md)
     pdf = os.path.join(DIST, NAME + ".pdf")
@@ -123,7 +124,7 @@ def main():
     zpath = os.path.join(DIST, NAME + ".zip")
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
         for rel in sorted(members + ["MANIFEST.sha256"]):
-            zi = zipfile.ZipInfo(NAME + "/" + rel, date_time=(2026, 10, 23, 0, 0, 0))
+            zi = zipfile.ZipInfo(NAME + "/" + rel, date_time=RELEASE_DATE + (0, 0, 0))
             zi.compress_type = zipfile.ZIP_DEFLATED
             zi.external_attr = (0o755 if rel.startswith("tools/") and rel.endswith(".py") else 0o644) << 16
             with open(os.path.join(ROOT, rel), "rb") as fh:
@@ -133,6 +134,10 @@ def main():
     with open(os.path.join(DIST, "SHA256SUMS.txt"), "w", newline="\n") as fh:
         for p in (zpath, html, pdf):
             fh.write("%s  %s\n" % (sha(p), os.path.basename(p)))
+    # the finished hand-over files and the tree agree on the version, both manifests, the documents and the zip
+    r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "check_set.py"), ROOT, "--expect", VERSION, "--strict"], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit("the finished set does not pass tools/check_set.py:\n" + r.stdout + r.stderr)
     print("built", ", ".join(os.path.basename(p) for p in (html, pdf, zpath)))
 
 

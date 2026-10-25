@@ -6,7 +6,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.3.0 (2026-10-23). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.4.0 (2026-10-24). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -130,10 +130,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.3.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
-| `builders-guide-2.3.0.html` | the same, as one web page |
-| `builders-guide-2.3.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.3.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.4.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
+| `builders-guide-2.4.0.html` | the same, as one web page |
+| `builders-guide-2.4.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.4.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.
@@ -1451,7 +1451,7 @@ hold preview pictures under `previews/`. `python3 tools/check_submission.py deli
 
 ---
 
-<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce | rules: X-79,X-80,X-81,X-82,X-83,X-84,X-85,X-86 -->
+<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 1 of 2) | rules: X-79,X-80,X-81,X-82,X-83,X-84,X-85,X-86 -->
 ### 8.1 Proofs: models and pictures that anyone can reproduce
 
 A reviewer should not have to open a modelling program to see what a delivery is. Every submitted delivery therefore carries **proofs** in
@@ -1463,7 +1463,14 @@ without a graphics card or a display, so the same files come out on a laptop and
 profile (`07-profile-parameters.md`); the numbers below are the defaults.
 
 The GLB files use metres and Y up: a point of the IFC frame (Z up) becomes `(x, y, z) -> (x, z, -y)`. Colours become PBR metallic-roughness
-materials; a texture set becomes a swatch with its maps embedded. The pictures use fixed lighting and a fixed background and are always made
+materials; a texture set becomes a swatch with its maps embedded. Zones and reservation volumes state a requirement, not a thing: when the
+profile sets `proofs.glbVolumes` to `exclude` (or `export_glb.py --volumes exclude` is used), they get no mesh and no node and are listed in the
+`extras.excluded` of the whole-model GLB, which `validate_glb.py --ifc` accepts as the written reason for a missing node (only those two kinds,
+never a wall or a slab). A consumer that moves or turns single things (a door about its hinge, a chair) sets `proofs.glbPivots` to `placement`: each
+product then has its own origin, the node carries the placement, identical shapes share one mesh, and `model.placements.json` lists every node; a profile
+may also ask for indexed meshes (`proofs.glbIndexed`). Two surfaces in one plane facing the same way fight for the same pixels (z-fighting);
+`validate_glb.py` warns when two nodes share more than `budgets.coincidentFaceMinAreaM2` of such area (an estimate, RECOMMENDED), `tools/coplanar.py`
+lists the pairs, and `proofs.glbCoplanar` set to `union` merges the overlaps inside one product. The pictures use fixed lighting and a fixed background and are always made
 from the delivered GLB files, never from anything else: a plan per level (cut at 1.2 m above the floor), four interior views for each room kind
 that is present, four exterior views, and for every component a contact sheet of turntable frames (a swatch view for a texture set).
 
@@ -1483,6 +1490,9 @@ that is present, four exterior views, and for every component a contact sheet of
 
 **X-86 · REQUIRED** - Make the proofs reproducible: rebuilding the GLB files from the delivered IFC files must give the same bytes, and re-rendering the delivered GLB files must give pictures that differ from the delivered ones by no more than `proofs.renderTolerance`; where the toolchain is not available the check says so and is skipped, not passed. Proofs that cannot be reproduced cannot be trusted, and a rebuild is the cheapest way to see that the pictures do show the model.
 
+---
+
+<!-- chunk: g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2 | source: 04-delivery-and-acceptance-guide.md | title: 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 2 of 2) | rules: - -->
 Acceptance of a submission is a merge to `main`; see `08-submissions-and-ingest.md` for what happens next. The checks cannot judge quality,
 ownership or taste: a person reviews those, and may decline a delivery that passes every check.
 
@@ -1769,6 +1779,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120, X-80 |
 | `budgets.maxDistinctColours` | number of distinct (class, colour, opacity) combinations above which the palette is too large to manage | `50` | `30` | D-05 |
 | `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51, X-80 |
+| `budgets.coincidentFaceMinAreaM2` | smallest overlap, in square metres, of same-facing coplanar faces of two nodes that validate_glb.py reports as coincident (an estimate, RECOMMENDED); smaller overlaps are ignored | `0.005` | `null` | X-80 |
 | `file.singleLineEntities` | true when the consumer's reader needs every STEP entity on one line | `false` | `true` | B-08 |
 | `identifiers.roomIdMaxLength` | longest allowed room identifier, in characters | `64` | `7` | B-23 |
 | `identifiers.roomIdPattern` | regular expression a room identifier must match | `"^[A-Za-z0-9._-]+$"` | `"^[A-Za-z0-9-]+$"` | B-23 |
@@ -1797,13 +1808,13 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `extensions.luminaires.enabled` | consumer turns declared fixtures into lights | `false` | `true` | - |
 | `extensions.luminaires.lensNameSuffix` | ending of the name of the emissive part | `" lens"` | `" lens"` | B-90 |
 | `extensions.luminaires.requiredProperties` | properties every luminaire assembly must carry | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | `["LuminaireId", "LuminaireMount", "LightType", "LightEner...` | B-91 |
-| `extensions.luminaires.lightTypes` | allowed values of LightType | `["omni", "spot"]` | `["omni", "spot"]` | B-91 |
 
 ---
 
 <!-- chunk: params--introduction-part-3-of-4 | source: 07-profile-parameters.md | title: Introduction (part 3 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `extensions.luminaires.lightTypes` | allowed values of LightType | `["omni", "spot"]` | `["omni", "spot"]` | B-91 |
 | `extensions.luminaires.positionToleranceMetres` | largest distance between the declared light position and the emissive part, level offset applied | `0.06` | `0.06` | B-92 |
 | `extensions.luminaires.maxPerRoom` | most fixtures per room, or null | `null` | `16` | B-95 |
 | `extensions.signboards.enabled` | consumer generates signs from declared boards | `false` | `true` | - |
@@ -1842,13 +1853,13 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `submission.allowedExtensions` | file name endings allowed in a delivery, lower case, without the dot; anything else (programs, scripts, archives) is refused | `["ifc", "glb", "png", "jpg", "json", "md", "csv", "txt"]` | `null` | X-72 |
 | `submission.allowedLicences` | licence identifiers a submitter may offer the delivery under | `["CC-BY-4.0", "CC0-1.0"]` | `null` | X-71 |
 | `submission.ingestMaxComponents` | most component assets one delivery may be split into by tools/ingest.py | `500` | `null` | - |
-| `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
 
 ---
 
 <!-- chunk: params--introduction-part-4-of-4 | source: 07-profile-parameters.md | title: Introduction (part 4 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
 | `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |
 | `proofs.maxGlbNodes` | most scene-graph nodes in one GLB | `20000` | `null` | X-80 |
 | `proofs.maxExtentMetres` | largest size of a GLB along any axis, in metres; a bigger model has probably been exported in the wrong unit | `5000` | `null` | X-80 |
@@ -1860,6 +1871,10 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `proofs.maxRenderPixels` | most pixels (width times height) of one render | `2097152` | `null` | X-84 |
 | `proofs.maxRenderBytes` | largest file size of one render, in bytes | `3145728` | `null` | X-84 |
 | `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
+| `proofs.glbVolumes` | what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list | `"mesh"` | `null` | X-80 |
+| `proofs.glbPivots` | where each product of the whole-model GLB has its origin: world bakes every vertex into world coordinates (every origin is the model origin); placement uses the origin of the product's IFC placement, so the node carries the placement and identical shapes share one mesh; footprint uses the centre of the footprint at the lowest point | `"world"` | `null` | X-80 |
+| `proofs.glbCoplanar` | what the GLB export does with overlapping coplanar same-facing triangles inside one product: off leaves them, union replaces them by the union of their polygons (needs shapely 2.1) | `"off"` | `null` | X-80 |
+| `proofs.glbIndexed` | share vertices that agree in position and normal in the whole-model GLB (indexed primitives) | `false` | `null` | X-80 |
 | `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
 | `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |
 | `proofs.renderTolerance.differenceLevels` |  | `8` | `null` | - |

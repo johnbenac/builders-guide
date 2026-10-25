@@ -7,7 +7,7 @@
 Checks: every generated file is current (gen_all); rules.json matches the guides rule by rule (id, level, statement) and its
 schema; rules_meta.json covers exactly the rules; every rule marked automated is emitted by its tool and every rule a tool
 emits is marked automated; skills are well formed (name, description, size, referenced files exist); every link in llms.txt
-resolves; MANIFEST.json hashes match the files; no chunk is over the size limit; no file of the set or of dist/ (zip members, PDF
+resolves; MANIFEST.json hashes match the files; the version, MANIFEST.json and MANIFEST.sha256 agree (check_set.py); no chunk is over the size limit; no file of the set or of dist/ (zip members, PDF
 streams and links included) holds a local-file address or an absolute local path (tools/leakscan.py).
 """
 import hashlib
@@ -149,6 +149,17 @@ if os.path.exists(zip_path):
     with zipfile.ZipFile(zip_path) as z:
         names = {n.split("/", 1)[1] for n in z.namelist()}
     check(names == set(fileset.set_files(ROOT) + fileset.dist_files(ROOT) + [fileset.CHECKSUM_FILE]), "the zip in dist/ holds different files from the manifest")
+# the set agrees with itself on its version and its two manifests (check_set.py; the zip and the hand-over documents are checked when dist/ is built)
+import check_set  # noqa: E402
+for prob in check_set.check(ROOT, expect=gen_all.VERSION, allow_unreleased=True, dist=False)[0]:
+    check(False, "check_set.py: " + prob)
+# no tool or template still states the previous release (a literal left behind at a version bump; other versions in tools are those of example deliveries)
+heads = re.findall(r"^## (\d+\.\d+\.\d+)\b", load("CHANGELOG.md"), re.M)
+older = {h for h in heads[:2] if h != gen_all.VERSION}
+for rel in sorted(fileset.set_files(ROOT)):
+    if (rel.startswith("tools/") and rel.endswith(".py") and not os.path.basename(rel).startswith("test_")) or rel.startswith("templates/"):
+        for lit in set(re.findall(r"[\"'](\d+\.\d+\.\d+)[\"']", load(rel))) & older:
+            check(False, "%s names version %s, but the set is %s (a literal left behind at a version bump)" % (rel, lit, gen_all.VERSION))
 n_rules = len(rj["rules"])
 m1 = re.search(r"rules\.json` \((\d+), stable ids", load("AGENTS.md"))
 check(m1 is not None and int(m1.group(1)) == n_rules, "AGENTS.md states a rule count that is not %d" % n_rules)

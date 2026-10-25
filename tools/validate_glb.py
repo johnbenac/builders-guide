@@ -20,7 +20,10 @@ set's; a size along any axis within `proofs.maxExtentMetres`; unit-length normal
 (`proofs.maxGlbNodes`), triangle count (`limits.maxTriangles`, and `budgets.recommendedTriangles` as a warning) and file size
 (`submission.maxFileBytes`) from the profile; texture sizes in `textures.sizesPixels`; for a whole model: the scene-graph naming
 (`model` > `level:<name>` > `<kind>:<name>#<GlobalId>`), the stated bounds equal the data, and with --ifc every product's bounding box equals
-the one computed from the IFC file (tolerance 1 mm) in the converted frame.
+the one computed from the IFC file (tolerance 1 mm) in the converted frame, no two nodes have coincident same-facing faces over
+`budgets.coincidentFaceMinAreaM2` (RECOMMENDED, an estimate: `tools/coplanar.py`), and every product with geometry has a node unless the model's
+`extras.excluded` (the exclusion report that `export_glb.py --volumes exclude` writes) lists it; only zones (IfcSpatialZone) and reservation
+volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE) may be listed, and a listed product must not have a node.
 
 The report is `check-report/1`; every finding has rule X-80, a `code`, a `location` and a `fix_hint`. Exit codes as in report.py:
 0 no REQUIRED failure, 1 at least one, 2 wrong command line, 3 nothing could be read.
@@ -37,11 +40,12 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import coplanar  # noqa: E402
 import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed  # noqa: E402
 
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 RULE = "X-80"
 TOP_KEYS = {"asset", "scene", "scenes", "nodes", "meshes", "materials", "accessors", "bufferViews", "buffers", "images", "textures",
             "samplers", "extras", "extensionsUsed", "extensionsRequired", "extensions", "cameras", "animations", "skins"}
@@ -264,7 +268,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
     # ---- meshes
     meshes = doc.get("meshes", [])
     tri_total, lo, hi = 0, None, None
-    prim_by_mesh = {}
+    prim_by_mesh, mesh_pos = {}, {}
     for mi, mesh in enumerate(meshes):
         for pi, pr in enumerate(mesh.get("primitives", []) or []):
             w = "/meshes/%d/primitives/%d" % (mi, pi)
@@ -303,6 +307,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
             tri_total += ntri
             lo = pos.min(axis=0) if lo is None else np.minimum(lo, pos.min(axis=0))
             hi = pos.max(axis=0) if hi is None else np.maximum(hi, pos.max(axis=0))
+            mesh_pos.setdefault(mi, []).append(pos)
             # attributes
             for name, acc_i in at.items():
                 if not rng(f, doc, "accessors", acc_i, "%s/attributes/%s" % (w, name)):
@@ -375,6 +380,7 @@ def validate_one(data, label, role, item, tex_sizes, params):
     else:
         sc_nodes = scenes[sc].get("nodes", [])
     parent = {}
+    transform_bad = False
     for ni, n in enumerate(nodes):
         w = "/nodes/%d" % ni
         if "mesh" in n and rng(f, doc, "meshes", n["mesh"], w + "/mesh"):
@@ -386,12 +392,10 @@ def validate_one(data, label, role, item, tex_sizes, params):
                 parent[c] = ni
         if "matrix" in n and ("translation" in n or "rotation" in n or "scale" in n):
             f.bad("GLB-NODE", "%s has both a matrix and translation/rotation/scale" % w, "Use one or the other.", w)
-        if "rotation" in n:
-            q = n["rotation"]
-            if not (isinstance(q, list) and len(q) == 4 and abs(math.sqrt(sum(float(x) ** 2 for x in q)) - 1.0) < 1e-3):
-                f.bad("GLB-NODE", "%s rotation is not a unit quaternion" % w, "Normalise the quaternion.", w)
-        if "scale" in n and (not isinstance(n["scale"], list) or any(not isinstance(x, (int, float)) or x <= 0 for x in n["scale"])):
-            f.bad("GLB-NODE", "%s scale must be positive" % w, "Mirroring and zero scale are not allowed; bake them into the vertices.", w)
+        for msg in node_transform_problems(n):
+            transform_bad = True
+            f.bad("GLB-NODE", "%s (%s): %s" % (w, n.get("name", ""), msg), "Write translation (3 numbers), rotation (a unit quaternion), scale (3 positive numbers) or a "
+                  "matrix (16 numbers, last row 0 0 0 1, positive determinant). Mirroring, zero scale and projection are not allowed; bake them into the vertices.", w)
     # cycles / reachability
     reach, stack = set(), list(sc_nodes)
     while stack:
@@ -417,6 +421,11 @@ def validate_one(data, label, role, item, tex_sizes, params):
         un = sorted(set(range(count)) - used)
         if un:
             f.bad("GLB-UNUSED", "%s %s is not used by anything" % (kind, ", ".join(map(str, un[:5]))), "Remove unused %ss; the file may hold nothing that is not shown." % kind, "/%ss" % kind)
+    # ---- the extent and the bounds are those of the scene: every node's transform applied to the mesh it holds
+    wb = None if transform_bad else world_bounds(doc, nodes, sc_nodes, mesh_pos)
+    if wb is not None:
+        lo, hi = wb
+        info["bounds"] = {"min": [float(x) for x in lo], "max": [float(x) for x in hi]}
     # ---- conventions
     ex = doc.get("extras") if isinstance(doc.get("extras"), dict) else {}
     if ex.get("units") != "metres":
@@ -457,9 +466,45 @@ def validate_one(data, label, role, item, tex_sizes, params):
                     cn = nodes[ci].get("name", "")
                     if not LEAF_NAME.match(cn or "") or "mesh" not in nodes[ci]:
                         f.bad("GLB-NAMES", "node %r is not a mesh node named <kind>:<name>#<GlobalId>" % (cn,), "Name leaf nodes as export_glb.py does.", "/nodes/%d" % ci)
+        gids = {}
+        for ni, n in enumerate(nodes):
+            nm = n.get("name") or ""
+            if "mesh" not in n or "#" not in nm or not LEAF_NAME.match(nm):
+                continue
+            gid_name = nm.rsplit("#", 1)[1]
+            ex_n = n.get("extras") if isinstance(n.get("extras"), dict) else {}
+            if ex_n.get("globalId") != gid_name:
+                f.bad("GLB-IDENT", "node %r: extras.globalId is %r, the GlobalId in its name is %r" % (nm, ex_n.get("globalId"), gid_name),
+                      "Write the product's GlobalId into the node name and into extras.globalId.", "/nodes/%d" % ni, level="RECOMMENDED")
+            gids.setdefault(gid_name, []).append(nm)
+        for gid_name, lst in sorted(gids.items()):
+            if len(lst) > 1:
+                f.bad("GLB-IDENT", "GlobalId %s is on %d nodes (%s ...)" % (gid_name, len(lst), lst[0]), "One node per product.", "/nodes", level="RECOMMENDED")
+        pairs = []
+        if not transform_bad:                            # an unreadable transform is already a REQUIRED finding; the check needs readable ones
+            try:
+                pairs = coplanar.glb_overlaps(data, params["coincidentMinAreaM2"])
+            except Failed as exc:
+                f.bad("GLB-COPLANAR", "the coincident-face check could not run: %s" % exc, "Fix the file; until then no warning does not mean no coincident faces.", "/nodes",
+                      level="RECOMMENDED")
+            except Exception as exc:                     # a defect of the check or of the file that no other check names: say so, never report "clean"
+                f.bad("GLB-COPLANAR", "internal error in the coincident-face check (%s: %s)" % (type(exc).__name__, str(exc)[:160]),
+                      "Report this with the file; the result of this check is unknown.", "/nodes")
+        if pairs:
+            f.bad("GLB-COPLANAR", "%d pair(s) of nodes have coincident same-facing faces over %g m2 (%.2f m2 in all); the largest: %s and %s, %.2f m2"
+                  % (len(pairs), params["coincidentMinAreaM2"], sum(p[2] for p in pairs), pairs[0][0], pairs[0][1], pairs[0][2]),
+                  "Two surfaces in one plane z-fight in a rasteriser. Offset one by a few millimetres, make the joint a butt joint, or build them as one solid; "
+                  "python3 tools/coplanar.py lists the pairs.", "/nodes", level="RECOMMENDED")
         dup = {x for x in names if x and names.count(x) > 1}
         if dup:
             f.bad("GLB-NAMES", "node name %r is used more than once" % sorted(dup)[0], "Names include the GlobalId, so they are unique.", "/nodes")
+        if "excluded" in ex:
+            lst = ex["excluded"]
+            if not (isinstance(lst, list) and all(isinstance(x, dict) and isinstance(x.get("globalId"), str) and x.get("reason") in glbkit.VOLUME_REASONS for x in lst)):
+                f.bad("GLB-EXTRAS", "extras.excluded must be a list of {globalId, ifcClass, name, predefinedType, reason} with reason zone or reservation",
+                      "Export with tools/export_glb.py --volumes exclude.", "/extras/excluded")
+            elif len({x["globalId"] for x in lst}) != len(lst):
+                f.bad("GLB-EXTRAS", "extras.excluded lists a GlobalId twice", "Export with tools/export_glb.py --volumes exclude.", "/extras/excluded")
         for k in ("levels", "rooms", "bounds", "source"):
             if k not in ex:
                 f.bad("GLB-EXTRAS", "extras.%s is missing; the render tools and the checks need it" % k, "Export with tools/export_glb.py.", "/extras/" + k)
@@ -476,6 +521,69 @@ def validate_one(data, label, role, item, tex_sizes, params):
     return f, info
 
 
+def node_transform_problems(n):
+    """[message] for a node whose translation, rotation, scale or matrix cannot be used: wrong length, not finite numbers, a rotation that is not a unit
+    quaternion, a scale that is not positive, or a matrix that mirrors (determinant not positive), projects (last row not 0 0 0 1) or has a zero axis."""
+    import numpy as np
+
+    def numbers(v, count):
+        return isinstance(v, list) and len(v) == count and all(isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) for x in v)
+    out = []
+    if "matrix" in n:
+        mt = n["matrix"]
+        if not numbers(mt, 16):
+            out.append("matrix must be 16 finite numbers")
+        else:
+            a = np.array(mt, dtype=float).reshape(4, 4).T                       # column-major
+            if not np.allclose(a[3], [0, 0, 0, 1], atol=1e-9):
+                out.append("matrix is not affine (its last row must be 0 0 0 1)")
+            elif np.linalg.det(a[:3, :3]) <= 0 or (np.linalg.norm(a[:3, :3], axis=0) <= 0).any():
+                out.append("matrix mirrors or collapses an axis (its determinant must be positive)")
+    if "translation" in n and not numbers(n["translation"], 3):
+        out.append("translation must be 3 finite numbers")
+    if "rotation" in n:
+        q = n["rotation"]
+        if not numbers(q, 4):
+            out.append("rotation must be 4 finite numbers")
+        elif abs(math.sqrt(sum(float(x) ** 2 for x in q)) - 1.0) >= 1e-3:
+            out.append("rotation is not a unit quaternion")
+    if "scale" in n:
+        sc = n["scale"]
+        if not numbers(sc, 3):
+            out.append("scale must be 3 finite numbers")
+        elif not all(x > 0 for x in sc):
+            out.append("scale must be positive")
+    return out
+
+
+def world_bounds(doc, nodes, sc_nodes, mesh_pos):
+    """(min, max) in glTF axes of everything the default scene draws, with the transform of every node on the path applied (translation, rotation, scale
+    or matrix) to the vertices of its mesh. A mesh used by several nodes counts once for each. None when the graph or a transform cannot be read
+    (the other checks name that), or when no node draws anything."""
+    import numpy as np
+    lo = hi = None
+    seen = set()
+    stack = [(i, np.eye(4)) for i in sc_nodes if isinstance(i, int) and 0 <= i < len(nodes)]
+    try:
+        while stack:
+            i, parent = stack.pop()
+            if i in seen:
+                continue
+            seen.add(i)
+            node = nodes[i]
+            m = parent @ glbkit.node_matrix(node)
+            for pos in mesh_pos.get(node.get("mesh"), []) if isinstance(node.get("mesh"), int) else []:
+                w = pos @ m[:3, :3].T + m[:3, 3]
+                lo = w.min(axis=0) if lo is None else np.minimum(lo, w.min(axis=0))
+                hi = w.max(axis=0) if hi is None else np.maximum(hi, w.max(axis=0))
+            for c in node.get("children", []) or []:
+                if isinstance(c, int) and 0 <= c < len(nodes):
+                    stack.append((c, m))
+    except (Failed, TypeError, ValueError, KeyError, IndexError):
+        return None
+    return None if lo is None else (lo, hi)
+
+
 def ifc_bounds_problems(glb_data, ifc_path):
     """Compare the bounding box of every product node with the one computed from the IFC file (world coordinates). Returns [message]."""
     import numpy as np
@@ -486,6 +594,7 @@ def ifc_bounds_problems(glb_data, ifc_path):
     st = ifcopenshell.geom.settings()
     st.set("use-world-coords", True)
     items = {}
+    excluded = excluded_of(doc)
     for it in glbkit.triangles_of(doc, bn):
         gid = (it.get("extras") or {}).get("globalId")
         if gid:
@@ -495,13 +604,23 @@ def ifc_bounds_problems(glb_data, ifc_path):
                 lo, hi = np.minimum(lo, items[gid][0]), np.maximum(hi, items[gid][1])
             items[gid] = (lo, hi)
     msgs, checked = [], 0
+    for gid, x in sorted(excluded.items()):
+        e = model.by_guid(gid)
+        if e is None:
+            msgs.append("excluded product %s is not a product of the IFC file" % gid)
+        elif glbkit.exclusion_reason(e) is None:
+            msgs.append("%s %s is listed as excluded, but only a zone or a reservation volume (PROVISIONFORSPACE) may be left out" % (e.is_a(), gid))
+        elif glbkit.exclusion_reason(e) != x.get("reason"):
+            msgs.append("excluded product %s is a %s volume, the list says %r" % (gid, glbkit.exclusion_reason(e), x.get("reason")))
+        if gid in items:
+            msgs.append("%s is listed as excluded but has a node in the GLB" % gid)
     for gid, (glo, ghi) in sorted(items.items()):
         e = model.by_guid(gid) if gid else None
         if e is None:
             msgs.append("node %s is not a product of the IFC file" % gid)
             continue
         los, his = [], []
-        prods = glbkit.part_products(e) if e.is_a() != "IfcGeographicElement" else [e]
+        prods = glbkit.part_products(e, lambda x: x.GlobalId in excluded and glbkit.exclusion_reason(x) is not None) if e.is_a() != "IfcGeographicElement" else [e]
         for p in prods:
             try:
                 g = ifcopenshell.geom.create_shape(st, p).geometry
@@ -519,10 +638,21 @@ def ifc_bounds_problems(glb_data, ifc_path):
                                                                            np.round(ilo, 3).tolist(), np.round(ihi, 3).tolist()))
     ids = {e.GlobalId for e in model.by_type("IfcProduct") if getattr(e, "Representation", None) and e.is_a() not in glbkit.SKIP_CLASSES and
            not any(r.RelatingObject.is_a("IfcElementAssembly") for r in (getattr(e, "Decomposes", None) or []))}
-    missing = sorted(i for i in ids - set(items))
+    missing = sorted(i for i in ids - set(items) - set(excluded))
     for gid in missing[:3]:
-        msgs.append("%s is a product of the IFC file with geometry but has no node in the GLB" % gid)
+        msgs.append("%s is a product of the IFC file with geometry but has no node in the GLB (and is not on extras.excluded)" % gid)
+    if len(missing) > 3:
+        msgs.append("%d more products of the IFC file with geometry have no node in the GLB" % (len(missing) - 3))
     return msgs, checked
+
+
+def excluded_of(doc):
+    """{GlobalId: entry} of the exclusion report in extras.excluded of a whole-model GLB ({} when there is none)."""
+    ex = doc.get("extras") if isinstance(doc.get("extras"), dict) else {}
+    lst = ex.get("excluded")
+    if not isinstance(lst, list):
+        return {}
+    return {x["globalId"]: x for x in lst if isinstance(x, dict) and isinstance(x.get("globalId"), str)}
 
 
 def khronos(paths):
@@ -540,7 +670,8 @@ def khronos(paths):
 def profile_params():
     return {"maxFileBytes": rpt.param("submission.maxFileBytes", 26214400), "maxGlbNodes": rpt.param("proofs.maxGlbNodes", 20000),
             "maxExtentMetres": rpt.param("proofs.maxExtentMetres", 5000), "maxTriangles": rpt.param("limits.maxTriangles", 5000000),
-            "recommendedTriangles": rpt.param("budgets.recommendedTriangles", 1000000), "maxItemTriangles": rpt.param("budgets.maxItemTriangles", 2000)}
+            "recommendedTriangles": rpt.param("budgets.recommendedTriangles", 1000000), "maxItemTriangles": rpt.param("budgets.maxItemTriangles", 2000),
+            "coincidentMinAreaM2": rpt.param("budgets.coincidentFaceMinAreaM2", 0.005)}
 
 
 def validate_files(specs, ifc=None, use_khronos="auto"):
@@ -567,7 +698,8 @@ def validate_files(specs, ifc=None, use_khronos="auto"):
         entry = {"path": s["label"], "role": role, "sha256": glbkit.sha256_bytes(data), "bytes": len(data), "triangles": info["triangles"], "nodes": info["nodes"]}
         if info["bounds"]:
             lo, hi = info["bounds"]["min"], info["bounds"]["max"]
-            entry["boundsIfcFrame"] = {"min": [round(lo[0], 6), round(-hi[2], 6), round(lo[1], 6)], "max": [round(hi[0], 6), round(-lo[2], 6), round(hi[1], 6)]}
+            r6 = lambda x: round(float(x), 6) + 0.0          # noqa: E731  (+ 0.0 turns -0.0 into 0.0, so an unchanged input gives an unchanged report)
+            entry["boundsIfcFrame"] = {"min": [r6(lo[0]), r6(-hi[2]), r6(lo[1])], "max": [r6(hi[0]), r6(-lo[2]), r6(hi[1])]}
         ifc_path = s.get("ifc") or (ifc if role == "model" else None)
         if ifc_path and role == "model" and not f.codes & {"GLB-CONTAINER"}:
             try:
@@ -577,6 +709,9 @@ def validate_files(specs, ifc=None, use_khronos="auto"):
             for m in msgs[:5]:
                 f.bad("GLB-BBOX-IFC", m, "Re-export from the delivered IFC file with tools/export_glb.py.")
             entry["ifcBoundsCompared"] = checked
+            n_excl = len(excluded_of(glbkit.split_glb(data)[0]))
+            if n_excl:
+                entry["ifcExcluded"] = n_excl
         if kv is not None:
             kr = kreports.get(s["path"])
             if kr:

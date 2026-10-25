@@ -26,6 +26,10 @@ KIND_OF = {"IfcCovering": "covering", "IfcDoor": "door", "IfcWindow": "window"}
 COVERING_CATEGORY = {"FLOORING": "floor-covering", "CEILING": "ceiling-covering", "CLADDING": "wall-covering", "WRAPPING": "wall-covering",
                      "MEMBRANE": "covering", "INSULATION": "covering", "SLEEVING": "covering", "MOLDING": "covering", "SKIRTINGBOARD": "covering"}
 SKIP_CLASSES = {"IfcOpeningElement", "IfcVirtualElement", "IfcSpace", "IfcAnnotation", "IfcGrid", "IfcGeographicElement"}
+# Volumes that state a requirement or a room, not a thing: a consumer must not draw or collide with them. `exclusion_reason` names them, an
+# export in `volumes="exclude"` mode leaves them out and lists them (`extras.excluded` of the whole-model GLB), and the validator accepts
+# a missing node only for a product that is on that list and of one of these kinds.
+VOLUME_REASONS = {"zone": "IfcSpatialZone", "reservation": "IfcBuildingElementProxy PROVISIONFORSPACE"}
 
 
 class Failed(Exception):
@@ -72,6 +76,48 @@ def _soup_arrays(rgba_tri):
     return out
 
 
+def _indexed_arrays(parts):
+    """Like _soup_arrays, but vertices that agree in position and normal are shared: [(rgba, positions Mx3 float32, normals Mx3 float32, indices uint32)].
+    The vertex order is the order of first use, so the same shape always gives the same bytes."""
+    import numpy as np
+    out = []
+    for rgba, pv, nv in _soup_arrays(parts):
+        key = np.concatenate([pv, nv], axis=1)
+        uniq, first, inv = np.unique(key, axis=0, return_index=True, return_inverse=True)
+        order = np.argsort(first, kind="stable")
+        rank = np.empty_like(order)
+        rank[order] = np.arange(len(order))
+        idx = rank[inv.reshape(-1)].astype("<u4")
+        uniq = uniq[order]
+        out.append((rgba, np.ascontiguousarray(uniq[:, :3], dtype="<f4"), np.ascontiguousarray(uniq[:, 3:], dtype="<f4"), idx))
+    return out
+
+
+def quaternion_of(r):
+    """Unit quaternion (x, y, z, w) of a 3x3 rotation matrix, with w >= 0 and rounded to 9 places (stable bytes); None when r is not a proper rotation."""
+    import numpy as np
+    r = np.asarray(r, dtype=float)
+    if not (np.allclose(r @ r.T, np.eye(3), atol=1e-6) and np.linalg.det(r) > 0):
+        return None
+    t = np.trace(r)
+    if t > 0:
+        s = np.sqrt(t + 1.0) * 2
+        q = [(r[2, 1] - r[1, 2]) / s, (r[0, 2] - r[2, 0]) / s, (r[1, 0] - r[0, 1]) / s, 0.25 * s]
+    elif r[0, 0] > r[1, 1] and r[0, 0] > r[2, 2]:
+        s = np.sqrt(1.0 + r[0, 0] - r[1, 1] - r[2, 2]) * 2
+        q = [0.25 * s, (r[0, 1] + r[1, 0]) / s, (r[0, 2] + r[2, 0]) / s, (r[2, 1] - r[1, 2]) / s]
+    elif r[1, 1] > r[2, 2]:
+        s = np.sqrt(1.0 + r[1, 1] - r[0, 0] - r[2, 2]) * 2
+        q = [(r[0, 1] + r[1, 0]) / s, 0.25 * s, (r[1, 2] + r[2, 1]) / s, (r[0, 2] - r[2, 0]) / s]
+    else:
+        s = np.sqrt(1.0 + r[2, 2] - r[0, 0] - r[1, 1]) * 2
+        q = [(r[0, 2] + r[2, 0]) / s, (r[1, 2] + r[2, 1]) / s, 0.25 * s, (r[1, 0] - r[0, 1]) / s]
+    q = np.array(q) / np.linalg.norm(q)
+    if q[3] < 0 or (q[3] == 0 and q[np.nonzero(q)[0][0]] < 0):
+        q = -q
+    return [round(float(x), 9) + 0.0 for x in q]
+
+
 def _pack(doc, bin_chunks):
     js = json.dumps(doc, sort_keys=True, separators=(",", ":")).encode("ascii")
     js += b" " * (-len(js) % 4)
@@ -112,18 +158,27 @@ def write_glb(parts):
     return _pack(doc, bin_chunks)
 
 
-def write_scene_glb(name, levels, loose, extras):
+def write_scene_glb(name, levels, loose, extras, indexed=False):
     """A whole model as a scene graph: root node `model`, one child per level (`level:<name>`), one child per component below it.
 
     levels: list of {"name", "components": [component]}; loose: components without a level (placed under the root);
-    component: {"name": node name, "extras": dict, "parts": [(rgba, Nx3 world triangle soup, Z up)]}.
+    component: {"name": node name, "extras": dict, "parts": [(rgba, Nx3 triangle soup, Z up)]} and, for a node with its own pivot,
+    "node": {"translation": [x, y, z] in glTF axes, "rotation": [x, y, z, w] or None}: then `parts` are in the node's own frame (Z up, before the
+    axis conversion) and components whose parts are identical share one mesh (instancing). Without "node" the parts are world coordinates and
+    nothing is shared. Each component dict gets "mesh" (the mesh index) and "instanceOf" (the name of the first node that uses that mesh, else None).
+    indexed: vertices that agree in position and normal are shared and the primitives carry indices.
     extras: dict stored as the document's extras (units and the axis note are added). Materials are shared by colour and named by it."""
     bin_chunks, views, accs, meshes, nodes, mats, mat_index = [], [], [], [], [{"name": name, "children": []}], [], {}
     off = [0]
+    shared = {}
 
-    def add_view(arr):
+    def add_view(arr, target=34962):
+        pad = -off[0] % 4
+        if pad:
+            bin_chunks.append(b"\0" * pad)
+            off[0] += pad
         b = arr.tobytes()
-        views.append({"buffer": 0, "byteOffset": off[0], "byteLength": len(b), "target": 34962})
+        views.append({"buffer": 0, "byteOffset": off[0], "byteLength": len(b), "target": target})
         bin_chunks.append(b)
         off[0] += len(b)
         return len(views) - 1
@@ -137,15 +192,43 @@ def write_scene_glb(name, levels, loose, extras):
         return mat_index[key]
 
     def add_component(c, parent):
-        prims = []
-        for rgba, pv, nv in _soup_arrays(c["parts"]):
-            va, vb = add_view(pv), add_view(nv)
-            accs.append({"bufferView": va, "componentType": 5126, "count": int(len(pv)), "type": "VEC3",
-                         "min": [float(x) for x in pv.min(axis=0)], "max": [float(x) for x in pv.max(axis=0)]})
-            accs.append({"bufferView": vb, "componentType": 5126, "count": int(len(nv)), "type": "VEC3"})
-            prims.append({"attributes": {"POSITION": len(accs) - 2, "NORMAL": len(accs) - 1}, "material": mat_of(rgba), "mode": 4})
-        meshes.append({"name": c["name"], "primitives": prims})
-        nodes.append({"name": c["name"], "mesh": len(meshes) - 1, "extras": c["extras"]})
+        arrays = _indexed_arrays(c["parts"]) if indexed else [(r, p, n, None) for r, p, n in _soup_arrays(c["parts"])]
+        own = c.get("node")
+        fp = None
+        if own is not None:
+            h = hashlib.sha256()
+            for rgba, pv, nv, ix in arrays:
+                h.update(repr(tuple(rgba)).encode() + pv.tobytes() + nv.tobytes() + (ix.tobytes() if ix is not None else b""))
+            fp = h.hexdigest()
+        if fp is not None and fp in shared:
+            mesh_index, c["instanceOf"] = shared[fp]
+        else:
+            prims = []
+            for rgba, pv, nv, ix in arrays:
+                va, vb = add_view(pv), add_view(nv)
+                accs.append({"bufferView": va, "componentType": 5126, "count": int(len(pv)), "type": "VEC3",
+                             "min": [float(x) for x in pv.min(axis=0)], "max": [float(x) for x in pv.max(axis=0)]})
+                accs.append({"bufferView": vb, "componentType": 5126, "count": int(len(nv)), "type": "VEC3"})
+                pr = {"attributes": {"POSITION": len(accs) - 2, "NORMAL": len(accs) - 1}, "material": mat_of(rgba), "mode": 4}
+                if ix is not None:
+                    small = len(pv) < 65536
+                    vi = add_view(ix.astype("<u2" if small else "<u4"), 34963)
+                    accs.append({"bufferView": vi, "componentType": 5123 if small else 5125, "count": int(len(ix)), "type": "SCALAR"})
+                    pr["indices"] = len(accs) - 1
+                prims.append(pr)
+            meshes.append({"name": ("shape:" + fp[:10]) if fp is not None else c["name"], "primitives": prims})      # a shared mesh is named by its shape, not by a node
+            mesh_index = len(meshes) - 1
+            c["instanceOf"] = None
+            if fp is not None:
+                shared[fp] = (mesh_index, c["name"])
+        c["mesh"] = mesh_index
+        node = {"name": c["name"], "mesh": mesh_index, "extras": c["extras"]}
+        if own is not None:
+            if own.get("translation") and any(abs(v) > 0 for v in own["translation"]):
+                node["translation"] = [r6(v) for v in own["translation"]]
+            if own.get("rotation"):
+                node["rotation"] = list(own["rotation"])
+        nodes.append(node)
         nodes[parent]["children"].append(len(nodes) - 1)
 
     for lv in levels:
@@ -161,6 +244,10 @@ def write_scene_glb(name, levels, loose, extras):
             n.pop("children", None)
     ex = {"units": "metres", "axisConversion": AXIS_NOTE}
     ex.update(extras)
+    pad = -off[0] % 4
+    if pad:
+        bin_chunks.append(b"\0" * pad)
+        off[0] += pad
     doc = {"asset": {"version": "2.0", "generator": GLB_GENERATOR}, "scene": 0, "scenes": [{"nodes": [0]}], "nodes": nodes,
            "meshes": meshes, "materials": mats, "accessors": accs, "bufferViews": views, "buffers": [{"byteLength": off[0]}], "extras": ex}
     return _pack(doc, bin_chunks)
@@ -302,13 +389,20 @@ def accessor_array(doc, bn, index):
 
 
 def node_matrix(node):
+    """The 4x4 local matrix of a node (matrix, or translation * rotation * scale). Failed when a transform is malformed (wrong length, not finite
+    numbers), so that no caller falls back to an identity or crashes with a traceback."""
     import numpy as np
+
+    def vec(key, default, n):
+        v = node.get(key, default)
+        if not (isinstance(v, list) and len(v) == n and all(isinstance(x, (int, float)) and not isinstance(x, bool) and np.isfinite(x) for x in v)):
+            raise Failed("node %r: %s must be %d finite numbers" % (node.get("name", ""), key, n))
+        return v
     if "matrix" in node:
-        return np.array(node["matrix"], dtype=np.float64).reshape(4, 4).T
-    t = node.get("translation", [0, 0, 0])
-    q = node.get("rotation", [0, 0, 0, 1])
-    s = node.get("scale", [1, 1, 1])
-    x, y, z, w = q
+        return np.array(vec("matrix", None, 16), dtype=np.float64).reshape(4, 4).T
+    t = vec("translation", [0, 0, 0], 3)
+    x, y, z, w = vec("rotation", [0, 0, 0, 1], 4)
+    s = vec("scale", [1, 1, 1], 3)
     r = np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
                   [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
                   [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])
@@ -355,11 +449,14 @@ def triangles_of(doc, bn):
 
 
 # ---------------------------------------------------------------- IFC geometry
-def part_products(root):
-    """The geometry-carrying products of a component root: the root itself, or all parts of an assembly (recursively)."""
+def part_products(root, skip=None):
+    """The geometry-carrying products of a component root: the root itself, or all parts of an assembly (recursively). skip: a function of a
+    product that is true for the products to leave out (the volumes of `--volumes exclude`, wherever they sit in the tree)."""
     out = []
 
     def walk(e):
+        if skip is not None and skip(e):
+            return
         if getattr(e, "Representation", None) and not e.is_a("IfcElementAssembly") and e.is_a() not in SKIP_CLASSES:
             out.append(e)
         for rel in getattr(e, "IsDecomposedBy", None) or []:
@@ -369,8 +466,8 @@ def part_products(root):
     return out
 
 
-def shape_parts(model, root, limits):
-    """[(rgba, triangle soup Nx3 in the root's own frame)] for a component root, and the root's world matrix (4x4)."""
+def shape_parts(model, root, limits, skip=None):
+    """[(rgba, triangle soup Nx3 in the root's own frame)] for a component root, and the root's world matrix (4x4). skip: see part_products."""
     import numpy as np
     import ifcopenshell.geom
     import ifcopenshell.util.placement as pl
@@ -379,7 +476,7 @@ def shape_parts(model, root, limits):
     inv = np.linalg.inv(m_root)
     groups = {}
     ntri = 0
-    for p in part_products(root):
+    for p in part_products(root, skip):
         limits.tick()
         try:
             sh = ifcopenshell.geom.create_shape(settings, p)
@@ -483,6 +580,25 @@ def master_roots(model):
         for p in parts:
             seen.add(p.id())
         out.append((e, parts, kind, cat))
+    return out
+
+
+def exclusion_reason(e):
+    """Why a product is a volume and not scenery: "zone" (IfcSpatialZone), "reservation" (IfcBuildingElementProxy of type PROVISIONFORSPACE), or None."""
+    if e.is_a("IfcSpatialZone"):
+        return "zone"
+    if e.is_a("IfcBuildingElementProxy") and str(getattr(e, "PredefinedType", "") or "") == "PROVISIONFORSPACE":
+        return "reservation"
+    return None
+
+
+def excluded_volumes(model):
+    """The exclusion report: [{globalId, ifcClass, name, predefinedType, reason}] of every volume with a representation, in GlobalId order."""
+    out = []
+    for e in sorted(model.by_type("IfcProduct"), key=lambda x: x.GlobalId):
+        why = exclusion_reason(e)
+        if why and getattr(e, "Representation", None):
+            out.append({"globalId": e.GlobalId, "ifcClass": e.is_a(), "name": str(e.Name or ""), "predefinedType": str(getattr(e, "PredefinedType", "") or ""), "reason": why})
     return out
 
 

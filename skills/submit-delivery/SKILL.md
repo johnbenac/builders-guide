@@ -3,7 +3,7 @@ name: submit-delivery
 description: Offer a building, interior, furniture item, material set, fixture or hardware piece to the shared repository as a pull request from a fork, with the automatic checks passing, or understand how an accepted (merged) delivery is ingested into component assets and a catalogue. Use when asked to contribute, submit or propose a delivery, to create deliveries/<slug>/, to write the submission block of delivery.json, to make or fix the proofs (GLB files, validation report, renders, proofs/manifest.json), to fix an X-70 to X-86 finding, or to run tools/ingest.py.
 license: CC-BY-4.0
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
   rules: "X-70 to X-86"
 ---
 
@@ -48,6 +48,9 @@ Every delivery carries proofs so that a reviewer sees the work without a modelli
   Units are metres, axes Y up, `(x, y, z) -> (x, z, -y)` from the IFC frame; deterministic bytes; no paths or times.
 * `tools/validate_glb.py` checks structure and conventions, bounding boxes against the IFC file and (when `npm ci --prefix tools/khronos` has been run)
   the Khronos glTF Validator; the report is `proofs/reports/glb-validation.json` and must pass.
+* Options for a consumer that moves single things or avoids volumes (a profile can set them: `proofs.glbVolumes`, `glbPivots`, `glbIndexed`, `glbCoplanar`; the
+  defaults reproduce the plain export): `export_glb.py --volumes exclude`, `--pivots placement`, `--indexed`, `--coplanar union`. `python3 tools/coplanar.py MODEL.glb`
+  lists nodes whose faces coincide (z-fighting), `python3 tools/walkcheck.py MODEL.glb --start X,Y,Z --radius 0.30 0.45` tells which rooms a body of that radius reaches.
 * `tools/render.py` draws, from the GLB files only: a plan per level, four interior views for each room kind present (a room needs a `Function`
   property), four exterior views, and a contact sheet of turntable frames for every component. Fixed light, background and sizes.
 * `proofs/manifest.json` lists every GLB (SHA-256, size, source IFC hash), the validation report and every picture (path, SHA-256, pixel size, camera,
