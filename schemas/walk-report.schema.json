@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Walk report",
+  "description": "Output of tools/walkcheck.py (format walk-report/1): for each body radius, how many standing places a whole-model GLB offers, in how many separate connected sets, and how much of each room's walkable floor can be reached from the start. Coordinates are metres in the IFC frame.",
+  "type": "object",
+  "required": ["format", "tool", "grid", "doors", "start", "radii"],
+  "properties": {
+    "format": {"const": "walk-report/1"},
+    "tool": {"type": "object", "required": ["name", "version"], "properties": {"name": {"const": "walkcheck.py"}, "version": {"type": "string"}}},
+    "grid": {
+      "type": "object",
+      "required": ["planResolutionMetres", "cells", "bodyHeightMetres", "feetHeightRangeMetres", "upperBodyFromMetres", "maxRiserMetres"],
+      "properties": {
+        "planResolutionMetres": {"type": "number", "exclusiveMinimum": 0},
+        "cells": {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 3, "maxItems": 3},
+        "bodyHeightMetres": {"type": "number"},
+        "feetHeightRangeMetres": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+        "upperBodyFromMetres": {"type": "number"},
+        "maxRiserMetres": {"type": "number"}
+      }
+    },
+    "doors": {"enum": ["open", "solid"]},
+    "start": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+    "exitCode": {"enum": [0, 1]},
+    "radii": {
+      "type": "object",
+      "description": "keyed by the body radius in metres with two decimals",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["standingPlaces", "components", "startFound"],
+        "properties": {
+          "standingPlaces": {"type": "integer", "minimum": 0},
+          "components": {"type": "integer", "minimum": 0},
+          "startFound": {"type": "boolean"},
+          "startComponent": {"type": "integer", "minimum": 0},
+          "rooms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "external", "footprintAreaM2", "walkableAreaM2", "reachableAreaM2", "reachable", "reachableShareOfWalkable"],
+              "properties": {
+                "id": {"type": "string"},
+                "level": {"type": ["string", "null"]},
+                "external": {"type": "boolean"},
+                "footprintAreaM2": {"type": "number", "minimum": 0},
+                "walkableAreaM2": {"type": "number", "minimum": 0},
+                "reachableAreaM2": {"type": "number", "minimum": 0},
+                "reachable": {"type": "boolean"},
+                "reachableShareOfWalkable": {"type": "number", "minimum": 0, "maximum": 1}
+              }
+            }
+          },
+          "waypoints": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["component", "connectedToStart"],
+              "properties": {"component": {"type": ["integer", "null"]}, "connectedToStart": {"type": "boolean"}}
+            }
+          }
+        }
+      }
+    }
+  }
+}

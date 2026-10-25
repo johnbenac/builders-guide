@@ -413,6 +413,80 @@ for i in t2_on:
     tops.append(top)
 expect(abs(sum(area(x) for x in tops) - 7.0) < 1e-4, "export union: the top plane of the product is the union, 4 + 4 - 1 = 7 m2: %s" % [area(x) for x in tops])
 
+# ------------------------------------------------------------------ 5. walk check at a body radius
+import walkcheck  # noqa: E402
+
+
+def box(x0, y0, z0, x1, y1, z1):
+    v = lambda x, y, z: [x, y, z]  # noqa: E731
+    p = [v(x0, y0, z0), v(x1, y0, z0), v(x1, y1, z0), v(x0, y1, z0), v(x0, y0, z1), v(x1, y0, z1), v(x1, y1, z1), v(x0, y1, z1)]
+    f = [(0, 3, 2), (0, 2, 1), (4, 5, 6), (4, 6, 7), (0, 1, 5), (0, 5, 4), (1, 2, 6), (1, 6, 5), (2, 3, 7), (2, 7, 6), (3, 0, 4), (3, 4, 7)]
+    return np.array([p[i] for tri in f for i in tri], dtype=float)
+
+
+def comp(name, kind, gid, *boxes, category="x"):
+    return {"name": "%s:%s#%s" % (kind, name, gid), "extras": {"globalId": gid, "ifcClass": "IfcX", "kind": kind, "category": category, "level": "Ground"},
+            "parts": [((0.7, 0.7, 0.7, 1.0), np.concatenate([box(*b) for b in boxes]))]}
+
+
+def house(gap=0.7, door=False, platform_h=0.15, table=False):
+    comps = [comp("Floor", "structure", "F1", (0, 0, -0.2, 10, 6, 0)),
+             comp("Partition low", "structure", "W1", (4.9, 0, 0, 5.1, 3.0 - gap / 2, 2.6)),
+             comp("Partition high", "structure", "W2", (4.9, 3.0 + gap / 2, 0, 5.1, 6, 2.6)),
+             comp("Roof", "structure", "R1", (0, 0, 2.6, 10, 6, 2.8)),
+             comp("Step platform", "structure", "P1", (8.0, 0.2, 0, 9.8, 1.4, platform_h)),
+             comp("High platform", "structure", "P2", (8.0, 4.4, 0, 9.8, 5.8, 0.45))]
+    if door:
+        comps.append(comp("Door leaf", "door", "D1", (4.95, 3.0 - gap / 2, 0, 5.05, 3.0 + gap / 2, 2.1)))
+    if table:
+        comps.append(comp("Table", "furniture", "T1", (6.0, 2.0, 0.0, 7.0, 4.0, 0.75)))
+    rooms = [{"id": "room-a", "name": "A", "function": "x", "level": "Ground", "external": False, "min": [0, 0, 0], "max": [5, 6, 2.6], "footprint": [[0, 0], [4.9, 0], [4.9, 6], [0, 6]]},
+             {"id": "room-b", "name": "B", "function": "x", "level": "Ground", "external": False, "min": [5, 0, 0], "max": [10, 6, 2.6], "footprint": [[5.1, 0], [10, 0], [10, 6], [5.1, 6]]}]
+    extras = {"source": {"ifcPath": "x.ifc", "ifcSha256": "0" * 64}, "levels": [{"name": "Ground", "elevation": 0.0}], "rooms": rooms,
+              "bounds": {"min": [0, 0, -0.2], "max": [10, 6, 2.8]}, "counts": {}}
+    return glbkit.write_scene_glb("model", [{"name": "Ground", "extras": {"elevation": 0.0}, "components": comps}], [], extras)
+
+
+def reach(rep, rad, room):
+    return next(r for r in rep["radii"]["%.2f" % rad]["rooms"] if r["id"] == room)
+
+
+rep = walkcheck.walk(house(0.7), (2.0, 3.0, 0.0), [0.30, 0.40], {"b-floor": (7.0, 3.0, 0.0), "step": (9.0, 0.8, 0.15), "high": (9.0, 5.0, 0.45)})
+expect(rep["radii"]["0.30"]["startFound"] and rep["radii"]["0.40"]["startFound"], "the start is a standing place")
+expect(reach(rep, 0.30, "room-b")["reachable"] and reach(rep, 0.30, "room-b")["reachableShareOfWalkable"] > 0.7, "a 0.7 m gap lets a body of radius 0.30 m into room B: %s" % reach(rep, 0.30, "room-b"))
+expect(not reach(rep, 0.40, "room-b")["reachable"] and reach(rep, 0.40, "room-a")["reachableShareOfWalkable"] > 0.9, "... but not one of radius 0.40 m (needs 0.8 m): %s" % reach(rep, 0.40, "room-b"))
+wp = rep["radii"]["0.30"]["waypoints"]
+expect(wp["b-floor"]["connectedToStart"] and wp["step"]["connectedToStart"], "a 0.15 m riser is stepped over: %s" % wp)
+expect(not wp["high"]["connectedToStart"] and wp["high"]["component"] is not None, "a 0.45 m platform is a standing place that is cut off (above the step limit): %s" % wp)
+rep2 = walkcheck.walk(house(0.7, door=True), (2.0, 3.0, 0.0), [0.30], doors="open")
+rep3 = walkcheck.walk(house(0.7, door=True), (2.0, 3.0, 0.0), [0.30], doors="solid")
+expect(reach(rep2, 0.30, "room-b")["reachable"] and not reach(rep3, 0.30, "room-b")["reachable"], "door leaves are open by default and solid on request")
+rep4 = walkcheck.walk(house(1.2, table=True), (2.0, 3.0, 0.0), [0.30, 0.45])
+expect(reach(rep4, 0.45, "room-b")["reachable"], "a 1.2 m gap passes radius 0.45 m even with a table in room B: %s" % reach(rep4, 0.45, "room-b"))
+expect(reach(rep4, 0.45, "room-b")["reachableAreaM2"] < reach(rep, 0.30, "room-b")["reachableAreaM2"], "furniture is solid: less floor is reachable")
+expect(rep4["radii"]["0.30"]["rooms"][1]["reachableAreaM2"] > rep4["radii"]["0.45"]["rooms"][1]["reachableAreaM2"], "a larger body reaches less of the floor")
+# command line: report file, --require, exit codes
+gp = os.path.join(work, "house.glb")
+open(gp, "wb").write(house(0.7))
+rp = os.path.join(work, "walk.json")
+r = py("walkcheck.py", gp, "--start", "2,3,0", "--radius", "0.30", "0.40", "--out", rp, "--require", "0.30")
+expect(r.returncode == 0 and "room-b" in r.stdout, "walkcheck.py runs: %s" % (r.stdout + r.stderr)[-300:])
+r = py("walkcheck.py", gp, "--start", "2,3,0", "--require", "0.40")
+expect(r.returncode == 1, "--require 0.40 fails when room B is cut off at that radius (exit %d)" % r.returncode)
+r = py("walkcheck.py", gp, "--start", "bad")
+expect(r.returncode == 2, "a bad --start is a command-line error")
+r = py("walkcheck.py", os.path.join(work, "missing.glb"), "--start", "1,1,0")
+expect(r.returncode == 3, "a missing file is exit 3")
+jsonschema = __import__("jsonschema")
+jsonschema.validate(json.load(open(rp)), json.load(open(os.path.join(ROOT, "schemas", "walk-report.schema.json"))))
+# the real sample: the pivoted export gives the same answer as the baked one (node transforms are applied)
+for glb_ in (g_ex, export(VARIANT, os.path.join(work, "o_walk"), "--volumes", "exclude", "--pivots", "placement")):
+    rr = walkcheck.walk(glb_, (1.0, 1.0, 0.0), [0.30], doors="open")
+    e = rr["radii"]["0.30"]
+    expect(e["startFound"] and e["rooms"][0]["reachable"], "the sample room is walkable from inside: %s" % e.get("rooms"))
+expect(walkcheck.walk(g_ex, (1.0, 1.0, 0.0), [0.30])["radii"]["0.30"]["rooms"] == walkcheck.walk(export(VARIANT, os.path.join(work, "o_walk"), "--volumes", "exclude", "--pivots", "placement"), (1.0, 1.0, 0.0), [0.30])["radii"]["0.30"]["rooms"],
+       "baked and pivoted exports of one model walk the same")
+
 if __name__ == "__main__":
     print("test_glb_options: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)
