@@ -241,6 +241,7 @@ for mode in ("placement", "footprint"):
     doc, _, leaf = nodes_of(g)
     expect(doc["extras"]["nodePivots"] == mode, "%s: extras.nodePivots names the mode" % mode)
     table = json.load(open(os.path.join(out, "model.placements.json")))
+    __import__("jsonschema").validate(table, json.load(open(os.path.join(ROOT, "schemas", "placements.schema.json"))))
     expect(table["format"] == "placements/1" and len(table["nodes"]) == len(leaf) and table["modelSha256"] == glbkit.sha256_bytes(g),
            "%s: the placements table lists every node and the hash of the model" % mode)
     names = {r["node"] for r in table["nodes"]}

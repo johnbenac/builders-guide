@@ -35,6 +35,10 @@ python3 tools/build_proofs.py deliveries/SLUG                 # GLB exports, val
 python3 tools/check_proofs.py deliveries/SLUG --reproduce     # check the proofs, rebuild them and compare (needs ifcopenshell, numpy, pillow, shapely)
 python3 tools/export_glb.py DELIVERY_OR.ifc --out DIR         # IFC to GLB, whole model and every component
 python3 tools/validate_glb.py DIR_OR.glb --json               # structure and convention checks of GLB files (X-80)
+python3 tools/export_glb.py DELIVERY --out DIR --volumes exclude --pivots placement --indexed   # scene GLB with per-product pivots, shared meshes, placements.json
+python3 tools/coplanar.py DIR/model.glb                       # pairs of nodes with coincident faces (z-fighting)
+python3 tools/walkcheck.py DIR/model.glb --start X,Y,Z --radius 0.30 0.45 --json   # can a body of that radius reach every room
+python3 tools/check_set.py SET_DIR --expect 2.3.0             # is a staged copy of this set whole and the version it says
 python3 tools/render.py GLB_DIR --out DIR                     # headless deterministic renders: plans, interiors, exteriors, contact sheets
 python3 tools/ingest.py deliveries/SLUG --commit HASH --out OUT --dry-run   # maintainers: split a MERGED delivery into components and a catalogue
 python3 tools/test_submission.py                              # prove the submission checks and ingest still behave

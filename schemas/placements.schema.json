@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Placements table",
+  "description": "model.placements.json written by tools/export_glb.py when the whole-model GLB has its own origin per product (--pivots placement or footprint; format placements/1): for each node the product it stands for, where its origin is in the IFC frame, how it is turned, which mesh it draws and whether that mesh is shared with an earlier node. Coordinates are metres in the IFC frame (Z up).",
+  "type": "object",
+  "required": ["format", "model", "ifcSha256", "modelSha256", "nodePivots", "meshes", "nodes"],
+  "properties": {
+    "format": {"const": "placements/1"},
+    "model": {"type": "string"},
+    "ifcSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "modelSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nodePivots": {"enum": ["placement", "footprint"]},
+    "meshes": {"type": "integer", "minimum": 0},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node", "globalId", "ifcClass", "kind", "pivot", "originIfc", "rotationZDegrees", "mesh", "instanceOf", "triangles"],
+        "properties": {
+          "node": {"type": "string"},
+          "globalId": {"type": "string"},
+          "ifcClass": {"type": "string"},
+          "kind": {"type": "string"},
+          "category": {"type": "string"},
+          "level": {"type": ["string", "null"]},
+          "pivot": {"enum": ["placement", "footprint", "override", "world"], "description": "where the origin comes from: the IFC placement, the footprint centre at the lowest point, a pivot file, or (terrain) the model origin"},
+          "originIfc": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+          "rotationZDegrees": {"type": "number", "description": "turn of the node about the vertical axis (placement pivots only; 0 otherwise)"},
+          "mesh": {"type": "integer", "minimum": 0},
+          "instanceOf": {"type": ["string", "null"], "description": "name of the first node that uses this mesh, null for that node itself"},
+          "triangles": {"type": "integer", "minimum": 0},
+          "placementIfc": {"type": ["array", "null"], "description": "the 4 x 4 placement of the product in the IFC frame, row by row", "items": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4}, "minItems": 4, "maxItems": 4}
+        }
+      }
+    }
+  }
+}

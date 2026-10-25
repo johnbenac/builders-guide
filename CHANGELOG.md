@@ -3,6 +3,33 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
+## Unreleased (proposed 2.4.0)
+
+Optional GLB export features and checks that consumers who move, open and walk through the model need, and a check of staged copies. Proposed MINOR
+under `VERSIONING.md`: every new behaviour of an existing tool is behind an option or a profile parameter whose default reproduces 2.3.0 (the default
+GLB bytes are unchanged), new tools, new profile parameters with defaults that keep existing deliveries passing, and new automated checks that can
+only warn (`RECOMMENDED`, estimates).
+
+**Added**
+
+* **Zones and reservation volumes in the whole-model GLB** (`X-80`, `X-81`): `export_glb.py --volumes exclude` (profile `proofs.glbVolumes`, default
+  `mesh`) leaves `IfcSpatialZone` and `PROVISIONFORSPACE` proxies out and lists them in `extras.excluded`; `validate_glb.py --ifc` accepts a missing node only
+  for a product on that list that is one of those two kinds, refuses a listed product that has a node, and reports the number of all products without a node.
+* **Per-product pivots, instancing, indexed meshes, placements table** (`X-80`, `X-81`): `export_glb.py --pivots world|placement|footprint` (profile
+  `proofs.glbPivots`, default `world`), `--pivot-file` (hinge points), `--indexed` (`proofs.glbIndexed`), `placements.json` (`schemas/placements.schema.json`, format
+  `placements/1`). Component GLB files and swatches are unchanged, so component identifiers are unchanged.
+* **`GLB-IDENT`** (`X-80`, `RECOMMENDED`): the GlobalId in a node name equals `extras.globalId`, and one GlobalId is on one node.
+* **Coincident faces:** `tools/coplanar.py` (pairs of nodes with same-facing coplanar overlapping faces, and the union of such overlaps inside one product), `GLB-COPLANAR` (`X-80`,
+  `RECOMMENDED`, an estimate; profile `budgets.coincidentFaceMinAreaM2`, default 0.005), `export_glb.py --coplanar union` (`proofs.glbCoplanar`, default `off`).
+* **`tools/walkcheck.py`** (`schemas/walk-report.schema.json`, format `walk-report/1`): a 3D voxel walk through a whole-model GLB at one or more body radii.
+* **`tools/check_set.py`:** a staged copy of the set agrees with itself on its version, is whole, and holds what it must.
+* **`tools/test_glb_options.py`** tests all of the above.
+
+**Changed**
+
+* `validate_glb.py` takes the transforms of the nodes into account for `GLB-BOUNDS`, `GLB-EXTENT` and the bounds it reports (a GLB whose nodes carry their own pivots no longer
+  reports wrong bounds); for a GLB whose vertices are baked into world space the result is the same as before.
+
 ## 2.3.0
 
 Every submitted delivery now carries standalone, reproducible visual proofs: GLB exports of the model and of every component, a GLB validation report

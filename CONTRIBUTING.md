@@ -35,7 +35,7 @@ third-party content. Agents: `skills/submit-delivery/SKILL.md`.
    `MANIFEST.json`).
 2. Regenerate: `python3 tools/gen_all.py --write`.
 3. Run the tests: `python3 tools/test_sync.py`, `python3 tools/selftest.py`, `python3 tools/agent_harness.py` and
-   `python3 tools/test_submission.py` and `python3 tools/test_proofs.py` (`pip install -r tools/requirements.txt` first; `test_submission.py` also needs
+   `python3 tools/test_submission.py`, `python3 tools/test_proofs.py` and `python3 tools/test_glb_options.py` (`pip install -r tools/requirements.txt` first; `test_submission.py` also needs
    `requirements-preview.txt`, and `test_proofs.py` uses the Khronos glTF Validator when `npm ci --prefix tools/khronos` has been run).
 4. Add a line to `CHANGELOG.md` and follow `VERSIONING.md`.
 

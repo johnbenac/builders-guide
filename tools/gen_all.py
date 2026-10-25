@@ -294,6 +294,8 @@ def llms(index, skills_present, count):
           "- [schemas/set.schema.json](schemas/set.schema.json): texture set description",
           "- [schemas/submission.schema.json](schemas/submission.schema.json): the submission block of a submitted delivery",
           "- [schemas/proofs.schema.json](schemas/proofs.schema.json): proofs/manifest.json of a delivery (GLB files, validation report, renders)",
+          "- [schemas/placements.schema.json](schemas/placements.schema.json): the placements table written by tools/export_glb.py for a GLB with per-product origins",
+          "- [schemas/walk-report.schema.json](schemas/walk-report.schema.json): the report of tools/walkcheck.py",
           "- [schemas/catalogue.schema.json](schemas/catalogue.schema.json): the neutral catalogue written by tools/ingest.py", "",
           "## Tools", "",
           "- [tools/check_all.py](tools/check_all.py): one command, one JSON report, per deliverable type",
@@ -301,6 +303,7 @@ def llms(index, skills_present, count):
           "- [tools/build_proofs.py](tools/build_proofs.py): makes a delivery's proofs: GLB files, validation report, standard renders, manifest (X-79 to X-86)",
           "- [tools/check_proofs.py](tools/check_proofs.py): checks the proofs; `--reproduce` rebuilds and compares them",
           "- [tools/export_glb.py](tools/export_glb.py), [tools/validate_glb.py](tools/validate_glb.py), [tools/render.py](tools/render.py): IFC to GLB, GLB validation, headless renders",
+          "- [tools/coplanar.py](tools/coplanar.py), [tools/walkcheck.py](tools/walkcheck.py), [tools/check_set.py](tools/check_set.py): coincident faces in a GLB, a 3D walk at a body radius, check of a staged copy of the set",
           "- [tools/ingest.py](tools/ingest.py): turns an accepted (merged) delivery into component assets and a catalogue",
           "- [tools/README.md](tools/README.md): every tool", "",
           "## Guide sections (each file is about 1,500 tokens or less)", ""]
