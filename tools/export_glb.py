@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Export IFC to binary glTF (GLB): the whole model, and every component on its own.
 
-    python3 tools/export_glb.py DELIVERY_DIR --out OUT_DIR [--index INDEX.json] [--json]
+    python3 tools/export_glb.py DELIVERY_DIR --out OUT_DIR [--index INDEX.json] [--json] [--profile PROFILE.json] [--volumes mesh|exclude]
     python3 tools/export_glb.py MODEL.ifc --out OUT_DIR
 
 DELIVERY_DIR is a delivery folder (deliveries/<slug>/, or any package with ifc/, items/ and finishes/). Writes below OUT_DIR:
@@ -20,6 +20,11 @@ metallic-roughness materials with one base colour per IFC surface colour (metall
 flat per-triangle normals; no textures except in the material swatches. Component GLBs of items keep the item's declared pivot;
 those of master-file elements are moved so the pivot is the centre of the footprint at the lowest point (as ingest does).
 
+Volumes (`--volumes`, profile `proofs.glbVolumes`, default `mesh`): zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type
+PROVISIONFORSPACE) state a requirement, not a thing. With `exclude` they get no mesh and no node, and the whole-model GLB lists them in
+`extras.excluded` (GlobalId, class, name, type, reason), which `validate_glb.py --ifc` reads: a product with geometry that has no node is
+accepted only when it is on that list and is one of these two kinds. With `mesh` (the default of 2.x) they are exported like any product.
+
 Exit codes: 0 written, 2 wrong command line, 3 an input could not be read or built. Requires tools/requirements.txt.
 """
 import argparse
@@ -32,6 +37,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import glbkit  # noqa: E402
+import report as rpt  # noqa: E402
 from glbkit import Failed, r6, rl, sha256_bytes, slugify  # noqa: E402
 
 VERSION = "2.3.0"
@@ -112,13 +118,27 @@ def room_records(model):
     return out
 
 
-def model_roots(model):
+VOLUME_MODES = ("mesh", "exclude")
+
+
+def volumes_mode(volumes=None):
+    """`volumes` as given, else the profile's proofs.glbVolumes, else "mesh"."""
+    mode = volumes or rpt.param("proofs.glbVolumes", "mesh")
+    if mode not in VOLUME_MODES:
+        raise Failed("volumes must be one of %s, not %r" % (", ".join(VOLUME_MODES), mode))
+    return mode
+
+
+def model_roots(model, volumes="mesh"):
     """[(root, geometry products, kind, category)] for everything the whole-model GLB holds: every product with geometry that is not an opening,
-    space, annotation or grid and not part of an assembly (an assembly is one root), terrain included. In GlobalId order."""
+    space, annotation or grid and not part of an assembly (an assembly is one root), terrain included. In GlobalId order. With volumes="exclude"
+    zones and reservation volumes are left out too (`glbkit.excluded_volumes` lists them)."""
     out, seen = [], set()
     for e in sorted(model.by_type("IfcProduct"), key=lambda x: x.GlobalId):
         cls = e.is_a()
         if (cls in glbkit.SKIP_CLASSES and cls != "IfcGeographicElement") or e.id() in seen or cls == "IfcBuildingStorey":
+            continue
+        if volumes == "exclude" and glbkit.exclusion_reason(e):
             continue
         if any(r.RelatingObject.is_a("IfcElementAssembly") for r in (getattr(e, "Decomposes", None) or [])):
             continue
@@ -137,12 +157,12 @@ def model_roots(model):
     return out
 
 
-def expected_levels_and_rooms(path):
+def expected_levels_and_rooms(path, volumes=None):
     """(level names that hold at least one exported product, [(room id, room kind, level name)]) of an IFC file, without building geometry."""
     import ifcopenshell
     model = ifcopenshell.open(path)
     levels = set()
-    for e, _p, _k, _c in model_roots(model):
+    for e, _p, _k, _c in model_roots(model, volumes_mode(volumes)):
         lv = glbkit.level_of(e)
         if lv is not None:
             levels.add(safe_name(lv.Name, 80))
@@ -155,17 +175,18 @@ def expected_levels_and_rooms(path):
     return levels, rooms
 
 
-def model_glb(path, rel, ifc_sha, limits=None):
-    """The whole-model GLB of one IFC file. Returns dict(glb, sha256, triangles, nodes, bounds, rooms, levels, source)."""
+def model_glb(path, rel, ifc_sha, limits=None, volumes=None):
+    """The whole-model GLB of one IFC file. Returns dict(glb, sha256, triangles, nodes, bounds, rooms, levels, counts, excluded)."""
     import numpy as np
     import ifcopenshell
     limits = limits or glbkit.NullLimits()
+    volumes = volumes_mode(volumes)
     model = ifcopenshell.open(path)
     storeys = sorted(model.by_type("IfcBuildingStorey"), key=lambda s: (float(s.Elevation or 0.0), s.GlobalId))
     by_level = {s.id(): [] for s in storeys}
     loose = []
     lo_all, hi_all, ntri, nnodes, counts = None, None, 0, 0, {}
-    for e, parts_p, kind, cat in model_roots(model):
+    for e, parts_p, kind, cat in model_roots(model, volumes):
         cls = e.is_a()
         if cls == "IfcGeographicElement":
             import ifcopenshell.geom
@@ -198,9 +219,13 @@ def model_glb(path, rel, ifc_sha, limits=None):
     extras = {"source": {"ifcPath": rel, "ifcSha256": ifc_sha},
               "levels": [{"name": lv["name"], "elevation": lv["extras"]["elevation"]} for lv in levels],
               "rooms": rooms, "bounds": {"min": rl(lo_all), "max": rl(hi_all)}, "counts": dict(sorted(counts.items()))}
+    excluded = []
+    if volumes == "exclude":
+        excluded = [dict(x, name=safe_name(x["name"], 80)) for x in glbkit.excluded_volumes(model)]
+        extras["excluded"] = excluded
     glb = glbkit.write_scene_glb("model", levels, loose, extras)
     return {"glb": glb, "sha256": sha256_bytes(glb), "triangles": ntri, "nodes": nnodes + len(levels) + 1,
-            "bounds": extras["bounds"], "rooms": rooms, "levels": extras["levels"], "counts": extras["counts"]}
+            "bounds": extras["bounds"], "rooms": rooms, "levels": extras["levels"], "counts": extras["counts"], "excluded": excluded}
 
 
 def component_list(delivery, limits=None):
@@ -271,14 +296,14 @@ def material_list(delivery):
     return out
 
 
-def export_delivery(delivery, limits=None):
+def export_delivery(delivery, limits=None, volumes=None):
     """Everything export_glb writes, in memory: {"models": [...], "components": [...], "materials": [...]}. Components with identical GLB
     bytes are merged into one entry listing all their keys and names; every entry has `rel`, the path below the output folder."""
     models = []
     masters = find_masters(delivery)
     for rel in masters:
         p = os.path.join(delivery, rel)
-        m = model_glb(p, rel, sha_file(p), limits)
+        m = model_glb(p, rel, sha_file(p), limits, volumes)
         m["source"] = {"path": rel, "sha256": sha_file(p)}
         m["keys"], m["kind"], m["category"], m["names"] = ["model:" + rel], "model", "model", ["whole model"]
         m["rel"] = "model.glb" if len(masters) == 1 else "model-%s.glb" % slugify(os.path.splitext(os.path.basename(rel))[0])
@@ -346,16 +371,19 @@ def main():
     ap.add_argument("--out", required=True, help="output folder")
     ap.add_argument("--index", help="also write the list of files with their SHA-256 as JSON")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--profile", help="consumer profile (its proofs.glbVolumes sets the default of --volumes)")
+    ap.add_argument("--volumes", choices=VOLUME_MODES, help="mesh: zones and reservation volumes are exported like any product; exclude: left out and listed in extras.excluded")
     a = ap.parse_args()
+    rpt.load_profile(a.profile)
     if not os.path.exists(a.path):
         print("ERROR not found: %s" % a.path, file=sys.stderr)
         sys.exit(3)
     try:
         if os.path.isfile(a.path):
-            m = model_glb(a.path, os.path.basename(a.path), sha_file(a.path))
+            m = model_glb(a.path, os.path.basename(a.path), sha_file(a.path), volumes=a.volumes)
             res = {"models": [dict(m, rel="model.glb", source={"path": os.path.basename(a.path), "sha256": sha_file(a.path)})], "components": [], "materials": []}
         else:
-            res = export_delivery(os.path.abspath(a.path))
+            res = export_delivery(os.path.abspath(a.path), volumes=a.volumes)
         index = write_all(res, a.out)
     except Failed as exc:
         print("FAILED: %s" % exc, file=sys.stderr)

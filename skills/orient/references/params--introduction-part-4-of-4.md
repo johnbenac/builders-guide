@@ -12,6 +12,7 @@
 | `proofs.maxRenderPixels` | most pixels (width times height) of one render | `2097152` | `null` | X-84 |
 | `proofs.maxRenderBytes` | largest file size of one render, in bytes | `3145728` | `null` | X-84 |
 | `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
+| `proofs.glbVolumes` | what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list | `"mesh"` | `null` | X-80 |
 | `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
 | `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |
 | `proofs.renderTolerance.differenceLevels` |  | `8` | `null` | - |

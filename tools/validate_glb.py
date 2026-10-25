@@ -20,7 +20,9 @@ set's; a size along any axis within `proofs.maxExtentMetres`; unit-length normal
 (`proofs.maxGlbNodes`), triangle count (`limits.maxTriangles`, and `budgets.recommendedTriangles` as a warning) and file size
 (`submission.maxFileBytes`) from the profile; texture sizes in `textures.sizesPixels`; for a whole model: the scene-graph naming
 (`model` > `level:<name>` > `<kind>:<name>#<GlobalId>`), the stated bounds equal the data, and with --ifc every product's bounding box equals
-the one computed from the IFC file (tolerance 1 mm) in the converted frame.
+the one computed from the IFC file (tolerance 1 mm) in the converted frame, and every product with geometry has a node unless the model's
+`extras.excluded` (the exclusion report that `export_glb.py --volumes exclude` writes) lists it; only zones (IfcSpatialZone) and reservation
+volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE) may be listed, and a listed product must not have a node.
 
 The report is `check-report/1`; every finding has rule X-80, a `code`, a `location` and a `fix_hint`. Exit codes as in report.py:
 0 no REQUIRED failure, 1 at least one, 2 wrong command line, 3 nothing could be read.
@@ -460,6 +462,13 @@ def validate_one(data, label, role, item, tex_sizes, params):
         dup = {x for x in names if x and names.count(x) > 1}
         if dup:
             f.bad("GLB-NAMES", "node name %r is used more than once" % sorted(dup)[0], "Names include the GlobalId, so they are unique.", "/nodes")
+        if "excluded" in ex:
+            lst = ex["excluded"]
+            if not (isinstance(lst, list) and all(isinstance(x, dict) and isinstance(x.get("globalId"), str) and x.get("reason") in glbkit.VOLUME_REASONS for x in lst)):
+                f.bad("GLB-EXTRAS", "extras.excluded must be a list of {globalId, ifcClass, name, predefinedType, reason} with reason zone or reservation",
+                      "Export with tools/export_glb.py --volumes exclude.", "/extras/excluded")
+            elif len({x["globalId"] for x in lst}) != len(lst):
+                f.bad("GLB-EXTRAS", "extras.excluded lists a GlobalId twice", "Export with tools/export_glb.py --volumes exclude.", "/extras/excluded")
         for k in ("levels", "rooms", "bounds", "source"):
             if k not in ex:
                 f.bad("GLB-EXTRAS", "extras.%s is missing; the render tools and the checks need it" % k, "Export with tools/export_glb.py.", "/extras/" + k)
@@ -486,6 +495,7 @@ def ifc_bounds_problems(glb_data, ifc_path):
     st = ifcopenshell.geom.settings()
     st.set("use-world-coords", True)
     items = {}
+    excluded = excluded_of(doc)
     for it in glbkit.triangles_of(doc, bn):
         gid = (it.get("extras") or {}).get("globalId")
         if gid:
@@ -495,6 +505,16 @@ def ifc_bounds_problems(glb_data, ifc_path):
                 lo, hi = np.minimum(lo, items[gid][0]), np.maximum(hi, items[gid][1])
             items[gid] = (lo, hi)
     msgs, checked = [], 0
+    for gid, x in sorted(excluded.items()):
+        e = model.by_guid(gid)
+        if e is None:
+            msgs.append("excluded product %s is not a product of the IFC file" % gid)
+        elif glbkit.exclusion_reason(e) is None:
+            msgs.append("%s %s is listed as excluded, but only a zone or a reservation volume (PROVISIONFORSPACE) may be left out" % (e.is_a(), gid))
+        elif glbkit.exclusion_reason(e) != x.get("reason"):
+            msgs.append("excluded product %s is a %s volume, the list says %r" % (gid, glbkit.exclusion_reason(e), x.get("reason")))
+        if gid in items:
+            msgs.append("%s is listed as excluded but has a node in the GLB" % gid)
     for gid, (glo, ghi) in sorted(items.items()):
         e = model.by_guid(gid) if gid else None
         if e is None:
@@ -519,10 +539,21 @@ def ifc_bounds_problems(glb_data, ifc_path):
                                                                            np.round(ilo, 3).tolist(), np.round(ihi, 3).tolist()))
     ids = {e.GlobalId for e in model.by_type("IfcProduct") if getattr(e, "Representation", None) and e.is_a() not in glbkit.SKIP_CLASSES and
            not any(r.RelatingObject.is_a("IfcElementAssembly") for r in (getattr(e, "Decomposes", None) or []))}
-    missing = sorted(i for i in ids - set(items))
+    missing = sorted(i for i in ids - set(items) - set(excluded))
     for gid in missing[:3]:
-        msgs.append("%s is a product of the IFC file with geometry but has no node in the GLB" % gid)
+        msgs.append("%s is a product of the IFC file with geometry but has no node in the GLB (and is not on extras.excluded)" % gid)
+    if len(missing) > 3:
+        msgs.append("%d more products of the IFC file with geometry have no node in the GLB" % (len(missing) - 3))
     return msgs, checked
+
+
+def excluded_of(doc):
+    """{GlobalId: entry} of the exclusion report in extras.excluded of a whole-model GLB ({} when there is none)."""
+    ex = doc.get("extras") if isinstance(doc.get("extras"), dict) else {}
+    lst = ex.get("excluded")
+    if not isinstance(lst, list):
+        return {}
+    return {x["globalId"]: x for x in lst if isinstance(x, dict) and isinstance(x.get("globalId"), str)}
 
 
 def khronos(paths):
@@ -577,6 +608,9 @@ def validate_files(specs, ifc=None, use_khronos="auto"):
             for m in msgs[:5]:
                 f.bad("GLB-BBOX-IFC", m, "Re-export from the delivered IFC file with tools/export_glb.py.")
             entry["ifcBoundsCompared"] = checked
+            n_excl = len(excluded_of(glbkit.split_glb(data)[0]))
+            if n_excl:
+                entry["ifcExcluded"] = n_excl
         if kv is not None:
             kr = kreports.get(s["path"])
             if kr:

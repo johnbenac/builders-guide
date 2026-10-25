@@ -5351,7 +5351,8 @@
     "textures.sizesPixels",
     "proofs.maxGlbNodes",
     "proofs.maxExtentMetres",
-    "submission.maxFileBytes"
+    "submission.maxFileBytes",
+    "proofs.glbVolumes"
    ],
    "extension": null
   },

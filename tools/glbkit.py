@@ -26,6 +26,10 @@ KIND_OF = {"IfcCovering": "covering", "IfcDoor": "door", "IfcWindow": "window"}
 COVERING_CATEGORY = {"FLOORING": "floor-covering", "CEILING": "ceiling-covering", "CLADDING": "wall-covering", "WRAPPING": "wall-covering",
                      "MEMBRANE": "covering", "INSULATION": "covering", "SLEEVING": "covering", "MOLDING": "covering", "SKIRTINGBOARD": "covering"}
 SKIP_CLASSES = {"IfcOpeningElement", "IfcVirtualElement", "IfcSpace", "IfcAnnotation", "IfcGrid", "IfcGeographicElement"}
+# Volumes that state a requirement or a room, not a thing: a consumer must not draw or collide with them. `exclusion_reason` names them, an
+# export in `volumes="exclude"` mode leaves them out and lists them (`extras.excluded` of the whole-model GLB), and the validator accepts
+# a missing node only for a product that is on that list and of one of these kinds.
+VOLUME_REASONS = {"zone": "IfcSpatialZone", "reservation": "IfcBuildingElementProxy PROVISIONFORSPACE"}
 
 
 class Failed(Exception):
@@ -483,6 +487,25 @@ def master_roots(model):
         for p in parts:
             seen.add(p.id())
         out.append((e, parts, kind, cat))
+    return out
+
+
+def exclusion_reason(e):
+    """Why a product is a volume and not scenery: "zone" (IfcSpatialZone), "reservation" (IfcBuildingElementProxy of type PROVISIONFORSPACE), or None."""
+    if e.is_a("IfcSpatialZone"):
+        return "zone"
+    if e.is_a("IfcBuildingElementProxy") and str(getattr(e, "PredefinedType", "") or "") == "PROVISIONFORSPACE":
+        return "reservation"
+    return None
+
+
+def excluded_volumes(model):
+    """The exclusion report: [{globalId, ifcClass, name, predefinedType, reason}] of every volume with a representation, in GlobalId order."""
+    out = []
+    for e in sorted(model.by_type("IfcProduct"), key=lambda x: x.GlobalId):
+        why = exclusion_reason(e)
+        if why and getattr(e, "Representation", None):
+            out.append({"globalId": e.GlobalId, "ifcClass": e.is_a(), "name": str(e.Name or ""), "predefinedType": str(getattr(e, "PredefinedType", "") or ""), "reason": why})
     return out
 
 

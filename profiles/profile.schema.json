@@ -572,6 +572,14 @@
           "description": "largest total size of the proofs/ folder, in bytes",
           "minimum": 1
         },
+        "glbVolumes": {
+          "type": "string",
+          "enum": [
+            "mesh",
+            "exclude"
+          ],
+          "description": "what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list"
+        },
         "renderTolerance": {
           "type": "object",
           "description": "how far a re-render may differ from the delivered picture: the mean absolute difference over all pixels (0 to 255 levels), the largest share of pixels that differ by more than differenceLevels, and that level",

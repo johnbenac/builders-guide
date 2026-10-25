@@ -10,7 +10,10 @@ without a graphics card or a display, so the same files come out on a laptop and
 profile (`07-profile-parameters.md`); the numbers below are the defaults.
 
 The GLB files use metres and Y up: a point of the IFC frame (Z up) becomes `(x, y, z) -> (x, z, -y)`. Colours become PBR metallic-roughness
-materials; a texture set becomes a swatch with its maps embedded. The pictures use fixed lighting and a fixed background and are always made
+materials; a texture set becomes a swatch with its maps embedded. Zones and reservation volumes state a requirement, not a thing: when the
+profile sets `proofs.glbVolumes` to `exclude` (or `export_glb.py --volumes exclude` is used), they get no mesh and no node and are listed in the
+`extras.excluded` of the whole-model GLB, which `validate_glb.py --ifc` accepts as the written reason for a missing node (only those two kinds,
+never a wall or a slab). The pictures use fixed lighting and a fixed background and are always made
 from the delivered GLB files, never from anything else: a plan per level (cut at 1.2 m above the floor), four interior views for each room kind
 that is present, four exterior views, and for every component a contact sheet of turntable frames (a swatch view for a texture set).
 

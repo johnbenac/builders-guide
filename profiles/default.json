@@ -200,6 +200,7 @@
     "maxRenderPixels": 2097152,
     "maxRenderBytes": 3145728,
     "maxProofBytes": 67108864,
+    "glbVolumes": "mesh",
     "renderTolerance": {
       "meanAbsLevels": 0.5,
       "differingFraction": 0.001,
