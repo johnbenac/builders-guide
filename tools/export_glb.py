@@ -22,7 +22,8 @@ flat per-triangle normals; no textures except in the material swatches. Componen
 those of master-file elements are moved so the pivot is the centre of the footprint at the lowest point (as ingest does).
 
 Volumes (`--volumes`, profile `proofs.glbVolumes`, default `mesh`): zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type
-PROVISIONFORSPACE) state a requirement, not a thing. With `exclude` they get no mesh and no node, and the whole-model GLB lists them in
+PROVISIONFORSPACE) state a requirement, not a thing. With `exclude` they get no mesh and no node (also when they are parts of an assembly: the
+assembly's node is built without them, and an assembly of volumes only has no node), and the whole-model GLB lists them in
 `extras.excluded` (GlobalId, class, name, type, reason), which `validate_glb.py --ifc` reads: a product with geometry that has no node is
 accepted only when it is on that list and is one of these two kinds. With `mesh` (the default of 2.x) they are exported like any product.
 
@@ -212,15 +213,16 @@ def model_roots(model, volumes="mesh"):
     space, annotation or grid and not part of an assembly (an assembly is one root), terrain included. In GlobalId order. With volumes="exclude"
     zones and reservation volumes are left out too (`glbkit.excluded_volumes` lists them)."""
     out, seen = [], set()
+    skip = glbkit.exclusion_reason if volumes == "exclude" else None       # also drops a volume that is a part of an assembly
     for e in sorted(model.by_type("IfcProduct"), key=lambda x: x.GlobalId):
         cls = e.is_a()
         if (cls in glbkit.SKIP_CLASSES and cls != "IfcGeographicElement") or e.id() in seen or cls == "IfcBuildingStorey":
             continue
-        if volumes == "exclude" and glbkit.exclusion_reason(e):
+        if skip is not None and skip(e):
             continue
         if any(r.RelatingObject.is_a("IfcElementAssembly") for r in (getattr(e, "Decomposes", None) or [])):
             continue
-        parts_p = [e] if (cls == "IfcGeographicElement" and getattr(e, "Representation", None)) else ([] if cls == "IfcGeographicElement" else glbkit.part_products(e))
+        parts_p = [e] if (cls == "IfcGeographicElement" and getattr(e, "Representation", None)) else ([] if cls == "IfcGeographicElement" else glbkit.part_products(e, skip))
         if not parts_p:
             continue
         for p in parts_p:
@@ -266,6 +268,7 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
     union_stats = [0, 0.0]
     overrides = overrides or {}
     placements = []
+    skip_volume = glbkit.exclusion_reason if volumes == "exclude" else None
     model = ifcopenshell.open(path)
     storeys = sorted(model.by_type("IfcBuildingStorey"), key=lambda s: (float(s.Elevation or 0.0), s.GlobalId))
     by_level = {s.id(): [] for s in storeys}
@@ -284,7 +287,7 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
             world = [(c, np.round(t, 6) + 0.0) for c, t in parts]
             local, own, origin, yaw, pk = world, None, (0.0, 0.0, 0.0), 0.0, "world"
         else:
-            parts, m_root = glbkit.shape_parts(model, e, limits)
+            parts, m_root = glbkit.shape_parts(model, e, limits, skip_volume)
             if union:
                 parts, n_planes, area = coplanar.union_parts(parts)
                 union_stats[0] += n_planes

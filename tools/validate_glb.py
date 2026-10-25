@@ -620,7 +620,7 @@ def ifc_bounds_problems(glb_data, ifc_path):
             msgs.append("node %s is not a product of the IFC file" % gid)
             continue
         los, his = [], []
-        prods = glbkit.part_products(e) if e.is_a() != "IfcGeographicElement" else [e]
+        prods = glbkit.part_products(e, lambda x: x.GlobalId in excluded and glbkit.exclusion_reason(x) is not None) if e.is_a() != "IfcGeographicElement" else [e]
         for p in prods:
             try:
                 g = ifcopenshell.geom.create_shape(st, p).geometry

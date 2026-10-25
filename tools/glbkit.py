@@ -449,11 +449,14 @@ def triangles_of(doc, bn):
 
 
 # ---------------------------------------------------------------- IFC geometry
-def part_products(root):
-    """The geometry-carrying products of a component root: the root itself, or all parts of an assembly (recursively)."""
+def part_products(root, skip=None):
+    """The geometry-carrying products of a component root: the root itself, or all parts of an assembly (recursively). skip: a function of a
+    product that is true for the products to leave out (the volumes of `--volumes exclude`, wherever they sit in the tree)."""
     out = []
 
     def walk(e):
+        if skip is not None and skip(e):
+            return
         if getattr(e, "Representation", None) and not e.is_a("IfcElementAssembly") and e.is_a() not in SKIP_CLASSES:
             out.append(e)
         for rel in getattr(e, "IsDecomposedBy", None) or []:
@@ -463,8 +466,8 @@ def part_products(root):
     return out
 
 
-def shape_parts(model, root, limits):
-    """[(rgba, triangle soup Nx3 in the root's own frame)] for a component root, and the root's world matrix (4x4)."""
+def shape_parts(model, root, limits, skip=None):
+    """[(rgba, triangle soup Nx3 in the root's own frame)] for a component root, and the root's world matrix (4x4). skip: see part_products."""
     import numpy as np
     import ifcopenshell.geom
     import ifcopenshell.util.placement as pl
@@ -473,7 +476,7 @@ def shape_parts(model, root, limits):
     inv = np.linalg.inv(m_root)
     groups = {}
     ntri = 0
-    for p in part_products(root):
+    for p in part_products(root, skip):
         limits.tick()
         try:
             sh = ifcopenshell.geom.create_shape(settings, p)

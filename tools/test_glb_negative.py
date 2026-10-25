@@ -170,6 +170,110 @@ rep = validate(neg)
 txt = json.dumps(rep["files"][0]["boundsIfcFrame"])
 expect("-0.0" not in txt, "boundsIfcFrame holds no negative zero: %s" % txt)
 
+
+# ------------------------------------------------------------------ IFC variant: assemblies with volumes, tilted and inverted placements, terrain
+import ifcopenshell  # noqa: E402
+import ifcopenshell.guid  # noqa: E402
+import uuid  # noqa: E402
+import export_glb  # noqa: E402
+
+SAMPLE = os.path.join(ROOT, "deliveries", "example-room")
+SRC_IFC = os.path.join(SAMPLE, "ifc", "example-room-master.ifc")
+TABLE = "3zDKiH6mrH2Rie17YTXQ7c"
+variant_dir = os.path.join(work, "variant")
+shutil.rmtree(variant_dir, ignore_errors=True)
+os.makedirs(variant_dir)
+VARIANT = os.path.join(variant_dir, "variant.ifc")
+
+
+def make_variant(out):
+    m = ifcopenshell.open(SRC_IFC)
+    table = m.by_guid(TABLE)
+    rel = table.ContainedInStructure[0]
+    storey = rel.RelatingStructure
+
+    def local(origin, deg=0.0, axis=(0.0, 0.0, 1.0), ref=None):
+        c, s_ = np.cos(np.radians(deg)), np.sin(np.radians(deg))
+        ax = m.create_entity("IfcAxis2Placement3D", Location=m.create_entity("IfcCartesianPoint", Coordinates=[float(v) for v in origin]),
+                             Axis=m.create_entity("IfcDirection", DirectionRatios=[float(v) for v in axis]),
+                             RefDirection=m.create_entity("IfcDirection", DirectionRatios=[float(v) for v in (ref or (c, s_, 0.0))]))
+        return m.create_entity("IfcLocalPlacement", PlacementRelTo=storey.ObjectPlacement, RelativePlacement=ax)
+
+    def clone(cls, name, key, origin, deg=0.0, axis=(0.0, 0.0, 1.0), ref=None, **kw):
+        return m.create_entity(cls, GlobalId=ifcopenshell.guid.compress(uuid.uuid5(uuid.NAMESPACE_DNS, key).hex), Name=name,
+                               ObjectPlacement=local(origin, deg, axis, ref), Representation=table.Representation, **kw)
+    out_ids = {}
+    chair = clone("IfcFurnishingElement", "Assembly chair", "neg-chair", (5.0, 5.0, 0.0))
+    proxy = clone("IfcBuildingElementProxy", "Assembly clearance", "neg-proxy", (8.0, 8.0, 0.0), PredefinedType="PROVISIONFORSPACE")
+    asm = m.create_entity("IfcElementAssembly", GlobalId=ifcopenshell.guid.compress(uuid.uuid5(uuid.NAMESPACE_DNS, "neg-asm").hex), Name="Chair with clearance",
+                          ObjectPlacement=local((5.0, 5.0, 0.0)))
+    m.create_entity("IfcRelAggregates", GlobalId=ifcopenshell.guid.new(), RelatingObject=asm, RelatedObjects=[chair, proxy])
+    lone_proxy = clone("IfcBuildingElementProxy", "Only clearance", "neg-lone", (9.0, 9.0, 0.0), PredefinedType="PROVISIONFORSPACE")
+    asm2 = m.create_entity("IfcElementAssembly", GlobalId=ifcopenshell.guid.compress(uuid.uuid5(uuid.NAMESPACE_DNS, "neg-asm2").hex), Name="Clearance only",
+                           ObjectPlacement=local((9.0, 9.0, 0.0)))
+    m.create_entity("IfcRelAggregates", GlobalId=ifcopenshell.guid.new(), RelatingObject=asm2, RelatedObjects=[lone_proxy])
+    tilted = clone("IfcFurnishingElement", "Tilted table", "neg-tilt", (-3.0, 4.0, 0.0), axis=(1.0, 0.0, 1.0), ref=(0.0, 1.0, 0.0))
+    inverted = clone("IfcFurnishingElement", "Inverted table", "neg-inv", (-3.0, -4.0, 2.0), axis=(0.0, 0.0, -1.0), ref=(1.0, 0.0, 0.0))
+    terrain = clone("IfcGeographicElement", "Test terrain", "neg-terrain", (20.0, 20.0, -1.0), PredefinedType="TERRAIN")
+    rel.RelatedElements = list(rel.RelatedElements) + [asm, asm2, tilted, inverted]
+    m.write(out)
+    out_ids.update(chair=chair.GlobalId, proxy=proxy.GlobalId, asm=asm.GlobalId, lone=lone_proxy.GlobalId, asm2=asm2.GlobalId, tilted=tilted.GlobalId,
+                   inverted=inverted.GlobalId, terrain=terrain.GlobalId)
+    return out_ids
+
+
+IDS = make_variant(VARIANT)
+
+
+def export(path, out, *args):
+    shutil.rmtree(out, ignore_errors=True)
+    r = py("export_glb.py", path, "--out", out, *args)
+    assert r.returncode == 0, r.stdout + r.stderr
+    with open(os.path.join(out, "model.glb"), "rb") as fh:
+        return fh.read()
+
+
+def validate_ifc(data, ifc, name="y.glb"):
+    d = os.path.join(work, "vg")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, name)
+    with open(p, "wb") as fh:
+        fh.write(data)
+    return validate_glb.validate_files([{"path": p, "label": name, "role": "model", "ifc": ifc}], ifc, "off")
+
+
+def node_box(data, gid):
+    doc, bn = glbkit.split_glb(data)
+    pts = [it["tri"].reshape(-1, 3) for it in glbkit.triangles_of(doc, bn) if it["extras"].get("globalId") == gid]
+    if not pts:
+        return None
+    a = np.concatenate(pts)
+    return a.min(axis=0), a.max(axis=0)
+
+
+# ------------------------------------------------------------------ 2. --volumes exclude also drops a volume that is part of an assembly
+g_mesh = export(VARIANT, os.path.join(work, "o_mesh"))
+g_ex = export(VARIANT, os.path.join(work, "o_ex"), "--volumes", "exclude")
+lo, hi = node_box(g_mesh, IDS["asm"])
+expect(hi[0] > 8.7 and hi[1] > 8.3, "mesh mode: the assembly node holds its clearance proxy (reaches x > 8.7, y > 8.3): %s" % hi.tolist())
+lo, hi = node_box(g_ex, IDS["asm"])
+expect(hi[0] < 7.0 and hi[1] < 7.0, "exclude mode: the assembly node no longer holds its clearance proxy: %s" % hi.tolist())
+doc_ex = glbkit.split_glb(g_ex)[0]
+listed = {x["globalId"] for x in doc_ex["extras"]["excluded"]}
+expect(IDS["proxy"] in listed and IDS["lone"] in listed, "exclude mode: both proxies are on extras.excluded")
+expect(node_box(g_ex, IDS["asm2"]) is None, "exclude mode: an assembly that holds only a volume has no node")
+rep = validate_ifc(g_ex, VARIANT)
+expect(rep["result"] == "pass" and "GLB-BBOX-IFC" not in codes(rep), "exclude mode: validate_glb --ifc passes: %s %s" % (rep["result"], [m for f in rep["findings"] for m in [f["message"]] if f["status"] != "pass"][:2]))
+# a GLB that lists the proxy but still draws it (the defect this test guards) is refused by the IFC comparison
+doc_m, bn_m = glbkit.split_glb(g_mesh)
+doc_m["extras"]["excluded"] = [dict(x) for x in doc_ex["extras"]["excluded"]]
+rep = validate_ifc(repack(doc_m, bn_m), VARIANT)
+expect("GLB-BBOX-IFC" in codes(rep), "a model that lists a volume as excluded but still draws it inside an assembly is refused: %s" % codes(rep))
+# the exclusion list names only what is really absent: every listed product has no triangle anywhere in the file
+doc, bn = glbkit.split_glb(g_ex)
+expect(all(node_box(g_ex, gid) is None for gid in listed), "extras.excluded lists only products that have no node")
+
+
 if __name__ == "__main__":
     print("test_glb_negative: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)
