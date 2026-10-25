@@ -448,6 +448,156 @@ expect(r.returncode == 0 and "pair(s)" in r.stdout, "coplanar.py finds the dupli
 expect(py("coplanar.py", dup, "--min-area", "-1").returncode == 2, "coplanar.py: a negative --min-area is a command-line error")
 
 
+# ------------------------------------------------------------------ 6. walk check: stairs, tall buildings, size budget, bad options, malformed input
+import walkcheck  # noqa: E402
+
+
+def stair_house(riser, n=8, tread=0.28, width=(1.0, 2.2)):
+    """A ground slab, a flight of n solid steps and an upper slab that the last step is part of; two rooms (ground before the stair, upper after it)."""
+    comps = [comp("Ground slab", "structure", "G1", (0, 0, -0.2, 6, 3, 0))]
+    x_top = 1.0 + (n - 1) * tread
+    for k in range(1, n + 1):
+        comps.append(comp("Step %d" % k, "structure", "S%d" % k, (1.0 + (k - 1) * tread, width[0], 0, 1.0 + k * tread, width[1], k * riser)))
+    h = n * riser
+    comps.append(comp("Upper slab", "structure", "U1", (x_top, 0, h - 0.2, 7, 3, h)))
+    rooms = [{"id": "ground", "name": "G", "function": "x", "level": "Ground", "external": False, "min": [0, 0, 0], "max": [1, 3, 2.6], "footprint": [[0, 0], [0.9, 0], [0.9, 3], [0, 3]]},
+             {"id": "upper", "name": "U", "function": "x", "level": "Upper", "external": False, "min": [x_top + 0.4, 0, h], "max": [7, 3, h + 2.6],
+              "footprint": [[x_top + 0.4, 0.3], [6.8, 0.3], [6.8, 2.7], [x_top + 0.4, 2.7]]}]
+    return scene(comps, rooms=rooms, levels=[{"name": "Ground", "elevation": 0.0}, {"name": "Upper", "elevation": h}])
+
+
+def upper_reachable(rep, rad):
+    e = rep["radii"][walkcheck.radius_key(rad)]
+    return e["startFound"] and next(r for r in e["rooms"] if r["id"] == "upper")["reachable"]
+
+
+for riser in (0.15, 0.16, 0.175, 0.18, 0.19):
+    g = stair_house(riser)
+    rep = walkcheck.walk(g, (0.5, 1.5, 0.0), [0.15, 0.20, 0.30])
+    expect(all(upper_reachable(rep, r) for r in (0.15, 0.20, 0.30)), "stairs with a riser of %.3f m and a tread of 0.28 m are climbed by default bodies of radius 0.15, 0.20 and 0.30" % riser)
+# a riser above the stated limit cuts the stair off, and --step / --riser change that
+g = stair_house(0.25)
+expect(not upper_reachable(walkcheck.walk(g, (0.5, 1.5, 0.0), [0.15]), 0.15), "a riser of 0.25 m is above the default step height: the upper room is cut off")
+expect(upper_reachable(walkcheck.walk(g, (0.5, 1.5, 0.0), [0.15], step=0.25), 0.15), "... and reachable with --step 0.25")
+with open(os.path.join(work, "stair.glb"), "wb") as fh:
+    fh.write(stair_house(0.175))
+sg = os.path.join(work, "stair.glb")
+r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", "--radius", "0.30", "--require", "0.30", "--riser", "0.30")
+expect(r.returncode == 0, "--riser 0.30 is a documented option and the stair is still climbed: %s" % (r.stdout + r.stderr)[-200:])
+r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", "--riser", "0.1")
+expect(r.returncode == 2 and "--riser" in r.stderr, "--riser below --step is a command-line error: %s" % r.stderr[-120:])
+profile_step = os.path.join(work, "stair-profile.json")
+with open(profile_step, "w") as fh:
+    json.dump({"name": "stairs", "version": "1.0.0", "geometry": {"stairRiserLimitMetres": 0.25}}, fh)
+with open(os.path.join(work, "stair25.glb"), "wb") as fh:
+    fh.write(stair_house(0.25))
+r = py("walkcheck.py", os.path.join(work, "stair25.glb"), "--start", "0.5,1.5,0", "--radius", "0.15", "--require", "0.15", "--profile", profile_step)
+expect(r.returncode == 0, "the default step height comes from the profile (geometry.stairRiserLimitMetres 0.25): %s" % (r.stdout + r.stderr)[-200:])
+r = py("walkcheck.py", os.path.join(work, "stair25.glb"), "--start", "0.5,1.5,0", "--radius", "0.15", "--require", "0.15")
+expect(r.returncode == 1, "... and without it the 0.25 m stair is cut off (exit 1): %s" % r.returncode)
+
+# levels more than 12 m above the lowest point are inside the grid
+tall = scene([comp("Slab 0", "structure", "A0", (0, 0, -0.2, 10, 6, 0)), comp("Slab 6", "structure", "A6", (0, 0, 5.8, 10, 6, 6)), comp("Slab 15", "structure", "A15", (0, 0, 14.8, 10, 6, 15))],
+             rooms=[{"id": "r%d" % h, "name": "R", "function": "x", "level": "L%d" % h, "external": False, "min": [0, 0, h], "max": [10, 6, h + 2.6], "footprint": [[0, 0], [10, 0], [10, 6], [0, 6]]} for h in (0, 6, 15)],
+             levels=[{"name": "L%d" % h, "elevation": float(h)} for h in (0, 6, 15)])
+rep = walkcheck.walk(tall, (5.0, 3.0, 0.0), [0.30], res=0.1)
+rooms = {r["id"]: r for r in rep["radii"]["0.30"]["rooms"]}
+expect(rooms["r15"]["walkableAreaM2"] > 50 and not rooms["r15"]["reachable"] and rooms["r0"]["reachable"], "a room 15 m up is in the grid (walkable area %s) and cut off because it is: %s" % (rooms["r15"]["walkableAreaM2"], rooms["r15"]))
+expect(rep["grid"]["cells"][2] >= 150, "the grid is as tall as the model: %s" % rep["grid"]["cells"])
+
+# size budget: stated, checked before allocating, a clear error
+huge = scene([comp("Huge", "structure", "H1", (0, 0, -0.2, 3000, 3000, 0))])
+for kw, needle in (({}, "million cells"), ({"max_mb": 10 ** 9}, "samples")):
+    try:
+        walkcheck.walk(huge, (1.0, 1.0, 0.0), [0.30], **kw)
+        expect(False, "a huge model must be refused (%s)" % needle)
+    except glbkit.Failed as exc:
+        expect(needle in str(exc) and "--res" in str(exc), "a huge model is refused with a suggestion (%s): %s" % (needle, str(exc)[:160]))
+hp = os.path.join(work, "huge.glb")
+with open(hp, "wb") as fh:
+    fh.write(huge)
+r = py("walkcheck.py", hp, "--start", "1,1,0")
+expect(r.returncode == 3 and "Traceback" not in r.stderr and "--res" in r.stderr, "walkcheck.py: the size budget is exit 3 with a message: %s" % r.stderr[-200:])
+r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", "--max-memory-mb", "1")
+expect(r.returncode == 3 and "--max-memory-mb" in r.stderr, "--max-memory-mb sets the budget: %s" % r.stderr[-150:])
+# one big triangle is cut into pieces and sampled in batches, and covers its surface
+big_tri = np.array([[[0, 0, 0], [40, 0, 0], [0, 30, 0]]], float)
+batches = list(walkcheck.sample_triangles(big_tri, 0.0225))
+npts = sum(len(b[0]) for b in batches)
+expect(max(len(b[0]) for b in batches) <= 2_100_000, "sampling is done in batches of about 2 million points at most: %s" % [len(b[0]) for b in batches][:5])
+expect(npts >= 0.9 * walkcheck.sample_count(big_tri, 0.0225) * 0.5 and all((b[0][:, 0] / 40 + b[0][:, 1] / 30 <= 1 + 1e-9).all() and (b[0] >= -1e-9).all() for b in batches), "all samples of a big triangle lie on it")
+cover = np.zeros((int(40 / 0.1) + 1, int(30 / 0.1) + 1), bool)
+for pts, _ in batches:
+    cover[np.floor(pts[:, 0] / 0.1).astype(int), np.floor(pts[:, 1] / 0.1).astype(int)] = True
+inside = np.array([[(i + 0.5) * 0.1 / 40 + (j + 0.5) * 0.1 / 30 < 0.99 for j in range(cover.shape[1])] for i in range(cover.shape[0])])
+expect(cover[inside].all(), "... and leave no 10 cm cell of the triangle uncovered")
+
+# bad numbers are command-line errors, not silent changes of the answer
+for args in (["--radius", "-0.3"], ["--radius", "nan"], ["--radius", "0"], ["--res", "0"], ["--res", "nan"], ["--step", "-1"], ["--step", "nan"], ["--body-height", "0"], ["--require", "0"],
+             ["--require", "-1"], ["--require", "nan"], ["--max-memory-mb", "0"], ["--riser", "nan"]):
+    r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", *args)
+    expect(r.returncode == 2 and "Traceback" not in r.stderr and "ERROR" in r.stderr, "walkcheck.py %s: exit 2 with a message: %s %s" % (" ".join(args), r.returncode, r.stderr[-100:]))
+for start in ("nan,1,0", "inf,1,0", "1,2"):
+    r = py("walkcheck.py", sg, "--start=" + start)
+    expect(r.returncode == 2 and "Traceback" not in r.stderr, "--start=%s: exit 2: %s" % (start, r.stderr[-100:]))
+r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", "--waypoint", "w=1,nan,0")
+expect(r.returncode == 2, "a waypoint with NaN is a command-line error")
+# radii that differ by less than a key's two decimals keep their own entries
+rep = walkcheck.walk(stair_house(0.15), (0.5, 1.5, 0.0), [0.301, 0.304, 0.30])
+expect(sorted(rep["radii"]) == ["0.30", "0.301", "0.304"], "radii 0.30, 0.301 and 0.304 have three keys: %s" % sorted(rep["radii"]))
+# --require 0.30 is honoured and a start that is not on a standing place is not a success
+r = py("walkcheck.py", sg, "--start=-1,1,0")
+expect(r.returncode == 1 and "not on a standing place" in (r.stdout + r.stderr), "a start that is not on a standing place exits 1: %s" % r.returncode)
+r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", "--radius", "0.30", "--require", "0.30")
+expect(r.returncode == 0, "(control) the stair house passes --require 0.30")
+r = py("walkcheck.py", sg, "--start", "0.5,1.5,0", "--radius", "3.0", "--require", "3.0")
+expect(r.returncode == 1, "a radius of 3 m fits nowhere: --require exits 1 (%d)" % r.returncode)
+
+# malformed input is exit 3 with a message, never a traceback
+def broken(mutate, name):
+    doc, bn = glbkit.split_glb(stair_house(0.175))
+    mutate(doc)
+    path = os.path.join(work, name)
+    with open(path, "wb") as fh:
+        fh.write(repack(doc, bn))
+    return py("walkcheck.py", path, "--start", "0.5,1.5,0")
+
+
+cases = {"a room without a footprint": lambda d: d["extras"]["rooms"][0].pop("footprint"),
+         "a room with a footprint of strings": lambda d: d["extras"]["rooms"][0].__setitem__("footprint", [["a", "b"]] * 3),
+         "a level without a name": lambda d: d["extras"]["levels"][0].pop("name"),
+         "rooms that is not a list": lambda d: d["extras"].__setitem__("rooms", 5),
+         "an index out of range": lambda d: d["nodes"][2].__setitem__("mesh", 99)}
+for label, mut in cases.items():
+    r = broken(mut, "broken.glb")
+    expect(r.returncode == 3 and "Traceback" not in r.stderr and "ERROR" in r.stderr, "walkcheck.py with %s: exit 3 with a message: %s %s" % (label, r.returncode, r.stderr[-120:]))
+# bounds in extras that are smaller than the geometry no longer cut it
+small = broken(lambda d: d["extras"].__setitem__("bounds", {"min": [0, 0, 0], "max": [1, 1, 1]}), "small-bounds.glb")
+expect(small.returncode == 0 and "upper" in small.stdout, "extras.bounds smaller than the geometry are not trusted: %s" % (small.stdout + small.stderr)[-200:])
+nan_b = broken(lambda d: d["extras"].__setitem__("bounds", {"min": [float("nan")] * 3, "max": [1, 1, 1]}), "nan-bounds.glb")
+expect(nan_b.returncode == 0 and "upper" in nan_b.stdout, "NaN extras.bounds are not used, the grid comes from the triangles: %s" % (nan_b.stdout + nan_b.stderr)[-200:])
+# scipy missing: a clear message
+import builtins  # noqa: E402
+real_import = builtins.__import__
+
+
+def no_scipy(name, *a, **k):
+    if name == "scipy" or name.startswith("scipy."):
+        raise ImportError("no scipy")
+    return real_import(name, *a, **k)
+
+
+builtins.__import__ = no_scipy
+try:
+    try:
+        walkcheck.walk(stair_house(0.175), (0.5, 1.5, 0.0), [0.30])
+        expect(False, "walk without scipy must fail")
+    except glbkit.Failed as exc:
+        expect("scipy" in str(exc) and "requirements" in str(exc), "a missing scipy is named with the fix: %s" % exc)
+finally:
+    builtins.__import__ = real_import
+
+
 if __name__ == "__main__":
     print("test_glb_negative: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))
     sys.exit(1 if FAILS else 0)

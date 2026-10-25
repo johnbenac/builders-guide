@@ -15,8 +15,10 @@
         "cells": {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 3, "maxItems": 3},
         "bodyHeightMetres": {"type": "number"},
         "feetHeightRangeMetres": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
-        "upperBodyFromMetres": {"type": "number"},
-        "maxRiserMetres": {"type": "number"}
+        "upperBodyFromMetres": {"type": "number", "description": "the height above the surface from which the full body radius must be clear (--riser)"},
+        "maxRiserMetres": {"type": "number", "description": "the largest riser stepped over (--step)"},
+        "estimatedMegabytes": {"type": "integer", "minimum": 0, "description": "the memory the grid was budgeted at (about 20 bytes per cell)"},
+        "surfaceSamples": {"type": "integer", "minimum": 0, "description": "the number of surface samples the voxelisation makes"}
       }
     },
     "doors": {"enum": ["open", "solid"]},
@@ -24,7 +26,7 @@
     "exitCode": {"enum": [0, 1]},
     "radii": {
       "type": "object",
-      "description": "keyed by the body radius in metres with two decimals",
+      "description": "keyed by the body radius in metres with two decimals (\"0.30\"), or with more digits when the radius has more, so that no two radii share a key",
       "additionalProperties": {
         "type": "object",
         "required": ["standingPlaces", "components", "startFound"],
