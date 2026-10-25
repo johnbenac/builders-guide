@@ -16,6 +16,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `budgets.recommendedTriangles` | triangle count above which load and display cost grows noticeably | `1000000` | `300000` | B-120, X-80 |
 | `budgets.maxDistinctColours` | number of distinct (class, colour, opacity) combinations above which the palette is too large to manage | `50` | `30` | D-05 |
 | `budgets.maxItemTriangles` | triangles of one ordinary library item | `2000` | `500` | F-51, X-80 |
+| `budgets.coincidentFaceMinAreaM2` | smallest overlap, in square metres, of same-facing coplanar faces of two nodes that validate_glb.py reports as coincident (an estimate, RECOMMENDED); smaller overlaps are ignored | `0.005` | `null` | X-80 |
 | `file.singleLineEntities` | true when the consumer's reader needs every STEP entity on one line | `false` | `true` | B-08 |
 | `identifiers.roomIdMaxLength` | longest allowed room identifier, in characters | `64` | `7` | B-23 |
 | `identifiers.roomIdPattern` | regular expression a room identifier must match | `"^[A-Za-z0-9._-]+$"` | `"^[A-Za-z0-9-]+$"` | B-23 |
@@ -97,6 +98,7 @@ Every value that depends on a consumer is a parameter of a profile (`profiles/pr
 | `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
 | `proofs.glbVolumes` | what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list | `"mesh"` | `null` | X-80 |
 | `proofs.glbPivots` | where each product of the whole-model GLB has its origin: world bakes every vertex into world coordinates (every origin is the model origin); placement uses the origin of the product's IFC placement, so the node carries the placement and identical shapes share one mesh; footprint uses the centre of the footprint at the lowest point | `"world"` | `null` | X-80 |
+| `proofs.glbCoplanar` | what the GLB export does with overlapping coplanar same-facing triangles inside one product: off leaves them, union replaces them by the union of their polygons (needs shapely 2.1) | `"off"` | `null` | X-80 |
 | `proofs.glbIndexed` | share vertices that agree in position and normal in the whole-model GLB (indexed primitives) | `false` | `null` | X-80 |
 | `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
 | `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |

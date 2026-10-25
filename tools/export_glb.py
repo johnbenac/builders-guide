@@ -3,7 +3,7 @@
 """Export IFC to binary glTF (GLB): the whole model, and every component on its own.
 
     python3 tools/export_glb.py DELIVERY_DIR --out OUT_DIR [--index INDEX.json] [--json] [--profile PROFILE.json] [--volumes mesh|exclude]
-                                [--pivots world|placement|footprint] [--pivot-file PIVOTS.json] [--indexed]
+                                [--pivots world|placement|footprint] [--pivot-file PIVOTS.json] [--indexed] [--coplanar off|union]
     python3 tools/export_glb.py MODEL.ifc --out OUT_DIR
 
 DELIVERY_DIR is a delivery folder (deliveries/<slug>/, or any package with ifc/, items/ and finishes/). Writes below OUT_DIR:
@@ -38,6 +38,12 @@ frame, the turn about the vertical, the 4 x 4 placement, the mesh and which node
 position and normal (indexed primitives, roughly a third of the bytes of the triangle soup); `proofs.glbIndexed` sets the default. The component
 GLB files and the swatches are not changed by any of these options.
 
+Coincident faces (`--coplanar`, profile `proofs.glbCoplanar`, default `off`): `union` replaces, inside each product of the whole-model GLB, the
+coplanar same-facing triangles that overlap (two boxes of one element sharing a plane, drawn in two colours) by the union of their polygons, so the
+element no longer fights with itself; the first colour keeps the shared area. Faces of different products that coincide are not changed (the
+model has to change; `tools/coplanar.py` lists them, and `validate_glb.py` warns). The result is recorded in `extras.coplanarUnion`.
+Needs shapely 2.1 or later.
+
 Exit codes: 0 written, 2 wrong command line, 3 an input could not be read or built. Requires tools/requirements.txt.
 """
 import argparse
@@ -49,6 +55,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import coplanar  # noqa: E402
 import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed, r6, rl, sha256_bytes, slugify  # noqa: E402
@@ -143,6 +150,15 @@ def volumes_mode(volumes=None):
 
 
 PIVOT_MODES = ("world", "placement", "footprint")
+COPLANAR_MODES = ("off", "union")
+
+
+def coplanar_mode(mode=None):
+    mode = mode or rpt.param("proofs.glbCoplanar", "off")
+    if mode not in COPLANAR_MODES:
+        raise Failed("coplanar must be one of %s, not %r" % (", ".join(COPLANAR_MODES), mode))
+    return mode
+
 
 
 def pivots_mode(pivots=None):
@@ -237,7 +253,7 @@ def expected_levels_and_rooms(path, volumes=None):
     return levels, rooms
 
 
-def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexed=None, overrides=None):
+def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexed=None, overrides=None, coplanar_union=None):
     """The whole-model GLB of one IFC file. Returns dict(glb, sha256, triangles, nodes, bounds, rooms, levels, counts, excluded, placements).
     pivots: world, placement or footprint (see the module doc); overrides: {GlobalId: [x, y(, z)]} pivot points in IFC world coordinates."""
     import numpy as np
@@ -246,6 +262,8 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
     volumes = volumes_mode(volumes)
     pivots = pivots_mode(pivots)
     indexed = is_indexed(indexed)
+    union = coplanar_mode(coplanar_union) == "union"
+    union_stats = [0, 0.0]
     overrides = overrides or {}
     placements = []
     model = ifcopenshell.open(path)
@@ -267,6 +285,10 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
             local, own, origin, yaw, pk = world, None, (0.0, 0.0, 0.0), 0.0, "world"
         else:
             parts, m_root = glbkit.shape_parts(model, e, limits)
+            if union:
+                parts, n_planes, area = coplanar.union_parts(parts)
+                union_stats[0] += n_planes
+                union_stats[1] += area
             world = [(c, np.round(t @ m_root[:3, :3].T + m_root[:3, 3], 6) + 0.0) for c, t in parts]
             local, own, origin, yaw, pk = pivot_node(m_root, parts, world, pivots, overrides.get(e.GlobalId))
         allv = np.concatenate([t for _, t in world])
@@ -299,6 +321,8 @@ def model_glb(path, rel, ifc_sha, limits=None, volumes=None, pivots=None, indexe
         extras["nodePivots"] = pivots
     if indexed:
         extras["indexed"] = True
+    if union:
+        extras["coplanarUnion"] = {"planesResolved": union_stats[0], "areaRemovedM2": round(union_stats[1], 4)}
     glb = glbkit.write_scene_glb("model", levels, loose, extras, indexed)
     table = None
     if pivots != "world":
@@ -382,14 +406,14 @@ def material_list(delivery):
     return out
 
 
-def export_delivery(delivery, limits=None, volumes=None, pivots=None, indexed=None, overrides=None):
+def export_delivery(delivery, limits=None, volumes=None, pivots=None, indexed=None, overrides=None, coplanar_union=None):
     """Everything export_glb writes, in memory: {"models": [...], "components": [...], "materials": [...]}. Components with identical GLB
     bytes are merged into one entry listing all their keys and names; every entry has `rel`, the path below the output folder."""
     models = []
     masters = find_masters(delivery)
     for rel in masters:
         p = os.path.join(delivery, rel)
-        m = model_glb(p, rel, sha_file(p), limits, volumes, pivots, indexed, overrides)
+        m = model_glb(p, rel, sha_file(p), limits, volumes, pivots, indexed, overrides, coplanar_union)
         m["source"] = {"path": rel, "sha256": sha_file(p)}
         m["keys"], m["kind"], m["category"], m["names"] = ["model:" + rel], "model", "model", ["whole model"]
         m["rel"] = "model.glb" if len(masters) == 1 else "model-%s.glb" % slugify(os.path.splitext(os.path.basename(rel))[0])
@@ -466,6 +490,7 @@ def main():
                     "shares identical shapes; footprint: origin at the centre of the footprint at the lowest point")
     ap.add_argument("--pivot-file", help="JSON {GlobalId: [x, y(, z)]} of pivot points in IFC world coordinates (for example door hinges)")
     ap.add_argument("--indexed", action="store_true", default=None, help="share vertices that agree in position and normal")
+    ap.add_argument("--coplanar", choices=COPLANAR_MODES, help="union: merge overlapping coplanar same-facing triangles inside each product (needs shapely 2.1)")
     ap.add_argument("--volumes", choices=VOLUME_MODES, help="mesh: zones and reservation volumes are exported like any product; exclude: left out and listed in extras.excluded")
     a = ap.parse_args()
     rpt.load_profile(a.profile)
@@ -483,10 +508,10 @@ def main():
             sys.exit(2)
     try:
         if os.path.isfile(a.path):
-            m = model_glb(a.path, os.path.basename(a.path), sha_file(a.path), volumes=a.volumes, pivots=a.pivots, indexed=a.indexed, overrides=overrides)
+            m = model_glb(a.path, os.path.basename(a.path), sha_file(a.path), volumes=a.volumes, pivots=a.pivots, indexed=a.indexed, overrides=overrides, coplanar_union=a.coplanar)
             res = {"models": [dict(m, rel="model.glb", source={"path": os.path.basename(a.path), "sha256": sha_file(a.path)})], "components": [], "materials": []}
         else:
-            res = export_delivery(os.path.abspath(a.path), volumes=a.volumes, pivots=a.pivots, indexed=a.indexed, overrides=overrides)
+            res = export_delivery(os.path.abspath(a.path), volumes=a.volumes, pivots=a.pivots, indexed=a.indexed, overrides=overrides, coplanar_union=a.coplanar)
         index = write_all(res, a.out)
     except Failed as exc:
         print("FAILED: %s" % exc, file=sys.stderr)

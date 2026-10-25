@@ -70,7 +70,7 @@ def make_variant(out):
         e = m.create_entity(cls, GlobalId=ifcopenshell.guid.compress(__import__("uuid").uuid5(__import__("uuid").NAMESPACE_DNS, key).hex), Name=name,
                             ObjectPlacement=local(origin, deg), Representation=table.Representation, **kw)
         return e
-    table2 = clone("IfcFurnishingElement", "Second table", "glb-options-table2", (1.0, 1.0, 0.0), 30.0)
+    table2 = clone("IfcFurnishingElement", "Second table", "glb-options-table2", (0.3, -2.1, 0.0), 30.0)
     zone = clone("IfcSpatialZone", "Dolly zone", "glb-options-zone", (2.0, 1.5, 0.0), 0.0)
     proxy = clone("IfcBuildingElementProxy", "Reserved clear volume", "glb-options-proxy", (0.5, 2.5, 0.0), 0.0, PredefinedType="PROVISIONFORSPACE")
     rel.RelatedElements = list(rel.RelatedElements) + [table2, proxy]
@@ -250,9 +250,9 @@ for mode in ("placement", "footprint"):
         t2 = next(n for n in leaf if n["name"].startswith("furniture:Second table"))
         expect(t1["mesh"] == t2["mesh"], "placement: the two tables (same shape, one turned) share one mesh")
         r2 = next(n for n in table["nodes"] if n["node"] == t2["name"])
-        expect("rotation" in t2 and abs(r2["rotationZDegrees"] - 30.0) < 1e-3 and np.allclose(r2["originIfc"][:2], [1.0, 1.0], atol=1e-6),
+        expect("rotation" in t2 and abs(r2["rotationZDegrees"] - 30.0) < 1e-3 and np.allclose(r2["originIfc"][:2], [0.3, -2.1], atol=1e-6),
                "placement: the second table is a translation and a 30 degree turn about the vertical: %s" % r2)
-        expect(np.allclose(t2["translation"], [1.0, 0.0, -1.0], atol=1e-6), "placement: translation is the placement in glTF axes: %s" % t2["translation"])
+        expect(np.allclose(t2["translation"], [0.3, 0.0, 2.1], atol=1e-6), "placement: translation is the placement in glTF axes: %s" % t2["translation"])
         expect(len({n["mesh"] for n in leaf}) < len(leaf), "placement: fewer meshes than nodes")
         q = np.array(t2["rotation"])
         expect(abs(np.linalg.norm(q) - 1) < 1e-6 and abs(q[1] - np.sin(np.radians(15))) < 1e-6 and abs(q[0]) < 1e-9 and abs(q[2]) < 1e-9, "placement: the rotation is about glTF Y by 30 degrees: %s" % q.tolist())
@@ -266,13 +266,13 @@ for mode in ("placement", "footprint"):
         expect(np.allclose(r["originIfc"], [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, lo[2]], atol=1e-5), "footprint: origin of the Work table is its footprint centre at the lowest point")
 # a pivot file puts the origin of one product on a given point (a hinge) and keeps its world geometry
 pf = os.path.join(work, "pivots.json")
-json.dump({IDS["table2"]: [2.0, 1.25]}, open(pf, "w"))
+json.dump({IDS["table2"]: [3.0, 1.25]}, open(pf, "w"))
 out = os.path.join(work, "o_override")
 g = export(VARIANT, out, "--volumes", "exclude", "--pivots", "placement", "--pivot-file", pf)
 doc, _, leaf = nodes_of(g)
 t2 = next(n for n in leaf if n["extras"]["globalId"] == IDS["table2"])
 lo2 = boxes_world[IDS["table2"]][0]
-expect(np.allclose(t2["translation"], [2.0, lo2[2], -1.25], atol=1e-6) and "rotation" not in t2, "pivot file: origin at the given point, z at the lowest point: %s" % t2)
+expect(np.allclose(t2["translation"], [3.0, lo2[2], -1.25], atol=1e-6) and "rotation" not in t2, "pivot file: origin at the given point, z at the lowest point: %s" % t2)
 expect(validate(g, VARIANT)["result"] == "pass" and all(np.allclose(per_product_boxes(g)[k][0], boxes_world[k][0], atol=1e-4) for k in boxes_world), "pivot file: world geometry unchanged")
 bad_pf = os.path.join(work, "bad-pivots.json")
 json.dump([1, 2], open(bad_pf, "w"))
@@ -318,6 +318,100 @@ r = py("check_proofs.py", pdel, "--reproduce", "--profile", pprof, "--json")
 rj = json.loads(r.stdout)
 expect(not any(f["status"] == "fail" for f in rj["findings"]) and any(f["rule"] == "X-86" and f["status"] == "pass" for f in rj["findings"]),
        "check_proofs --reproduce passes (X-86 included) on the pivoted proofs: %s" % [f["message"][:120] for f in rj["findings"] if f["status"] == "fail"])
+
+# ------------------------------------------------------------------ 4. coincident faces: found, warned about, merged inside one product
+import coplanar  # noqa: E402
+
+
+def quad(x0, y0, x1, y1, z, up=True):
+    a, b, c, d = [x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]
+    return [a, b, c, a, c, d] if up else [a, c, b, a, d, c]
+
+
+# unit tests of the library on plain triangles
+t = np.array(quad(0, 0, 2, 2, 0.0) + quad(1, 1, 3, 3, 0.0) + quad(0, 0, 2, 2, 0.001) + quad(5, 5, 6, 6, 0.0) + quad(0, 0, 2, 2, 0.0, up=False), dtype=float).reshape(-1, 3, 3)
+own = np.repeat([0, 1, 2, 3, 4], 2)
+rows = coplanar.find_overlaps(t, own, 0.005)
+pairs = {(a, b): round(ar, 4) for a, b, ar, _, _ in rows}
+expect(pairs.get((0, 1)) == 1.0, "two quads overlapping by 1 m2 are found with their area: %s" % pairs)
+expect(pairs.get((0, 2)) == 4.0 and pairs.get((1, 2)) == 1.0, "a quad 1 mm above another is coincident too (plane tolerance 2 mm): %s" % pairs)
+expect(not any(3 in k or 4 in k for k in pairs), "a quad elsewhere and an opposite-facing quad are not reported: %s" % pairs)
+expect(len(coplanar.find_overlaps(t, own, 3.0)) == 1 and coplanar.find_overlaps(t, own, 3.0)[0][:2] == (0, 2), "--min-area filters by pair")
+expect(coplanar.find_overlaps(t[:2], own[:2] * 0, 0.0) == [], "triangles of one owner never count against each other")
+# an inclined plane (45 degrees) is measured in its own plane
+inc = lambda s: np.array([[0, 0, 0], [2, 0, 2], [2, 2, 2], [0, 0, 0], [2, 2, 2], [0, 2, 0]], dtype=float) + np.array([0, s, 0])  # noqa: E731
+rows = coplanar.find_overlaps(np.concatenate([inc(0).reshape(-1, 3, 3), inc(1).reshape(-1, 3, 3)]), np.repeat([0, 1], 2), 0.005)
+expect(len(rows) == 1 and abs(rows[0][2] - 2 * np.sqrt(2)) < 1e-6, "an inclined plane is found and measured in its own plane: %s" % rows)
+# union: A (0..2) and B (1..3) in the same plane, A first
+grp = {"a": np.array(quad(0, 0, 2, 2, 1.0), float).reshape(-1, 3, 3), "b": np.array(quad(1, 1, 3, 3, 1.0), float).reshape(-1, 3, 3)}
+new, planes, removed = coplanar.union_within(grp)
+
+
+def area(tr):
+    return float(np.linalg.norm(np.cross(tr[:, 1] - tr[:, 0], tr[:, 2] - tr[:, 0]), axis=1).sum() / 2) if len(tr) else 0.0
+
+
+expect(planes == 1 and abs(removed - 1.0) < 1e-9, "union: one plane, 1 m2 of the later group removed: %s %s" % (planes, removed))
+expect(abs(area(new["a"]) - 4.0) < 1e-9 and abs(area(new["b"]) - 3.0) < 1e-9, "union: A keeps 4 m2, B keeps 3 m2 (areas %s, %s)" % (area(new["a"]), area(new["b"])))
+allt = np.concatenate([new["a"], new["b"]])
+expect(not coplanar.find_overlaps(allt, np.concatenate([np.zeros(len(new["a"]), int), np.ones(len(new["b"]), int)]), 1e-4), "union: no overlap is left")
+expect(np.all(np.cross(allt[:, 1] - allt[:, 0], allt[:, 2] - allt[:, 0])[:, 2] > 0), "union: every triangle still faces up")
+disjoint = {"a": grp["a"], "b": np.array(quad(5, 5, 6, 6, 1.0), float).reshape(-1, 3, 3)}
+new2, planes2, _ = coplanar.union_within(disjoint)
+expect(planes2 == 0 and np.array_equal(new2["a"], disjoint["a"]), "union leaves groups that do not overlap alone")
+
+# a duplicate floor slab in the model: the validator warns, the tool names the pair
+dup_ifc = os.path.join(work, "variant", "dup.ifc")
+m = ifcopenshell.open(SRC_IFC)
+slab = next(e for e in m.by_type("IfcSlab") if e.Name == "Floor slab")
+twin = m.create_entity("IfcSlab", GlobalId=ifcopenshell.guid.new(), Name="Floor finish twin", ObjectPlacement=slab.ObjectPlacement, Representation=slab.Representation,
+                       PredefinedType=slab.PredefinedType)
+slab.ContainedInStructure[0].RelatedElements = list(slab.ContainedInStructure[0].RelatedElements) + [twin]
+m.write(dup_ifc)
+g_dup = export(dup_ifc, os.path.join(work, "o_dup"))
+rep = validate(g_dup, dup_ifc)
+expect(rep["result"] == "pass" and "GLB-COPLANAR" in codes(rep), "validate_glb warns (RECOMMENDED) about the twin slab: %s %s" % (rep["result"], codes(rep)))
+hits = coplanar.glb_overlaps(g_dup, 0.005)
+expect(len(hits) >= 1 and {hits[0][0].split(":")[1].split("#")[0], hits[0][1].split(":")[1].split("#")[0]} == {"Floor slab", "Floor finish twin"}, "coplanar.py names the pair: %s" % hits[:1])
+r = py("coplanar.py", os.path.join(work, "o_dup", "model.glb"), "--min-area", "0.5")
+expect(r.returncode == 0 and "Floor finish twin" in r.stdout, "coplanar.py prints the pairs: %s" % r.stdout[:200])
+rj = json.loads(py("coplanar.py", os.path.join(work, "o_dup", "model.glb"), "--json").stdout)
+expect(rj["model.glb"] and rj["model.glb"][0]["areaM2"] > 1.0, "coplanar.py --json lists the pairs")
+expect("GLB-COPLANAR" not in codes(validate(g_ex, VARIANT)), "no warning on a model without coincident faces")
+big = os.path.join(work, "profile-big.json")
+json.dump({"name": "big", "version": "1.0.0", "budgets": {"coincidentFaceMinAreaM2": 1000}}, open(big, "w"))
+rpt.load_profile(big)
+expect("GLB-COPLANAR" not in codes(validate(g_dup, dup_ifc)), "budgets.coincidentFaceMinAreaM2 sets the threshold")
+rpt.load_profile(None)
+
+# export_glb --coplanar union on a product built from two overlapping boxes of two colours (geometry replaced for one product)
+orig_shape_parts = glbkit.shape_parts
+
+
+def fake_shape_parts(model_, root, limits):
+    parts, m_root = orig_shape_parts(model_, root, limits)
+    if root.GlobalId == IDS["table2"]:
+        parts = [((0.9, 0.1, 0.1, 1.0), np.array(quad(0, 0, 2, 2, 0.8) + quad(0, 0, 2, 2, 0.0, up=True), float)),
+                 ((0.1, 0.1, 0.9, 1.0), np.array(quad(1, 1, 3, 3, 0.8), float))]
+    return parts, m_root
+
+
+glbkit.shape_parts = fake_shape_parts
+try:
+    res_off = export_glb.model_glb(VARIANT, "v", "x", volumes="exclude", pivots="placement", coplanar_union="off")
+    res_on = export_glb.model_glb(VARIANT, "v", "x", volumes="exclude", pivots="placement", coplanar_union="union")
+finally:
+    glbkit.shape_parts = orig_shape_parts
+d_on = glbkit.split_glb(res_on["glb"])[0]
+expect(d_on["extras"]["coplanarUnion"]["planesResolved"] == 1 and abs(d_on["extras"]["coplanarUnion"]["areaRemovedM2"] - 1.0) < 1e-6, "export --coplanar union records what it did: %s" % d_on["extras"].get("coplanarUnion"))
+expect("coplanarUnion" not in glbkit.split_glb(res_off["glb"])[0]["extras"] and res_off["triangles"] != res_on["triangles"], "off leaves the geometry (and the extras) alone")
+t2_on = [i for i in glbkit.triangles_of(*glbkit.split_glb(res_on["glb"])) if i["extras"]["globalId"] == IDS["table2"]]
+tops = []
+for i in t2_on:
+    tr = i["tri"]
+    top = tr[np.abs(tr[:, :, 2] - tr[:, :, 2].max()).max(axis=1) < 1e-6]
+    tops.append(top)
+expect(abs(sum(area(x) for x in tops) - 7.0) < 1e-4, "export union: the top plane of the product is the union, 4 + 4 - 1 = 7 m2: %s" % [area(x) for x in tops])
 
 if __name__ == "__main__":
     print("test_glb_options: %s" % ("all checks behaved as expected" if not FAILS else "%d failure(s)" % len(FAILS)))

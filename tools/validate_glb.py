@@ -20,7 +20,8 @@ set's; a size along any axis within `proofs.maxExtentMetres`; unit-length normal
 (`proofs.maxGlbNodes`), triangle count (`limits.maxTriangles`, and `budgets.recommendedTriangles` as a warning) and file size
 (`submission.maxFileBytes`) from the profile; texture sizes in `textures.sizesPixels`; for a whole model: the scene-graph naming
 (`model` > `level:<name>` > `<kind>:<name>#<GlobalId>`), the stated bounds equal the data, and with --ifc every product's bounding box equals
-the one computed from the IFC file (tolerance 1 mm) in the converted frame, and every product with geometry has a node unless the model's
+the one computed from the IFC file (tolerance 1 mm) in the converted frame, no two nodes have coincident same-facing faces over
+`budgets.coincidentFaceMinAreaM2` (RECOMMENDED, an estimate: `tools/coplanar.py`), and every product with geometry has a node unless the model's
 `extras.excluded` (the exclusion report that `export_glb.py --volumes exclude` writes) lists it; only zones (IfcSpatialZone) and reservation
 volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE) may be listed, and a listed product must not have a node.
 
@@ -39,6 +40,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import coplanar  # noqa: E402
 import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed  # noqa: E402
@@ -479,6 +481,15 @@ def validate_one(data, label, role, item, tex_sizes, params):
         for gid_name, lst in sorted(gids.items()):
             if len(lst) > 1:
                 f.bad("GLB-IDENT", "GlobalId %s is on %d nodes (%s ...)" % (gid_name, len(lst), lst[0]), "One node per product.", "/nodes", level="RECOMMENDED")
+        try:
+            pairs = coplanar.glb_overlaps(data, params["coincidentMinAreaM2"])
+        except Exception:
+            pairs = []                                   # a GLB that cannot be read this far has other findings
+        if pairs:
+            f.bad("GLB-COPLANAR", "%d pair(s) of nodes have coincident same-facing faces over %g m2 (%.2f m2 in all); the largest: %s and %s, %.2f m2"
+                  % (len(pairs), params["coincidentMinAreaM2"], sum(p[2] for p in pairs), pairs[0][0], pairs[0][1], pairs[0][2]),
+                  "Two surfaces in one plane z-fight in a rasteriser. Offset one by a few millimetres, make the joint a butt joint, or build them as one solid; "
+                  "python3 tools/coplanar.py lists the pairs.", "/nodes", level="RECOMMENDED")
         dup = {x for x in names if x and names.count(x) > 1}
         if dup:
             f.bad("GLB-NAMES", "node name %r is used more than once" % sorted(dup)[0], "Names include the GlobalId, so they are unique.", "/nodes")
@@ -619,7 +630,8 @@ def khronos(paths):
 def profile_params():
     return {"maxFileBytes": rpt.param("submission.maxFileBytes", 26214400), "maxGlbNodes": rpt.param("proofs.maxGlbNodes", 20000),
             "maxExtentMetres": rpt.param("proofs.maxExtentMetres", 5000), "maxTriangles": rpt.param("limits.maxTriangles", 5000000),
-            "recommendedTriangles": rpt.param("budgets.recommendedTriangles", 1000000), "maxItemTriangles": rpt.param("budgets.maxItemTriangles", 2000)}
+            "recommendedTriangles": rpt.param("budgets.recommendedTriangles", 1000000), "maxItemTriangles": rpt.param("budgets.maxItemTriangles", 2000),
+            "coincidentMinAreaM2": rpt.param("budgets.coincidentFaceMinAreaM2", 0.005)}
 
 
 def validate_files(specs, ifc=None, use_khronos="auto"):

@@ -93,6 +93,11 @@
         "maxItemTriangles": {
           "type": "number",
           "description": "triangles of one ordinary library item"
+        },
+        "coincidentFaceMinAreaM2": {
+          "type": "number",
+          "description": "smallest overlap, in square metres, of same-facing coplanar faces of two nodes that validate_glb.py reports as coincident (an estimate, RECOMMENDED); smaller overlaps are ignored",
+          "minimum": 0
         }
       }
     },
@@ -588,6 +593,14 @@
             "footprint"
           ],
           "description": "where each product of the whole-model GLB has its origin: world bakes every vertex into world coordinates (every origin is the model origin); placement uses the origin of the product's IFC placement, so the node carries the placement and identical shapes share one mesh; footprint uses the centre of the footprint at the lowest point"
+        },
+        "glbCoplanar": {
+          "type": "string",
+          "enum": [
+            "off",
+            "union"
+          ],
+          "description": "what the GLB export does with overlapping coplanar same-facing triangles inside one product: off leaves them, union replaces them by the union of their polygons (needs shapely 2.1)"
         },
         "glbIndexed": {
           "type": "boolean",

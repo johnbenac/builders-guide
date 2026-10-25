@@ -1,6 +1,7 @@
 <!-- chunk: params--introduction-part-4-of-4 | source: 07-profile-parameters.md | title: Introduction (part 4 of 4) | rules: - -->
 | Parameter | Meaning | default | strict | Rules |
 |---|---|---|---|---|
+| `submission.ingestMaxSeconds` | time limit of one tools/ingest.py run, in seconds | `300` | `null` | - |
 | `submission.maxImagePixels` | most pixels (width times height) of one PNG or JPEG image in a delivery; protects reviewers and ingest from decompression bombs | `67108864` | `null` | X-77 |
 | `proofs.maxGlbNodes` | most scene-graph nodes in one GLB | `20000` | `null` | X-80 |
 | `proofs.maxExtentMetres` | largest size of a GLB along any axis, in metres; a bigger model has probably been exported in the wrong unit | `5000` | `null` | X-80 |
@@ -14,6 +15,7 @@
 | `proofs.maxProofBytes` | largest total size of the proofs/ folder, in bytes | `67108864` | `null` | X-84 |
 | `proofs.glbVolumes` | what the GLB export does with zones (IfcSpatialZone) and reservation volumes (IfcBuildingElementProxy of type PROVISIONFORSPACE): mesh exports them like any product; exclude leaves them out, lists them in extras.excluded of the whole-model GLB, and the validator accepts their missing nodes only through that list | `"mesh"` | `null` | X-80 |
 | `proofs.glbPivots` | where each product of the whole-model GLB has its origin: world bakes every vertex into world coordinates (every origin is the model origin); placement uses the origin of the product's IFC placement, so the node carries the placement and identical shapes share one mesh; footprint uses the centre of the footprint at the lowest point | `"world"` | `null` | X-80 |
+| `proofs.glbCoplanar` | what the GLB export does with overlapping coplanar same-facing triangles inside one product: off leaves them, union replaces them by the union of their polygons (needs shapely 2.1) | `"off"` | `null` | X-80 |
 | `proofs.glbIndexed` | share vertices that agree in position and normal in the whole-model GLB (indexed primitives) | `false` | `null` | X-80 |
 | `proofs.renderTolerance.meanAbsLevels` |  | `0.5` | `null` | - |
 | `proofs.renderTolerance.differingFraction` |  | `0.001` | `null` | - |

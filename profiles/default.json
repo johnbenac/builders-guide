@@ -23,7 +23,8 @@
     "recommendedFileMegabytes": 100,
     "recommendedTriangles": 1000000,
     "maxDistinctColours": 50,
-    "maxItemTriangles": 2000
+    "maxItemTriangles": 2000,
+    "coincidentFaceMinAreaM2": 0.005
   },
   "file": {
     "singleLineEntities": false
@@ -203,6 +204,7 @@
     "glbVolumes": "mesh",
     "glbPivots": "world",
     "glbIndexed": false,
+    "glbCoplanar": "off",
     "renderTolerance": {
       "meanAbsLevels": 0.5,
       "differingFraction": 0.001,

@@ -3694,7 +3694,9 @@
     "submission.maxFileBytes",
     "proofs.glbVolumes",
     "proofs.glbPivots",
-    "proofs.glbIndexed"
+    "proofs.glbIndexed",
+    "proofs.glbCoplanar",
+    "budgets.coincidentFaceMinAreaM2"
    ],
    "extension": null
   },
