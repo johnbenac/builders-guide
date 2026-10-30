@@ -1123,7 +1123,7 @@
    "file": "chunks/review--2-check-construction-and-usable-space-before-mul.md",
    "source": "09-environment-review-and-handoff.md",
    "title": "2. Check construction and usable space before multiplying media",
-   "approx_tokens": 463,
+   "approx_tokens": 599,
    "rules": []
   },
   {
@@ -1131,7 +1131,7 @@
    "file": "chunks/review--3-review-material-authoring-and-exported-appeara.md",
    "source": "09-environment-review-and-handoff.md",
    "title": "3. Review material authoring and exported appearance separately",
-   "approx_tokens": 384,
+   "approx_tokens": 422,
    "rules": []
   },
   {
@@ -1139,7 +1139,7 @@
    "file": "chunks/review--4-prove-the-lighting-and-renderer-contract.md",
    "source": "09-environment-review-and-handoff.md",
    "title": "4. Prove the lighting and renderer contract",
-   "approx_tokens": 422,
+   "approx_tokens": 542,
    "rules": []
   },
   {
@@ -1156,6 +1156,14 @@
    "source": "09-environment-review-and-handoff.md",
    "title": "6. Resume and improve",
    "approx_tokens": 210,
+   "rules": []
+  },
+  {
+   "id": "review--7-make-ownership-and-resumption-explicit",
+   "file": "chunks/review--7-make-ownership-and-resumption-explicit.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "7. Make ownership and resumption explicit",
+   "approx_tokens": 245,
    "rules": []
   }
  ]

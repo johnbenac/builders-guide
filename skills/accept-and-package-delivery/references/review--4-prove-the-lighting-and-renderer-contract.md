@@ -4,6 +4,12 @@
 Document whether diffuse direct/indirect illumination is baked or evaluated at
 runtime. Avoid counting both. Preserve source UVs separately from lightmap UVs;
 verify geometry identity, UV coverage, overlap, receivers and gutters after optimization.
+Positive UV area does not guarantee lighting samples. Check actual texel-center
+support at the delivered atlas resolution, including quantized consumer UVs and
+bilinear filter footprints. Gutters cannot restore illumination that was never
+sampled. Group charts by UV and physical edge continuity; object/material names
+alone neither establish continuity nor require a seam. Record unsupported faces
+and memory/transfer costs before selecting a denser layout or additional atlases.
 
 When filtering Monte Carlo noise, keep contact/direct shadow detail out of an
 indirect-light smoothing operation. Filter independent atlas charts independently.

@@ -10,7 +10,10 @@ Inspect color, normal, roughness, metallic, emission and optical properties afte
 export and import into the intended consumer. Retain material identity through
 batching. Inspect winding and authored normals on both sides of foliage. For
 closed shells, check outward orientation as well as surface positions; preserve
-intentional single-sided geometry under the profile's sidedness convention. Texture-cache keys must include settings that change the resulting material.
+intentional single-sided geometry under the profile's sidedness convention.
+Use explicit surface intent when several surfaces share a palette color: soil
+and stained timber must not acquire the same finish through color matching.
+Texture-cache keys must include settings that change the resulting material.
 
 Alpha coverage alone does not establish believable clear glass. Preserve the
 source's intended transmission, index of refraction and roughness using supported

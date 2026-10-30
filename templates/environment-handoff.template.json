@@ -105,5 +105,25 @@
       "method",
       "diagnostic_limits"
     ]
+  },
+  "coordination": {
+    "assignment_id": "REPLACE",
+    "state": "unclaimed",
+    "input_revision": "REPLACE",
+    "owned_files": [],
+    "output_directory": "REPLACE",
+    "last_verified_result": null,
+    "next_dependency": null,
+    "active_jobs": [],
+    "cleanup_owner": null,
+    "takeover_rule": "Verify job state and reconcile shared edits before replacing the owner."
+  },
+  "reproduction": {
+    "fresh_extraction": "unproven",
+    "path_with_spaces": "unproven",
+    "fresh_dependency_install": "unproven",
+    "independent_machine": "unproven",
+    "commands": [],
+    "limitations": []
   }
 }

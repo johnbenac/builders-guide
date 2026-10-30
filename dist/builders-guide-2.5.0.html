@@ -253,6 +253,9 @@ id="toc-5-package-evidence-that-another-contributor-can-continue">5.
 Package evidence that another contributor can continue</a></li>
 <li><a href="#6-resume-and-improve" id="toc-6-resume-and-improve">6.
 Resume and improve</a></li>
+<li><a href="#7-make-ownership-and-resumption-explicit"
+id="toc-7-make-ownership-and-resumption-explicit">7. Make ownership and
+resumption explicit</a></li>
 </ul></li>
 <li><a href="#repair-loop" id="toc-repair-loop">Repair loop</a>
 <ul>
@@ -4032,7 +4035,15 @@ returns when joints must align.</p>
 and other open leaves. “Open” is not synonymous with “passable.” Do not
 hide a blocking leaf, enlarge a clearance result, or rotate a leaf into
 a wall to obtain a pass. Preserve the neutral rig and record hinge,
-parts and applied pose exactly once.</p>
+parts and applied pose exactly once. Test intermediate states as well as
+endpoints, including linked folding leaves. Retain all actual
+surface-contact witnesses. Labels such as hinge-region or floor-level
+describe a contact; they do not establish that it is harmless. Inspect
+the contacted object and the profile tolerance before accepting it.</p>
+<p>Check functional fixture geometry: a basin needs an open cavity, a
+credible rim and a drain; a painted circular cap is not a bowl. Inspect
+supporting counters, trays and taps for intersections. Keep
+already-correct fixtures unchanged.</p>
 <p>Use actual finished-floor geometry for steps, decks and ramps.
 Semantic level labels and large furniture bounding boxes can
 misrepresent walkable space. Evaluate the consumer's body clearance and
@@ -4057,9 +4068,11 @@ optical properties after export and import into the intended consumer.
 Retain material identity through batching. Inspect winding and authored
 normals on both sides of foliage. For closed shells, check outward
 orientation as well as surface positions; preserve intentional
-single-sided geometry under the profile's sidedness convention.
-Texture-cache keys must include settings that change the resulting
-material.</p>
+single-sided geometry under the profile's sidedness convention. Use
+explicit surface intent when several surfaces share a palette color:
+soil and stained timber must not acquire the same finish through color
+matching. Texture-cache keys must include settings that change the
+resulting material.</p>
 <p>Alpha coverage alone does not establish believable clear glass.
 Preserve the source's intended transmission, index of refraction and
 roughness using supported properties; keep mirror and painted/opaque
@@ -4072,7 +4085,14 @@ lighting and renderer contract</h2>
 <p>Document whether diffuse direct/indirect illumination is baked or
 evaluated at runtime. Avoid counting both. Preserve source UVs
 separately from lightmap UVs; verify geometry identity, UV coverage,
-overlap, receivers and gutters after optimization.</p>
+overlap, receivers and gutters after optimization. Positive UV area does
+not guarantee lighting samples. Check actual texel-center support at the
+delivered atlas resolution, including quantized consumer UVs and
+bilinear filter footprints. Gutters cannot restore illumination that was
+never sampled. Group charts by UV and physical edge continuity;
+object/material names alone neither establish continuity nor require a
+seam. Record unsupported faces and memory/transfer costs before
+selecting a denser layout or additional atlases.</p>
 <p>When filtering Monte Carlo noise, keep contact/direct shadow detail
 out of an indirect-light smoothing operation. Filter independent atlas
 charts independently. Specify linear versus display-encoded values,
@@ -4154,6 +4174,20 @@ reproducible example and a source/export/review check to the appropriate
 guide or tool. Fix the shared recipe as well as the particular asset.
 Acceptance remains the receiving party's explicit, revision-bound
 decision under guide 4.</p>
+<h2 id="7-make-ownership-and-resumption-explicit">7. Make ownership and
+resumption explicit</h2>
+<p>A handoff records who owns each mutable file, the input digest, work
+state, last verified result and the next dependency. A claim reserves
+editing, not acceptance. Before taking over an apparently stale claim,
+contact its owner or verify that its job has stopped; reconcile shared
+edits explicitly. Do not infer completion from silence or overwrite a
+running worker's output.</p>
+<p>Separate portable relative paths from optional machine-local working
+paths. Record host, process/job handle and cleanup responsibility for
+active work; never include credentials. Rehearse from a fresh
+extraction, including a path with spaces. State separately whether
+dependencies were freshly installed and whether another machine
+reproduced it. A same-host replay proves neither.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="repair-loop">Repair loop</h1>

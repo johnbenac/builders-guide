@@ -155,6 +155,7 @@ Version 2.5.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [review--4-prove-the-lighting-and-renderer-contract](chunks/review--4-prove-the-lighting-and-renderer-contract.md): 4. Prove the lighting and renderer contract
 - [review--5-package-evidence-that-another-contributor-can](chunks/review--5-package-evidence-that-another-contributor-can.md): 5. Package evidence that another contributor can continue
 - [review--6-resume-and-improve](chunks/review--6-resume-and-improve.md): 6. Resume and improve
+- [review--7-make-ownership-and-resumption-explicit](chunks/review--7-make-ownership-and-resumption-explicit.md): 7. Make ownership and resumption explicit
 
 ## Optional
 
