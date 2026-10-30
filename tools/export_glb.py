@@ -66,7 +66,7 @@ import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 from glbkit import Failed, r6, rl, sha256_bytes, slugify  # noqa: E402
 
-VERSION = "2.4.0"
+VERSION = "2.5.0"
 STRUCTURE = {"IfcWall", "IfcWallStandardCase", "IfcSlab", "IfcRoof", "IfcStair", "IfcStairFlight", "IfcRamp", "IfcRampFlight", "IfcColumn",
              "IfcBeam", "IfcMember", "IfcPlate", "IfcFooting", "IfcCurtainWall", "IfcBuildingElementProxy", "IfcCovering"}
 NODE_KINDS = ("furniture", "covering", "fixture", "hardware", "door", "window", "structure", "terrain", "other")

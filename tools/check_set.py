@@ -39,7 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import fileset  # noqa: E402
 
-VERSION = "2.4.0"
+VERSION = "2.5.0"
 ROW = re.compile(r"^([0-9a-f]{64})  (\S.*)$")
 DIST_DOC = re.compile(r"^dist/builders-guide-(\d+\.\d+\.\d+)\.(html|pdf)$")
 TOOL_VERSION = re.compile(r'^(?:TOOL_)?VERSION = "(\d+\.\d+\.\d+)"', re.M)

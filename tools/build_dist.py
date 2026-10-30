@@ -21,12 +21,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fileset  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-VERSION = "2.4.0"
-RELEASE_DATE = (2026, 10, 24)         # the date of the release: it is in the subtitle and in the zip member times, so the same tree gives the same files
+VERSION = "2.5.0"
+RELEASE_DATE = (2026, 10, 30)         # the date of the release: it is in the subtitle and in the zip member times, so the same tree gives the same files
 NAME = "builders-guide-" + VERSION
 DIST = os.path.join(ROOT, "dist")
 ORDER = ["README.md", "AGENTS.md", "01-builders-and-architects-guide.md", "02-interior-decorators-guide.md",
-         "03-furniture-and-fixtures-guide.md", "04-delivery-and-acceptance-guide.md", "05-worked-example.md", "08-submissions-and-ingest.md", "REPAIR-LOOP.md", "06-rules-index.md"]
+         "03-furniture-and-fixtures-guide.md", "04-delivery-and-acceptance-guide.md", "05-worked-example.md", "08-submissions-and-ingest.md", "09-environment-review-and-handoff.md", "REPAIR-LOOP.md", "06-rules-index.md"]
 
 
 def slug(title):

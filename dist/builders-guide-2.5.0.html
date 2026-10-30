@@ -32,7 +32,7 @@ a { color: #1f4e79; text-decoration: none; }
 <body>
 <h1 class="title first" style="border:none">Authoring Guide Set for
 Digital Buildings, Materials and Furniture (IFC)</h1>
-<div class="subtitle">Version 2.4.0, 2026-10-24. Application-neutral
+<div class="subtitle">Version 2.5.0, 2026-10-30. Application-neutral
 guides and tools for outside organisations and their agents.</div>
 <nav id="TOC">
 <ul>
@@ -46,6 +46,9 @@ profile</a></li>
 <li><a href="#for-agents" id="toc-for-agents">For agents</a></li>
 <li><a href="#the-five-guides" id="toc-the-five-guides">The five
 guides</a></li>
+<li><a href="#environment-quality-and-remote-work"
+id="toc-environment-quality-and-remote-work">Environment quality and
+remote work</a></li>
 <li><a href="#submissions" id="toc-submissions">Submissions</a></li>
 <li><a href="#how-rules-are-written" id="toc-how-rules-are-written">How
 rules are written</a></li>
@@ -140,6 +143,8 @@ id="toc-7-delivering-a-reusable-material-library">7. Delivering a
 reusable material library</a></li>
 <li><a href="#8-defects-commonly-seen"
 id="toc-8-defects-commonly-seen">8. Defects commonly seen</a></li>
+<li><a href="#exported-appearance-review"
+id="toc-exported-appearance-review">Exported appearance review</a></li>
 </ul></li>
 <li><a href="#guide-3-furniture-and-fixtures-guide"
 id="toc-guide-3-furniture-and-fixtures-guide">Guide 3: Furniture and
@@ -225,6 +230,30 @@ automatic check</a></li>
 <li><a href="#ingest" id="toc-ingest">Ingest</a></li>
 <li><a href="#for-agents-1" id="toc-for-agents-1">For agents</a></li>
 </ul></li>
+<li><a href="#environment-review-and-asynchronous-handoff"
+id="toc-environment-review-and-asynchronous-handoff">Environment review
+and asynchronous handoff</a>
+<ul>
+<li><a href="#1-agree-the-work-and-pin-its-inputs"
+id="toc-1-agree-the-work-and-pin-its-inputs">1. Agree the work and pin
+its inputs</a></li>
+<li><a
+href="#2-check-construction-and-usable-space-before-multiplying-media"
+id="toc-2-check-construction-and-usable-space-before-multiplying-media">2.
+Check construction and usable space before multiplying media</a></li>
+<li><a
+href="#3-review-material-authoring-and-exported-appearance-separately"
+id="toc-3-review-material-authoring-and-exported-appearance-separately">3.
+Review material authoring and exported appearance separately</a></li>
+<li><a href="#4-prove-the-lighting-and-renderer-contract"
+id="toc-4-prove-the-lighting-and-renderer-contract">4. Prove the
+lighting and renderer contract</a></li>
+<li><a href="#5-package-evidence-that-another-contributor-can-continue"
+id="toc-5-package-evidence-that-another-contributor-can-continue">5.
+Package evidence that another contributor can continue</a></li>
+<li><a href="#6-resume-and-improve" id="toc-6-resume-and-improve">6.
+Resume and improve</a></li>
+</ul></li>
 <li><a href="#repair-loop" id="toc-repair-loop">Repair loop</a>
 <ul>
 <li><a href="#the-loop" id="toc-the-loop">The loop</a></li>
@@ -246,7 +275,7 @@ mini-loop</a></li>
 <h1
 id="authoring-guide-set-for-ifc-buildings-materials-and-furniture">Authoring
 Guide Set for IFC Buildings, Materials and Furniture</h1>
-<p>Version 2.4.0 (2026-10-24). Application-neutral guides, rules,
+<p>Version 2.5.0 (2026-10-30). Application-neutral guides, rules,
 checkers and examples for people and software agents who create digital
 buildings, finishes, wall coverings and furniture in the IFC
 building-data format, so that their work can be used by many different
@@ -382,6 +411,15 @@ light, with a generator script and checker</td>
 </tr>
 </tbody>
 </table>
+<h2 id="environment-quality-and-remote-work">Environment quality and
+remote work</h2>
+<p>Follow <a
+href="#environment-review-and-asynchronous-handoff">Environment review
+and asynchronous handoff</a> for source-to-consumer visual checks,
+all-room circulation, materials/UVs, lighting, revision invalidation and
+resumable contributor evidence. Start a handoff with
+<code>templates/environment-handoff.template.json</code>. Technical
+validation and visual acceptance remain separate decisions.</p>
 <h2 id="submissions">Submissions</h2>
 <p>The same repository takes outside deliveries as pull requests from
 forks: fork it, build the delivery in a branch of your fork under
@@ -503,21 +541,21 @@ it</td>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>builders-guide-2.4.0.pdf</code></td>
+<td><code>builders-guide-2.5.0.pdf</code></td>
 <td>all guides, the worked example, the submissions page and the rules
 index in one document</td>
 </tr>
 <tr class="even">
-<td><code>builders-guide-2.4.0.html</code></td>
+<td><code>builders-guide-2.5.0.html</code></td>
 <td>the same, as one web page</td>
 </tr>
 <tr class="odd">
-<td><code>builders-guide-2.4.0.zip</code></td>
+<td><code>builders-guide-2.5.0.zip</code></td>
 <td>the whole set, with <code>MANIFEST.sha256</code></td>
 </tr>
 <tr class="even">
 <td><code>SHA256SUMS.txt</code>,
-<code>builders-guide-2.4.0.zip.sha256</code></td>
+<code>builders-guide-2.5.0.zip.sha256</code></td>
 <td>SHA-256 of the three files above</td>
 </tr>
 </tbody>
@@ -565,6 +603,9 @@ consumer's profile when you have one.</li>
 <li>Find everything else through <code>llms.txt</code> (index) or
 <code>MANIFEST.json</code> (every file with purpose and tags).</li>
 </ol>
+<p>Review rendered environment quality and remote handoffs with
+<code>09-environment-review-and-handoff.md</code>; use
+<code>templates/environment-handoff.template.json</code>.</p>
 <h2 id="commands">Commands</h2>
 <pre><code>pip install -r tools/requirements.txt                        # core; add -r
     tools/requirements-terrain.txt or -preview.txt for those tools
@@ -2046,6 +2087,14 @@ particular project.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="exported-appearance-review">Exported appearance review</h2>
+<p>Review UV scale, grain direction, masonry corners, normal strength,
+surface-specific roughness/metallic response and clear-glass optics in
+the actual exported consumer artifact. An exporter or preview must not
+silently replace authored surfaces to make its image look correct.
+Inspect closeups and ordinary room views; use <a
+href="#environment-review-and-asynchronous-handoff">guide 9</a> to
+record evidence and limitations.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="guide-3-furniture-and-fixtures-guide">Guide 3: Furniture and
@@ -3212,6 +3261,15 @@ way to see that the pictures do show the model.</p>
 <code>08-submissions-and-ingest.md</code> for what happens next. The
 checks cannot judge quality, ownership or taste: a person reviews those,
 and may decline a delivery that passes every check.</p>
+<h3 id="82-consumer-appearance-and-remote-review">8.2 Consumer
+appearance and remote review</h3>
+<p>A reproducible proof is not automatically a useful visual review.
+Follow <a href="#environment-review-and-asynchronous-handoff">guide
+9</a>: inspect every authored space and connection, construction/detail
+closeups and actual exported materials in the intended consumer. Record
+renderer/light substitutions explicitly. Keep technical validity,
+rendered appearance and device behavior separate, and attach
+revision-bound findings and a resumable handoff.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="guide-5-worked-example">Guide 5: Worked example</h1>
@@ -3927,6 +3985,162 @@ unless they are true, and do not set <code>attestation</code> fields to
 profiles or schemas in a delivery pull request. Stop and report if the
 same REQUIRED finding remains after three runs
 (<code>REPAIR-LOOP.md</code>).</p>
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
+<h1 id="environment-review-and-asynchronous-handoff">Environment review
+and asynchronous handoff</h1>
+<p>This procedure supplements guides 1–4. It adds review guidance, not
+new default rule levels. The consumer's profile supplies tolerances,
+clearance, camera, device and performance targets. A valid file can
+still depict a poor environment.</p>
+<h2 id="1-agree-the-work-and-pin-its-inputs">1. Agree the work and pin
+its inputs</h2>
+<p>Assign one owner per editable source or shared exporter. Separate
+model author, material author, consumer integration and independent
+review where practical. Work on branches; do not overwrite an accepted
+delivery or another worker's candidate. Independent rooms and assets can
+proceed in parallel. Serialize changes to shared generators, material
+contracts and publication manifests.</p>
+<p>Record the guide/profile versions and hashes, source commit, editable
+sources, dependencies, exact build commands, units and coordinate
+transform. Distinguish the canonical model hash from an optimized
+consumer model hash. A screenshot needs the latter, its
+material/lightmap assets, renderer version and camera. Use
+<code>templates/environment-handoff.template.json</code> for a resumable
+work record. Reference the evidence manifest and frozen render-input
+manifest by path and hash; they bind captures to model, pose, lightmaps,
+renderer modules, cameras, method and diagnostic limits. Include those
+files in the portable handoff.</p>
+<p>Deliver relative paths and immutable artifact addresses that
+collaborators can access. A working-machine path or symlink alone is not
+a handoff. Keep rights, font/texture dependencies, procedural seeds and
+storage requirements with sources. Never include credentials or depend
+on a contributor's running browser session.</p>
+<h2
+id="2-check-construction-and-usable-space-before-multiplying-media">2.
+Check construction and usable space before multiplying media</h2>
+<p>Inventory every authored room, exterior and connection. Review a
+complete set of directions and upward/downward joins, then relevant
+closeups. A few attractive hero views do not prove room coverage. List
+places not inspected and why.</p>
+<p>Inspect openings, wall/roof/bay joins, thresholds, chimney bores and
+flashing, hardware attachment, furniture clearances, support contacts
+and actual object orientation. Check props against the real support
+surface, not an assumed floor height. Model masonry bonds and corner
+returns when joints must align.</p>
+<p>Verify the requested open-door state against actual fixed surfaces
+and other open leaves. “Open” is not synonymous with “passable.” Do not
+hide a blocking leaf, enlarge a clearance result, or rotate a leaf into
+a wall to obtain a pass. Preserve the neutral rig and record hinge,
+parts and applied pose exactly once.</p>
+<p>Use actual finished-floor geometry for steps, decks and ramps.
+Semantic level labels and large furniture bounding boxes can
+misrepresent walkable space. Evaluate the consumer's body clearance and
+all required connections; compute connectivity again after
+stair/threshold repairs. A room viewpoint should lie on an accessible
+component, not a comfortable-looking isolated patch behind furniture.
+Separate photographic compositions from natural standing/entry
+viewpoints.</p>
+<h2
+id="3-review-material-authoring-and-exported-appearance-separately">3.
+Review material authoring and exported appearance separately</h2>
+<p>Name the intended surface: paint, wood species, metal/coating,
+plaster, glass, fabric, stone, foliage. A solid painted finish is often
+correct; do not substitute a generic timber or noise texture merely
+because the exporter has one available.</p>
+<p>Check UV orientation, real scale, repetition and seams at corners and
+close range. Inspect color, normal, roughness, metallic, emission and
+optical properties after export and import into the intended consumer.
+Retain material identity through batching. Texture-cache keys must
+include settings that change the resulting material.</p>
+<p>Alpha coverage alone does not establish believable clear glass.
+Preserve the source's intended transmission, index of refraction and
+roughness using supported properties; keep mirror and painted/opaque
+surfaces distinct. Record unsupported features. Do not silently replace
+materials by name in a proof renderer: that can make a broken export
+appear correct. Label diagnostic fill lights and substitutions; they
+cannot prove the unmodified consumer's appearance.</p>
+<h2 id="4-prove-the-lighting-and-renderer-contract">4. Prove the
+lighting and renderer contract</h2>
+<p>Document whether diffuse direct/indirect illumination is baked or
+evaluated at runtime. Avoid counting both. Preserve source UVs
+separately from lightmap UVs; verify geometry identity, UV coverage,
+overlap, receivers and gutters after optimization.</p>
+<p>When filtering Monte Carlo noise, keep contact/direct shadow detail
+out of an indirect-light smoothing operation. Filter independent atlas
+charts independently. Specify linear versus display-encoded values,
+range/scale, texture channels and tone mapping. Check pixel values after
+delivery encoding: lossy image coding can introduce colored blocks into
+unrelated atlas islands. An attractive source render does not prove an
+optimized map or a different renderer.</p>
+<p>Review actual consumer views of dark rooms, bright windows, foliage
+backsides, glass, metals and contact shadows. A changed sky must agree
+with the baked light's direction and color convention. Record dark,
+noisy or implausible results as open findings; do not declare the
+pipeline finished because its scripts exited successfully.</p>
+<h2 id="5-package-evidence-that-another-contributor-can-continue">5.
+Package evidence that another contributor can continue</h2>
+<p>For each finding record severity, affected objects/rooms,
+observation, artifact hashes, correction owner, attempted fix and the
+matching verification view. Keep baseline and candidate evidence
+separate. A changed artifact invalidates its old acceptance; record a
+superseding decision rather than editing away adverse evidence.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Change</th>
+<th>Evidence to revisit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Geometry or pose</td>
+<td>Collision/support, connectivity, room stops, UVs, bake, media and
+consumer integration</td>
+</tr>
+<tr class="even">
+<td>Materials or source UVs</td>
+<td>Export/import parity, relevant bake contributions, optical closeups
+and media</td>
+</tr>
+<tr class="odd">
+<td>Renderer, sky or lighting</td>
+<td>Matched views, affected media and device measurements</td>
+</tr>
+<tr class="even">
+<td>Encoding/optimization</td>
+<td>Decoded pixels/surfaces, attribute retention and consumer views</td>
+</tr>
+<tr class="odd">
+<td>Labels or publication only</td>
+<td>Affected links, accessibility, asset integrity and deployed
+behavior</td>
+</tr>
+</tbody>
+</table>
+<p>Reuse a prior geometry/navigation result for a material-only revision
+only when an explicit equivalence check proves unchanged relevant
+geometry and poses. A matching vertex count is insufficient; changed
+triangle diagonals can matter.</p>
+<p>Record reviewer independence and limits. Schema validation, image
+existence, reproducibility and visual acceptance are separate results. A
+diagnostic render, software renderer or emulated phone must not be
+represented as a physical-device test. Measure actual transfer, first
+usable frame, frame times and repeated-entry resource cleanup. Optimize
+from evidence without hiding quality loss or inventing a universal
+limit.</p>
+<h2 id="6-resume-and-improve">6. Resume and improve</h2>
+<p>The receiving contributor verifies artifact hashes, reads open
+findings and runs the recorded next command. Record the output revision,
+decisions and remaining work in the handoff; attach readable contact
+sheets and exact evidence files. Release owned processes and scratch
+storage without deleting editable masters. Do not claim an old job is
+running without checking its real handle.</p>
+<p>When a defect escapes the process, add its general cause, a
+reproducible example and a source/export/review check to the appropriate
+guide or tool. Fix the shared recipe as well as the particular asset.
+Acceptance remains the receiving party's explicit, revision-bound
+decision under guide 4.</p>
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <h1 id="repair-loop">Repair loop</h1>

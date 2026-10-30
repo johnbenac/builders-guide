@@ -3,6 +3,10 @@
 
 Format: newest first. See `VERSIONING.md` for what each kind of change means.
 
+## 2.5.0
+
+Added an application-neutral environment-review and asynchronous-handoff procedure and optional machine-readable work record. Connects existing construction, finish and acceptance guidance to complete-room coverage, source/export parity, consumer rendering, door-pose collision, artifact invalidation and remote continuation. Clarifies that technical proof checks do not establish visual or device acceptance. No rule levels, profile limits, package formats or default checker outcomes change.
+
 ## 2.4.0
 
 Optional GLB export features and checks that consumers who move, open and walk through the model need, and a check of staged copies. MINOR under

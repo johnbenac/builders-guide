@@ -35,6 +35,14 @@
    "rules": []
   },
   {
+   "id": "readme--environment-quality-and-remote-work",
+   "file": "chunks/readme--environment-quality-and-remote-work.md",
+   "source": "README.md",
+   "title": "Environment quality and remote work",
+   "approx_tokens": 137,
+   "rules": []
+  },
+  {
    "id": "readme--submissions",
    "file": "chunks/readme--submissions.md",
    "source": "README.md",
@@ -523,6 +531,14 @@
    "rules": []
   },
   {
+   "id": "g2--exported-appearance-review",
+   "file": "chunks/g2--exported-appearance-review.md",
+   "source": "02-interior-decorators-guide.md",
+   "title": "Exported appearance review",
+   "approx_tokens": 144,
+   "rules": []
+  },
+  {
    "id": "g3--introduction",
    "file": "chunks/g3--introduction.md",
    "source": "03-furniture-and-fixtures-guide.md",
@@ -780,6 +796,14 @@
    "source": "04-delivery-and-acceptance-guide.md",
    "title": "8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 2 of 2)",
    "approx_tokens": 123,
+   "rules": []
+  },
+  {
+   "id": "g4--8-submitting-a-delivery-as-a-pull-request-8-2-co",
+   "file": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-2-co.md",
+   "source": "04-delivery-and-acceptance-guide.md",
+   "title": "8. Submitting a delivery as a pull request: 8.2 Consumer appearance and remote review",
+   "approx_tokens": 176,
    "rules": []
   },
   {
@@ -1076,6 +1100,62 @@
    "source": "REPAIR-LOOP.md",
    "title": "Worked mini-loop",
    "approx_tokens": 184,
+   "rules": []
+  },
+  {
+   "id": "review--introduction",
+   "file": "chunks/review--introduction.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "Introduction",
+   "approx_tokens": 112,
+   "rules": []
+  },
+  {
+   "id": "review--1-agree-the-work-and-pin-its-inputs",
+   "file": "chunks/review--1-agree-the-work-and-pin-its-inputs.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "1. Agree the work and pin its inputs",
+   "approx_tokens": 384,
+   "rules": []
+  },
+  {
+   "id": "review--2-check-construction-and-usable-space-before-mul",
+   "file": "chunks/review--2-check-construction-and-usable-space-before-mul.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "2. Check construction and usable space before multiplying media",
+   "approx_tokens": 401,
+   "rules": []
+  },
+  {
+   "id": "review--3-review-material-authoring-and-exported-appeara",
+   "file": "chunks/review--3-review-material-authoring-and-exported-appeara.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "3. Review material authoring and exported appearance separately",
+   "approx_tokens": 328,
+   "rules": []
+  },
+  {
+   "id": "review--4-prove-the-lighting-and-renderer-contract",
+   "file": "chunks/review--4-prove-the-lighting-and-renderer-contract.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "4. Prove the lighting and renderer contract",
+   "approx_tokens": 318,
+   "rules": []
+  },
+  {
+   "id": "review--5-package-evidence-that-another-contributor-can",
+   "file": "chunks/review--5-package-evidence-that-another-contributor-can.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "5. Package evidence that another contributor can continue",
+   "approx_tokens": 447,
+   "rules": []
+  },
+  {
+   "id": "review--6-resume-and-improve",
+   "file": "chunks/review--6-resume-and-improve.md",
+   "source": "09-environment-review-and-handoff.md",
+   "title": "6. Resume and improve",
+   "approx_tokens": 210,
    "rules": []
   }
  ]

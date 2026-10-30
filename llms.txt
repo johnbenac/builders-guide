@@ -2,7 +2,7 @@
 
 > Application-neutral rules, tools and skills for building, decorating, furnishing and packaging IFC deliveries that any compatible consumer can use. Static files only: read them, run the Python tools, fix, repeat until no REQUIRED finding remains.
 
-Version 2.4.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
+Version 2.5.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED rules should. Commands are plain `python3 tools/...` lines; nothing here assumes a particular agent harness.
 
 ## Start here
 
@@ -53,6 +53,7 @@ Version 2.4.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [readme--core-and-profile](chunks/readme--core-and-profile.md): Core and profile
 - [readme--for-agents](chunks/readme--for-agents.md): For agents
 - [readme--the-five-guides](chunks/readme--the-five-guides.md): The five guides
+- [readme--environment-quality-and-remote-work](chunks/readme--environment-quality-and-remote-work.md): Environment quality and remote work
 - [readme--submissions](chunks/readme--submissions.md): Submissions
 - [readme--how-rules-are-written](chunks/readme--how-rules-are-written.md): How rules are written; rules B-12, B-90
 - [readme--reading-order](chunks/readme--reading-order.md): Reading order
@@ -86,6 +87,7 @@ Version 2.4.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [g2--6-palettes](chunks/g2--6-palettes.md): 6. Palettes; rules D-70, D-71, D-72
 - [g2--7-delivering-a-reusable-material-library](chunks/g2--7-delivering-a-reusable-material-library.md): 7. Delivering a reusable material library; rules D-80, D-81, D-82, D-83, D-84, D-85
 - [g2--8-defects-commonly-seen](chunks/g2--8-defects-commonly-seen.md): 8. Defects commonly seen
+- [g2--exported-appearance-review](chunks/g2--exported-appearance-review.md): Exported appearance review
 - [g3--introduction](chunks/g3--introduction.md): Introduction
 - [g3--1-what-consumers-do-with-an-item](chunks/g3--1-what-consumers-do-with-an-item.md): 1. What consumers do with an item
 - [g3--2-classes-and-categories](chunks/g3--2-classes-and-categories.md): 2. Classes and categories; rules F-01, F-02, F-03
@@ -108,6 +110,7 @@ Version 2.4.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [g4--8-submitting-a-delivery-as-a-pull-request](chunks/g4--8-submitting-a-delivery-as-a-pull-request.md): 8. Submitting a delivery as a pull request; rules X-70, X-71, X-72, X-73, X-74, X-75 ...
 - [g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr](chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr.md): 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 1 of 2); rules X-79, X-80, X-81, X-82, X-83, X-84 ...
 - [g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2](chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-1-pr-2.md): 8. Submitting a delivery as a pull request: 8.1 Proofs: models and pictures that anyone can reproduce (part 2 of 2)
+- [g4--8-submitting-a-delivery-as-a-pull-request-8-2-co](chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-2-co.md): 8. Submitting a delivery as a pull request: 8.2 Consumer appearance and remote review
 - [g5--introduction](chunks/g5--introduction.md): Introduction
 - [g5--1-the-profiles](chunks/g5--1-the-profiles.md): 1. The profiles
 - [g5--2-what-is-modelled](chunks/g5--2-what-is-modelled.md): 2. What is modelled
@@ -145,6 +148,13 @@ Version 2.4.0. 214 rules (see rules.json): REQUIRED rules must pass, RECOMMENDED
 - [repair--stop-conditions](chunks/repair--stop-conditions.md): Stop conditions
 - [repair--never-do-these-to-get-a-pass](chunks/repair--never-do-these-to-get-a-pass.md): Never do these to get a pass
 - [repair--worked-mini-loop](chunks/repair--worked-mini-loop.md): Worked mini-loop
+- [review--introduction](chunks/review--introduction.md): Introduction
+- [review--1-agree-the-work-and-pin-its-inputs](chunks/review--1-agree-the-work-and-pin-its-inputs.md): 1. Agree the work and pin its inputs
+- [review--2-check-construction-and-usable-space-before-mul](chunks/review--2-check-construction-and-usable-space-before-mul.md): 2. Check construction and usable space before multiplying media
+- [review--3-review-material-authoring-and-exported-appeara](chunks/review--3-review-material-authoring-and-exported-appeara.md): 3. Review material authoring and exported appearance separately
+- [review--4-prove-the-lighting-and-renderer-contract](chunks/review--4-prove-the-lighting-and-renderer-contract.md): 4. Prove the lighting and renderer contract
+- [review--5-package-evidence-that-another-contributor-can](chunks/review--5-package-evidence-that-another-contributor-can.md): 5. Package evidence that another contributor can continue
+- [review--6-resume-and-improve](chunks/review--6-resume-and-improve.md): 6. Resume and improve
 
 ## Optional
 

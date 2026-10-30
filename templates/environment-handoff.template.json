@@ -1,0 +1,109 @@
+{
+  "format": "environment-handoff/1",
+  "state": "work-in-progress",
+  "delivery": {
+    "id": "REPLACE",
+    "version": "REPLACE",
+    "branch_or_pr": "REPLACE"
+  },
+  "owners": {
+    "source": "REPLACE",
+    "materials": "REPLACE",
+    "integration": "REPLACE",
+    "review": "REPLACE"
+  },
+  "inputs": {
+    "guide_version": "REPLACE",
+    "profile_path": "profiles/consumer.json",
+    "profile_sha256": "REPLACE",
+    "source_commit": "REPLACE",
+    "editable_source_archive": {
+      "path": "sources/source.zip",
+      "sha256": "REPLACE"
+    },
+    "canonical_model": {
+      "path": "models/canonical.glb",
+      "sha256": "REPLACE"
+    },
+    "consumer_model": {
+      "path": "models/consumer.glb",
+      "sha256": "REPLACE"
+    },
+    "pose": {
+      "path": "poses/consumer.json",
+      "sha256": "REPLACE",
+      "neutral_state": "REPLACE",
+      "applied_once": false
+    },
+    "coordinate_convention": "REPLACE",
+    "tool_versions_and_commands": []
+  },
+  "coverage": [
+    {
+      "room_or_exterior": "REPLACE",
+      "connections": [],
+      "evidence_paths": [],
+      "status": "not-inspected"
+    }
+  ],
+  "findings": [
+    {
+      "id": "REPLACE",
+      "severity": "major",
+      "owner": "REPLACE",
+      "observation": "REPLACE",
+      "source_revision": "REPLACE",
+      "evidence": [],
+      "correction": null,
+      "verification": null,
+      "status": "open"
+    }
+  ],
+  "review": {
+    "technical_checks": "unproven",
+    "visual_acceptance": "unproven",
+    "consumer_device_acceptance": "unproven",
+    "reviewer": null,
+    "independence_limits": [],
+    "diagnostic_substitutions": [],
+    "outcome": "revision-needed"
+  },
+  "artifacts": [
+    {
+      "path": "REPLACE",
+      "sha256": "REPLACE",
+      "bytes": null,
+      "purpose": "REPLACE",
+      "available_to_receiver": false
+    }
+  ],
+  "handoff": {
+    "completed": [],
+    "remaining": [],
+    "invalidated_evidence": [],
+    "next_command": "REPLACE",
+    "expected_output": "REPLACE",
+    "resource_requirements": [],
+    "owned_jobs_and_cleanup": [],
+    "unresolved_limits": []
+  },
+  "evidence": {
+    "manifest": {
+      "path": "proofs/inspection.json",
+      "sha256": "REPLACE"
+    },
+    "frozen_render_inputs": {
+      "path": "proofs/render-manifest.json",
+      "sha256": "REPLACE"
+    },
+    "required_bindings": [
+      "exact_model",
+      "pose",
+      "lightmaps",
+      "renderer_modules",
+      "cameras",
+      "method",
+      "diagnostic_limits"
+    ]
+  }
+}

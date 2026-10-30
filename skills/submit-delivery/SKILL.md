@@ -3,7 +3,7 @@ name: submit-delivery
 description: Offer a building, interior, furniture item, material set, fixture or hardware piece to the shared repository as a pull request from a fork, with the automatic checks passing, or understand how an accepted (merged) delivery is ingested into component assets and a catalogue. Use when asked to contribute, submit or propose a delivery, to create deliveries/<slug>/, to write the submission block of delivery.json, to make or fix the proofs (GLB files, validation report, renders, proofs/manifest.json), to fix an X-70 to X-86 finding, or to run tools/ingest.py.
 license: CC-BY-4.0
 metadata:
-  version: "2.4.0"
+  version: "2.5.0"
   rules: "X-70 to X-86"
 ---
 
