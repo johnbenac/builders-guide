@@ -1,6 +1,6 @@
 {
  "format": "set-manifest/1",
- "version": "2.4.0",
+ "version": "2.5.0",
  "note": "Every file of the set (the list is tools/fileset.py) except dist/ and MANIFEST.sha256 (see MANIFEST.sha256 and dist/SHA256SUMS.txt).",
  "files": [
   {
@@ -29,8 +29,8 @@
     "guide",
     "human"
    ],
-   "sha256": "76fe96edc04330d3ebb9d3fd9b7aacb0779fc59fb7732a11b08897dae81261fa",
-   "bytes": 15199
+   "sha256": "996cb8a6d975486ed4a75d5db939e67cab5217e34077cf68674b254a9908c381",
+   "bytes": 15638
   },
   {
    "path": "03-furniture-and-fixtures-guide.md",
@@ -49,8 +49,8 @@
     "guide",
     "human"
    ],
-   "sha256": "bac64b8a2706b1a4af0f171ad7b56e0c2b775678eb9b0562e257319239dc5cc0",
-   "bytes": 29841
+   "sha256": "70d349ed9a0d394c660866a59f0b640b8f65ec7c194d74e727e4fa1cf63fb9af",
+   "bytes": 30324
   },
   {
    "path": "05-worked-example.md",
@@ -94,6 +94,13 @@
    "bytes": 14933
   },
   {
+   "path": "09-environment-review-and-handoff.md",
+   "purpose": "supporting file",
+   "tags": [],
+   "sha256": "232fd0cb656c0c07d984bbccbee113f0ffe8625e2d6ee312cdec51dcb626dc87",
+   "bytes": 10482
+  },
+  {
    "path": "ABOUT.md",
    "purpose": "what the set is, who it is for, how a consumer adopts it",
    "tags": [
@@ -110,8 +117,8 @@
     "entry",
     "agent"
    ],
-   "sha256": "8b59fae673f9016d34e1e32f7b54ca6aa0370c866630e346792993e75df79a32",
-   "bytes": 6728
+   "sha256": "8ec4d8bf49bddb3a99bc246243c76b81c1ea659cc18110118f150c5c7fbeef46",
+   "bytes": 6881
   },
   {
    "path": "CHANGELOG.md",
@@ -120,8 +127,8 @@
     "policy",
     "human"
    ],
-   "sha256": "6d7fb4ca432a5fedbad13fadb6ba5eebba6103068eddd93fdabbbc0a6ce91f4f",
-   "bytes": 19836
+   "sha256": "640fd59b2f2718e692f7d0bfab7af21358548723bd41cd74c7a47a0c89832976",
+   "bytes": 20579
   },
   {
    "path": "CONTRIBUTING.md",
@@ -150,8 +157,8 @@
     "entry",
     "human"
    ],
-   "sha256": "a12774c3702650e02a5782b817818921ca0e02ad6a41989f795aa7c1ae50ae35",
-   "bytes": 7903
+   "sha256": "70fdb26bbc5eb55e3ca51a3d21b8d83593b228318473717cd5380a0e676b0b72",
+   "bytes": 8316
   },
   {
    "path": "REPAIR-LOOP.md",
@@ -537,6 +544,17 @@
    "bytes": 895
   },
   {
+   "path": "chunks/g2--exported-appearance-review.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "25eb07646285059b53cf998dbadccffed9ee06c97222c8255b82511e84a6ac9c",
+   "bytes": 574
+  },
+  {
    "path": "chunks/g2--introduction.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
@@ -768,6 +786,17 @@
    "bytes": 6252
   },
   {
+   "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request-8-2-co.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "45a66f3bdb12e986d02a8a2ae4635f46655c9d892b6bd0e9be03b49cc3f714e3",
+   "bytes": 703
+  },
+  {
    "path": "chunks/g4--8-submitting-a-delivery-as-a-pull-request.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
@@ -984,8 +1013,8 @@
     "generated",
     "machine"
    ],
-   "sha256": "69b78f84f7a7771f2eeaf7fca3cd510e1f1fc1f90e8b5b89824319eb198f61d0",
-   "bytes": 26672
+   "sha256": "eccee6234cad618374011addfefea881e1ee71bfe9aa18aadbe72cac791187fd",
+   "bytes": 29799
   },
   {
    "path": "chunks/params--extensions.md",
@@ -1065,6 +1094,17 @@
    "bytes": 792
   },
   {
+   "path": "chunks/readme--environment-quality-and-remote-work.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "2db055e445276ac02bc61516aad7244c6fa7c1671d2a3c76b70dd0389541220d",
+   "bytes": 548
+  },
+  {
    "path": "chunks/readme--for-agents.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
@@ -1083,7 +1123,7 @@
     "generated",
     "chunk"
    ],
-   "sha256": "1026f710dd9d46f4542928ff2e348808a9be3263ca64a2903aed6eff4229ac3e",
+   "sha256": "9d6b800649fb8bdc95385b352e208471fd4ee1ad3da484ae8a5f08f9830859e3",
    "bytes": 747
   },
   {
@@ -1105,7 +1145,7 @@
     "generated",
     "chunk"
    ],
-   "sha256": "103b326d10c2d32df189c68d256198aad93bdeca60961db5553df5a5e112e945",
+   "sha256": "b46d76d1fe0a30e77c78ad9c5954bd9caf03ffe0e8f79382459338b6595090da",
    "bytes": 896
   },
   {
@@ -1230,6 +1270,94 @@
    "bytes": 735
   },
   {
+   "path": "chunks/review--1-agree-the-work-and-pin-its-inputs.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "150860335004d407c172e9bb69a4de4c1cc0f6a7651c17dadb981bf371db489e",
+   "bytes": 1536
+  },
+  {
+   "path": "chunks/review--2-check-construction-and-usable-space-before-mul.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "f0e191d81d4ce66a2ac62630354c826ea4385b4acf41f31400e12229a9c7606c",
+   "bytes": 2402
+  },
+  {
+   "path": "chunks/review--3-review-material-authoring-and-exported-appeara.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "64d641e365207a15063f2a330ae5478e15e82cc6935e82311c35cabf38d34f08",
+   "bytes": 1688
+  },
+  {
+   "path": "chunks/review--4-prove-the-lighting-and-renderer-contract.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "3814bb8f3342518e2f7ac935876e620410a09f64c41bff8e60d7fe9fc6ee9b58",
+   "bytes": 2166
+  },
+  {
+   "path": "chunks/review--5-package-evidence-that-another-contributor-can.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "fdc0c1da3e55a413ec709a3e8e8c67b4a12bbca6250f7ab75036f65dd084b784",
+   "bytes": 1788
+  },
+  {
+   "path": "chunks/review--6-resume-and-improve.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "d9d5ec0a0fa0c45ab7ed0be85783b38b5933146f723bc8c2f9d1d20dfbe82404",
+   "bytes": 840
+  },
+  {
+   "path": "chunks/review--7-make-ownership-and-resumption-explicit.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "6d333012e52703d89a0cb738c018c8ebad6791193f22df76402a754fa3e70c47",
+   "bytes": 979
+  },
+  {
+   "path": "chunks/review--introduction.md",
+   "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
+   "tags": [
+    "content",
+    "generated",
+    "chunk"
+   ],
+   "sha256": "deb52b1e557b76e32fc5e9f197355c1d52db07652e14a75c1b131dc1f87a8df9",
+   "bytes": 448
+  },
+  {
    "path": "chunks/sub--for-agents.md",
    "purpose": "guide section chunk of about 1,500 tokens or less (generated)",
    "tags": [
@@ -1324,8 +1452,8 @@
     "agent",
     "content"
    ],
-   "sha256": "4891b0865db5209f3e23f15ac0049387c40773f35878f9c12da2ed5302111c96",
-   "bytes": 168771
+   "sha256": "67c6df294bee86a979aa92d97e6216393aa004d8a854eea9436b64be7bf4c9bb",
+   "bytes": 182509
   },
   {
    "path": "llms.txt",
@@ -1335,8 +1463,8 @@
     "agent",
     "index"
    ],
-   "sha256": "c3432d93f7f5d8c93c8f36d5ef66a0b31c164dffde00f773289db4e6d7fd4048",
-   "bytes": 15623
+   "sha256": "cba2b8d9b949af7d5a1eef742bb1e80608be3dd60f2be13ff67c725c2e4ba3b1",
+   "bytes": 17276
   },
   {
    "path": "profiles/default.json",
@@ -1377,7 +1505,7 @@
     "generated",
     "machine"
    ],
-   "sha256": "231b9509712e6e7afd196a063f35ffda93aaae8b4b72e2c90069a0f9531cd88b",
+   "sha256": "39665e3caa9e3d31abf8c56ea604cb53e529fb149765704bf713069b64697d22",
    "bytes": 203952
   },
   {
@@ -1537,8 +1665,8 @@
     "skill",
     "agent"
    ],
-   "sha256": "301f7ab1c6cf03a82544264bc03c693432a6e7d8e5fec9d79e66c8918c201ab4",
-   "bytes": 5161
+   "sha256": "ac1c97dec3618feb26a9a5fe0f3fed4aadb54c16b60e6d2616ceb8f4738a5fbd",
+   "bytes": 5358
   },
   {
    "path": "skills/accept-and-package-delivery/references/g4--1-what-you-send.md",
@@ -1640,6 +1768,17 @@
    "bytes": 6252
   },
   {
+   "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request-8-2-co.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "45a66f3bdb12e986d02a8a2ae4635f46655c9d892b6bd0e9be03b49cc3f714e3",
+   "bytes": 703
+  },
+  {
    "path": "skills/accept-and-package-delivery/references/g4--8-submitting-a-delivery-as-a-pull-request.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
@@ -1660,6 +1799,94 @@
    ],
    "sha256": "b7c2ffb05a580de928de1a7aa9b5985f2a30fd70f9c0438450b764ceade8e6f1",
    "bytes": 733
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--1-agree-the-work-and-pin-its-inputs.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "150860335004d407c172e9bb69a4de4c1cc0f6a7651c17dadb981bf371db489e",
+   "bytes": 1536
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--2-check-construction-and-usable-space-before-mul.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "f0e191d81d4ce66a2ac62630354c826ea4385b4acf41f31400e12229a9c7606c",
+   "bytes": 2402
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--3-review-material-authoring-and-exported-appeara.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "64d641e365207a15063f2a330ae5478e15e82cc6935e82311c35cabf38d34f08",
+   "bytes": 1688
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--4-prove-the-lighting-and-renderer-contract.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "3814bb8f3342518e2f7ac935876e620410a09f64c41bff8e60d7fe9fc6ee9b58",
+   "bytes": 2166
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--5-package-evidence-that-another-contributor-can.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "fdc0c1da3e55a413ec709a3e8e8c67b4a12bbca6250f7ab75036f65dd084b784",
+   "bytes": 1788
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--6-resume-and-improve.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "d9d5ec0a0fa0c45ab7ed0be85783b38b5933146f723bc8c2f9d1d20dfbe82404",
+   "bytes": 840
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--7-make-ownership-and-resumption-explicit.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "6d333012e52703d89a0cb738c018c8ebad6791193f22df76402a754fa3e70c47",
+   "bytes": 979
+  },
+  {
+   "path": "skills/accept-and-package-delivery/references/review--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "deb52b1e557b76e32fc5e9f197355c1d52db07652e14a75c1b131dc1f87a8df9",
+   "bytes": 448
   },
   {
    "path": "skills/accept-and-package-delivery/references/rules.md",
@@ -1689,7 +1916,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "bb4e83ad538a5e29eac254efb6e9ed4fa314dd094b3feef1021e6c5d3c40adb7",
+   "sha256": "0627ac1c770c44e0860f62a1e2036f012d4c1f1c64f405b95b7d9af31cb2f7be",
    "bytes": 8051
   },
   {
@@ -2105,7 +2332,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "fb9c434d75224138f113b4f75135818e874f95ab457779cab2ce1d51581182f3",
+   "sha256": "e35020d2429fa7e88e3a0811f7be61cee3297b38e0d87d1a48ae4815cd736286",
    "bytes": 4224
   },
   {
@@ -2257,7 +2484,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "76ddd5008b99860a97a67df24fac350f1e70cf3fe862d2c7ff5de7326680685f",
+   "sha256": "14a8fb7c3269c35cdc49972dfd3ecd1efe62e93a2f9da4318317019a01fe3ffd",
    "bytes": 4534
   },
   {
@@ -2349,6 +2576,17 @@
    "bytes": 895
   },
   {
+   "path": "skills/decorate-interior/references/g2--exported-appearance-review.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "25eb07646285059b53cf998dbadccffed9ee06c97222c8255b82511e84a6ac9c",
+   "bytes": 574
+  },
+  {
    "path": "skills/decorate-interior/references/g2--introduction.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
@@ -2387,8 +2625,8 @@
     "skill",
     "agent"
    ],
-   "sha256": "206b614e3a5785ddb46fb491b3d9559dd91633cb47ef1b557aa4c5e0f4068156",
-   "bytes": 4807
+   "sha256": "6c45fe487cfa2554557f8fd9e861eae5acef5b2775419510686b54a8ed4c478c",
+   "bytes": 4968
   },
   {
    "path": "skills/orient/references/about--how-a-consumer-adopts-it.md",
@@ -2545,6 +2783,17 @@
    "bytes": 792
   },
   {
+   "path": "skills/orient/references/readme--environment-quality-and-remote-work.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "2db055e445276ac02bc61516aad7244c6fa7c1671d2a3c76b70dd0389541220d",
+   "bytes": 548
+  },
+  {
    "path": "skills/orient/references/readme--for-agents.md",
    "purpose": "guide chunk for this skill, loaded on demand (generated)",
    "tags": [
@@ -2563,7 +2812,7 @@
     "reference",
     "generated"
    ],
-   "sha256": "1026f710dd9d46f4542928ff2e348808a9be3263ca64a2903aed6eff4229ac3e",
+   "sha256": "9d6b800649fb8bdc95385b352e208471fd4ee1ad3da484ae8a5f08f9830859e3",
    "bytes": 747
   },
   {
@@ -2585,7 +2834,7 @@
     "reference",
     "generated"
    ],
-   "sha256": "103b326d10c2d32df189c68d256198aad93bdeca60961db5553df5a5e112e945",
+   "sha256": "b46d76d1fe0a30e77c78ad9c5954bd9caf03ffe0e8f79382459338b6595090da",
    "bytes": 896
   },
   {
@@ -2710,6 +2959,94 @@
    "bytes": 735
   },
   {
+   "path": "skills/orient/references/review--1-agree-the-work-and-pin-its-inputs.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "150860335004d407c172e9bb69a4de4c1cc0f6a7651c17dadb981bf371db489e",
+   "bytes": 1536
+  },
+  {
+   "path": "skills/orient/references/review--2-check-construction-and-usable-space-before-mul.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "f0e191d81d4ce66a2ac62630354c826ea4385b4acf41f31400e12229a9c7606c",
+   "bytes": 2402
+  },
+  {
+   "path": "skills/orient/references/review--3-review-material-authoring-and-exported-appeara.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "64d641e365207a15063f2a330ae5478e15e82cc6935e82311c35cabf38d34f08",
+   "bytes": 1688
+  },
+  {
+   "path": "skills/orient/references/review--4-prove-the-lighting-and-renderer-contract.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "3814bb8f3342518e2f7ac935876e620410a09f64c41bff8e60d7fe9fc6ee9b58",
+   "bytes": 2166
+  },
+  {
+   "path": "skills/orient/references/review--5-package-evidence-that-another-contributor-can.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "fdc0c1da3e55a413ec709a3e8e8c67b4a12bbca6250f7ab75036f65dd084b784",
+   "bytes": 1788
+  },
+  {
+   "path": "skills/orient/references/review--6-resume-and-improve.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "d9d5ec0a0fa0c45ab7ed0be85783b38b5933146f723bc8c2f9d1d20dfbe82404",
+   "bytes": 840
+  },
+  {
+   "path": "skills/orient/references/review--7-make-ownership-and-resumption-explicit.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "6d333012e52703d89a0cb738c018c8ebad6791193f22df76402a754fa3e70c47",
+   "bytes": 979
+  },
+  {
+   "path": "skills/orient/references/review--introduction.md",
+   "purpose": "guide chunk for this skill, loaded on demand (generated)",
+   "tags": [
+    "skill",
+    "reference",
+    "generated"
+   ],
+   "sha256": "deb52b1e557b76e32fc5e9f197355c1d52db07652e14a75c1b131dc1f87a8df9",
+   "bytes": 448
+  },
+  {
    "path": "skills/orient/scripts/run_tool.py",
    "purpose": "wrapper that runs the set's tools",
    "tags": [
@@ -2726,7 +3063,7 @@
     "skill",
     "agent"
    ],
-   "sha256": "232e0d279ca72ab7bd10b00b920966b6dc51d2e3e794ff6f355c5a5bc867cf5e",
+   "sha256": "484646be65235b8a2df3cb4eeaa731a796a05cfd9ccf92b83a2370250c47b004",
    "bytes": 8006
   },
   {
@@ -2839,6 +3176,15 @@
    "bytes": 1405
   },
   {
+   "path": "templates/environment-handoff.template.json",
+   "purpose": "starting file",
+   "tags": [
+    "template"
+   ],
+   "sha256": "e56c5ef3e7de3c73c5a8ef8257b4dedf3c254771fca31dc3e5689080cf31f1d0",
+   "bytes": 3086
+  },
+  {
    "path": "templates/finish-schedule.template.json",
    "purpose": "starting file",
    "tags": [
@@ -2862,7 +3208,7 @@
    "tags": [
     "template"
    ],
-   "sha256": "ab6e1f73c3a7826e4a69a1c480e8aba6739778d09873fe0d01ac295f422aa393",
+   "sha256": "482cc9db0f30cbd1e27ef20237e0e925ecce20945b3eeda82559cbb90df3bdf7",
    "bytes": 1324
   },
   {
@@ -2900,8 +3246,8 @@
     "tool",
     "script"
    ],
-   "sha256": "001d9727b217d4b6a7ddf197702633d31748557789f6cc363cc2924c4fca3e0b",
-   "bytes": 7305
+   "sha256": "a524c07ec59848143584f56520c8782cc3318f8ba61ef27d2cb7ded664ae370e",
+   "bytes": 7345
   },
   {
    "path": "tools/build_package.py",
@@ -2910,7 +3256,7 @@
     "tool",
     "script"
    ],
-   "sha256": "b2f1fc34cb7a4e19620be58064bc9b69c657f1e98f69573d7ce3befa0d913bff",
+   "sha256": "c56b5e3ddf30c84a296d57069527275c1df0467922611cbfd14bef7d61e0c2a0",
    "bytes": 17791
   },
   {
@@ -2920,7 +3266,7 @@
     "tool",
     "script"
    ],
-   "sha256": "06f8e7bff3c138bf026019a1164643d49051af65b49dd0ee38ec5e596f53894e",
+   "sha256": "a1a9c6b69b1ac12c79abe87fa4086a275024b671df8f3fcfc8aa5352bb951dbc",
    "bytes": 12189
   },
   {
@@ -2930,7 +3276,7 @@
     "tool",
     "script"
    ],
-   "sha256": "340739e99fd396cecc922512f1faca682c71b64f91e3676cbdba29ab2a080fa9",
+   "sha256": "64283b957d6846ae590028639e986b446faa982c125596ea6bf4969253292157",
    "bytes": 9549
   },
   {
@@ -2940,7 +3286,7 @@
     "tool",
     "script"
    ],
-   "sha256": "d1522c8083224278f017b556279444c844297385e7e34b6ab193be347c6bb862",
+   "sha256": "1eaae0ea2ba027e8351f64f99efc2a0025f62021d2a0268767e008690c99e472",
    "bytes": 67351
   },
   {
@@ -2950,7 +3296,7 @@
     "tool",
     "script"
    ],
-   "sha256": "45771bcdc74030c01882eee29f40ea864e14136ac638f4361b336923d089e002",
+   "sha256": "6bf28801fd1aa7db924635e116ac888b6fbdada8fcdb48a3760785ab3ea0e8d0",
    "bytes": 7189
   },
   {
@@ -2960,7 +3306,7 @@
     "tool",
     "script"
    ],
-   "sha256": "bf5df8cf37758e33fd79529fda92bdfe46806fd155ccb31ec05fb86ad1f14616",
+   "sha256": "e084c174625cfc301ab7d31b75fe014453408026bb098a4b616af7d2752140bc",
    "bytes": 22157
   },
   {
@@ -2970,7 +3316,7 @@
     "tool",
     "script"
    ],
-   "sha256": "1926043df70196649164c80f7ec72dfd2d2458cab924e3a2c50509de0c7cab74",
+   "sha256": "95271d59236352df6fa7319632e9ab69f950f00c0c9f7c1e35751bcba1ff9d90",
    "bytes": 18458
   },
   {
@@ -2980,7 +3326,7 @@
     "tool",
     "script"
    ],
-   "sha256": "2f0b9a2ba95340b5404354178ec5f80cecd91b5fdf8cd00f0893432e1a255eb8",
+   "sha256": "3bbe73af9908e8bdcb5b72ab1a0b2b17c8e3a040f21fa2350409a999861f1c20",
    "bytes": 12929
   },
   {
@@ -2990,7 +3336,7 @@
     "tool",
     "script"
    ],
-   "sha256": "eb12cc315e3e41f556a7af48ef570ecd2c8cc4d032a203a5140e3e94c32ff4d3",
+   "sha256": "96b08c681660b7d6eecaa5c345245d7904a5eaf5d476cda810c483ddb5f01d5c",
    "bytes": 7622
   },
   {
@@ -3029,7 +3375,7 @@
     "tool",
     "script"
    ],
-   "sha256": "618ea0596a37d67669ab2a42b8c4fc89d1b78025c15ba9fc628c2cc1b92c0acd",
+   "sha256": "7d10ebeb97b2e9d7dd2e3b299cdb54b947de5db0aa347ae7e709dd7a8899d0f5",
    "bytes": 34594
   },
   {
@@ -3049,8 +3395,8 @@
     "tool",
     "script"
    ],
-   "sha256": "52219ab6de24ad2fa06adad0ffef66a4600dafe05524e8500a5dd58a8f8ce4d0",
-   "bytes": 24877
+   "sha256": "a05342248f0764687df4f8b5ef32339ecb234205a5a65817cd113cf2713746de",
+   "bytes": 24949
   },
   {
    "path": "tools/glbkit.py",
@@ -3079,7 +3425,7 @@
     "tool",
     "script"
    ],
-   "sha256": "94e70ea6a3428a6c2c94871af9f3e7715381a37bb8f49dae7ecb51a8ede59a58",
+   "sha256": "1041b035b823c53e8c4115f7168318d35b3a0539c031c875ddb4d62c69eafde2",
    "bytes": 34177
   },
   {
@@ -3216,7 +3562,7 @@
     "tool",
     "script"
    ],
-   "sha256": "242e60b6099d1d39fa8595ca71fc9785da2aeb235aab08a89e011adbc294e064",
+   "sha256": "08af12cefec88e3b70e07390fca889fdc8a346677f020cdd1e405d07d39486ab",
    "bytes": 24585
   },
   {
@@ -3450,7 +3796,7 @@
     "tool",
     "script"
    ],
-   "sha256": "78b12b3a0b007d2c54507289c7516de41773ed0f0ff0ca150224345161deb76e",
+   "sha256": "ab220d979056b45c8002915b8e38998ac030c542e6523b78060828aa02688f25",
    "bytes": 48846
   },
   {
@@ -3460,7 +3806,7 @@
     "tool",
     "script"
    ],
-   "sha256": "b9b6a299d85e8edae5e3492c22490fd23fe8f90ec5978134bd26245759298130",
+   "sha256": "0acb28bf76a6d050aeb0ed28c911829887fb48ce1a89662a22894b2a0b2badba",
    "bytes": 29843
   }
  ]

@@ -319,3 +319,7 @@ that is present, four exterior views, and for every component a contact sheet of
 
 Acceptance of a submission is a merge to `main`; see `08-submissions-and-ingest.md` for what happens next. The checks cannot judge quality,
 ownership or taste: a person reviews those, and may decline a delivery that passes every check.
+
+### 8.2 Consumer appearance and remote review
+
+A reproducible proof is not automatically a useful visual review. Follow [guide 9](09-environment-review-and-handoff.md): inspect every authored space and connection, construction/detail closeups and actual exported materials in the intended consumer. Record renderer/light substitutions explicitly. Keep technical validity, rendered appearance and device behavior separate, and attach revision-bound findings and a resumable handoff.

@@ -3,7 +3,7 @@ name: orient
 description: Start here when you are asked to create, check or hand over IFC buildings, interior finishes, wall coverings, furniture or fixtures for a consumer you cannot see (a viewer, simulator, game runtime, BIM tool or archive). Explains what the guide set is, how profiles carry consumer-specific numbers, which skill to load (author-building, decorate-interior, author-furniture-library, accept-and-package-delivery, submit-delivery), the commands, and the repair loop. Use it first whenever the task mentions IFC, a profile, a room table, a finish schedule, an item library or a delivery package.
 license: CC-BY-4.0
 metadata:
-  version: "2.4.0"
+  version: "2.5.0"
   audience: any agent, any harness
 ---
 
@@ -61,7 +61,7 @@ A job with several parts: do the parts in this order, then package: building, fi
 ## Definition of done
 
 `python3 tools/check_all.py PACKAGE_DIR --profile PROFILE.json --json` exits 0 with `summary.requiredFailures` equal to 0, and the
-notes list any RECOMMENDED findings you left open.
+notes list any RECOMMENDED findings you left open. This establishes technical validity, not visual or consumer-device acceptance; follow `09-environment-review-and-handoff.md` for revision-bound review evidence.
 
 ## References
 

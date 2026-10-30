@@ -3,7 +3,7 @@ name: author-furniture-library
 description: Create a library of reusable furniture, fixtures and accent items as IFC4 files with item description files (pivot, dimensions, collision box, clearances, anchors, placement rules, variants) that can be placed in any compatible consumer. Use when modelling a table, chair, bed, shelf, lamp or equipment item, writing an item description, instancing items into a building, or when a check reports an F-rule finding.
 license: CC-BY-4.0
 metadata:
-  version: "2.4.0"
+  version: "2.5.0"
   rules: "F-01 to F-72"
 ---
 

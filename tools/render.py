@@ -44,7 +44,7 @@ sys.path.insert(0, HERE)
 import glbkit  # noqa: E402
 import report as rpt  # noqa: E402
 
-VERSION = "2.4.0"
+VERSION = "2.5.0"
 BACKEND = "numpy-rasteriser/1"
 SS = 2
 KEY = np.array([0.35, -0.5, 0.8]) / np.linalg.norm([0.35, -0.5, 0.8])

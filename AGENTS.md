@@ -16,6 +16,8 @@ people can read the PDF or HTML in `dist/`. Everything is static files and Pytho
    against the consumer's profile when you have one.
 5. Find everything else through `llms.txt` (index) or `MANIFEST.json` (every file with purpose and tags).
 
+Review rendered environment quality and remote handoffs with `09-environment-review-and-handoff.md`; use `templates/environment-handoff.template.json`.
+
 ## Commands
 
 ```

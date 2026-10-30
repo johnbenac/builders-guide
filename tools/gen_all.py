@@ -20,11 +20,11 @@ import fileset  # noqa: E402
 import rules_index  # noqa: E402
 
 ROOT = rules_index.ROOT = os.path.abspath(os.path.join(HERE, ".."))
-VERSION = "2.4.0"
+VERSION = "2.5.0"
 MAX_CHUNK_CHARS = 6000          # about 1,500 tokens
 DOCS = [("readme", "README.md"), ("about", "ABOUT.md"), ("g1", "01-builders-and-architects-guide.md"), ("g2", "02-interior-decorators-guide.md"),
         ("g3", "03-furniture-and-fixtures-guide.md"), ("g4", "04-delivery-and-acceptance-guide.md"),
-        ("g5", "05-worked-example.md"), ("params", "07-profile-parameters.md"), ("sub", "08-submissions-and-ingest.md"), ("repair", "REPAIR-LOOP.md")]
+        ("g5", "05-worked-example.md"), ("params", "07-profile-parameters.md"), ("sub", "08-submissions-and-ingest.md"), ("repair", "REPAIR-LOOP.md"), ("review", "09-environment-review-and-handoff.md")]
 TOOL_CMD = {
     "check_ifc": "python3 tools/check_ifc.py MASTER.ifc --profile PROFILE.json --finish-schedule finishes/finish-schedule.json --json",
     "check_texture_set": "python3 tools/check_texture_set.py SET_DIR --profile PROFILE.json --json",
@@ -35,11 +35,11 @@ TOOL_CMD = {
     "check_proofs": "python3 tools/check_proofs.py deliveries/SLUG --profile PROFILE.json --reproduce --json",
 }
 SKILLS = {
-    "orient": {"docs": ["readme", "about", "repair", "params"], "rules": None},
+    "orient": {"docs": ["readme", "about", "repair", "params", "review"], "rules": None},
     "author-building": {"docs": ["g1", "g5"], "rules": ["building", "room"]},
     "decorate-interior": {"docs": ["g2"], "rules": ["material"]},
     "author-furniture-library": {"docs": ["g3"], "rules": ["furniture"]},
-    "accept-and-package-delivery": {"docs": ["g4"], "rules": ["package"]},
+    "accept-and-package-delivery": {"docs": ["g4", "review"], "rules": ["package"]},
     "submit-delivery": {"docs": ["sub"], "rules": ["submission"]},
 }
 PURPOSE = [

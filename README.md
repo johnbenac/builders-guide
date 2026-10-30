@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Authoring Guide Set for IFC Buildings, Materials and Furniture
 
-Version 2.4.0 (2026-10-24). Application-neutral guides, rules, checkers and examples for people and software agents who create
+Version 2.5.0 (2026-10-30). Application-neutral guides, rules, checkers and examples for people and software agents who create
 digital buildings, finishes, wall coverings and furniture in the IFC building-data format, so that their work can be used by many
 different programs. Start with [ABOUT.md](ABOUT.md): what this is, who it is for, and how a consumer adopts it.
 
@@ -43,6 +43,10 @@ The set is also written to be read and run by software agents of any kind. Stati
 | 3 | [03-furniture-and-fixtures-guide.md](03-furniture-and-fixtures-guide.md) | furniture and fixture designers | item library format, pivots, dimensions, anchors, clearances, collision, variants, instancing |
 | 4 | [04-delivery-and-acceptance-guide.md](04-delivery-and-acceptance-guide.md) | everyone who sends or receives | package layout, manifest with hashes, versions, provenance and licences, checklist, acceptance checks, outcomes |
 | 5 | [05-worked-example.md](05-worked-example.md) | everyone | one room with a door, a window, a table, a wall covering and a light, with a generator script and checker |
+
+## Environment quality and remote work
+
+Follow [Environment review and asynchronous handoff](09-environment-review-and-handoff.md) for source-to-consumer visual checks, all-room circulation, materials/UVs, lighting, revision invalidation and resumable contributor evidence. Start a handoff with `templates/environment-handoff.template.json`. Technical validation and visual acceptance remain separate decisions.
 
 ## Submissions
 
@@ -101,10 +105,10 @@ Numbers are never reused; a retired rule keeps its number.
 
 | File | Content |
 |---|---|
-| `builders-guide-2.4.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
-| `builders-guide-2.4.0.html` | the same, as one web page |
-| `builders-guide-2.4.0.zip` | the whole set, with `MANIFEST.sha256` |
-| `SHA256SUMS.txt`, `builders-guide-2.4.0.zip.sha256` | SHA-256 of the three files above |
+| `builders-guide-2.5.0.pdf` | all guides, the worked example, the submissions page and the rules index in one document |
+| `builders-guide-2.5.0.html` | the same, as one web page |
+| `builders-guide-2.5.0.zip` | the whole set, with `MANIFEST.sha256` |
+| `SHA256SUMS.txt`, `builders-guide-2.5.0.zip.sha256` | SHA-256 of the three files above |
 
 `MANIFEST.sha256` lists the SHA-256 of every other file in the set (`sha256sum -c MANIFEST.sha256`); `MANIFEST.json` describes the same files
 with purpose and tags. `tools/build_dist.py` rebuilds all of this.
