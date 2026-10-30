@@ -10,7 +10,12 @@ indirect-light smoothing operation. Filter independent atlas charts independentl
 Specify linear versus display-encoded values, range/scale, texture channels and
 tone mapping. Check pixel values after delivery encoding: lossy image coding can
 introduce colored blocks into unrelated atlas islands. An attractive source render
-does not prove an optimized map or a different renderer.
+does not prove an optimized map or a different renderer. Isolate albedo, direct
+and indirect illumination before changing textures or adding fill to conceal a
+lighting defect. Record sampling, path-depth, glossy-blur and clamping settings:
+noise controls can change transmitted energy, and more samples alone may not
+remove that bias. Keep raw passes and compare bounded transport fixtures against
+an appropriate physical reference; record convergence limits explicitly.
 
 Review actual consumer views of dark rooms, bright windows, foliage backsides,
 glass, metals and contact shadows. A changed sky must agree with the baked light's

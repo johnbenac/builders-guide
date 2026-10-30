@@ -21,3 +21,6 @@ Evaluate the consumer's body clearance and all required connections; compute
 connectivity again after stair/threshold repairs. A room viewpoint should lie on
 an accessible component, not a comfortable-looking isolated patch behind furniture.
 Separate photographic compositions from natural standing/entry viewpoints.
+Verify the actual projection matrix, sensor convention and aspect ratio. A nominal
+lens label is insufficient if the consumer ignores it or applies a default field
+of view; qualify affected historical captures rather than silently relabeling them.

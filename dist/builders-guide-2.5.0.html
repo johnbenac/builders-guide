@@ -4040,7 +4040,10 @@ all required connections; compute connectivity again after
 stair/threshold repairs. A room viewpoint should lie on an accessible
 component, not a comfortable-looking isolated patch behind furniture.
 Separate photographic compositions from natural standing/entry
-viewpoints.</p>
+viewpoints. Verify the actual projection matrix, sensor convention and
+aspect ratio. A nominal lens label is insufficient if the consumer
+ignores it or applies a default field of view; qualify affected
+historical captures rather than silently relabeling them.</p>
 <h2
 id="3-review-material-authoring-and-exported-appearance-separately">3.
 Review material authoring and exported appearance separately</h2>
@@ -4051,8 +4054,12 @@ because the exporter has one available.</p>
 <p>Check UV orientation, real scale, repetition and seams at corners and
 close range. Inspect color, normal, roughness, metallic, emission and
 optical properties after export and import into the intended consumer.
-Retain material identity through batching. Texture-cache keys must
-include settings that change the resulting material.</p>
+Retain material identity through batching. Inspect winding and authored
+normals on both sides of foliage. For closed shells, check outward
+orientation as well as surface positions; preserve intentional
+single-sided geometry under the profile's sidedness convention.
+Texture-cache keys must include settings that change the resulting
+material.</p>
 <p>Alpha coverage alone does not establish believable clear glass.
 Preserve the source's intended transmission, index of refraction and
 roughness using supported properties; keep mirror and painted/opaque
@@ -4072,7 +4079,13 @@ charts independently. Specify linear versus display-encoded values,
 range/scale, texture channels and tone mapping. Check pixel values after
 delivery encoding: lossy image coding can introduce colored blocks into
 unrelated atlas islands. An attractive source render does not prove an
-optimized map or a different renderer.</p>
+optimized map or a different renderer. Isolate albedo, direct and
+indirect illumination before changing textures or adding fill to conceal
+a lighting defect. Record sampling, path-depth, glossy-blur and clamping
+settings: noise controls can change transmitted energy, and more samples
+alone may not remove that bias. Keep raw passes and compare bounded
+transport fixtures against an appropriate physical reference; record
+convergence limits explicitly.</p>
 <p>Review actual consumer views of dark rooms, bright windows, foliage
 backsides, glass, metals and contact shadows. A changed sky must agree
 with the baked light's direction and color convention. Record dark,

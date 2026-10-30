@@ -8,7 +8,9 @@ a generic timber or noise texture merely because the exporter has one available.
 Check UV orientation, real scale, repetition and seams at corners and close range.
 Inspect color, normal, roughness, metallic, emission and optical properties after
 export and import into the intended consumer. Retain material identity through
-batching. Texture-cache keys must include settings that change the resulting material.
+batching. Inspect winding and authored normals on both sides of foliage. For
+closed shells, check outward orientation as well as surface positions; preserve
+intentional single-sided geometry under the profile's sidedness convention. Texture-cache keys must include settings that change the resulting material.
 
 Alpha coverage alone does not establish believable clear glass. Preserve the
 source's intended transmission, index of refraction and roughness using supported

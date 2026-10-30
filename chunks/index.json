@@ -1123,7 +1123,7 @@
    "file": "chunks/review--2-check-construction-and-usable-space-before-mul.md",
    "source": "09-environment-review-and-handoff.md",
    "title": "2. Check construction and usable space before multiplying media",
-   "approx_tokens": 401,
+   "approx_tokens": 463,
    "rules": []
   },
   {
@@ -1131,7 +1131,7 @@
    "file": "chunks/review--3-review-material-authoring-and-exported-appeara.md",
    "source": "09-environment-review-and-handoff.md",
    "title": "3. Review material authoring and exported appearance separately",
-   "approx_tokens": 328,
+   "approx_tokens": 384,
    "rules": []
   },
   {
@@ -1139,7 +1139,7 @@
    "file": "chunks/review--4-prove-the-lighting-and-renderer-contract.md",
    "source": "09-environment-review-and-handoff.md",
    "title": "4. Prove the lighting and renderer contract",
-   "approx_tokens": 318,
+   "approx_tokens": 422,
    "rules": []
   },
   {
